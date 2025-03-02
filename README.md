@@ -61,6 +61,20 @@ To learn more about how to write a good product vision, please see:
 -->
 
 ### Features and Assumptions
+#### High-Level Features:
+- Student Profiles & Progress Tracking - Students can create and customize their profiles, view their progress, including games played, mistakes made, and learning outcomes.  
+- Classroom Management - Teachers can create and manage multiple classes, assign students to specific classes, choose what games are available for that class and monitor individual student and class performance.
+- Game Exploration - Any user can browse and play a variety of educational games, categorized by age and educational level, to enhance their learning. This allows teachers and developers to test the games before students play them and students autonomously play any game in the platform.
+- Game Content Overview and Verification - Teachers can review the educational objectives and bibliographies associated with each game to ensure the accuracy and credibility of the content. Games may also have a verified tag stating that the app developers ensured it's accuracy.
+- Game Development Platform - Game developers can create, edit, and update their educational games within the app. They must provide and adviced age group and write an appropriate description and corresponding bibliography for each game.
+- Real-Time Feedback - The games will provide instant feedback during gameplay, highlighting mistakes, rewarding progress, and offering hints or tips.
+- Leaderboard - The teacher will be able to turn on a leaderboard for each of his classes to encourage students to play the educative games.
+- Achievement System - The student will receive achivements based on performance which will be available on the students profile to encourage him to learn more.
+- Notifications - The app will send reminders to students about upcoming game deadlines.
+
+#### Assumptions and Dependencies:
+- User Roles - The app will have three distinct user roles: Student, Teacher, and Game Developer, each with different levels of capabilities.
+
 <!-- 
 Indicate an  initial/tentative list of high-level features - high-level capabilities or desired services of the system that are necessary to deliver benefits to the users.
  - Feature XPTO - a few words to briefly describe the feature
@@ -71,6 +85,9 @@ Optionally, indicate an initial/tentative list of assumptions that you are doing
 -->
 
 ### Elevator Pitch
+Have you ever wondered how to engage students in learning about sustainability in a fun and interactive way?  
+Our app offers a unique platform for teachers to help students aged 6-16 learn recycling, citizenship and sustainability through engaging games. Teachers can create classes, assign personalized games, and track student progress with detailed performance stats. Unlike traditional methods, our app offers a dynamic learning experience with age-appropriate games, verified content, and a bibliography for each game that cites the sources of the information, ensuring accuracy and trustworthiness Start making sustainability education more enjoyable and impactful today with our app!
+
 <!-- 
 Draft a small text to help you quickly introduce and describe your product in a short time (lift travel time ~90 seconds) and a few words (~800 characters), a technique usually known as elevator pitch.
 
@@ -83,6 +100,23 @@ Take a look at the following links to learn some techniques:
 ## Requirements
 
 ### User Stories
+- As a user who is opening the app for the first time I want to be able to choose if I am a student, teacher or game developer so that I have an experience tailored to my role.
+- As a student I want the games to provide instant feedback, highlight mistakes and offer tips so that I can improve my learning.
+- As a teacher I want to be able to create and manage multiple classes, assign students and games to them so that I can use the app with multiple classrooms of diferent age groups and needs.
+- As a student I want to be able to easily join my teachers class so that I can start learning fast.
+- As a student I want to be able to view my mistakes, games I have played and what I have learned so that I can easily revise those materials and keep track of my progress.  
+- As a teacher I want to be able to monitor individual student and class performance so that I can see the progress of the overall class and individuals.
+- As a student I want to be able to customize my profile so that I can be identified by my teacher.
+- As a game developer I want to be able to browse all games so that I can see what other developers have made and inovate.
+- As a game developer I want to be able to create, edit and test games so that I can ensure they are bug-free.
+- As a teacher I want to have a bibliography associated with each game so that I can easily verify the accuracy and sources of the information.
+- As a teacher I want to be able to browse and test all games before I assign them to my students so that I can ensure the games are appropriate and accurate.
+- As a student I want to be able to browse all games so that I can play any game and learn, even if it wasn’t assigned by my teacher.
+- As a game developer I want to be able to add a description and associate a game with an age group so that my games reach their target audience.
+- As a student I want to receive notifications if a game I was assign to play has a close deadline so that I don't miss my assignments due date.
+- As a teacher I want to have an option to enable a classroom leaderboard so that I can motivate my students to engage with the educational games.
+- As a student I want to receive achivements based on performance and display them on my profile so that I can showcase my progress.
+
 <!-- 
 In this section, you should describe all kinds of requirements for your module: functional and non-functional requirements.
 
