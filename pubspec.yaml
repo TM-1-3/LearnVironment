@@ -1,5 +1,9 @@
-name: namer_app
-description: A new Flutter project.
+name: LearnVironment
+description: Have you ever wondered how to engage students in learning about sustainability in a fun and interactive way? 
+ Our app offers a unique platform for teachers to help students aged 6-16 learn recycling, citizenship and sustainability through engaging games. 
+ Teachers can create classes, assign personalized games, and track student progress with detailed performance stats. 
+ Unlike traditional methods, our app offers a dynamic learning experience with age-appropriate games, verified content, and a bibliography for each game that cites the sources of the information, ensuring accuracy and trustworthiness.
+ Start making sustainability education more enjoyable and impactful today with our app!
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 

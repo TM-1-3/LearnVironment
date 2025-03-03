@@ -1,8 +1,8 @@
-# _[your product name]_ Development Report
+# LearnVironment Development Report
 
-Welcome to the documentation pages of _[your product name]_!
+Welcome to the documentation pages of LearnVironment!
 
-This Software Development Report, tailored for LEIC-ES-2024-25, provides comprehensive details about _[your product name]_, from high-level vision to low-level implementation decisions. It’s organised by the following activities. 
+This Software Development Report, tailored for LEIC-ES-2024-25, provides comprehensive details about LearnVironment, from high-level vision to low-level implementation decisions. It’s organised by the following activities. 
 
 * [Business modeling](#Business-Modelling) 
   * [Product Vision](#Product-Vision)
