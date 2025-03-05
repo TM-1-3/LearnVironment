@@ -147,6 +147,8 @@ At the end, it is good to add a rough indication of the value of the user story 
 
 ### Domain model
 
+![UML Domain Diagram](docs/domainDiagram.png)
+
 <!-- 
 To better understand the context of the software system, it is useful to have a simple UML class diagram with all and only the key concepts (names, attributes) and relationships involved of the problem domain addressed by your app. 
 Also provide a short textual description of each concept (domain class). 
@@ -159,6 +161,8 @@ Example:
 
 
 ## Architecture and Design
+
+![UML Deployment Diagram](docs/deploymentDiagram.png)
 <!--
 The architecture of a software system encompasses the set of key decisions about its organization. 
 
