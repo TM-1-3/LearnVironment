@@ -147,6 +147,7 @@ At the end, it is good to add a rough indication of the value of the user story 
 
 ### Domain model
 
+
 ![UML Domain Diagram](docs/domainDiagram.png)
 
 <!-- 
@@ -162,7 +163,12 @@ Example:
 
 ## Architecture and Design
 
+The representation of our app’s physical architecture features the following entities. The User’s Device, through which they interact with the Flutter app. The Cloud-Based Backend (Firebase Server) contains all the Firebase services essential for the app’s functionalities, as well as the Firebase Database, which stores all the information produced and required by the users. The app’s maintenance and updates are ensured through the Developer’s Workstation.
+
+
 ![UML Deployment Diagram](docs/deploymentDiagram.png)
+
+Regarding technologies, for the frontend, we used Flutter, with the Dart programming language and, for the backend, Firebase.
 <!--
 The architecture of a software system encompasses the set of key decisions about its organization. 
 
