@@ -102,8 +102,9 @@ Take a look at the following links to learn some techniques:
 
 ### User Stories
 - As an non registered user I want to be able to register so that I can use the app.
-- As a student I want the games to provide instant feedback, highlight mistakes and offer tips so that I can improve my learning.
-- As a teacher I want to be able to create and manage multiple classes so that I can use the app with multiple classrooms of diferent age groups and needs.
+- As a student I want the games to provide instant feedback so that I know how I did.
+- As a student I want the games to offer tips so that I can improve my learning.
+- As a teacher I want to be able to create a class so that I can use the app with multiple classrooms of diferent age groups and needs.
 - As a teacher I want to be able to assign students to classes so that I can divide my students between subjects and age groups.
 - As a teacher I want to be able to assign games to a class so that students know what to play.
 - As a teacher I want to be able to remove students from classes so that I can regulate drop-outs.
@@ -114,12 +115,15 @@ Take a look at the following links to learn some techniques:
 - As a teacher I want to be able to monitor class performance so that I can see the progress of the overall class.
 - As a user I want to be able to customize my profile so that I can be easily identified.
 - As a game developer I want to be able to browse all games so that I can see what other developers have made and inovate.
-- As a game developer I want to be able to create, edit and test games so that I can ensure they are bug-free.
-- As a teacher I want to have a bibliography associated with each game so that I can easily verify the accuracy and sources of the information.
-- As a teacher I want to be able to browse and test all games before I assign them to my students so that I can ensure the games are appropriate and accurate.
+- As a game developer I want to be able to create a game so that others could play it.
+- As a game developer I want to be able to edit my game so that I can fix bugs.
+- As a game developer I want to be able to dry run my game so that I can ensure it is bug-free.
+- As a user I want to have a bibliography associated with each game so that I can easily verify the accuracy and sources of the information.
+- As a teacher I want to be able to play a game before I assign them to my students so that I can ensure the games are appropriate and accurate.
 - As a student I want to be able to browse all games so that I can play any game and learn, even if it wasn’t assigned by my teacher.
-- As a game developer I want to be able to add a description and associate a game with an age group so that my games reach their target audience.
-- As a student I want to receive notifications if a game I was assign to play has a close deadline so that I don't miss my assignments due date.
+- As a game developer I want to be able to add a description to my game so that users can understand what it is about before playng it.
+- As a game developer I want to be able to associate a game with an age group so that my games reach their target audience.
+- As a student I want to receive notifications if a game I was assigned to play has a close deadline so that I don't miss my assignments due date.
 - As a teacher I want to have an option to enable a classroom leaderboard so that I can motivate my students to engage with the educational games.
 - As a student I want to receive achivements based on performance and display them on my profile so that I can showcase my progress.
 
