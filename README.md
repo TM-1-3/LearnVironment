@@ -100,7 +100,7 @@ Take a look at the following links to learn some techniques:
 ## Requirements
 
 ### User Stories
-- As a user who is opening the app for the first time I want to be able to choose if I am a student, teacher or game developer so that I have an experience tailored to my role.
+- As an non registered user I want to be able to register so that I can use the app.
 - As a student I want the games to provide instant feedback, highlight mistakes and offer tips so that I can improve my learning.
 - As a teacher I want to be able to create and manage multiple classes, assign students and games to them so that I can use the app with multiple classrooms of diferent age groups and needs.
 - As a student I want to be able to easily join my teachers class so that I can start learning fast.
