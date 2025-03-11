@@ -102,7 +102,11 @@ Take a look at the following links to learn some techniques:
 ### User Stories
 - As an non registered user I want to be able to register so that I can use the app.
 - As a student I want the games to provide instant feedback, highlight mistakes and offer tips so that I can improve my learning.
-- As a teacher I want to be able to create and manage multiple classes, assign students and games to them so that I can use the app with multiple classrooms of diferent age groups and needs.
+- As a teacher I want to be able to create and manage multiple classes so that i can use the app with multiple classrooms of diferent age groups and needs.
+- As a teacher I want to be able to assign students to classes so that I can divide my students between subjects and age groups.
+- As a teacher I want to be able to assign games to a class so that students know what to play.
+- As a teacher I want to be able to remove students from classes so that I can regulate drop-outs.
+ 
 - As a student I want to be able to easily join my teachers class so that I can start learning fast.
 - As a student I want to be able to view my mistakes, games I have played and what I have learned so that I can easily revise those materials and keep track of my progress.  
 - As a teacher I want to be able to monitor individual student and class performance so that I can see the progress of the overall class and individuals.
