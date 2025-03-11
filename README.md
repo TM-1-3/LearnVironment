@@ -162,13 +162,6 @@ Example:
 
 
 ## Architecture and Design
-
-The representation of our app’s physical architecture features the following entities. The User’s Device, through which they interact with the Flutter app. The Cloud-Based Backend (Firebase Server) contains all the Firebase services essential for the app’s functionalities, as well as the Firebase Database, which stores all the information produced and required by the users. The app’s maintenance and updates are ensured through the Developer’s Workstation.
-
-
-![UML Deployment Diagram](docs/deploymentDiagram.png)
-
-Regarding technologies, for the frontend, we used Flutter, with the Dart programming language and, for the backend, Firebase.
 <!--
 The architecture of a software system encompasses the set of key decisions about its organization. 
 
@@ -193,6 +186,13 @@ Example of _UML package diagram_ showing a _logical view_ of the Eletronic Ticke
 
 
 ### Physical architecture
+
+The representation of our app’s physical architecture features the following entities. The User’s Device, through which they interact with the Flutter app. The Cloud-Based Backend (Firebase Server) contains all the Firebase services essential for the app’s functionalities, as well as the Firebase Database, which stores all the information produced and required by the users. The app’s maintenance and updates are ensured through the Developer’s Workstation.
+
+
+![UML Deployment Diagram](docs/deploymentDiagram.png)
+
+Regarding technologies, for the frontend, we used Flutter, with the Dart programming language and, for the backend, Firebase.
 <!--
 The goal of this subsection is to document the high-level physical structure of the software system (machines, connections, software components installed, and their dependencies) using UML deployment diagrams (Deployment View) or component diagrams (Implementation View), separate or integrated, showing the physical structure of the system.
 
