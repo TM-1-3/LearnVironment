@@ -41,6 +41,9 @@ Business modeling in software development involves defining the product's vision
 
 ### Product Vision
 
+What if there was an app that gamified learning and teaching about recycling?
+Our app LearnVironment provides a learning environment in a fun and ludic way.
+
 <!-- 
 Start by defining a clear and concise vision for your app, to help members of the team, contributors, and users into focusing their often disparate views into a concise, visual, and short textual form. 
 
