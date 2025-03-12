@@ -65,19 +65,19 @@ To learn more about how to write a good product vision, please see:
 
 ### Features and Assumptions
 #### High-Level Features:
-- Student Profiles & Progress Tracking - Students can create and customize their profiles, view their progress, including games played, mistakes made, and learning outcomes.  
-- Classroom Management - Teachers can create and manage multiple classes, assign students to specific classes, choose what games are available for that class and monitor individual student and class performance.
-- Game Exploration - Any user can browse and play a variety of educational games, categorized by age and educational level, to enhance their learning. This allows teachers and developers to test the games before students play them and students autonomously play any game in the platform.
-- Game Content Overview and Verification - Teachers can review the educational objectives and bibliographies associated with each game to ensure the accuracy and credibility of the content. Games may also have a verified tag stating that the app developers ensured it's accuracy.
-- Game Development Platform - Game developers can create, edit, and update their educational games within the app. They must provide and adviced age group and write an appropriate description and corresponding bibliography for each game.
-- Real-Time Feedback - The games will provide instant feedback during gameplay, highlighting mistakes, rewarding progress, and offering hints or tips.
-- Leaderboard - The teacher will be able to turn on a leaderboard for each of his classes to encourage students to play the educative games.
-- Achievement System - The student will receive achivements based on performance which will be available on the students profile to encourage him to learn more.
-- Notifications - The app will send reminders to students about upcoming game deadlines.
+- **Student Profiles & Progress Tracking** - Students can create and customize their profiles, view their progress, including games played, mistakes made, and learning outcomes.  
+- **Classroom Management** - Teachers can create and manage multiple classes, assign students to specific classes, choose what games are available for that class and monitor individual student and class performance.
+- **Game Exploration** - Any user can browse and play a variety of educational games, categorized by age and educational level, to enhance their learning. This allows teachers and developers to test the games before students play them and students autonomously play any game in the platform.
+- **Game Content Overview and Verification** - Teachers can review the educational objectives and bibliographies associated with each game to ensure the accuracy and credibility of the content. Games may also have a verified tag stating that the app developers ensured it's accuracy.
+- **Game Development Platform** - Game developers can create, edit, and update their educational games within the app. They must provide and adviced age group and write an appropriate description and corresponding bibliography for each game.
+- **Real-Time Feedback** - The games will provide instant feedback during gameplay, highlighting mistakes, rewarding progress, and offering hints or tips.
+- **Leaderboard** - The teacher will be able to turn on a leaderboard for each of his classes to encourage students to play the educative games.
+- **Achievement System** - The student will receive achivements based on performance which will be available on the students profile to encourage him to learn more.
+- **Notifications** - The app will send reminders to students about upcoming game deadlines.
 
 #### Assumptions and Dependencies:
-- User Roles - The app will have three distinct user roles: Student, Teacher, and Game Developer, each with different levels of capabilities.
-
+- **User Roles** - The app will have three distinct user roles: Student, Teacher, and Game Developer, each with different levels of capabilities.
+- **Firebase** - The app will be dependent on Firebase servers.
 <!-- 
 Indicate an  initial/tentative list of high-level features - high-level capabilities or desired services of the system that are necessary to deliver benefits to the users.
  - Feature XPTO - a few words to briefly describe the feature
