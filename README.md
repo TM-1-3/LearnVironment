@@ -186,6 +186,9 @@ In this section you should start by briefly describing the components of the pro
 
 
 ### Logical architecture
+
+
+![UML Domain Diagram](docs/logicalArchitectureDiagram.png)
 <!--
 The purpose of this subsection is to document the high-level logical structure of the code (Logical View), using a UML diagram with logical packages, without the worry of allocating to components, processes or machines.
 
