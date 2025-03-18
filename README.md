@@ -149,6 +149,7 @@ Take a look at the following links to learn some techniques:
 - As a teacher I want to have an option to enable a classroom leaderboard so that I can motivate my students to engage with the educational games.
 - As a student I want to receive achivements based on performance and display them on my profile so that I can showcase my progress.
 - As a teacher I want to be able to remove an assignment from a class so that if I decide it doesn't fit my class it can be gone.
+- As a teacher I want to be able to delete a class from my account so that when I don't need it anymore it is removed. 
 
 <!-- 
 In this section, you should describe all kinds of requirements for your module: functional and non-functional requirements.
