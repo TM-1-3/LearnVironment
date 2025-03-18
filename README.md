@@ -105,9 +105,9 @@ Take a look at the following links to learn some techniques:
 
 ### User Stories
 #### Most Important User Story
-- As a student I want to be able to play any game and learn, even if it wasn’t assigned by my teacher.
-   **Value:** Must-have
-   **Effort:** 8
+- As a student I want to be able to play any game and learn, even if it wasn’t assigned by my teacher.  
+   **Value:** Must-have  
+   **Effort:** 8  
   ![image](https://github.com/user-attachments/assets/778782ca-f046-4b2d-a3f1-b00c02607707)
 
   ```gherkin
