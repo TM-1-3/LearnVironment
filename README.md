@@ -33,6 +33,7 @@ Thank you!
 * Leonor Bidarra [up202307719@up.pt](mailto:up202307719@up.pt)
 * Maria Sousa [up202303834@up.pt](mailto:up202303834@up.pt)
 * Tomás Morais [up202304692@up.pt](mailto:up202304692@up.pt)
+* Miguel Roque [up202304950@up.pt](mailto:up202304950@up.pt)
 
 ---
 ## Business Modelling
