@@ -103,10 +103,11 @@ Take a look at the following links to learn some techniques:
 ## Requirements
 
 ### User Stories
-- As a student I want to be able to browse all games so that I can play any game and learn, even if it wasn’t assigned by my teacher.
-
-![image](https://github.com/user-attachments/assets/df329a3e-b3b2-4f3f-8afe-d2e10d1eafc1)
-
+- As a student I want to be able to play any game and learn, even if it wasn’t assigned by my teacher.
+- 
+  ![image](https://github.com/user-attachments/assets/778782ca-f046-4b2d-a3f1-b00c02607707)
+  
+- As a student I want to be able to browse all games so that I can see what games I can play.
 - As an non registered user I want to be able to register so that I can use the app.
 - As a student I want the games to provide instant feedback so that I know how I did.
 - As a student I want the games to offer tips so that I can improve my learning.
