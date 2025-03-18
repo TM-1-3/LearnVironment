@@ -103,6 +103,10 @@ Take a look at the following links to learn some techniques:
 ## Requirements
 
 ### User Stories
+- As a student I want to be able to browse all games so that I can play any game and learn, even if it wasn’t assigned by my teacher.
+
+![image](https://github.com/user-attachments/assets/df329a3e-b3b2-4f3f-8afe-d2e10d1eafc1)
+
 - As an non registered user I want to be able to register so that I can use the app.
 - As a student I want the games to provide instant feedback so that I know how I did.
 - As a student I want the games to offer tips so that I can improve my learning.
@@ -122,7 +126,6 @@ Take a look at the following links to learn some techniques:
 - As a game developer I want to be able to dry run my game so that I can ensure it is bug-free.
 - As a user I want to have a bibliography associated with each game so that I can easily verify the accuracy and sources of the information.
 - As a teacher I want to be able to play a game before I assign them to my students so that I can ensure the games are appropriate and accurate.
-- As a student I want to be able to browse all games so that I can play any game and learn, even if it wasn’t assigned by my teacher.
 - As a game developer I want to be able to add a description to my game so that users can understand what it is about before playing it.
 - As a game developer I want to be able to associate a game with an age group so that my games reach their target audience.
 - As a student I want to receive notifications if a game I was assigned to play has a close deadline so that I don't miss my assignments due date.
