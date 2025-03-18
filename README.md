@@ -104,16 +104,21 @@ Take a look at the following links to learn some techniques:
 
 ### User Stories
 - As a student I want to be able to play any game and learn, even if it wasn’t assigned by my teacher.
-- 
-  ![image](https://github.com/user-attachments/assets/778782ca-f046-4b2d-a3f1-b00c02607707)
   
+  ![image](https://github.com/user-attachments/assets/778782ca-f046-4b2d-a3f1-b00c02607707)
+
+  ```gherkin
+  Scenario: Play any game available on the app
+	Given I am a student logged into the app
+	When I navigate to the games section
+	Then I should be able to select and play any game independently of it being assigned to me or not
+  ```
 - As a student I want to be able to browse all games so that I can see what games I can play.
   ```gherkin
   Scenario: Browse all games  
 	  Given I am a student logged into the app  
 	  When I navigate to the games section
 	  Then I should see a list of all available games  
-	  And I should be able to select and play any game
   ```
 - As an non registered user I want to be able to register so that I can use the app.
 - As a student I want the games to provide instant feedback so that I know how I did.
