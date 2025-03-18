@@ -103,8 +103,10 @@ Take a look at the following links to learn some techniques:
 ## Requirements
 
 ### User Stories
+#### Most Important User Story
 - As a student I want to be able to play any game and learn, even if it wasn’t assigned by my teacher.
-  
+   **Value:** Must-have
+   **Effort:** 8
   ![image](https://github.com/user-attachments/assets/778782ca-f046-4b2d-a3f1-b00c02607707)
 
   ```gherkin
@@ -113,6 +115,7 @@ Take a look at the following links to learn some techniques:
 	When I navigate to the games section
 	Then I should be able to select and play any game independently of it being assigned to me or not
   ```
+#### Other User Stories
 - As a student I want to be able to browse all games so that I can see what games I can play.
   ```gherkin
   Scenario: Browse all games  
