@@ -33,6 +33,11 @@ migrate_working_dir/
 .pub/
 /build/
 
+# Firebase-related
+google-services.json
+GoogleService-Info.plist
+firebase-debug.log
+
 # Symbolication related
 app.*.symbols
 
@@ -43,3 +48,8 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Dart/Flutter generated files
+/.dart_tool/
+
+
