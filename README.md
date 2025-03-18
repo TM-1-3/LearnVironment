@@ -108,7 +108,8 @@ Take a look at the following links to learn some techniques:
 - As a student I want to be able to play any game and learn, even if it wasn’t assigned by my teacher.  
    **Value:** Must-have  
    **Effort:** 8  
-  ![image](https://github.com/user-attachments/assets/778782ca-f046-4b2d-a3f1-b00c02607707)
+  ![image](https://github.com/user-attachments/assets/778782ca-f046-4b2d-a3f1-b00c02607707) ![image](https://github.com/user-attachments/assets/b710de95-b8e1-44b9-bb56-54ef5bfbe676)
+
 
   ```gherkin
   Scenario: Play any game available on the app
