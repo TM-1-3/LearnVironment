@@ -233,7 +233,6 @@ The representation of our app’s physical architecture features the following e
 
 ![UML Deployment Diagram](docs/deploymentDiagram.png)
 
-Regarding technologies, for the frontend, we used Flutter, with the Dart programming language and, for the backend, Firebase.
 <!--
 The goal of this subsection is to document the high-level physical structure of the software system (machines, connections, software components installed, and their dependencies) using UML deployment diagrams (Deployment View) or component diagrams (Implementation View), separate or integrated, showing the physical structure of the system.
 
