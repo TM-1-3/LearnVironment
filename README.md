@@ -211,6 +211,8 @@ In this section you should start by briefly describing the components of the pro
 
 ### Logical architecture
 
+Regardin our app´s logical architecture, it follows a two-layered structure. User interacts with the app though the User Interface for actions and visual elements. The Business Logic handles the functionalities of the app, enabling communication with the Firebase DataBase which allows the storage and retrieval of data.
+
 
 ![UML Domain Diagram](docs/logicalArchitectureDiagram.png)
 <!--
@@ -226,7 +228,7 @@ Example of _UML package diagram_ showing a _logical view_ of the Eletronic Ticke
 
 ### Physical architecture
 
-The representation of our app’s physical architecture features the following entities. The User’s Device, through which they interact with the Flutter app. The Cloud-Based Backend (Firebase Server) contains all the Firebase services essential for the app’s functionalities, as well as the Firebase Database, which stores all the information produced and required by the users.
+The representation of our app’s physical architecture features the following entities. The User’s Device, through which the user interacts with the Flutter app. The Cloud-Based Backend (Firebase Server) contains all the Firebase services essential for functioning of the app’s functionalities, such as Firebase Authentication, Firebase Cloud Messaging and Cloud Firestore, as well as the Firebase DataBase, which is accessed to store and retrive necessary data.
 
 
 ![UML Deployment Diagram](docs/deploymentDiagram.png)
