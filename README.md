@@ -183,27 +183,27 @@ At the end, it is good to add a rough indication of the value of the user story 
 
 ### Domain model
 
--> User: Generalization of the three different roles a user can assume. Stores information about the user.
+- **User** - Generalization of the three different roles a user can assume. Stores information about the user.
 
--> Student, Teacher and Game Developer: An user can assume at any time one of these three roles (the generalization is overlapping and complete), being limited to the actions associated with their current specific role.
+- **Student, Teacher and Game Developer** - An user can assume at any time one of these three roles (the generalization is overlapping and complete), being limited to the actions associated with their current specific role.
 
--> Class: Stores information about a class. A student can participate in many classes, each one managed by one teacher, who can manage multiple classes.
+- **Class** - Stores information about a class. A student can participate in many classes, each one managed by one teacher, who can manage multiple classes.
 
--> Leaderboard: Represents the ranking of the students of a class based on their performance.
+- **Leaderboard** - Represents the ranking of the students of a class based on their performance.
 
--> Achievement: After meeting certain conditions, the user will be awarded with an achievement. There are many achievements which the user can obtain.
+- **Achievement** - After meeting certain conditions, the user will be awarded with an achievement. There are many achievements which the user can obtain.
 
--> Game: Stores information about a game. A game is made by one game developer, which can also update it. Games are assigned by teachers to the students of a class to play it. All published games are available for all users to play.
+- **Game** - Stores information about a game. A game is made by one game developer, which can also update it. Games are assigned by teachers to the students of a class to play it. All published games are available for all users to play.
 
--> Template: Each game has a certain template as its base, which the game developer customizes to create their one.
+- **Template** - Each game has a certain template as its base, which the game developer customizes to create their one.
 
--> Bibliography: Each game has a bibliography containing the information related to the game´s solution. The same bibliography can be used in various games.
+- **Bibliography** - Each game has a bibliography containing the information related to the game´s solution. The same bibliography can be used in various games.
 
--> Deadline: When a teacher assigns a game to a class, they set a deadline for the students to complete the game.
+- **Deadline** - When a teacher assigns a game to a class, they set a deadline for the students to complete the game.
 
--> Age Group and Education Level: Each class has associated to it a certain age group and level of education for their students, as well as each game, in order to help teachers know what games to assign to a specific class and students which ones to play in order to practise.
+- **Age Group and Education Level** - Each class has associated to it a certain age group and level of education for their students, as well as each game, in order to help teachers know what games to assign to a specific class and students which ones to play in order to practise.
 
--> Feedback: After completing a game, it is shown to the student their score, what mistakes they made and tips for them to overcome their struggles.
+- **Feedback** - After completing a game, it is shown to the student their score, what mistakes they made and tips for them to overcome their struggles.
 
 ![UML Domain Diagram](docs/domainDiagram.png)
 
