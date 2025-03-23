@@ -273,27 +273,27 @@ You can find below information and references related with the project managemen
 
 ### Sprint 0
 
-Goal: Create a simple Flutter app so the team becomes familiar with software development using Flutter; create team´s scrumboard as a Github Project; complete the documentation by inserting List of Features, UML Diagrams, User Stories, Acceptance Tests, and UI Mockups in the README.md file of our app; create a vertical prototype of our app, already including one of its features and implementing the Google Firebase Services that we intend to use
+**Goal:** Create a simple Flutter app so the team becomes familiar with software development using Flutter; create team´s scrumboard as a Github Project; complete the documentation by inserting List of Features, UML Diagrams, User Stories, Acceptance Tests, and UI Mockups in the README.md file of our app; create a vertical prototype of our app, already including one of its features and implementing the Google Firebase Services that we intend to use
 
 **Sprint Retrospective**
 
-Did Well:
+**Did Well:**
 
-- Effective Team Communication: Our team members were able to create a productive work environment by continuously giving feedback about the progress of each one´s task, as well as promptly responding to questions related to technical issues, details about the app or the progress of the work;
+- **Effective Team Communication:** Our team members were able to create a productive work environment by continuously giving feedback about the progress of each one´s task, as well as promptly responding to questions related to technical issues, details about the app or the progress of the work;
 
-- Effective Work Balance and Distribution : By adopting the strategy of dividing the tasks evenly among the team, the members managed to achieve a more cohesive and productive workflow, being able to concentrate on one task at a time and help the others on the execution of their tasks;
+- **Effective Work Balance and Distribution:** By adopting the strategy of dividing the tasks evenly among the team, the members managed to achieve a more cohesive and productive workflow, being able to concentrate on one task at a time and help the others on the execution of their tasks;
 
-- Holding Meetings : In order to keep all team members on the same page regarding the progress of the app, they participated in a couple of meetings in order to establish the current state of the development and establish goals for the future, provide assistance to each member´s task and make decisions that would need the approval of the whole team;
+- **Holding Meetings:** In order to keep all team members on the same page regarding the progress of the app, they participated in a couple of meetings in order to establish the current state of the development and establish goals for the future, provide assistance to each member´s task and make decisions that would need the approval of the whole team;
 
-- Clear Definition of the App : The team defined the app´s conceptual characteristics and core functionalities with success, being able to document everything in the README.md file of the project.
-
-
-Do Differently: 
-
-- Participate in More Periodical Meetings: With Sprint 1 starting and the team soon to begin the actual coding of our app´s functionalities, the members realize that more regular meetings will be necessary in order to ensure a productive and unobstructed work progress.
+- **Clear Definition of the App:** The team defined the app´s conceptual characteristics and core functionalities with success, being able to document everything in the README.md file of the project.
 
 
-Challenges: 
+**Do Differently:** 
+
+- **Participate in More Periodical Meetings:** With Sprint 1 starting and the team soon to begin the actual coding of our app´s functionalities, the members realize that more regular meetings will be necessary in order to ensure a productive and unobstructed work progress.
+
+
+**Challenges:** 
 
 - The successfull installation of Flutter and Android Studio in the members´ PCs;
   
