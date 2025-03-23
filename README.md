@@ -118,40 +118,15 @@ Take a look at the following links to learn some techniques:
 	When I navigate to the games section
 	Then I should be able to select and play any game independently of it being assigned to me or not
   ```
-#### Other User Stories
-- As a student I want to be able to browse all games so that I can see what games I can play.
-  ```gherkin
-  Scenario: Browse all games  
-	  Given I am a student logged into the app  
-	  When I navigate to the games section
-	  Then I should see a list of all available games  
-  ```
-- As an non registered user I want to be able to register so that I can use the app.
-- As a student I want the games to provide instant feedback so that I know how I did.
-- As a student I want the games to offer tips so that I can improve my learning.
-- As a teacher I want to be able to create a class so that I can use the app with multiple classrooms of diferent age groups and needs.
-- As a teacher I want to be able to assign students to classes so that I can divide my students between subjects and age groups.
-- As a teacher I want to be able to assign games to a class so that students know what to play.
-- As a teacher I want to be able to remove students from classes so that I can regulate drop-outs.
-- As a student I want to be able to easily join my teachers class so that I can start learning fast.
-- As a student I want to be able to view my mistakes so that I can easily revise those materials.  
-- As a student I want to be able to view the games I have played so that I can keep track of my progress.  
-- As a teacher I want to be able to monitor individual student so that I can see the progress of individuals.
-- As a teacher I want to be able to monitor class performance so that I can see the progress of the overall class.
-- As a user I want to be able to customize my profile so that I can be easily identified.
-- As a game developer I want to be able to browse all games so that I can see what other developers have made and inovate.
-- As a game developer I want to be able to create a game so that others could play it.
-- As a game developer I want to be able to edit my game so that I can fix bugs.
-- As a game developer I want to be able to dry run my game so that I can ensure it is bug-free.
-- As a user I want to have a bibliography associated with each game so that I can easily verify the accuracy and sources of the information.
-- As a teacher I want to be able to play a game before I assign them to my students so that I can ensure the games are appropriate and accurate.
-- As a game developer I want to be able to add a description to my game so that users can understand what it is about before playing it.
-- As a game developer I want to be able to associate a game with an age group so that my games reach their target audience.
-- As a student I want to receive notifications if a game I was assigned to play has a close deadline so that I don't miss my assignments due date.
-- As a teacher I want to have an option to enable a classroom leaderboard so that I can motivate my students to engage with the educational games.
-- As a student I want to receive achivements based on performance and display them on my profile so that I can showcase my progress.
-- As a teacher I want to be able to remove an assignment from a class so that if I decide it doesn't fit my class it can be gone.
-- As a teacher I want to be able to delete a class from my account so that when I don't need it anymore it is removed. 
+#### Description  
+Our app offers an engaging, interactive recycling game platform designed to promote sustainability, recycling, and good citizenship among students. 
+
+Users can log in as one of three roles: Student, Teacher, or Game Developer, each with their own set of features and benefits.
+Students can join a class created by their teacher or explore a variety of educational games available within the app. They can track their progress by viewing their individual statistics, including what they’ve learned, the games they've played, and their performance (mistakes made, etc.). The app allows for a personalized learning experience, ensuring each student can see their growth over time.
+Teachers have the ability to create and manage multiple classes, adding as many students as needed. They can assign specific games to students and monitor their progress, including individual student statistics and overall class performance. Teachers can track which games have been played and verify student engagement. They also have the option to review the content of the games, including educational objectives and supporting verified materials (such as bibliographies and references), ensuring the accuracy and credibility of the information provided.
+Game developers can create new educational games directly within the app. These developers have access to games they've created, with the ability to make edits and improvements as needed. The app provides a platform for developers to innovate and contribute new content, enhancing the learning experience for students and teachers alike.
+
+Besides that, the app features pre-built educational games focused on sustainability, recycling, and citizenship. Each game includes detailed descriptions of its learning objectives, ensuring the educational material is accurate and credible. Games are rated by age group, making them suitable for students across a wide range of ages and educational levels.
 
 <!-- 
 In this section, you should describe all kinds of requirements for your module: functional and non-functional requirements.
