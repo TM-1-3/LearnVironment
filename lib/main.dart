@@ -2,8 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
-import 'app_state.dart';
 import 'auth_gate.dart';
+import 'auth_service.dart'; // Import the AuthService
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,7 +12,7 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider<ApplicationState>(create: (_) => ApplicationState()),
+        ChangeNotifierProvider<AuthService>(create: (_) => AuthService()),
       ],
       child: const App(),
     ),

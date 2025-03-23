@@ -14,19 +14,28 @@ class ApplicationState extends ChangeNotifier {
   bool _loggedIn = false;
   bool get loggedIn => _loggedIn;
 
+  // Improved init() with error handling
   Future<void> init() async {
-    await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform);
+    try {
+      // Initialize Firebase
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+    } catch (e) {
+      // Handle Firebase initialization error
+      print("Error initializing Firebase: $e");
+      // Optionally, you can show an error dialog or message to the user here
+      // e.g., showErrorDialog(context, "Failed to initialize Firebase.");
+      return; // Early return if initialization fails
+    }
 
+    // Set up Firebase UI providers
     FirebaseUIAuth.configureProviders([EmailAuthProvider()]);
 
-    FirebaseAuth.instance.userChanges().listen((user) {
-      if (user != null) {
-        _loggedIn = true;
-      } else {
-        _loggedIn = false;
-      }
-      notifyListeners();
+    // Listen for authentication state changes
+    FirebaseAuth.instance.authStateChanges().listen((user) {
+      _loggedIn = user != null;
+      notifyListeners(); // Notify listeners of authentication state change
     });
   }
 

@@ -1,8 +1,9 @@
-import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'app_state.dart';
+import 'auth_service.dart';  // Import the AuthService for authentication handling
+import 'profile_screen.dart';  // Import your custom ProfileScreen
+
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -11,82 +12,68 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
+enum TabItem { statistics, home, games }
+
 class _HomePageState extends State<HomePage> {
-  var selectedIndex = 1;  // Default to the Home page
+  // Default to the Home tab
+  TabItem selectedTab = TabItem.home;
 
-  // List of screens corresponding to each tab
-  final List<Widget> _pages = [
-    Center(child: Text('Statistics Page')),
-    Center(child: Text('Home Page')),
-    Center(child: Text('Games Page')),
-  ];
+  // Map of tabs to corresponding pages
+  final Map<TabItem, Widget> _pages = {
+    TabItem.statistics: const Center(child: Text('Statistics Page')),
+    TabItem.home: const Center(child: Text('Home Page')),
+    TabItem.games: const Center(child: Text('Games Page')),
+  };
 
+  // Method to handle bottom navigation tap
   void _onItemTapped(int index) {
     setState(() {
-      selectedIndex = index;
+      selectedTab = TabItem.values[index];
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ApplicationState>(
-      builder: (context, appState, _) {
-        return Scaffold(
-          appBar: AppBar(
-            title: Text('LearnVironment'),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.person),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute<ProfileScreen>(
-                      builder: (context) => ProfileScreen(
-                        appBar: AppBar(title: const Text('User Profile')),
-                        actions: [
-                          SignedOutAction((context) {
-                            Navigator.of(context).pop();
-                          }),
-                        ],
-                        children: [
-                          const Divider(),
-                          Padding(
-                            padding: const EdgeInsets.all(2),
-                            child: AspectRatio(
-                              aspectRatio: 1,
-                              child: Image.asset('flutterfire_300x.png'),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ],
-            automaticallyImplyLeading: false,
-          ),
-          body: _pages[selectedIndex], // Display the selected page
-          bottomNavigationBar: BottomNavigationBar(
-            currentIndex: selectedIndex,
-            onTap: _onItemTapped,
-            items: const <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
-                icon: Icon(Icons.pie_chart),
-                label: 'Statistics',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.home),
-                label: 'Home',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.videogame_asset),
-                label: 'Games',
-              ),
-            ],
-          ),
-        );
-      },
-    );
+    return Consumer<AuthService>(builder: (context, authService, _) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('LearnVironment'),
+          actions: [
+            // Profile button in AppBar
+            IconButton(
+              icon: const Icon(Icons.person),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProfileScreen(authService: authService),
+                  ),
+                );
+              },
+            ),
+          ],
+          automaticallyImplyLeading: false,
+        ),
+        body: _pages[selectedTab]!, // Display the selected page
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: TabItem.values.indexOf(selectedTab),
+          onTap: _onItemTapped,
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.pie_chart),
+              label: 'Statistics',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.videogame_asset),
+              label: 'Games',
+            ),
+          ],
+        ),
+      );
+    });
   }
 }
