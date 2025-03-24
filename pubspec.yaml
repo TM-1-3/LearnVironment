@@ -23,13 +23,16 @@ dependencies:
   cloud_firestore: ^5.6.5
   firebase_messaging: ^15.2.4
   firebase_ui_auth: ^1.16.1
-  firebase_storage: ^12.4.4
+  path_provider: ^2.0.11
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   flutter_lints: ^5.0.0
+  mockito: ^5.0.16
+  build_runner: ^2.0.6
+  test: ^1.25.15
 
 flutter:
   uses-material-design: true

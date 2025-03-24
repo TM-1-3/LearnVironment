@@ -17,6 +17,7 @@ enum TabItem { statistics, home, games }
 class _HomePageState extends State<HomePage> {
   // Default to the Home tab
   TabItem selectedTab = TabItem.home;
+  String message = '';
 
   // Map of tabs to corresponding pages
   final Map<TabItem, Widget> _pages = {
@@ -29,6 +30,22 @@ class _HomePageState extends State<HomePage> {
   void _onItemTapped(int index) {
     setState(() {
       selectedTab = TabItem.values[index];
+    });
+  }
+
+  // Method to handle button press and show a message
+  void _showMessage() {
+    setState(() {
+      message = 'Button Pressed!';
+    });
+  }
+
+  // Method to log out
+  void _logout() {
+    // This would call your AuthService to log out
+    // For now, just show a message
+    setState(() {
+      message = 'Logged Out';
     });
   }
 
@@ -54,7 +71,21 @@ class _HomePageState extends State<HomePage> {
           ],
           automaticallyImplyLeading: false,
         ),
-        body: _pages[selectedTab]!, // Display the selected page
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _pages[selectedTab]!, // Display the selected page
+            if (message.isNotEmpty) Text(message), // Show message if any
+            ElevatedButton(
+              onPressed: _showMessage,
+              child: const Text('Show Message'),
+            ),
+            ElevatedButton(
+              onPressed: _logout,
+              child: const Text('Logout'),
+            ),
+          ],
+        ),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: TabItem.values.indexOf(selectedTab),
           onTap: _onItemTapped,

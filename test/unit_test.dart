@@ -1,0 +1,89 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
+import 'package:provider/provider.dart';
+import 'package:learnvironment/auth_service.dart';
+import 'package:flutter/material.dart';
+import 'package:learnvironment/home_page.dart';
+
+import 'mock_firebase.dart';
+
+void main() {
+  late AuthService authService;
+  late MockFirebaseAuth mockFirebaseAuth;
+  late MockUser mockUser;
+
+  setUp(() {
+    // Initialize mock instances before each test
+    mockFirebaseAuth = MockFirebaseAuth();
+    mockUser = MockUser();
+    authService = AuthService(firebaseAuth: mockFirebaseAuth);  // Inject mock FirebaseAuth
+  });
+
+  // 1. Authentication Tests
+  // 1. Authentication Tests
+  test('authStateChanges returns null for unauthenticated user', () async {
+    // Mock the behavior of authStateChanges() to return a stream that emits null (unauthenticated user)
+    when(mockFirebaseAuth.authStateChanges()).thenAnswer(
+          (_) => Stream<User?>.value(null), // This returns a stream that emits null
+    );
+
+    // Initialize the AuthService and listen for changes
+    await authService.init();
+
+    // Check that the loggedIn state is false because there's no authenticated user
+    expect(authService.loggedIn, false);
+  });
+
+  test('authStateChanges returns a user when authenticated', () async {
+    // Mock the behavior of authStateChanges() to return a stream that emits a mock user (authenticated user)
+    when(mockFirebaseAuth.authStateChanges()).thenAnswer(
+          (_) => Stream<User?>.value(mockUser), // This returns a stream that emits the mock user
+    );
+
+    // Initialize the AuthService and listen for changes
+    await authService.init();
+
+    // Check that the loggedIn state is true because we simulated an authenticated user
+    expect(authService.loggedIn, true);
+  });
+
+  // 2. Button Interaction Tests
+  testWidgets('Show Message button updates the message text', (WidgetTester tester) async {
+    // Arrange: Set up the HomePage widget with the mock AuthService
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ChangeNotifierProvider<AuthService>(
+          create: (_) => authService,  // Use the real authService here
+          child: const HomePage(),
+        ),
+      ),
+    );
+
+    // Act: Tap the "Show Message" button
+    await tester.tap(find.text('Show Message'));
+    await tester.pump(); // Rebuild the widget tree
+
+    // Assert: Check if the message is updated to "Button Pressed!"
+    expect(find.text('Button Pressed!'), findsOneWidget);
+  });
+
+  testWidgets('Logout button updates the message to "Logged Out"', (WidgetTester tester) async {
+    // Arrange: Set up the HomePage widget with the mock AuthService
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ChangeNotifierProvider<AuthService>(
+          create: (_) => authService,  // Use the real authService here
+          child: const HomePage(),
+        ),
+      ),
+    );
+
+    // Act: Tap the "Logout" button
+    await tester.tap(find.text('Logout'));
+    await tester.pump(); // Rebuild the widget tree
+
+    // Assert: Check if the message is updated to "Logged Out"
+    expect(find.text('Logged Out'), findsOneWidget);
+  });
+}

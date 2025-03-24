@@ -14,7 +14,7 @@ class AuthGate extends StatelessWidget {
     return Consumer<AuthService>(
       builder: (context, authService, _) {
         return StreamBuilder<User?>(
-          stream: FirebaseAuth.instance.authStateChanges(),  // FirebaseAuth instance is used here
+          stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -63,7 +63,7 @@ class AuthGate extends StatelessWidget {
               );
             }
 
-            return const HomePage();
+            return const HomePage();  // Navigate to the HomePage after sign-in
           },
         );
       },
