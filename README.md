@@ -248,6 +248,22 @@ In this subsection please describe which feature, or part of it, you have implem
 
 At this phase, instead of a complete user story, you can simply implement a small part of a feature that demonstrates thay you can use the technology, for example, show a screen with the app credits (name and authors).
 -->
+- Sign in, sign up with firebase authentication with email verification);
+- Edit profile which allows to select an image from your device, change account email and change username (the image is stored locally);
+- Internal memory of logged in or logged out state;
+- Log out and delete acount in the profile page;
+- Basic buttons that display page in the home page;
+- Experimented with Unit tests and widget tests;
+<img width="291" alt="image" src="https://github.com/user-attachments/assets/7dd8600e-f03b-4c74-b1aa-ad70db7c44ca" />
+<img width="291" alt="image" src="https://github.com/user-attachments/assets/a2c981de-4362-46c8-840a-2e5b44c5726f" />
+<img width="290" alt="image" src="https://github.com/user-attachments/assets/62db6deb-922e-4bf8-91f2-f72ac0b32262" />
+<img width="290" alt="image" src="https://github.com/user-attachments/assets/1945950a-9a7c-44d5-8d22-97366bd289d7" />
+<img width="290" alt="image" src="https://github.com/user-attachments/assets/c57a236a-95fa-4b6e-8cfa-1549f02ad134" />
+<img width="291" alt="image" src="https://github.com/user-attachments/assets/dba54c75-62b4-4be6-bac7-76d70c3d66ce" />
+
+
+<img width="360" alt="image" src="https://github.com/user-attachments/assets/fa44a467-ec9a-484d-9a09-c4f1d5b4bfdd" />
+
 
 ## Project management
 <!--
