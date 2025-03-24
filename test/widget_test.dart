@@ -1,30 +1,44 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:learnvironment/auth_service.dart';
+import 'package:learnvironment/home_page.dart'; // Import HomePage widget
+import 'package:mockito/mockito.dart';
+import 'package:provider/provider.dart';
 
-import 'package:LearnVironment/main.dart';
+// Create a mock AuthService class
+class MockAuthService extends Mock implements AuthService {}
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('Show Message and Logout Button work correctly', (WidgetTester tester) async {
+    // Create a mock AuthService instance
+    final mockAuthService = MockAuthService();
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Build the widget tree with a Provider for AuthService
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ChangeNotifierProvider<AuthService>(
+          create: (_) => mockAuthService,
+          child: const HomePage(),
+        ),
+      ),
+    );
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    // Initial state should have no message
+    expect(find.text('Button Pressed!'), findsNothing);
+    expect(find.text('Logged Out'), findsNothing);
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Test the Show Message Button
+    await tester.tap(find.text('Show Message'));
+    await tester.pump(); // Rebuild the widget tree
+
+    // After tapping the "Show Message" button, the message should appear
+    expect(find.text('Button Pressed!'), findsOneWidget);
+
+    // Test the Logout Button
+    await tester.tap(find.text('Logout'));
+    await tester.pump(); // Rebuild the widget tree
+
+    // After tapping the "Logout" button, the message should update to "Logged Out"
+    expect(find.text('Logged Out'), findsOneWidget);
   });
 }

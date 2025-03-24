@@ -33,6 +33,11 @@ migrate_working_dir/
 .pub/
 /build/
 
+# Firebase-related
+google-services.json
+GoogleService-Info.plist
+firebase-debug.log
+
 # Symbolication related
 app.*.symbols
 
@@ -43,3 +48,24 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Dart/Flutter generated files
+/.dart_tool/
+
+# Firebase Functions-related (if applicable)
+firebase-debug.log
+firebase/.functions/
+
+# iOS build and temporary files
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Flutter.framework/
+ios/Flutter/Flutter.podspec
+
+# macOS build artifacts
+macos/.flutter-plugins
+macos/.flutter-plugins-dependencies
+
+# Android specific generated files
+/android/app/.flutter-plugins
+/android/app/.flutter-plugins-dependencies
