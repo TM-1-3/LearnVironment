@@ -376,13 +376,13 @@ class EditProfileWidget extends StatelessWidget {
   final File? imageFile;
 
   const EditProfileWidget({
-    Key? key,
+    super.key,
     required this.usernameController,
     required this.emailController,
     required this.onSave,
     required this.pickImage,
     this.imageFile,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
