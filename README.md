@@ -248,21 +248,35 @@ In this subsection please describe which feature, or part of it, you have implem
 
 At this phase, instead of a complete user story, you can simply implement a small part of a feature that demonstrates thay you can use the technology, for example, show a screen with the app credits (name and authors).
 -->
-- Sign in, sign up with firebase authentication with email verification);
-- Edit profile which allows to select an image from your device, change account email and change username (the image is stored locally);
-- Internal memory of logged in or logged out state;
-- Log out and delete acount in the profile page;
-- Basic buttons that display page in the home page;
-- Experimented with Unit tests and widget tests;
-<img width="291" alt="image" src="https://github.com/user-attachments/assets/7dd8600e-f03b-4c74-b1aa-ad70db7c44ca" />
-<img width="291" alt="image" src="https://github.com/user-attachments/assets/a2c981de-4362-46c8-840a-2e5b44c5726f" />
-<img width="290" alt="image" src="https://github.com/user-attachments/assets/62db6deb-922e-4bf8-91f2-f72ac0b32262" />
-<img width="290" alt="image" src="https://github.com/user-attachments/assets/1945950a-9a7c-44d5-8d22-97366bd289d7" />
-<img width="290" alt="image" src="https://github.com/user-attachments/assets/c57a236a-95fa-4b6e-8cfa-1549f02ad134" />
-<img width="291" alt="image" src="https://github.com/user-attachments/assets/dba54c75-62b4-4be6-bac7-76d70c3d66ce" />
+#### Sign-up and Sign-in
+Our app uses Firebase Authentication to deal with the log in and sign-up of users,allowing them to easily create an account or sign in using their email address. During the sign-up phase, after entering their information, users will receive an email verification to confirm their identity.
 
+<img width="291" alt="image" src="https://github.com/user-attachments/assets/7dd8600e-f03b-4c74-b1aa-ad70db7c44ca"/>
 
-<img width="360" alt="image" src="https://github.com/user-attachments/assets/fa44a467-ec9a-484d-9a09-c4f1d5b4bfdd" />
+#### Edit Profile
+When a user is logged in, they can easily edit their profile. Users can upload a profile picture from their devices and the image gets stored locally. Besides the profile picture, users can also change their usernames and email addresses. These updates ensure their profile stays personalized and up to date.
+
+<img width="291" alt="image" src="https://github.com/user-attachments/assets/dba54c75-62b4-4be6-bac7-76d70c3d66ce"/>
+
+#### Session Management
+Our app keeps the information of the user's current session, ensuring that they do not have to continuously log in every time they reopen the app. This feature is very useful to maintain a good experience while using the app.
+
+#### Account Deletion and Log Out
+On the profile section of the app, users have the option to either log out or delete their accounts. Logging out ends the current session, sending them back to the log in page, and when the user chooses to delete their account, their data is removed from Firebase services.
+
+<img width="290" alt="image" src="https://github.com/user-attachments/assets/c57a236a-95fa-4b6e-8cfa-1549f02ad134"/>
+
+#### Navigation and User Interface
+We included basic navigation buttons that indicate and lead users to the different sections of the app. These buttons allow users to access the Statistics, Home and Games sections.
+
+<img width="291" alt="image" src="https://github.com/user-attachments/assets/a2c981de-4362-46c8-840a-2e5b44c5726f"/>
+<img width="290" alt="image" src="https://github.com/user-attachments/assets/62db6deb-922e-4bf8-91f2-f72ac0b32262"/>
+<img width="290" alt="image" src="https://github.com/user-attachments/assets/1945950a-9a7c-44d5-8d22-97366bd289d7"/>
+
+#### Unit Tests
+To make sure our app's features worked properly, we have added unit and widget tests. The unit tests help verify that the functions and methods are working as intended, while the widget tests ensure the correct behaviour of UI elements, such as buttons. The usage of these tests ensure that the app is stable and reliable.
+
+<img width="360" alt="image" src="https://github.com/user-attachments/assets/fa44a467-ec9a-484d-9a09-c4f1d5b4bfdd"/>
 
 
 ## Project management
