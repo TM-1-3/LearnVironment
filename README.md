@@ -342,6 +342,8 @@ You can find below information and references related with the project managemen
 
 **Board at the Beginning of Sprint 1**
 
+![beginSprint0](docs/beginSprint0.png)
+
 ### Sprint 2
 
 ### Sprint 3
