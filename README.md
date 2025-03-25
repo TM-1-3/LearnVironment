@@ -340,6 +340,16 @@ You can find below information and references related with the project managemen
 
 ### Sprint 1
 
+**Goal:** Create an interface for users to browse all available games; develop a couple of games for users to play; implement a system that allows users to see the mistakes they made during their playthrough.
+
+**Sprint Retrospective:**
+
+**Did Well:**
+
+**Do Differently:**
+
+**Challenges:**
+
 **Board at the Beginning of Sprint 1**
 
 ![beginSprint0](docs/beginSprint0.png)
