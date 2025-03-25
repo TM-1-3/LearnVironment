@@ -329,14 +329,18 @@ You can find below information and references related with the project managemen
   
 - How to implement Google Firebase Services on our app.
 
-**Board At Begining Of Sprint 0**
+**Board at the Beginning Of Sprint 0**
+
 ![Captura de ecrã 2025-03-24 213058](https://github.com/user-attachments/assets/7e5e1a7d-4c41-4195-9d4a-79c9228e0348)
 
-**Board At End Of Sprint 0**
+**Board at the End of Sprint 0**
+
 <img width="1351" alt="image" src="https://github.com/user-attachments/assets/1a678148-4250-476c-a9c0-473b48454d0e" />
 
 
 ### Sprint 1
+
+**Board at the Beginning of Sprint 1**
 
 ### Sprint 2
 
