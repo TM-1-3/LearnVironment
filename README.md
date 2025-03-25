@@ -207,7 +207,7 @@ In this section you should start by briefly describing the components of the pro
 
 ### Logical architecture
 
-Regardin our app´s logical architecture, it follows a two-layered structure. User interacts with the app though the User Interface for actions and visual elements. The Business Logic handles the functionalities of the app, enabling communication with the Firebase DataBase which allows the storage and retrieval of data.
+Regardin our app´s logical architecture, it follows a two-layered structure. User interacts with the app though the User Interface for actions and visual elements. The Business Logic handles the functionalities of the app, enabling communication with the Firebase Services which allows the storage and retrieval of data, user authentiaction and messaging.
 
 
 ![UML Domain Diagram](docs/logicalArchitectureDiagram.png)
