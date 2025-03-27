@@ -331,7 +331,7 @@ You can find below information and references related with the project managemen
 
 **Board at the Beginning Of Sprint 0**
 
-![Captura de ecrã 2025-03-24 213058](https://github.com/user-attachments/assets/7e5e1a7d-4c41-4195-9d4a-79c9228e0348)
+![beginSprint0](https://github.com/user-attachments/assets/7e5e1a7d-4c41-4195-9d4a-79c9228e0348)
 
 **Board at the End of Sprint 0**
 
@@ -352,7 +352,8 @@ You can find below information and references related with the project managemen
 
 **Board at the Beginning of Sprint 1**
 
-![beginSprint0](docs/beginSprint0.png)
+![beginSprint1](https://github.com/user-attachments/assets/030ace43-2236-41a2-bf9f-a5cf2c51e5ae)
+
 
 ### Sprint 2
 
