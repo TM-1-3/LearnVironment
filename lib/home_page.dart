@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import 'auth_service.dart';  // Import the AuthService for authentication handling
 import 'profile_screen.dart';  // Import your custom ProfileScreen
+import 'bin.dart'; // Import the game Bin
 
 
 class HomePage extends StatefulWidget {
@@ -68,6 +69,18 @@ class _HomePageState extends State<HomePage> {
                 );
               },
             ),
+            // Game button in ToolBar
+            IconButton(
+                          icon: const Icon(Icons.videogame_asset),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => BinScreen(authService: authService),
+                              ),
+                            );
+                          },
+                        ),
           ],
           automaticallyImplyLeading: false,
         ),
