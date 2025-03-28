@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:learnvironment/main_pages/game_data.dart';
 import 'dart:io';
+import 'package:learnvironment/main_pages/game_data.dart';
 import 'package:path_provider/path_provider.dart';
 import 'authentication/auth_service.dart';
 
