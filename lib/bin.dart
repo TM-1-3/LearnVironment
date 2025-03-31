@@ -21,7 +21,7 @@ class BinScreenState extends State<BinScreen> {
   bool _isEditing = false;
   late TextEditingController usernameController;
   late TextEditingController emailController;
-  List<Widget> draggableImages = [];
+  Map<int, Offset> trashPositions = {};
 
   @override
   void initState() {
@@ -29,7 +29,6 @@ class BinScreenState extends State<BinScreen> {
     usernameController = TextEditingController();
     emailController = TextEditingController();
     _loadImagePath();
-    _initializeDraggableImages();
   }
 
   Future<void> _loadImagePath() async {
@@ -47,25 +46,29 @@ class BinScreenState extends State<BinScreen> {
     }
   }
 
-  void _initializeDraggableImages() {
-    draggableImages = List.generate(3, (index) => _buildDraggableImage(index));
-  }
-
-  Widget _buildDraggableImage(int index) {
+  Widget _buildDraggableTrash(int index) {
     return Draggable<int>(
       data: index,
-      feedback: CircleAvatar(
-        radius: 45,
-        backgroundImage: AssetImage('assets/placeholder.png'),
+      feedback: Image.asset('assets/trash1.png', width: 80),
+      childWhenDragging: Opacity(
+        opacity: 0.5,
+        child: Image.asset('assets/trash1.png', width: 80),
       ),
-      childWhenDragging: CircleAvatar(
-        radius: 40,
-        backgroundColor: Colors.grey[300],
+      onDraggableCanceled: (velocity, offset) {
+        setState(() => trashPositions[index] = offset);
+      },
+      child: Positioned(
+        left: trashPositions[index]?.dx ?? 0,
+        top: trashPositions[index]?.dy ?? 0,
+        child: Image.asset('assets/trash1.png', width: 80),
       ),
-      child: CircleAvatar(
-        radius: 40,
-        backgroundImage: AssetImage('assets/placeholder.png'),
-      ),
+    );
+  }
+
+  Widget _buildBinRow(List<String> assets) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: assets.map((path) => Image.asset(path, width: 100)).toList(),
     );
   }
 
@@ -78,35 +81,26 @@ class BinScreenState extends State<BinScreen> {
       child: Scaffold(
         appBar: AppBar(
           leading: CircleAvatar(
-            radius: 20,
             backgroundImage: _imageFile != null
                 ? FileImage(_imageFile!)
                 : user?.photoURL != null
                 ? NetworkImage(user?.photoURL ?? '')
-                : AssetImage('assets/placeholder.png') as ImageProvider,
+                : AssetImage('assets/placeholder.png'),
           ),
           title: Text('Recycling Bin'),
         ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
+            _buildBinRow(['assets/green_bin.png', 'assets/green_bin.png', 'assets/blue_bin.png']),
+            _buildBinRow(['assets/brown_bin.png', 'assets/red_bin.png']),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: List.generate(3, (index) => CircleAvatar(
-                radius: 150,
-                backgroundImage: AssetImage('assets/green_bin.png'),
-              )),
+              children: List.generate(3, _buildDraggableTrash),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: List.generate(2, (index) => CircleAvatar(
-                radius: 40,
-                backgroundImage: AssetImage('assets/placeholder.png'),
-              )),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: draggableImages,
+              children: List.generate(2, (index) => _buildDraggableTrash(index + 3)),
             ),
           ],
         ),
