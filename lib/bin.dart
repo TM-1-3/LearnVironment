@@ -21,6 +21,10 @@ class BinScreenState extends State<BinScreen> {
   late TextEditingController usernameController;
   late TextEditingController emailController;
   bool isBlueBinOpen = false;
+  bool isGreenBinOpen = false;
+  bool isYellowBinOpen = false;
+  bool isBrownBinOpen = false;
+  bool isRedBinOpen = false;
 
   @override
   void initState() {
@@ -70,7 +74,22 @@ class BinScreenState extends State<BinScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Image.asset('assets/green_bin.png', width: 100),
+                DragTarget<String>(
+                  onWillAccept: (data) {
+                    setState(() => isGreenBinOpen = true);
+                    return true;
+                  },
+                  onLeave: (data) {
+                    setState(() => isGreenBinOpen = false);
+                  },
+                  onAccept: (data) {
+                    setState(() => isGreenBinOpen = false);
+                  },
+                  builder: (context, candidateData, rejectedData) => Image.asset(
+                    isGreenBinOpen ? 'assets/open_green_bin.png' : 'assets/green_bin.png',
+                    width: 100,
+                  ),
+                ),
                 DragTarget<String>(
                   onWillAccept: (data) {
                     setState(() => isBlueBinOpen = true);
@@ -87,7 +106,22 @@ class BinScreenState extends State<BinScreen> {
                     width: 100,
                   ),
                 ),
-                Image.asset('assets/green_bin.png', width: 100),
+                DragTarget<String>(
+                  onWillAccept: (data) {
+                    setState(() => isYellowBinOpen = true);
+                    return true;
+                  },
+                  onLeave: (data) {
+                    setState(() => isYellowBinOpen = false);
+                  },
+                  onAccept: (data) {
+                    setState(() => isYellowBinOpen = false);
+                  },
+                  builder: (context, candidateData, rejectedData) => Image.asset(
+                    isYellowBinOpen ? 'assets/open_yellow_bin.png' : 'assets/green_bin.png',
+                    width: 100,
+                  ),
+                ),
               ],
             ),
 
@@ -95,8 +129,38 @@ class BinScreenState extends State<BinScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Image.asset('assets/brown_bin.png', width: 100),
-                Image.asset('assets/red_bin.png', width: 100),
+                DragTarget<String>(
+                  onWillAccept: (data) {
+                    setState(() => isBrownBinOpen = true);
+                    return true;
+                  },
+                  onLeave: (data) {
+                    setState(() => isBrownBinOpen = false);
+                  },
+                  onAccept: (data) {
+                    setState(() => isBrownBinOpen = false);
+                  },
+                  builder: (context, candidateData, rejectedData) => Image.asset(
+                    isBrownBinOpen ? 'assets/open_brown_bin.png' : 'assets/brown_bin.png',
+                    width: 100,
+                  ),
+                ),
+                DragTarget<String>(
+                  onWillAccept: (data) {
+                    setState(() => isRedBinOpen = true);
+                    return true;
+                  },
+                  onLeave: (data) {
+                    setState(() => isRedBinOpen = false);
+                  },
+                  onAccept: (data) {
+                    setState(() => isRedBinOpen = false);
+                  },
+                  builder: (context, candidateData, rejectedData) => Image.asset(
+                    isRedBinOpen ? 'assets/open_red_bin.png' : 'assets/red_bin.png',
+                    width: 100,
+                  ),
+                ),
               ],
             ),
 
@@ -105,12 +169,12 @@ class BinScreenState extends State<BinScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: List.generate(3, (index) => Draggable<String>(
                 data: 'trash',
-                feedback: Image.asset('assets/trash1.png', width: 80),
+                feedback: Image.asset('assets/trash1.png', width: 100),
                 childWhenDragging: Opacity(
                   opacity: 0.5,
-                  child: Image.asset('assets/trash1.png', width: 80),
+                  child: Image.asset('assets/trash1.png', width: 100),
                 ),
-                child: Image.asset('assets/trash1.png', width: 80),
+                child: Image.asset('assets/trash1.png', width: 100),
               )),
             ),
 
@@ -119,12 +183,12 @@ class BinScreenState extends State<BinScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: List.generate(2, (index) => Draggable<String>(
                 data: 'trash',
-                feedback: Image.asset('assets/trash1.png', width: 80),
+                feedback: Image.asset('assets/trash1.png', width: 100),
                 childWhenDragging: Opacity(
                   opacity: 0.5,
-                  child: Image.asset('assets/trash1.png', width: 80),
+                  child: Image.asset('assets/trash1.png', width: 100),
                 ),
-                child: Image.asset('assets/trash1.png', width: 80),
+                child: Image.asset('assets/trash1.png', width: 100),
               )),
             ),
           ],
