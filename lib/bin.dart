@@ -20,11 +20,16 @@ class BinScreenState extends State<BinScreen> {
   bool _isEditing = false;
   late TextEditingController usernameController;
   late TextEditingController emailController;
+
+  // Bin States
   bool isBlueBinOpen = false;
   bool isGreenBinOpen = false;
   bool isYellowBinOpen = false;
   bool isBrownBinOpen = false;
   bool isRedBinOpen = false;
+
+  // List to track trash items
+  List<String> trashItems = ["trash1", "trash2", "trash3", "trash4", "trash5"];
 
   @override
   void initState() {
@@ -47,6 +52,12 @@ class BinScreenState extends State<BinScreen> {
     } catch (e) {
       print("Error loading image: $e");
     }
+  }
+
+  void removeTrashItem(String item) {
+    setState(() {
+      trashItems.remove(item);
+    });
   }
 
   @override
@@ -83,9 +94,10 @@ class BinScreenState extends State<BinScreen> {
                     setState(() => isGreenBinOpen = false);
                   },
                   onAccept: (data) {
+                    removeTrashItem(data!);
                     setState(() => isGreenBinOpen = false);
                   },
-                  builder: (context, candidateData, rejectedData) => Image.asset(
+                  builder: (_, __, ___) => Image.asset(
                     isGreenBinOpen ? 'assets/open_green_bin.png' : 'assets/green_bin.png',
                     width: 100,
                   ),
@@ -99,9 +111,10 @@ class BinScreenState extends State<BinScreen> {
                     setState(() => isBlueBinOpen = false);
                   },
                   onAccept: (data) {
+                    removeTrashItem(data!);
                     setState(() => isBlueBinOpen = false);
                   },
-                  builder: (context, candidateData, rejectedData) => Image.asset(
+                  builder: (_, __, ___) => Image.asset(
                     isBlueBinOpen ? 'assets/open_blue_bin.png' : 'assets/blue_bin.png',
                     width: 100,
                   ),
@@ -115,9 +128,10 @@ class BinScreenState extends State<BinScreen> {
                     setState(() => isYellowBinOpen = false);
                   },
                   onAccept: (data) {
+                    removeTrashItem(data!);
                     setState(() => isYellowBinOpen = false);
                   },
-                  builder: (context, candidateData, rejectedData) => Image.asset(
+                  builder: (_, __, ___) => Image.asset(
                     isYellowBinOpen ? 'assets/open_yellow_bin.png' : 'assets/green_bin.png',
                     width: 100,
                   ),
@@ -138,9 +152,10 @@ class BinScreenState extends State<BinScreen> {
                     setState(() => isBrownBinOpen = false);
                   },
                   onAccept: (data) {
+                    removeTrashItem(data!);
                     setState(() => isBrownBinOpen = false);
                   },
-                  builder: (context, candidateData, rejectedData) => Image.asset(
+                  builder: (_, __, ___) => Image.asset(
                     isBrownBinOpen ? 'assets/open_brown_bin.png' : 'assets/brown_bin.png',
                     width: 100,
                   ),
@@ -154,9 +169,10 @@ class BinScreenState extends State<BinScreen> {
                     setState(() => isRedBinOpen = false);
                   },
                   onAccept: (data) {
+                    removeTrashItem(data!);
                     setState(() => isRedBinOpen = false);
                   },
-                  builder: (context, candidateData, rejectedData) => Image.asset(
+                  builder: (_, __, ___) => Image.asset(
                     isRedBinOpen ? 'assets/open_red_bin.png' : 'assets/red_bin.png',
                     width: 100,
                   ),
@@ -164,32 +180,22 @@ class BinScreenState extends State<BinScreen> {
               ],
             ),
 
-            // Third Row: 3 Trash
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: List.generate(3, (index) => Draggable<String>(
-                data: 'trash',
-                feedback: Image.asset('assets/trash1.png', width: 100),
+            // Third & Fourth Rows: Draggable Trash
+            Wrap(
+              spacing: 20,
+              runSpacing: 20,
+              alignment: WrapAlignment.center,
+              children: trashItems
+                  .map((item) => Draggable<String>(
+                data: item,
+                feedback: Image.asset('assets/trash1.png', width: 80),
                 childWhenDragging: Opacity(
                   opacity: 0.5,
-                  child: Image.asset('assets/trash1.png', width: 100),
+                  child: Image.asset('assets/trash1.png', width: 80),
                 ),
-                child: Image.asset('assets/trash1.png', width: 100),
-              )),
-            ),
-
-            // Fourth Row: 2 Trash
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: List.generate(2, (index) => Draggable<String>(
-                data: 'trash',
-                feedback: Image.asset('assets/trash1.png', width: 100),
-                childWhenDragging: Opacity(
-                  opacity: 0.5,
-                  child: Image.asset('assets/trash1.png', width: 100),
-                ),
-                child: Image.asset('assets/trash1.png', width: 100),
-              )),
+                child: Image.asset('assets/trash1.png', width: 80),
+              ))
+                  .toList(),
             ),
           ],
         ),
