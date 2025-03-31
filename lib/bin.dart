@@ -124,7 +124,6 @@ class BinScreenState extends State<BinScreen> {
                   : Image.asset('assets/widget.png', width: 40, height: 40, fit: BoxFit.cover),
             ),
           ),
-
           title: Text('Recycling Bin'),
         ),
     body: LayoutBuilder(
