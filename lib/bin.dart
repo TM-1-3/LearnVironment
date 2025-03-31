@@ -20,7 +20,7 @@ class BinScreenState extends State<BinScreen> {
   bool _isEditing = false;
   late TextEditingController usernameController;
   late TextEditingController emailController;
-  Map<int, Offset> trashPositions = {};
+  bool isBlueBinOpen = false;
 
   @override
   void initState() {
@@ -45,32 +45,6 @@ class BinScreenState extends State<BinScreen> {
     }
   }
 
-  Widget _buildDraggableTrash(int index) {
-    return Draggable<int>(
-      data: index,
-      feedback: Image.asset('assets/trash1.png', width: 80),
-      childWhenDragging: Opacity(
-        opacity: 0.5,
-        child: Image.asset('assets/trash1.png', width: 80),
-      ),
-      onDraggableCanceled: (velocity, offset) {
-        setState(() => trashPositions[index] = offset);
-      },
-      child: Positioned(
-        left: trashPositions[index]?.dx ?? 0,
-        top: trashPositions[index]?.dy ?? 0,
-        child: Image.asset('assets/trash1.png', width: 80),
-      ),
-    );
-  }
-
-  Widget _buildBinRow(List<String> assets) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: assets.map((path) => Image.asset(path, width: 100)).toList(),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
@@ -80,26 +54,78 @@ class BinScreenState extends State<BinScreen> {
       child: Scaffold(
         appBar: AppBar(
           leading: CircleAvatar(
+            radius: 20,
             backgroundImage: _imageFile != null
                 ? FileImage(_imageFile!)
                 : user?.photoURL != null
                 ? NetworkImage(user?.photoURL ?? '')
-                : AssetImage('assets/placeholder.png'),
+                : AssetImage('assets/placeholder.png') as ImageProvider,
           ),
           title: Text('Recycling Bin'),
         ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            _buildBinRow(['assets/green_bin.png', 'assets/green_bin.png', 'assets/blue_bin.png']),
-            _buildBinRow(['assets/brown_bin.png', 'assets/red_bin.png']),
+            // First Row: 3 Bins
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: List.generate(3, _buildDraggableTrash),
+              children: [
+                Image.asset('assets/green_bin.png', width: 100),
+                DragTarget<String>(
+                  onWillAccept: (data) {
+                    setState(() => isBlueBinOpen = true);
+                    return true;
+                  },
+                  onLeave: (data) {
+                    setState(() => isBlueBinOpen = false);
+                  },
+                  onAccept: (data) {
+                    setState(() => isBlueBinOpen = false);
+                  },
+                  builder: (context, candidateData, rejectedData) => Image.asset(
+                    isBlueBinOpen ? 'assets/open_blue_bin.png' : 'assets/blue_bin.png',
+                    width: 100,
+                  ),
+                ),
+                Image.asset('assets/green_bin.png', width: 100),
+              ],
             ),
+
+            // Second Row: 2 Bins
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: List.generate(2, (index) => _buildDraggableTrash(index + 3)),
+              children: [
+                Image.asset('assets/brown_bin.png', width: 100),
+                Image.asset('assets/red_bin.png', width: 100),
+              ],
+            ),
+
+            // Third Row: 3 Trash
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: List.generate(3, (index) => Draggable<String>(
+                data: 'trash',
+                feedback: Image.asset('assets/trash1.png', width: 80),
+                childWhenDragging: Opacity(
+                  opacity: 0.5,
+                  child: Image.asset('assets/trash1.png', width: 80),
+                ),
+                child: Image.asset('assets/trash1.png', width: 80),
+              )),
+            ),
+
+            // Fourth Row: 2 Trash
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: List.generate(2, (index) => Draggable<String>(
+                data: 'trash',
+                feedback: Image.asset('assets/trash1.png', width: 80),
+                childWhenDragging: Opacity(
+                  opacity: 0.5,
+                  child: Image.asset('assets/trash1.png', width: 80),
+                ),
+                child: Image.asset('assets/trash1.png', width: 80),
+              )),
             ),
           ],
         ),
