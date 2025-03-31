@@ -61,6 +61,7 @@ class BinScreenState extends State<BinScreen> {
     usernameController = TextEditingController();
     emailController = TextEditingController();
     _loadImagePath();
+    _initializeDraggableImages();
   }
 
   Future<void> _loadImagePath() async {

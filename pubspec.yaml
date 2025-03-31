@@ -75,3 +75,14 @@ flutter:
   - assets/right.png
   - assets/wrong.png
   - assets/quizLogo.png
+  - assets/placeholder.png
+  - assets/green_bin.png
+  - assets/blue_bin.png
+  - assets/brown_bin.png
+  - assets/red_bin.png
+  - assets/trash1.png
+  - assets/open_green_bin.png
+  - assets/open_yellow_bin.png
+  - assets/open_blue_bin.png
+  - assets/open_brown_bin.png
+  - assets/open_red_bin.png
