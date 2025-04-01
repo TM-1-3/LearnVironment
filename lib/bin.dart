@@ -21,15 +21,22 @@ class BinScreenState extends State<BinScreen> {
   late TextEditingController usernameController;
   late TextEditingController emailController;
 
-  // Bin States
-  bool isBlueBinOpen = false;
-  bool isGreenBinOpen = false;
-  bool isYellowBinOpen = false;
-  bool isBrownBinOpen = false;
-  bool isRedBinOpen = false;
+  // Bin states stored in a Map
+  Map<String, bool> binStates = {
+    "blue": false,
+    "green": false,
+    "yellow": false,
+    "brown": false,
+    "red": false,
+  };
+
+  bool showIcon = false;
+  bool rightAnswer = true;
+  Offset iconPosition = Offset(0, 0);
 
   // List to track trash items
   List<String> trashItems = ["trash1", "trash2", "trash3", "trash4", "trash5"];
+  List<String> remainingTrashItems = ["trash6", "trash7", "trash8", "trash9", "trash10"];
 
   @override
   void initState() {
@@ -54,27 +61,24 @@ class BinScreenState extends State<BinScreen> {
     }
   }
 
-  // List to track trash items
-  List<String> remainingTrashItems = ["trash6", "trash7", "trash8", "trash9", "trash10"];
-  //  ..removeWhere((item) => visibleTrashItems.contains(item));
-
-  /*void removeTrashItem(String item) {
+  void removeTrashItem(String item, Offset position) {
     setState(() {
       trashItems.remove(item);
-    });
-  }*/
+      iconPosition = position;
+      showIcon = true;
+      rightAnswer = true;
 
-  void removeTrashItem(String item) {
-    setState(() {
-      trashItems.remove(item); // Remove item from visible list
-
-      // Check if more trash items are available in the queue
       if (remainingTrashItems.isNotEmpty) {
-        trashItems.add(remainingTrashItems.removeAt(0)); // Add next item
+        trashItems.add(remainingTrashItems.removeAt(0));
       }
     });
-  }
 
+    Future.delayed(Duration(seconds: 1), () {
+      setState(() {
+        showIcon = false;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,127 +98,85 @@ class BinScreenState extends State<BinScreen> {
           ),
           title: Text('Recycling Bin'),
         ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        body: Stack(
           children: [
-            // First Row: 3 Bins
-            Row(
+            Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                DragTarget<String>(
-                  onWillAccept: (data) {
-                    setState(() => isGreenBinOpen = true);
-                    return true;
-                  },
-                  onLeave: (data) {
-                    setState(() => isGreenBinOpen = false);
-                  },
-                  onAccept: (data) {
-                    removeTrashItem(data!);
-                    setState(() => isGreenBinOpen = false);
-                  },
-                  builder: (_, __, ___) => Image.asset(
-                    isGreenBinOpen ? 'assets/open_green_bin.png' : 'assets/green_bin.png',
-                    width: 100,
-                  ),
+                // First Row: 3 Bins
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    binWidget('green', (data, position) => removeTrashItem(data!, position)),
+                    binWidget('blue', (data, position) => removeTrashItem(data!, position)),
+                    binWidget('yellow', (data, position) => removeTrashItem(data!, position)),
+                  ],
                 ),
-                DragTarget<String>(
-                  onWillAccept: (data) {
-                    setState(() => isBlueBinOpen = true);
-                    return true;
-                  },
-                  onLeave: (data) {
-                    setState(() => isBlueBinOpen = false);
-                  },
-                  onAccept: (data) {
-                    removeTrashItem(data!);
-                    setState(() => isBlueBinOpen = false);
-                  },
-                  builder: (_, __, ___) => Image.asset(
-                    isBlueBinOpen ? 'assets/open_blue_bin.png' : 'assets/blue_bin.png',
-                    width: 100,
-                  ),
+
+                // Second Row: 2 Bins
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    binWidget('brown', (data, position) => removeTrashItem(data!, position)),
+                    binWidget('red', (data, position) => removeTrashItem(data!, position)),
+                  ],
                 ),
-                DragTarget<String>(
-                  onWillAccept: (data) {
-                    setState(() => isYellowBinOpen = true);
-                    return true;
-                  },
-                  onLeave: (data) {
-                    setState(() => isYellowBinOpen = false);
-                  },
-                  onAccept: (data) {
-                    removeTrashItem(data!);
-                    setState(() => isYellowBinOpen = false);
-                  },
-                  builder: (_, __, ___) => Image.asset(
-                    isYellowBinOpen ? 'assets/open_yellow_bin.png' : 'assets/green_bin.png',
-                    width: 100,
-                  ),
+
+                // Third & Fourth Rows: Draggable Trash
+                Wrap(
+                  spacing: 20,
+                  runSpacing: 20,
+                  alignment: WrapAlignment.center,
+                  children: trashItems
+                      .map((item) => Draggable<String>(
+                    data: item,
+                    feedback: Image.asset('assets/$item.png', width: 80),
+                    childWhenDragging: Opacity(
+                      opacity: 0.5,
+                      child: Image.asset('assets/$item.png', width: 80),
+                    ),
+                    child: Image.asset('assets/$item.png', width: 80),
+                  ))
+                      .toList(),
                 ),
               ],
             ),
 
-            // Second Row: 2 Bins
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                DragTarget<String>(
-                  onWillAccept: (data) {
-                    setState(() => isBrownBinOpen = true);
-                    return true;
-                  },
-                  onLeave: (data) {
-                    setState(() => isBrownBinOpen = false);
-                  },
-                  onAccept: (data) {
-                    removeTrashItem(data!);
-                    setState(() => isBrownBinOpen = false);
-                  },
-                  builder: (_, __, ___) => Image.asset(
-                    isBrownBinOpen ? 'assets/open_brown_bin.png' : 'assets/brown_bin.png',
-                    width: 100,
-                  ),
+            // Feedback icon
+            if (showIcon)
+              Positioned(
+                left: iconPosition.dx,
+                top: iconPosition.dy,
+                child: Image.asset(
+                  rightAnswer ? 'assets/right.png' : 'assets/wrong.png',
+                  width: 50,
+                  height: 50,
                 ),
-                DragTarget<String>(
-                  onWillAccept: (data) {
-                    setState(() => isRedBinOpen = true);
-                    return true;
-                  },
-                  onLeave: (data) {
-                    setState(() => isRedBinOpen = false);
-                  },
-                  onAccept: (data) {
-                    removeTrashItem(data!);
-                    setState(() => isRedBinOpen = false);
-                  },
-                  builder: (_, __, ___) => Image.asset(
-                    isRedBinOpen ? 'assets/open_red_bin.png' : 'assets/red_bin.png',
-                    width: 100,
-                  ),
-                ),
-              ],
-            ),
-
-            // Third & Fourth Rows: Draggable Trash
-            Wrap(
-              spacing: 20,
-              runSpacing: 20,
-              alignment: WrapAlignment.center,
-              children: trashItems
-                  .map((item) => Draggable<String>(
-                data: item,
-                feedback: Image.asset('assets/$item.png', width: 80), // Dynamically set image
-                childWhenDragging: Opacity(
-                  opacity: 0.5,
-                  child: Image.asset('assets/$item.png', width: 80), // Dynamically set image
-                ),
-                child: Image.asset('assets/$item.png', width: 80), // Dynamically set image
-              ))
-                  .toList(),
-            )
+              ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget binWidget(String color, Function(String?, Offset) onAccept) {
+    return DragTarget<String>(
+      onWillAccept: (data) {
+        setState(() => binStates[color] = true);
+        return true;
+      },
+      onLeave: (data) {
+        setState(() => binStates[color] = false);
+      },
+      onAcceptWithDetails: (details) {
+        RenderBox box = context.findRenderObject() as RenderBox;
+        Offset position = box.globalToLocal(details.offset);
+        onAccept(details.data, position);
+        setState(() => binStates[color] = false);
+      },
+      builder: (_, __, ___) => Image.asset(
+        binStates[color]! ? 'assets/open_${color}_bin.png' : 'assets/${color}_bin.png',
+        width: 100,
       ),
     );
   }
