@@ -54,11 +54,27 @@ class BinScreenState extends State<BinScreen> {
     }
   }
 
-  void removeTrashItem(String item) {
+  // List to track trash items
+  List<String> remainingTrashItems = ["trash6", "trash7", "trash8", "trash9", "trash10"];
+  //  ..removeWhere((item) => visibleTrashItems.contains(item));
+
+  /*void removeTrashItem(String item) {
     setState(() {
       trashItems.remove(item);
     });
+  }*/
+
+  void removeTrashItem(String item) {
+    setState(() {
+      trashItems.remove(item); // Remove item from visible list
+
+      // Check if more trash items are available in the queue
+      if (remainingTrashItems.isNotEmpty) {
+        trashItems.add(remainingTrashItems.removeAt(0)); // Add next item
+      }
+    });
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -188,15 +204,15 @@ class BinScreenState extends State<BinScreen> {
               children: trashItems
                   .map((item) => Draggable<String>(
                 data: item,
-                feedback: Image.asset('assets/trash1.png', width: 80),
+                feedback: Image.asset('assets/$item.png', width: 80), // Dynamically set image
                 childWhenDragging: Opacity(
                   opacity: 0.5,
-                  child: Image.asset('assets/trash1.png', width: 80),
+                  child: Image.asset('assets/$item.png', width: 80), // Dynamically set image
                 ),
-                child: Image.asset('assets/trash1.png', width: 80),
+                child: Image.asset('assets/$item.png', width: 80), // Dynamically set image
               ))
                   .toList(),
-            ),
+            )
           ],
         ),
       ),
