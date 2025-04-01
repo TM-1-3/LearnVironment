@@ -130,12 +130,12 @@ class BinScreenState extends State<BinScreen> {
                   children: trashItems
                       .map((item) => Draggable<String>(
                     data: item,
-                    feedback: Image.asset('assets/$item.png', width: 80),
+                    feedback: Image.asset('assets/$item.png', width: 80, height: 80),
                     childWhenDragging: Opacity(
                       opacity: 0.5,
-                      child: Image.asset('assets/$item.png', width: 80),
+                      child: Image.asset('assets/$item.png', width: 80, height: 80),
                     ),
-                    child: Image.asset('assets/$item.png', width: 80),
+                    child: Image.asset('assets/$item.png', width: 80, height: 80),
                   ))
                       .toList(),
                 ),
