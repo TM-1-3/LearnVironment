@@ -48,6 +48,8 @@ flutter:
   uses-material-design: true
   assets:
   - assets/placeholder.png
+  - assets/right.png
+  - assets/wrong.png
   - assets/green_bin.png
   - assets/blue_bin.png
   - assets/brown_bin.png
@@ -57,6 +59,11 @@ flutter:
   - assets/trash3.png
   - assets/trash4.png
   - assets/trash5.png
+  - assets/trash6.png
+  - assets/trash7.png
+  - assets/trash8.png
+  - assets/trash9.png
+  - assets/trash10.png
   - assets/open_green_bin.png
   - assets/open_yellow_bin.png
   - assets/open_blue_bin.png
