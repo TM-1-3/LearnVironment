@@ -7,25 +7,25 @@ class GamesPage extends StatefulWidget {
 
 class _GamesPageState extends State<GamesPage> {
   String _searchQuery = "";
-  String _selectedTag = "";
-  String _selectedAge = "";
+  String? _selectedTag; // Set as nullable
+  String? _selectedAge; // Set as nullable
 
   // List of game data
   final List<Map<String, dynamic>> games = [
     {
-      'imagePath': '/assets/placeholder',
+      'imagePath': 'assets/placeholder.png',
       'gameTitle': 'Game Title 1',
-      'tags': ['Age: 12+', 'Recycling', 'Citizenship'],
+      'tags': <String>['Age: 12+', 'Recycling', 'Citizenship'],
     },
     {
-      'imagePath': '/assets/placeholder',
+      'imagePath': 'assets/placeholder.png',
       'gameTitle': 'Game Title 2',
-      'tags': ['Age: 8+', 'Recycling'],
+      'tags': <String>['Age: 8+', 'Recycling'],
     },
     {
-      'imagePath': '/assets/placeholder',
+      'imagePath': 'assets/placeholder.png',
       'gameTitle': 'Game Title 3',
-      'tags': ['Age: 10+', 'Strategy', 'Citizenship'],
+      'tags': <String>['Age: 10+', 'Strategy', 'Citizenship'],
     },
   ];
 
@@ -34,17 +34,16 @@ class _GamesPageState extends State<GamesPage> {
     // Filter games based on search query, age, and tags
     final filteredGames = games.where((game) {
       final gameTitle = game['gameTitle'].toLowerCase();
-      final tags = game['tags'];
-      final ageTag = tags.firstWhere((tag) => tag.startsWith('Age:'), orElse: () => '');
+      final tags = game['tags'] as List<String>; // Explicitly cast as List<String>
 
-      // Check if search query matches game title
-      final matchesQuery = _searchQuery.isEmpty || gameTitle.contains(_searchQuery);
+      final ageTag = tags.firstWhere(
+            (tag) => tag.startsWith('Age:'),
+        orElse: () => '',
+      );
 
-      // Check if selected tag matches any tag in the game
-      final matchesTag = _selectedTag.isEmpty || tags.contains(_selectedTag);
-
-      // Check if selected age matches the age tag
-      final matchesAge = _selectedAge.isEmpty || ageTag.contains(_selectedAge);
+      final matchesQuery = _searchQuery.isEmpty || gameTitle.contains(_searchQuery.toLowerCase());
+      final matchesTag = _selectedTag == null || tags.contains(_selectedTag);
+      final matchesAge = _selectedAge == null || ageTag.contains(_selectedAge!);
 
       return matchesQuery && matchesTag && matchesAge;
     }).toList();
@@ -54,7 +53,7 @@ class _GamesPageState extends State<GamesPage> {
         title: TextField(
           onChanged: (query) {
             setState(() {
-              _searchQuery = query.toLowerCase(); // Convert query to lowercase
+              _searchQuery = query.toLowerCase();
             });
           },
           decoration: const InputDecoration(
@@ -81,7 +80,7 @@ class _GamesPageState extends State<GamesPage> {
                       .toList(),
                   onChanged: (value) {
                     setState(() {
-                      _selectedAge = value ?? "";
+                      _selectedAge = value;
                     });
                   },
                 ),
@@ -96,7 +95,7 @@ class _GamesPageState extends State<GamesPage> {
                       .toList(),
                   onChanged: (value) {
                     setState(() {
-                      _selectedTag = value ?? "";
+                      _selectedTag = value;
                     });
                   },
                 ),
@@ -113,7 +112,7 @@ class _GamesPageState extends State<GamesPage> {
                 return GameCard(
                   imagePath: game['imagePath'],
                   gameTitle: game['gameTitle'],
-                  tags: game['tags'],
+                  tags: List<String>.from(game['tags']),
                 );
               },
             )
@@ -144,11 +143,8 @@ class GameCard extends StatelessWidget {
     return Card(
       child: Column(
         children: <Widget>[
-          Image.network(
-            imagePath,
-            height: 150,
-            width: double.infinity,
-            fit: BoxFit.cover,
+          Image.asset(
+            imagePath
           ),
           Padding(
             padding: const EdgeInsets.all(10.0),
