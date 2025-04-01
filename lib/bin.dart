@@ -33,6 +33,8 @@ class BinScreenState extends State<BinScreen> {
   bool showIcon = false;
   bool rightAnswer = true;
   Offset iconPosition = Offset(0, 0);
+  int correctCount = 0;
+  int wrongCount = 0;
 
   // Trash items mapped to their correct bin
   Map<String, String> trashItems = {
@@ -78,6 +80,9 @@ class BinScreenState extends State<BinScreen> {
     setState(() {
       // Check if the item was placed in the correct bin
       rightAnswer = trashItems[item] == bin;
+      if (rightAnswer) {
+        correctCount++;
+      } else { wrongCount++; }
       iconPosition = position;
       showIcon = true;
 
