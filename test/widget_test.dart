@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:learnvironment/auth_service.dart';
+import 'package:learnvironment/authentication/auth_service.dart';
 import 'package:learnvironment/home_page.dart'; // Import HomePage widget
 import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';

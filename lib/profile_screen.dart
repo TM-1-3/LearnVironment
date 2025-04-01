@@ -3,7 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
-import 'auth_service.dart';
+import 'authentication/auth_service.dart';
+
+import 'edit_profile.dart';
 
 class ProfileScreen extends StatefulWidget {
   final AuthService authService;
@@ -363,64 +365,6 @@ class ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
       ),
-    );
-  }
-}
-
-// EditProfileWidget class
-class EditProfileWidget extends StatelessWidget {
-  final TextEditingController usernameController;
-  final TextEditingController emailController;
-  final Function(String, String) onSave;
-  final Function pickImage;
-  final File? imageFile;
-
-  const EditProfileWidget({
-    super.key,
-    required this.usernameController,
-    required this.emailController,
-    required this.onSave,
-    required this.pickImage,
-    this.imageFile,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        GestureDetector(
-          onTap: () {
-            pickImage();
-          },
-          child: CircleAvatar(
-            radius: 100,
-            backgroundImage: imageFile != null
-                ? FileImage(imageFile!)
-                : AssetImage('assets/default_profile_picture.png')
-            as ImageProvider,
-          ),
-        ),
-        const SizedBox(height: 20),
-        TextField(
-          controller: usernameController,
-          decoration: const InputDecoration(labelText: 'Username'),
-        ),
-        const SizedBox(height: 10),
-        TextField(
-          controller: emailController,
-          keyboardType: TextInputType.emailAddress,
-          decoration: const InputDecoration(labelText: 'Email'),
-        ),
-        const SizedBox(height: 20),
-        ElevatedButton(
-          onPressed: () {
-            String newUsername = usernameController.text.trim();
-            String newEmail = emailController.text.trim();
-            onSave(newUsername, newEmail);
-          },
-          child: const Text('Save Changes'),
-        ),
-      ],
     );
   }
 }

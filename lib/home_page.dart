@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'auth_service.dart';  // Import the AuthService for authentication handling
+import 'authentication/auth_service.dart';  // Import the AuthService for authentication handling
 import 'profile_screen.dart';  // Import your custom ProfileScreen
 
+import 'main_pages/main_page.dart';
+import 'main_pages/games_page.dart';
+import 'main_pages/statistics_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -21,31 +24,15 @@ class _HomePageState extends State<HomePage> {
 
   // Map of tabs to corresponding pages
   final Map<TabItem, Widget> _pages = {
-    TabItem.statistics: const Center(child: Text('Statistics Page')),
-    TabItem.home: const Center(child: Text('Home Page')),
-    TabItem.games: const Center(child: Text('Games Page')),
+    TabItem.statistics: StatisticsPage(),
+    TabItem.home: MainPage(),
+    TabItem.games: GamesPage(),
   };
 
   // Method to handle bottom navigation tap
   void _onItemTapped(int index) {
     setState(() {
       selectedTab = TabItem.values[index];
-    });
-  }
-
-  // Method to handle button press and show a message
-  void _showMessage() {
-    setState(() {
-      message = 'Button Pressed!';
-    });
-  }
-
-  // Method to log out
-  void _logout() {
-    // This would call your AuthService to log out
-    // For now, just show a message
-    setState(() {
-      message = 'Logged Out';
     });
   }
 
@@ -74,15 +61,9 @@ class _HomePageState extends State<HomePage> {
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _pages[selectedTab]!, // Display the selected page
-            if (message.isNotEmpty) Text(message), // Show message if any
-            ElevatedButton(
-              onPressed: _showMessage,
-              child: const Text('Show Message'),
-            ),
-            ElevatedButton(
-              onPressed: _logout,
-              child: const Text('Logout'),
+            // Wrap the page in Expanded to give it proper constraints
+            Expanded(
+              child: _pages[selectedTab]!, // Display the selected page
             ),
           ],
         ),
