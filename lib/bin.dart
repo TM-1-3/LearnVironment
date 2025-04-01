@@ -97,6 +97,7 @@ class BinScreenState extends State<BinScreen> {
         remainingTrashItems.remove(nextItem);
       }
     });
+  }
 
     Future.delayed(Duration(seconds: 1), () {
       setState(() {

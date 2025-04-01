@@ -81,6 +81,7 @@ flutter:
   - assets/green_bin.png
   - assets/blue_bin.png
   - assets/brown_bin.png
+  - assets/yellow_bin.png
   - assets/red_bin.png
   - assets/trash1.png
   - assets/trash2.png
