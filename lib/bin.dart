@@ -119,11 +119,11 @@ class BinScreenState extends State<BinScreen> {
     body: LayoutBuilder(
     builder: (context, constraints) {
     // Calculate positions based on layout constraints
-    Offset greenPosition = Offset(constraints.maxWidth * 0.2, constraints.maxHeight * 0.2);
-    Offset bluePosition = Offset(constraints.maxWidth * 0.6, constraints.maxHeight * 0.2);
-    Offset yellowPosition = Offset(constraints.maxWidth * 0.4, constraints.maxHeight * 0.4);
-    Offset brownPosition = Offset(constraints.maxWidth * 0.2, constraints.maxHeight * 0.6);
-    Offset redPosition = Offset(constraints.maxWidth * 0.6, constraints.maxHeight * 0.6);
+    Offset greenPosition = Offset(constraints.maxWidth * 0.2 + 35, constraints.maxHeight * 0.2);
+    Offset bluePosition = Offset(constraints.maxWidth * 0.6 + 65, constraints.maxHeight * 0.2);
+    Offset yellowPosition = Offset(constraints.maxWidth * 0.4 + 50, constraints.maxHeight * 0.4 + 50);
+    Offset brownPosition = Offset(constraints.maxWidth * 0.2 + 35, constraints.maxHeight * 0.6 + 100);
+    Offset redPosition = Offset(constraints.maxWidth * 0.6 + 65, constraints.maxHeight * 0.6 + 100);
 
       return Stack(
       children: [
@@ -153,23 +153,26 @@ class BinScreenState extends State<BinScreen> {
       ],
       ),
 
-      // Draggable Trash
-      Wrap(
-      spacing: 20,
-      runSpacing: 20,
-      alignment: WrapAlignment.center,
-      children: trashItems.keys
-          .map((item) => Draggable<String>(
-      data: item,
-      feedback: Image.asset('assets/$item.png', width: 80, height: 80),
-      childWhenDragging: Opacity(
-      opacity: 0.5,
-      child: Image.asset('assets/$item.png', width: 80, height: 80),
-      ),
-      child: Image.asset('assets/$item.png', width: 80, height: 80),
-      ))
-          .toList(),
-      ),
+        Padding(
+          padding: const EdgeInsets.only(top: 60), // Adjust the value as needed
+          child: Wrap(
+            spacing: 20,
+            runSpacing: 20,
+            alignment: WrapAlignment.center,
+            children: trashItems.keys
+                .map((item) => Draggable<String>(
+              data: item,
+              feedback: Image.asset('assets/$item.png', width: 80, height: 80),
+              childWhenDragging: Opacity(
+                opacity: 0.5,
+                child: Image.asset('assets/$item.png', width: 80, height: 80),
+              ),
+              child: Image.asset('assets/$item.png', width: 80, height: 80),
+            ))
+                .toList(),
+          ),
+        ),
+
       ],
       ),
 
