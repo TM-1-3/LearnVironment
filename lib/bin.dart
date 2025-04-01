@@ -40,10 +40,10 @@ class BinScreenState extends State<BinScreen> {
     "trash2": "red",
     "trash3": "yellow",
     "trash4": "blue",
-    "trash5": "green",
   };
 
   Map<String, String> remainingTrashItems = {
+    "trash5": "green",
     "trash6": "blue",
     "trash7": "red",
     "trash8": "green",
@@ -112,53 +112,66 @@ class BinScreenState extends State<BinScreen> {
                 ? Image.file(_imageFile!, width: 40, height: 40, fit: BoxFit.cover)
                 : user?.photoURL != null
                 ? Image.network(user?.photoURL ?? '', width: 40, height: 40, fit: BoxFit.cover)
-                : Image.asset('assets/placeholder.png', width: 40, height: 40, fit: BoxFit.cover),
+                : Image.asset('assets/widget.png', width: 40, height: 40, fit: BoxFit.cover),
           ),
           title: Text('Recycling Bin'),
         ),
-        body: Stack(
-          children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                // First Row: 3 Bins
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    binWidget('green'),
-                    binWidget('blue'),
-                    binWidget('yellow'),
-                  ],
-                ),
+    body: LayoutBuilder(
+    builder: (context, constraints) {
+    // Calculate positions based on layout constraints
+    Offset greenPosition = Offset(constraints.maxWidth * 0.2, constraints.maxHeight * 0.2);
+    Offset bluePosition = Offset(constraints.maxWidth * 0.6, constraints.maxHeight * 0.2);
+    Offset yellowPosition = Offset(constraints.maxWidth * 0.4, constraints.maxHeight * 0.4);
+    Offset brownPosition = Offset(constraints.maxWidth * 0.2, constraints.maxHeight * 0.6);
+    Offset redPosition = Offset(constraints.maxWidth * 0.6, constraints.maxHeight * 0.6);
 
-                // Second Row: 2 Bins
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    binWidget('brown'),
-                    binWidget('red'),
-                  ],
-                ),
+      return Stack(
+      children: [
+      Column(
+      children: [
+      // First Row: 2 Bins
+      Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+      binWidget('green', greenPosition),
+      binWidget('blue', bluePosition),
+      ],
+      ),
+      // Second Row: 1 Bin
+      Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+      binWidget('yellow', yellowPosition),
+      ],
+      ),
+      // Third Row: 2 Bins
+      Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+      binWidget('brown', brownPosition),
+      binWidget('red', redPosition),
+      ],
+      ),
 
-                // Third & Fourth Rows: Draggable Trash
-                Wrap(
-                  spacing: 20,
-                  runSpacing: 20,
-                  alignment: WrapAlignment.center,
-                  children: trashItems.keys
-                      .map((item) => Draggable<String>(
-                    data: item,
-                    feedback: Image.asset('assets/$item.png', width: 80, height: 80),
-                    childWhenDragging: Opacity(
-                      opacity: 0.5,
-                      child: Image.asset('assets/$item.png', width: 80, height: 80),
-                    ),
-                    child: Image.asset('assets/$item.png', width: 80, height: 80),
-                  ))
-                      .toList(),
-                ),
-              ],
-            ),
+      // Draggable Trash
+      Wrap(
+      spacing: 20,
+      runSpacing: 20,
+      alignment: WrapAlignment.center,
+      children: trashItems.keys
+          .map((item) => Draggable<String>(
+      data: item,
+      feedback: Image.asset('assets/$item.png', width: 80, height: 80),
+      childWhenDragging: Opacity(
+      opacity: 0.5,
+      child: Image.asset('assets/$item.png', width: 80, height: 80),
+      ),
+      child: Image.asset('assets/$item.png', width: 80, height: 80),
+      ))
+          .toList(),
+      ),
+      ],
+      ),
 
             // Feedback icon
             if (showIcon)
@@ -172,12 +185,14 @@ class BinScreenState extends State<BinScreen> {
                 ),
               ),
           ],
-        ),
+        );
+    },
+    ),
       ),
     );
   }
 
-  Widget binWidget(String color) {
+  Widget binWidget(String color, Offset binPosition) {
     return DragTarget<String>(
       onWillAccept: (data) {
         setState(() => binStates[color] = true);
@@ -187,14 +202,12 @@ class BinScreenState extends State<BinScreen> {
         setState(() => binStates[color] = false);
       },
       onAcceptWithDetails: (details) {
-        RenderBox box = context.findRenderObject() as RenderBox;
-        Offset position = box.globalToLocal(details.offset);
-        removeTrashItem(details.data, color, position);
+        removeTrashItem(details.data, color, binPosition);
         setState(() => binStates[color] = false);
       },
       builder: (_, __, ___) => Image.asset(
         binStates[color]! ? 'assets/open_${color}_bin.png' : 'assets/${color}_bin.png',
-        width: 100,
+        width: 150,
       ),
     );
   }
