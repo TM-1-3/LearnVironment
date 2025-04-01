@@ -107,13 +107,13 @@ class BinScreenState extends State<BinScreen> {
       onWillPop: () async => !_isEditing,
       child: Scaffold(
         appBar: AppBar(
-          leading: CircleAvatar(
-            radius: 20,
-            backgroundImage: _imageFile != null
-                ? FileImage(_imageFile!)
+          leading: ClipRRect(
+            borderRadius: BorderRadius.circular(10), // Adjust the radius for roundness
+            child: _imageFile != null
+                ? Image.file(_imageFile!, width: 40, height: 40, fit: BoxFit.cover)
                 : user?.photoURL != null
-                ? NetworkImage(user?.photoURL ?? '')
-                : AssetImage('assets/placeholder.png') as ImageProvider,
+                ? Image.network(user?.photoURL ?? '', width: 40, height: 40, fit: BoxFit.cover)
+                : Image.asset('assets/placeholder.png', width: 40, height: 40, fit: BoxFit.cover),
           ),
           title: Text('Recycling Bin'),
         ),
