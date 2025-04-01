@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:learnvironment/quiz.dart';
 import 'package:provider/provider.dart';
 
 import 'auth_service.dart';  // Import the AuthService for authentication handling
@@ -28,9 +29,18 @@ class _HomePageState extends State<HomePage> {
 
   // Method to handle bottom navigation tap
   void _onItemTapped(int index) {
-    setState(() {
-      selectedTab = TabItem.values[index];
-    });
+    TabItem tappedTab = TabItem.values[index];
+
+    if (tappedTab == TabItem.games) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const Quiz()),
+      );
+    } else {
+      setState(() {
+        selectedTab = tappedTab;
+      });
+    }
   }
 
   // Method to handle button press and show a message
