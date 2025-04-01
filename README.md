@@ -42,7 +42,7 @@ Business modeling in software development involves defining the product's vision
 
 ### Product Vision
 
-What if there was an app that gamified learning and teaching about recycling?
+What if there was an app that gamified learning and teaching about recycling and sustentability?
 Our app LearnVironment provides a learning environment in a fun and ludic way.
 
 <!-- 
@@ -118,40 +118,15 @@ Take a look at the following links to learn some techniques:
 	When I navigate to the games section
 	Then I should be able to select and play any game independently of it being assigned to me or not
   ```
-#### Other User Stories
-- As a student I want to be able to browse all games so that I can see what games I can play.
-  ```gherkin
-  Scenario: Browse all games  
-	  Given I am a student logged into the app  
-	  When I navigate to the games section
-	  Then I should see a list of all available games  
-  ```
-- As an non registered user I want to be able to register so that I can use the app.
-- As a student I want the games to provide instant feedback so that I know how I did.
-- As a student I want the games to offer tips so that I can improve my learning.
-- As a teacher I want to be able to create a class so that I can use the app with multiple classrooms of diferent age groups and needs.
-- As a teacher I want to be able to assign students to classes so that I can divide my students between subjects and age groups.
-- As a teacher I want to be able to assign games to a class so that students know what to play.
-- As a teacher I want to be able to remove students from classes so that I can regulate drop-outs.
-- As a student I want to be able to easily join my teachers class so that I can start learning fast.
-- As a student I want to be able to view my mistakes so that I can easily revise those materials.  
-- As a student I want to be able to view the games I have played so that I can keep track of my progress.  
-- As a teacher I want to be able to monitor individual student so that I can see the progress of individuals.
-- As a teacher I want to be able to monitor class performance so that I can see the progress of the overall class.
-- As a user I want to be able to customize my profile so that I can be easily identified.
-- As a game developer I want to be able to browse all games so that I can see what other developers have made and inovate.
-- As a game developer I want to be able to create a game so that others could play it.
-- As a game developer I want to be able to edit my game so that I can fix bugs.
-- As a game developer I want to be able to dry run my game so that I can ensure it is bug-free.
-- As a user I want to have a bibliography associated with each game so that I can easily verify the accuracy and sources of the information.
-- As a teacher I want to be able to play a game before I assign them to my students so that I can ensure the games are appropriate and accurate.
-- As a game developer I want to be able to add a description to my game so that users can understand what it is about before playing it.
-- As a game developer I want to be able to associate a game with an age group so that my games reach their target audience.
-- As a student I want to receive notifications if a game I was assigned to play has a close deadline so that I don't miss my assignments due date.
-- As a teacher I want to have an option to enable a classroom leaderboard so that I can motivate my students to engage with the educational games.
-- As a student I want to receive achivements based on performance and display them on my profile so that I can showcase my progress.
-- As a teacher I want to be able to remove an assignment from a class so that if I decide it doesn't fit my class it can be gone.
-- As a teacher I want to be able to delete a class from my account so that when I don't need it anymore it is removed. 
+#### Description  
+Our app offers an engaging, interactive recycling game platform designed to promote sustainability, recycling, and good citizenship among students. 
+
+Users can log in as one of three roles: Student, Teacher, or Game Developer, each with their own set of features and benefits.
+Students can join a class created by their teacher or explore a variety of educational games available within the app. They can track their progress by viewing their individual statistics, including what they’ve learned, the games they've played, and their performance (mistakes made, etc.). The app allows for a personalized learning experience, ensuring each student can see their growth over time.
+Teachers have the ability to create and manage multiple classes, adding as many students as needed. They can assign specific games to students and monitor their progress, including individual student statistics and overall class performance. Teachers can track which games have been played and verify student engagement. They also have the option to review the content of the games, including educational objectives and supporting verified materials (such as bibliographies and references), ensuring the accuracy and credibility of the information provided.
+Game developers can create new educational games directly within the app. These developers have access to games they've created, with the ability to make edits and improvements as needed. The app provides a platform for developers to innovate and contribute new content, enhancing the learning experience for students and teachers alike.
+
+Besides that, the app features pre-built educational games focused on sustainability, recycling, and citizenship. Each game includes detailed descriptions of its learning objectives, ensuring the educational material is accurate and credible. Games are rated by age group, making them suitable for students across a wide range of ages and educational levels.
 
 <!-- 
 In this section, you should describe all kinds of requirements for your module: functional and non-functional requirements.
@@ -183,6 +158,27 @@ At the end, it is good to add a rough indication of the value of the user story 
 
 ### Domain model
 
+- **User** - Generalization of the three different roles a user can assume. Stores information about the user.
+
+- **Student, Teacher and Game Developer** - An user can assume at any time one of these three roles (the generalization is overlapping and complete), being limited to the actions associated with their current specific role.
+
+- **Class** - Stores information about a class. A student can participate in many classes, each one managed by one teacher, who can manage multiple classes.
+
+- **Leaderboard** - Represents the ranking of the students of a class based on their performance.
+
+- **Achievement** - After meeting certain conditions, the user will be awarded with an achievement. There are many achievements which the user can obtain.
+
+- **Game** - Stores information about a game. A game is made by one game developer, which can also update it. Games are assigned by teachers to the students of a class to play it. All published games are available for all users to play.
+
+- **Template** - Each game has a certain template as its base, which the game developer customizes to create their one.
+
+- **Bibliography** - Each game has a bibliography containing the information related to the game´s solution. The same bibliography can be used in various games.
+
+- **Deadline** - When a teacher assigns a game to a class, they set a deadline for the students to complete the game.
+
+- **Age Group and Education Level** - Each class has associated to it a certain age group and level of education for their students, as well as each game, in order to help teachers know what games to assign to a specific class and students which ones to play in order to practise.
+
+- **Feedback** - After completing a game, it is shown to the student their score, what mistakes they made and tips for them to overcome their struggles.
 
 ![UML Domain Diagram](docs/domainDiagram.png)
 
@@ -211,6 +207,8 @@ In this section you should start by briefly describing the components of the pro
 
 ### Logical architecture
 
+Regardin our app´s logical architecture, it follows a two-layered structure. User interacts with the app though the User Interface for actions and visual elements. The Business Logic handles the functionalities of the app, enabling communication with the Firebase Services which allows the storage and retrieval of data, user authentiaction and messaging.
+
 
 ![UML Domain Diagram](docs/logicalArchitectureDiagram.png)
 <!--
@@ -226,12 +224,11 @@ Example of _UML package diagram_ showing a _logical view_ of the Eletronic Ticke
 
 ### Physical architecture
 
-The representation of our app’s physical architecture features the following entities. The User’s Device, through which they interact with the Flutter app. The Cloud-Based Backend (Firebase Server) contains all the Firebase services essential for the app’s functionalities, as well as the Firebase Database, which stores all the information produced and required by the users.
+The representation of our app’s physical architecture features the following entities. The User’s Device, through which the user interacts with the Flutter app. The Cloud-Based Backend (Firebase Server) contains all the Firebase services essential for functioning of the app’s functionalities, such as Firebase Authentication, Firebase Cloud Messaging and Cloud Firestore, as well as the Firebase DataBase, which is accessed to store and retrive necessary data.
 
 
 ![UML Deployment Diagram](docs/deploymentDiagram.png)
 
-Regarding technologies, for the frontend, we used Flutter, with the Dart programming language and, for the backend, Firebase.
 <!--
 The goal of this subsection is to document the high-level physical structure of the software system (machines, connections, software components installed, and their dependencies) using UML deployment diagrams (Deployment View) or component diagrams (Implementation View), separate or integrated, showing the physical structure of the system.
 
@@ -251,6 +248,36 @@ In this subsection please describe which feature, or part of it, you have implem
 
 At this phase, instead of a complete user story, you can simply implement a small part of a feature that demonstrates thay you can use the technology, for example, show a screen with the app credits (name and authors).
 -->
+#### Sign-up and Sign-in
+Our app uses Firebase Authentication to deal with the log in and sign-up of users,allowing them to easily create an account or sign in using their email address. During the sign-up phase, after entering their information, users will receive an email verification to confirm their identity.
+
+<img width="291" alt="image" src="https://github.com/user-attachments/assets/7dd8600e-f03b-4c74-b1aa-ad70db7c44ca"/>
+
+#### Edit Profile
+When a user is logged in, they can easily edit their profile. Users can upload a profile picture from their devices and the image gets stored locally. Besides the profile picture, users can also change their usernames and email addresses. These updates ensure their profile stays personalized and up to date.
+
+<img width="291" alt="image" src="https://github.com/user-attachments/assets/dba54c75-62b4-4be6-bac7-76d70c3d66ce"/>
+
+#### Session Management
+Our app keeps the information of the user's current session, ensuring that they do not have to continuously log in every time they reopen the app. This feature is very useful to maintain a good experience while using the app.
+
+#### Account Deletion and Log Out
+On the profile section of the app, users have the option to either log out or delete their accounts. Logging out ends the current session, sending them back to the log in page, and when the user chooses to delete their account, their data is removed from Firebase services.
+
+<img width="290" alt="image" src="https://github.com/user-attachments/assets/c57a236a-95fa-4b6e-8cfa-1549f02ad134"/>
+
+#### Navigation and User Interface
+We included basic navigation buttons that indicate and lead users to the different sections of the app. These buttons allow users to access the Statistics, Home and Games sections.
+
+<img width="291" alt="image" src="https://github.com/user-attachments/assets/a2c981de-4362-46c8-840a-2e5b44c5726f"/>
+<img width="290" alt="image" src="https://github.com/user-attachments/assets/62db6deb-922e-4bf8-91f2-f72ac0b32262"/>
+<img width="290" alt="image" src="https://github.com/user-attachments/assets/1945950a-9a7c-44d5-8d22-97366bd289d7"/>
+
+#### Unit Tests
+To make sure our app's features worked properly, we have added unit and widget tests. The unit tests help verify that the functions and methods are working as intended, while the widget tests ensure the correct behaviour of UI elements, such as buttons. The usage of these tests ensure that the app is stable and reliable.
+
+<img width="360" alt="image" src="https://github.com/user-attachments/assets/fa44a467-ec9a-484d-9a09-c4f1d5b4bfdd"/>
+
 
 ## Project management
 <!--
@@ -276,7 +303,57 @@ You can find below information and references related with the project managemen
 
 ### Sprint 0
 
+**Goal:** Create a simple Flutter app so the team becomes familiar with software development using Flutter; create team´s scrumboard as a Github Project; complete the documentation by inserting List of Features, UML Diagrams, User Stories, Acceptance Tests, and UI Mockups in the README.md file of our app; create a vertical prototype of our app, already including one of its features and implementing the Google Firebase Services that we intend to use
+
+**Sprint Retrospective**
+
+**Did Well:**
+
+- **Effective Team Communication:** Our team members were able to create a productive work environment by continuously giving feedback about the progress of each one´s task, as well as promptly responding to questions related to technical issues, details about the app or the progress of the work;
+
+- **Effective Work Balance and Distribution:** By adopting the strategy of dividing the tasks evenly among the team, the members managed to achieve a more cohesive and productive workflow, being able to concentrate on one task at a time and help the others on the execution of their tasks;
+
+- **Holding Meetings:** In order to keep all team members on the same page regarding the progress of the app, they participated in a couple of meetings in order to establish the current state of the development and establish goals for the future, provide assistance to each member´s task and make decisions that would need the approval of the whole team;
+
+- **Clear Definition of the App:** The team defined the app´s conceptual characteristics and core functionalities with success, being able to document everything in the README.md file of the project.
+
+
+**Do Differently:** 
+
+- **Participate in More Periodical Meetings:** With Sprint 1 starting and the team soon to begin the actual coding of our app´s functionalities, the members realize that more regular meetings will be necessary in order to ensure a productive and unobstructed work progress.
+
+
+**Challenges:** 
+
+- The successfull installation of Flutter and Android Studio in the members´ PCs;
+  
+- How to implement Google Firebase Services on our app.
+
+**Board at the Beginning Of Sprint 0**
+
+![beginSprint0](https://github.com/user-attachments/assets/7e5e1a7d-4c41-4195-9d4a-79c9228e0348)
+
+**Board at the End of Sprint 0**
+
+<img width="1351" alt="image" src="https://github.com/user-attachments/assets/1a678148-4250-476c-a9c0-473b48454d0e" />
+
+
 ### Sprint 1
+
+**Goal:** Create an interface for users to browse all available games; develop a couple of games for users to play; implement a system that allows users to see the mistakes they made during their playthrough.
+
+**Sprint Retrospective:**
+
+**Did Well:**
+
+**Do Differently:**
+
+**Challenges:**
+
+**Board at the Beginning of Sprint 1**
+
+![beginSprint1](https://github.com/user-attachments/assets/030ace43-2236-41a2-bf9f-a5cf2c51e5ae)
+
 
 ### Sprint 2
 
