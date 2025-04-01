@@ -34,9 +34,22 @@ class BinScreenState extends State<BinScreen> {
   bool rightAnswer = true;
   Offset iconPosition = Offset(0, 0);
 
-  // List to track trash items
-  List<String> trashItems = ["trash1", "trash2", "trash3", "trash4", "trash5"];
-  List<String> remainingTrashItems = ["trash6", "trash7", "trash8", "trash9", "trash10"];
+  // Trash items mapped to their correct bin
+  Map<String, String> trashItems = {
+    "trash1": "brown",
+    "trash2": "red",
+    "trash3": "yellow",
+    "trash4": "blue",
+    "trash5": "green",
+  };
+
+  Map<String, String> remainingTrashItems = {
+    "trash6": "blue",
+    "trash7": "red",
+    "trash8": "green",
+    "trash9": "yellow",
+    "trash10": "brown",
+  };
 
   @override
   void initState() {
@@ -61,15 +74,20 @@ class BinScreenState extends State<BinScreen> {
     }
   }
 
-  void removeTrashItem(String item, Offset position) {
+  void removeTrashItem(String item, String bin, Offset position) {
     setState(() {
-      trashItems.remove(item);
+      // Check if the item was placed in the correct bin
+      rightAnswer = trashItems[item] == bin;
       iconPosition = position;
       showIcon = true;
-      rightAnswer = true;
+
+      trashItems.remove(item);
 
       if (remainingTrashItems.isNotEmpty) {
-        trashItems.add(remainingTrashItems.removeAt(0));
+        // Get the first available item from the remainingTrashItems
+        String nextItem = remainingTrashItems.keys.first;
+        trashItems[nextItem] = remainingTrashItems[nextItem]!;
+        remainingTrashItems.remove(nextItem);
       }
     });
 
@@ -107,9 +125,9 @@ class BinScreenState extends State<BinScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    binWidget('green', (data, position) => removeTrashItem(data!, position)),
-                    binWidget('blue', (data, position) => removeTrashItem(data!, position)),
-                    binWidget('yellow', (data, position) => removeTrashItem(data!, position)),
+                    binWidget('green'),
+                    binWidget('blue'),
+                    binWidget('yellow'),
                   ],
                 ),
 
@@ -117,8 +135,8 @@ class BinScreenState extends State<BinScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    binWidget('brown', (data, position) => removeTrashItem(data!, position)),
-                    binWidget('red', (data, position) => removeTrashItem(data!, position)),
+                    binWidget('brown'),
+                    binWidget('red'),
                   ],
                 ),
 
@@ -127,7 +145,7 @@ class BinScreenState extends State<BinScreen> {
                   spacing: 20,
                   runSpacing: 20,
                   alignment: WrapAlignment.center,
-                  children: trashItems
+                  children: trashItems.keys
                       .map((item) => Draggable<String>(
                     data: item,
                     feedback: Image.asset('assets/$item.png', width: 80, height: 80),
@@ -159,7 +177,7 @@ class BinScreenState extends State<BinScreen> {
     );
   }
 
-  Widget binWidget(String color, Function(String?, Offset) onAccept) {
+  Widget binWidget(String color) {
     return DragTarget<String>(
       onWillAccept: (data) {
         setState(() => binStates[color] = true);
@@ -171,7 +189,7 @@ class BinScreenState extends State<BinScreen> {
       onAcceptWithDetails: (details) {
         RenderBox box = context.findRenderObject() as RenderBox;
         Offset position = box.globalToLocal(details.offset);
-        onAccept(details.data, position);
+        removeTrashItem(details.data, color, position);
         setState(() => binStates[color] = false);
       },
       builder: (_, __, ___) => Image.asset(
