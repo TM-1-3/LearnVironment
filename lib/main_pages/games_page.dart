@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 class GamesPage extends StatefulWidget {
   @override
-  _GamesPageState createState() => _GamesPageState();
+  GamesPageState createState() => GamesPageState();
 }
 
-class _GamesPageState extends State<GamesPage> {
+class GamesPageState extends State<GamesPage> {
   String _searchQuery = "";
   String? _selectedTag; // Set as nullable
   String? _selectedAge; // Set as nullable
@@ -132,11 +132,11 @@ class GameCard extends StatelessWidget {
   final List<String> tags;
 
   const GameCard({
-    Key? key,
+    super.key,
     required this.imagePath,
     required this.gameTitle,
     required this.tags,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

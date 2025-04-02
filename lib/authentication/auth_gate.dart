@@ -1,13 +1,32 @@
 import 'package:firebase_auth/firebase_auth.dart'
     hide EmailAuthProvider;
-import 'package:firebase_ui_auth/firebase_ui_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:learnvironment/main_pages/games_page.dart';
 import 'package:provider/provider.dart';
-import 'auth_service.dart';  // AuthService
-import '../home_page.dart';     // HomePage
+import 'auth_service.dart'; // AuthService
+import '../home_page.dart';
+import 'fix_account.dart'; // FixAccountPage
+import 'login_screen.dart'; // Import your custom LoginScreen
 
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
+
+  // Function to fetch userType from Firestore
+  Future<String?> fetchUserType(String uid) async {
+    try {
+      final userDoc =
+      await FirebaseFirestore.instance.collection('users').doc(uid).get();
+      if (userDoc.exists) {
+        return userDoc['role']; // Fetch the "role" field
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print("Error fetching user role: $e");
+      return null;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,50 +39,42 @@ class AuthGate extends StatelessWidget {
               return const Center(child: CircularProgressIndicator());
             }
 
+            // If the user is not authenticated, navigate to the LoginScreen
             if (!snapshot.hasData) {
-              return SignInScreen(
-                providers: [
-                  EmailAuthProvider(),
-                ],
-                headerBuilder: (context, constraints, shrinkOffset) {
-                  return Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: AspectRatio(
-                      aspectRatio: 1,
-                      child: Image.asset('assets/placeholder.png'),
-                    ),
-                  );
-                },
-                subtitleBuilder: (context, action) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: action == AuthAction.signIn
-                        ? const Text('Welcome to LearnVironment, please sign in!')
-                        : const Text('Welcome to LearnVironment, please sign up!'),
-                  );
-                },
-                footerBuilder: (context, action) {
-                  return const Padding(
-                    padding: EdgeInsets.only(top: 16),
-                    child: Text(
-                      'By signing in, you agree to our terms and conditions.',
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                  );
-                },
-                sideBuilder: (context, shrinkOffset) {
-                  return Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: AspectRatio(
-                      aspectRatio: 1,
-                      child: Image.asset('assets/placeholder.png'),
-                    ),
-                  );
-                },
-              );
+              return const LoginScreen(); // Use your custom LoginScreen here
             }
 
-            return const HomePage();  // Navigate to the HomePage after sign-in
+            final user = snapshot.data!;
+            return FutureBuilder<String?>(
+              future: fetchUserType(user.uid),
+              builder: (context, userTypeSnapshot) {
+                if (userTypeSnapshot.connectionState ==
+                    ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (userTypeSnapshot.hasError) {
+                  return Center(
+                    child: Text(
+                      'Error: ${userTypeSnapshot.error}',
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  );
+                }
+
+                final userType = userTypeSnapshot.data;
+                if (userType == 'developer') {
+                  // Navigate to Developer Dashboard
+                  return GamesPage(); // Replace with your developer screen
+                } else if (userType == 'student') {
+                  // Navigate to Student Home
+                  return const HomePage(); // Replace with your student screen
+                } else {
+                  // Navigate to Fix Account Page if role is missing or invalid
+                  return const FixAccountPage();
+                }
+              },
+            );
           },
         );
       },
