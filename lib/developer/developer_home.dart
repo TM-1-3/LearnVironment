@@ -1,31 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'authentication/auth_service.dart';  // Import the AuthService for authentication handling
-import 'profile_screen.dart';  // Import your custom ProfileScreen
+import '../authentication/auth_service.dart';  // Import the AuthService for authentication handling
+import '../profile_screen.dart';  // Import your custom ProfileScreen
 
-import 'main_pages/main_page.dart';
-import 'main_pages/games_page.dart';
-import 'main_pages/statistics_page.dart';
+import 'my_games.dart';
+import '../main_pages/games_page.dart';
+import 'new_game.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class DeveloperHomePage extends StatefulWidget {
+  const DeveloperHomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<DeveloperHomePage> createState() => _DeveloperHomePage();
 }
 
 enum TabItem { statistics, home, games }
 
-class _HomePageState extends State<HomePage> {
+class _DeveloperHomePage extends State<DeveloperHomePage> {
   // Default to the Home tab
   TabItem selectedTab = TabItem.home;
   String message = '';
 
   // Map of tabs to corresponding pages
   final Map<TabItem, Widget> _pages = {
-    TabItem.statistics: StatisticsPage(),
-    TabItem.home: MainPage(),
+    TabItem.statistics: NewGamePage(),
+    TabItem.home: MyGamesPage(),
     TabItem.games: GamesPage(),
   };
 
@@ -72,8 +72,8 @@ class _HomePageState extends State<HomePage> {
           onTap: _onItemTapped,
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: Icon(Icons.pie_chart),
-              label: 'Statistics',
+              icon: Icon(Icons.add),
+              label: 'New Game',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.home),

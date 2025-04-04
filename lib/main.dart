@@ -1,9 +1,12 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'firebase_options.dart';
-import 'auth_gate.dart';
-import 'auth_service.dart'; // Import the AuthService
+import 'authentication/firebase_options.dart';
+import 'authentication/auth_gate.dart';
+import 'authentication/auth_service.dart'; // Import the AuthService
+import 'authentication/fix_account.dart';
+import '../authentication/login_screen.dart'; // Import the Login Screen
+import '../authentication/signup_screen.dart'; // Import the Sign-Up Screen
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,11 +33,17 @@ class App extends StatelessWidget {
         buttonTheme: Theme.of(context).buttonTheme.copyWith(
           highlightColor: Colors.green,
         ),
-        colorScheme: ColorScheme.fromSeed(seedColor: Color.fromRGBO(0, 255, 0, 1.0)),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromRGBO(0, 255, 0, 1.0)),
         visualDensity: VisualDensity.adaptivePlatformDensity,
         useMaterial3: true,
       ),
-      home: const AuthGate(),  // The AuthGate widget as the starting point
+      home: AuthGate(), // The AuthGate widget as the starting point
+      routes: {
+        '/auth_gate': (context) => AuthGate(), // Define the AuthGate route
+        '/fix_account': (context) => const FixAccountPage(), // Define FixAccountPage route
+        '/login': (context) => LoginScreen(), // Define LoginScreen route
+        '/signup': (context) => const SignUpScreen(), // Define SignUpScreen route
+      },
     );
   }
 }

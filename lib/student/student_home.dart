@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'authentication/auth_service.dart';  // Import the AuthService for authentication handling
-import 'profile_screen.dart';  // Import your custom ProfileScreen
+import '../authentication/auth_service.dart';  // Import the AuthService for authentication handling
+import '../profile_screen.dart';  // Import your custom ProfileScreen
 
-import 'main_pages/main_page.dart';
-import 'main_pages/games_page.dart';
-import 'main_pages/statistics_page.dart';
+import '../main_pages/main_page.dart';
+import '../main_pages/games_page.dart';
+import '../main_pages/statistics_page.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class StudentHomePage extends StatefulWidget {
+  const StudentHomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<StudentHomePage> createState() => _StudentHomePage();
 }
 
 enum TabItem { statistics, home, games }
 
-class _HomePageState extends State<HomePage> {
+class _StudentHomePage extends State<StudentHomePage> {
   // Default to the Home tab
   TabItem selectedTab = TabItem.home;
   String message = '';

@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
-import 'auth_service.dart';
+import 'package:learnvironment/authentication/auth_service.dart';
 
 class ProfileScreen extends StatefulWidget {
   final AuthService authService;
@@ -31,7 +31,6 @@ class ProfileScreenState extends State<ProfileScreen> {
     _loadUserProfile();
   }
 
-  // Function to load the profile image from local storage (if exists)
   Future<void> _loadImagePath() async {
     final directory = await getApplicationDocumentsDirectory();
     final imagePath = '${directory.path}/profile_image.jpg'; // Custom file name
@@ -45,7 +44,6 @@ class ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  // Function to load the user's profile (displayName and email)
   Future<void> _loadUserProfile() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
@@ -56,74 +54,72 @@ class ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  // Function to update the user's profile details (username, email)
   Future<void> _updateProfile(String newUsername, String newEmail) async {
     try {
       User? user = FirebaseAuth.instance.currentUser;
 
       if (user == null) {
-        print("No user is logged in");
-        _showErrorDialog("No user is logged in.");
+        _showErrorDialog("No user is logged in.", "Error");
         return;
       }
 
-      // Only update the email if it is changed
+      // Only update the email if it has changed
       if (newEmail != user.email) {
-        // Handle email update
-        await _updateEmail(user, newEmail);
+        await _updateEmail(user, newEmail);  // Update the email in Firebase
       }
 
-      // Update the username (display name) only if changed
+      // Update the username (display name) only if it has changed
       if (newUsername != user.displayName) {
         await user.updateProfile(displayName: newUsername);
-        print("Username updated successfully.");
       }
 
       // Reload the user to reflect the changes
       await user.reload();
+      user = FirebaseAuth.instance.currentUser; // Get the updated user
 
-      // After reloading, update the UI state to reflect the changes
+      // After reloading, update the local controllers to reflect the changes
       setState(() {
+        usernameController.text = user?.displayName ?? ''; // Update username
+        emailController.text = user?.email ?? ''; // Update email in the UI
         _isEditing = false; // Exit edit mode
       });
 
-      print("Profile updated successfully!");
     } catch (e) {
       print("Error updating profile: $e");
-      _showErrorDialog("Error updating profile. Please try again.");
+      _showErrorDialog("Error updating profile. Please try again.", "Error");
     }
   }
 
-  // Function to update email (requires re-authentication if email is unverified)
   Future<void> _updateEmail(User user, String newEmail) async {
     try {
-      // Ask for the user's password to reauthenticate
       String password = await _promptForPassword();
       if (password.isEmpty) return;
 
-      // Perform reauthentication
       final AuthCredential credential = EmailAuthProvider.credential(
         email: user.email ?? '',
         password: password,
       );
 
       await user.reauthenticateWithCredential(credential);
-      await user.verifyBeforeUpdateEmail(newEmail); // Proceed with email update
-      print("Email updated successfully.");
 
-      // After updating the email, send the verification email
-      await user.sendEmailVerification();
-      print("Verification email sent to $newEmail");
+      // Only update the email if the new email is different from the current one
+      if (newEmail != user.email) {
+        await user.verifyBeforeUpdateEmail(newEmail); // Update email in Firebase
+        print("Email updated successfully.");
 
-      // You can then prompt the user to check their email
-      _showErrorDialog("A verification email has been sent to your new email. Please verify it.");
+        // Send verification email only if the email is not already verified
+        if (!user.emailVerified) {
+          await user.sendEmailVerification();
+          _showErrorDialog("A verification email has been sent to $newEmail. Please verify it.", "Warning");
+        }
+      }
     } catch (e) {
       print("Error updating email: $e");
-      _showErrorDialog("Error updating email. Please check the email and try again.");
+      _showErrorDialog("Error updating email. Please check the email and try again.", "Error");
     }
   }
 
-  // Function to prompt the user for their password
+
   Future<String> _promptForPassword() async {
     String password = '';
     await showDialog(
@@ -131,7 +127,7 @@ class ProfileScreenState extends State<ProfileScreen> {
       builder: (BuildContext context) {
         TextEditingController passwordController = TextEditingController();
         return AlertDialog(
-          title: const Text('Reauthentication required'),
+          title: const Text('Re-authentication required'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -158,17 +154,17 @@ class ProfileScreenState extends State<ProfileScreen> {
     return password;
   }
 
-  // Function to handle account deletion
   Future<void> _deleteAccount() async {
     try {
       await FirebaseAuth.instance.currentUser?.delete();
-      Navigator.of(context).pop();
+      if (mounted) {
+        Navigator.of(context).pushReplacementNamed('/signup');
+      }
     } catch (e) {
-      print("Error deleting account: $e");
+      _showErrorDialog("Error deleting account. Please try again.", "Error");
     }
   }
 
-  // Function to show the confirmation dialog for account deletion
   Future<void> _showDeleteAccountDialog() async {
     bool? shouldDelete = await showDialog<bool>(
       context: context,
@@ -195,13 +191,13 @@ class ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  // Function to sign out the user
   Future<void> _signOut() async {
     await FirebaseAuth.instance.signOut();
-    Navigator.of(context).pop();
+    if (mounted) {
+      Navigator.of(context).pushReplacementNamed('/login');
+    }
   }
 
-  // Function to show a confirmation dialog before leaving if there are unsaved changes
   Future<bool> _onWillPop() async {
     if (_isEditing) {
       return await showDialog<bool>(
@@ -234,12 +230,12 @@ class ProfileScreenState extends State<ProfileScreen> {
     super.dispose();
   }
 
-  void _showErrorDialog(String message) {
+  void _showErrorDialog(String message, String ctx) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Error'),
+          title: Text(ctx),
           content: Text(message),
           actions: <Widget>[
             TextButton(
@@ -254,7 +250,6 @@ class ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // Function to pick an image from the gallery
   Future<void> _pickImage() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
@@ -266,7 +261,6 @@ class ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  // Function to save the image locally
   Future<void> _saveImageLocally(XFile image) async {
     try {
       final directory = await getApplicationDocumentsDirectory();
@@ -279,8 +273,6 @@ class ProfileScreenState extends State<ProfileScreen> {
         _imagePath = imagePath;
         _imageFile = localImage;
       });
-
-      print('Image saved locally at: $imagePath');
     } catch (e) {
       print("Error saving image locally: $e");
     }
@@ -290,7 +282,8 @@ class ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
 
-    return PopScope(
+    return WillPopScope(
+      onWillPop: _onWillPop, // Hooking the method here
       child: Scaffold(
         appBar: AppBar(
           title: const Text('User Profile'),
@@ -312,14 +305,16 @@ class ProfileScreenState extends State<ProfileScreen> {
               // Show profile image and info
               Center(
                 child: !_isEditing
-                    ? CircleAvatar(
-                  radius: 100,
-                  backgroundImage: _imageFile != null
-                      ? FileImage(_imageFile!)
-                      : user?.photoURL != null
-                      ? NetworkImage(user?.photoURL ?? '')
-                      : AssetImage('assets/placeholder.png')
-                  as ImageProvider,
+                    ? GestureDetector(
+                  onTap: _pickImage,
+                  child: CircleAvatar(
+                    radius: 100,
+                    backgroundImage: _imageFile != null
+                        ? FileImage(_imageFile!)
+                        : user?.photoURL != null
+                        ? NetworkImage(user?.photoURL ?? '')
+                        : AssetImage('assets/placeholder.png') as ImageProvider,
+                  ),
                 )
                     : const SizedBox.shrink(),
               ),
@@ -367,7 +362,6 @@ class ProfileScreenState extends State<ProfileScreen> {
   }
 }
 
-// EditProfileWidget class
 class EditProfileWidget extends StatelessWidget {
   final TextEditingController usernameController;
   final TextEditingController emailController;
@@ -396,8 +390,7 @@ class EditProfileWidget extends StatelessWidget {
             radius: 100,
             backgroundImage: imageFile != null
                 ? FileImage(imageFile!)
-                : AssetImage('assets/default_profile_picture.png')
-            as ImageProvider,
+                : AssetImage('assets/default_profile_picture.png') as ImageProvider,
           ),
         ),
         const SizedBox(height: 20),

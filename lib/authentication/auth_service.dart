@@ -25,4 +25,16 @@ class AuthService extends ChangeNotifier {
     _loggedIn = false;
     notifyListeners();
   }
+
+  // Delete account method
+  Future<void> deleteAccount() async {
+    try {
+      User? user = _firebaseAuth.currentUser; // Use _firebaseAuth instead of _auth
+      if (user != null) {
+        await user.delete(); // Deletes the user account
+      }
+    } catch (e) {
+      throw Exception("Error deleting account: $e");
+    }
+  }
 }
