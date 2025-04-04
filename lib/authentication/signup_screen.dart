@@ -34,15 +34,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
               onPressed: () async {
                 await user.reload(); // Reload user data to fetch the latest verification status
                 if (user.emailVerified) {
-                  Navigator.of(context).pop(); // Close the dialog
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Email verified for ${user.email}! You can now log in.')),
-                  );
-                  Navigator.of(context).pushReplacementNamed('/login'); // Navigate to the login page
+                  if (context.mounted) {
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Email verified for ${user
+                          .email}! You can now log in.')),
+                    );
+                    Navigator.of(context).pushReplacementNamed('/login'); // Navigate to the login page
+                  }
                 } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Email not verified yet. Please check your inbox.')),
-                  );
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text(
+                          'Email not verified yet. Please check your inbox.')),
+                    );
+                  }
                 }
               },
               child: const Text('I Verified My Email'),
@@ -51,13 +57,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
               onPressed: () async {
                 try {
                   await user.sendEmailVerification(); // Resend email verification
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Verification email resent to ${user.email}!')),
-                  );
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(
+                          'Verification email resent to ${user.email}!')),
+                    );
+                  }
                 } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Error resending verification email.')),
-                  );
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text('Error resending verification email.')),
+                    );
+                  }
                 }
               },
               child: const Text('Resend Email'),
@@ -119,17 +131,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
       await userCredential.user?.sendEmailVerification();
 
       // Inform the user the account was created and prompt them to verify
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Account created successfully! Please verify your email.')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text(
+              'Account created successfully! Please verify your email.')),
+        );
+      }
 
       // Open the email verification dialog
       _showEmailVerificationDialog(userCredential.user);
     } catch (e) {
       // Handle errors gracefully
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('An error occurred during sign-up: ${e.toString()}')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('An error occurred during sign-up: ${e.toString()}')),
+        );
+      }
     }
   }
 

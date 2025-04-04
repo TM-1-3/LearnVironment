@@ -22,7 +22,9 @@ class _FixAccountPageState extends State<FixAccountPage> {
   // Function to sign out the user
   Future<void> _signOut() async {
     await FirebaseAuth.instance.signOut();
-    Navigator.of(context).pushReplacementNamed('/login'); // Replace with your login route
+    if (mounted) {
+      Navigator.of(context).pushReplacementNamed('/login');
+    }
   }
 
   // Function to update or create the user's document in Firestore
@@ -35,23 +37,31 @@ class _FixAccountPageState extends State<FixAccountPage> {
       if (docSnapshot.exists) {
         // Update the existing document
         await userDoc.update({'role': userType});
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('User type updated successfully!')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('User type updated successfully!')),
+          );
+        }
       } else {
         // Create a new document with the uid and role
         await userDoc.set({'role': userType});
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('User type created successfully!')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('User type created successfully!')),
+          );
+        }
       }
 
       // Redirect back to AuthGate
-      Navigator.of(context).pushReplacementNamed('/auth_gate');
+      if (mounted) {
+        Navigator.of(context).pushReplacementNamed('/auth_gate');
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error updating user type: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error updating user type: $e')),
+        );
+      }
     }
   }
 

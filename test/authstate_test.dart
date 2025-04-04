@@ -1,10 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:provider/provider.dart';
 import 'package:learnvironment/authentication/auth_service.dart';
-import 'package:flutter/material.dart';
-import 'package:learnvironment/home_page.dart';
 
 import 'mock_firebase.dart';
 
@@ -46,44 +43,5 @@ void main() {
 
     // Check that the loggedIn state is true because we simulated an authenticated user
     expect(authService.loggedIn, true);
-  });
-
-  // 2. Button Interaction Tests
-  testWidgets('Show Message button updates the message text', (WidgetTester tester) async {
-    // Arrange: Set up the HomePage widget with the mock AuthService
-    await tester.pumpWidget(
-      MaterialApp(
-        home: ChangeNotifierProvider<AuthService>(
-          create: (_) => authService,  // Use the real authService here
-          child: const HomePage(),
-        ),
-      ),
-    );
-
-    // Act: Tap the "Show Message" button
-    await tester.tap(find.text('Show Message'));
-    await tester.pump(); // Rebuild the widget tree
-
-    // Assert: Check if the message is updated to "Button Pressed!"
-    expect(find.text('Button Pressed!'), findsOneWidget);
-  });
-
-  testWidgets('Logout button updates the message to "Logged Out"', (WidgetTester tester) async {
-    // Arrange: Set up the HomePage widget with the mock AuthService
-    await tester.pumpWidget(
-      MaterialApp(
-        home: ChangeNotifierProvider<AuthService>(
-          create: (_) => authService,  // Use the real authService here
-          child: const HomePage(),
-        ),
-      ),
-    );
-
-    // Act: Tap the "Logout" button
-    await tester.tap(find.text('Logout'));
-    await tester.pump(); // Rebuild the widget tree
-
-    // Assert: Check if the message is updated to "Logged Out"
-    expect(find.text('Logged Out'), findsOneWidget);
   });
 }

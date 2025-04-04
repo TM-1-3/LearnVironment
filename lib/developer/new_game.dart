@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class MainPage extends StatelessWidget {
+class NewGamePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
         child: Text(
-          'My games!',
+          'Create new games here!',
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
       ),

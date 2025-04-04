@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:learnvironment/authentication/signup_screen.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  final FirebaseAuth auth;
+
+  LoginScreen({super.key, FirebaseAuth? auth})
+      : auth = auth ?? FirebaseAuth.instance;
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -12,7 +15,10 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  // Use the passed FirebaseAuth instance (or default to FirebaseAuth.instance)
+  FirebaseAuth get _auth => widget.auth;
+
 
   Future<void> _handleLogin() async {
     try {
@@ -26,56 +32,49 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
 
-      // Check if the email exists
-      final signInMethods = await _auth.fetchSignInMethodsForEmail(email);
-      if (signInMethods.isEmpty) {
-        // Email does not exist
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'No account exists for this email. Please create an account.',
-              style: TextStyle(color: Colors.red),
-            ),
-          ),
-        );
-        return;
-      }
-
-      // Attempt to log in
-      try {
-        await _auth.signInWithEmailAndPassword(email: email, password: password);
+      // Directly attempt to log in
+      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Successfully logged in!')),
         );
+      }
 
-        // Navigate to the home page (implement your home page logic here)
-      } on FirebaseAuthException catch (loginError) {
-        // Map Firebase error codes to user-friendly messages
-        String errorMessage;
-        switch (loginError.code) {
-          case 'wrong-password':
-            errorMessage = 'Incorrect password. Please try again.';
-          case 'user-not-found':
-            errorMessage = 'No account found for this email.';
-          case 'invalid-email':
-            errorMessage = 'The email address is not valid.';
-          case 'too-many-requests':
-            errorMessage = 'Too many login attempts. Please try again later.';
-          default:
-            errorMessage = 'An unexpected error occurred. Please try again.';
-        }
-
+      // Navigate to the home page here
+    } on FirebaseAuthException catch (e) {
+      String errorMessage = e.code;
+      switch (e.code) {
+        case "ERROR_EMAIL_ALREADY_IN_USE":
+        case "account-exists-with-different-credential":
+        case "email-already-in-use":
+          errorMessage = "Email already used. Go to login page.";
+        case "ERROR_WRONG_PASSWORD":
+        case "wrong-password":
+        errorMessage = "Wrong email/password combination.";
+        case "ERROR_USER_NOT_FOUND":
+        case "user-not-found":
+          errorMessage = "No user found with this email.";
+        case "ERROR_USER_DISABLED":
+        case "user-disabled":
+          errorMessage = "User disabled.";
+        case "ERROR_TOO_MANY_REQUESTS":
+        case "operation-not-allowed":
+          errorMessage = "Too many requests to log into this account.";
+        case "ERROR_OPERATION_NOT_ALLOWED":
+          errorMessage = "Server error, please try again later.";
+        case "ERROR_INVALID_EMAIL":
+        case "invalid-email":
+          errorMessage = "Email address is invalid.";
+        default:
+          errorMessage = "Login failed. Please try again.";
+      }
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(errorMessage)),
         );
       }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('An unexpected error occurred. Please try again.')),
-      );
     }
   }
-
 
   @override
   Widget build(BuildContext context) {

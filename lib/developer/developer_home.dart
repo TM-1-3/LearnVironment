@@ -4,28 +4,28 @@ import 'package:provider/provider.dart';
 import '../authentication/auth_service.dart';  // Import the AuthService for authentication handling
 import '../profile_screen.dart';  // Import your custom ProfileScreen
 
-import '../main_pages/main_page.dart';
+import 'my_games.dart';
 import '../main_pages/games_page.dart';
-import '../main_pages/statistics_page.dart';
+import 'new_game.dart';
 
-class StudentHomePage extends StatefulWidget {
-  const StudentHomePage({super.key});
+class DeveloperHomePage extends StatefulWidget {
+  const DeveloperHomePage({super.key});
 
   @override
-  State<StudentHomePage> createState() => _StudentHomePage();
+  State<DeveloperHomePage> createState() => _DeveloperHomePage();
 }
 
 enum TabItem { statistics, home, games }
 
-class _StudentHomePage extends State<StudentHomePage> {
+class _DeveloperHomePage extends State<DeveloperHomePage> {
   // Default to the Home tab
   TabItem selectedTab = TabItem.home;
   String message = '';
 
   // Map of tabs to corresponding pages
   final Map<TabItem, Widget> _pages = {
-    TabItem.statistics: StatisticsPage(),
-    TabItem.home: MainPage(),
+    TabItem.statistics: NewGamePage(),
+    TabItem.home: MyGamesPage(),
     TabItem.games: GamesPage(),
   };
 
@@ -72,8 +72,8 @@ class _StudentHomePage extends State<StudentHomePage> {
           onTap: _onItemTapped,
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: Icon(Icons.pie_chart),
-              label: 'Statistics',
+              icon: Icon(Icons.add),
+              label: 'New Game',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.home),

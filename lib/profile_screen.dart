@@ -1,12 +1,12 @@
-import 'dart:io';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 import 'package:path_provider/path_provider.dart';
-import 'authentication/auth_service.dart'; // Import AuthService
+import 'package:learnvironment/authentication/auth_service.dart';
 
 class ProfileScreen extends StatefulWidget {
-  final AuthService authService; // Receive AuthService via constructor
+  final AuthService authService;
 
   const ProfileScreen({super.key, required this.authService});
 
@@ -33,13 +33,13 @@ class ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _loadImagePath() async {
     final directory = await getApplicationDocumentsDirectory();
-    final imagePath = '${directory.path}/profile_image.jpg';
+    final imagePath = '${directory.path}/profile_image.jpg'; // Custom file name
     final imageFile = File(imagePath);
 
     if (imageFile.existsSync()) {
       setState(() {
         _imagePath = imagePath;
-        _imageFile = imageFile;
+        _imageFile = imageFile; // Load the image file
       });
     }
   }
@@ -59,29 +59,34 @@ class ProfileScreenState extends State<ProfileScreen> {
       User? user = FirebaseAuth.instance.currentUser;
 
       if (user == null) {
-        _showErrorDialog("No user is logged in.");
+        _showErrorDialog("No user is logged in.", "Error");
         return;
       }
 
+      // Only update the email if it has changed
       if (newEmail != user.email) {
-        await _updateEmail(user, newEmail);
+        await _updateEmail(user, newEmail);  // Update the email in Firebase
       }
 
+      // Update the username (display name) only if it has changed
       if (newUsername != user.displayName) {
         await user.updateProfile(displayName: newUsername);
       }
 
+      // Reload the user to reflect the changes
       await user.reload();
+      user = FirebaseAuth.instance.currentUser; // Get the updated user
 
+      // After reloading, update the local controllers to reflect the changes
       setState(() {
-        _isEditing = false;
+        usernameController.text = user?.displayName ?? ''; // Update username
+        emailController.text = user?.email ?? ''; // Update email in the UI
+        _isEditing = false; // Exit edit mode
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profile updated successfully!')),
-      );
     } catch (e) {
-      _showErrorDialog("Error updating profile. Please try again.");
+      print("Error updating profile: $e");
+      _showErrorDialog("Error updating profile. Please try again.", "Error");
     }
   }
 
@@ -96,15 +101,24 @@ class ProfileScreenState extends State<ProfileScreen> {
       );
 
       await user.reauthenticateWithCredential(credential);
-      await user.verifyBeforeUpdateEmail(newEmail);
 
-      _showErrorDialog(
-          "A verification email has been sent to your new email. Please verify it.");
+      // Only update the email if the new email is different from the current one
+      if (newEmail != user.email) {
+        await user.verifyBeforeUpdateEmail(newEmail); // Update email in Firebase
+        print("Email updated successfully.");
+
+        // Send verification email only if the email is not already verified
+        if (!user.emailVerified) {
+          await user.sendEmailVerification();
+          _showErrorDialog("A verification email has been sent to $newEmail. Please verify it.", "Warning");
+        }
+      }
     } catch (e) {
-      _showErrorDialog(
-          "Error updating email. Please check the email and try again.");
+      print("Error updating email: $e");
+      _showErrorDialog("Error updating email. Please check the email and try again.", "Error");
     }
   }
+
 
   Future<String> _promptForPassword() async {
     String password = '';
@@ -113,7 +127,7 @@ class ProfileScreenState extends State<ProfileScreen> {
       builder: (BuildContext context) {
         TextEditingController passwordController = TextEditingController();
         return AlertDialog(
-          title: const Text('Reauthentication required'),
+          title: const Text('Re-authentication required'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -142,11 +156,12 @@ class ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _deleteAccount() async {
     try {
-      await widget.authService
-          .deleteAccount(); // Use AuthService for account deletion
-      Navigator.of(context).pushReplacementNamed('/signup');
+      await FirebaseAuth.instance.currentUser?.delete();
+      if (mounted) {
+        Navigator.of(context).pushReplacementNamed('/signup');
+      }
     } catch (e) {
-      _showErrorDialog("Error deleting account. Please try again.");
+      _showErrorDialog("Error deleting account. Please try again.", "Error");
     }
   }
 
@@ -156,8 +171,7 @@ class ProfileScreenState extends State<ProfileScreen> {
       builder: (context) {
         return AlertDialog(
           title: const Text('Are you sure?'),
-          content: const Text(
-              'This will permanently delete your account. Do you want to proceed?'),
+          content: const Text('This will permanently delete your account. Do you want to proceed?'),
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
@@ -178,11 +192,9 @@ class ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _signOut() async {
-    try {
-      await widget.authService.signOut(); // Use AuthService for signing out
+    await FirebaseAuth.instance.signOut();
+    if (mounted) {
       Navigator.of(context).pushReplacementNamed('/login');
-    } catch (e) {
-      _showErrorDialog("Error signing out. Please try again.");
     }
   }
 
@@ -193,8 +205,7 @@ class ProfileScreenState extends State<ProfileScreen> {
         builder: (context) {
           return AlertDialog(
             title: const Text('Unsaved Changes'),
-            content: const Text(
-                'You have unsaved changes. Do you want to leave without saving?'),
+            content: const Text('You have unsaved changes. Do you want to leave without saving?'),
             actions: <Widget>[
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
@@ -209,19 +220,28 @@ class ProfileScreenState extends State<ProfileScreen> {
         },
       ) ?? false;
     }
-    return true;
+    return true; // Allow leaving if not editing
   }
 
-  void _showErrorDialog(String message) {
+  @override
+  void dispose() {
+    usernameController.dispose();
+    emailController.dispose();
+    super.dispose();
+  }
+
+  void _showErrorDialog(String message, String ctx) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Error'),
+          title: Text(ctx),
           content: Text(message),
           actions: <Widget>[
             TextButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
               child: const Text('OK'),
             ),
           ],
@@ -245,8 +265,10 @@ class ProfileScreenState extends State<ProfileScreen> {
     try {
       final directory = await getApplicationDocumentsDirectory();
       final imagePath = '${directory.path}/profile_image.jpg';
+
       final localImage = File(imagePath);
       await localImage.writeAsBytes(await image.readAsBytes());
+
       setState(() {
         _imagePath = imagePath;
         _imageFile = localImage;
@@ -257,18 +279,11 @@ class ProfileScreenState extends State<ProfileScreen> {
   }
 
   @override
-  void dispose() {
-    usernameController.dispose();
-    emailController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
 
     return WillPopScope(
-      onWillPop: _onWillPop,
+      onWillPop: _onWillPop, // Hooking the method here
       child: Scaffold(
         appBar: AppBar(
           title: const Text('User Profile'),
@@ -287,67 +302,52 @@ class ProfileScreenState extends State<ProfileScreen> {
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
+              // Show profile image and info
               Center(
                 child: !_isEditing
-                    ? CircleAvatar(
-                  radius: 100,
-                  backgroundImage: _imageFile != null
-                      ? FileImage(_imageFile!)
-                      : user?.photoURL != null
-                      ? NetworkImage(user?.photoURL ?? '')
-                      : const AssetImage(
-                      'assets/placeholder.png') as ImageProvider,
+                    ? GestureDetector(
+                  onTap: _pickImage,
+                  child: CircleAvatar(
+                    radius: 100,
+                    backgroundImage: _imageFile != null
+                        ? FileImage(_imageFile!)
+                        : user?.photoURL != null
+                        ? NetworkImage(user?.photoURL ?? '')
+                        : AssetImage('assets/placeholder.png') as ImageProvider,
+                  ),
                 )
                     : const SizedBox.shrink(),
               ),
               const SizedBox(height: 20),
-              if (_isEditing) ...[
-                TextField(
-                  controller: usernameController,
-                  decoration: const InputDecoration(labelText: 'Username'),
-                ),
-                TextField(
-                  controller: emailController,
-                  decoration: const InputDecoration(labelText: 'Email'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    _updateProfile(
-                      usernameController.text.trim(),
-                      emailController.text.trim(),
-                    );
+              if (_isEditing)
+                EditProfileWidget(
+                  usernameController: usernameController,
+                  emailController: emailController,
+                  onSave: (newUsername, newEmail) {
+                    _updateProfile(newUsername, newEmail);
                   },
-                  child: const Text('Save Changes'),
+                  pickImage: _pickImage,
+                  imageFile: _imageFile,
                 ),
-              ],
               if (!_isEditing) ...[
-                // Display the user's username
                 Text(
                   user?.displayName ?? 'Username',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 10),
-                // Display the user's email
                 Text(
                   user?.email ?? 'Email',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 16,
-                  ),
+                  style: const TextStyle(fontSize: 16),
                 ),
                 const SizedBox(height: 30),
-                // Sign Out button
                 ElevatedButton.icon(
                   onPressed: _signOut,
                   icon: const Icon(Icons.exit_to_app),
                   label: const Text('Sign Out'),
                 ),
                 const SizedBox(height: 20),
-                // Delete Account button
                 ElevatedButton.icon(
                   onPressed: _showDeleteAccountDialog,
                   icon: const Icon(Icons.delete_forever),
@@ -358,6 +358,62 @@ class ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class EditProfileWidget extends StatelessWidget {
+  final TextEditingController usernameController;
+  final TextEditingController emailController;
+  final Function(String, String) onSave;
+  final Function pickImage;
+  final File? imageFile;
+
+  const EditProfileWidget({
+    super.key,
+    required this.usernameController,
+    required this.emailController,
+    required this.onSave,
+    required this.pickImage,
+    this.imageFile,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: () {
+            pickImage();
+          },
+          child: CircleAvatar(
+            radius: 100,
+            backgroundImage: imageFile != null
+                ? FileImage(imageFile!)
+                : AssetImage('assets/default_profile_picture.png') as ImageProvider,
+          ),
+        ),
+        const SizedBox(height: 20),
+        TextField(
+          controller: usernameController,
+          decoration: const InputDecoration(labelText: 'Username'),
+        ),
+        const SizedBox(height: 10),
+        TextField(
+          controller: emailController,
+          keyboardType: TextInputType.emailAddress,
+          decoration: const InputDecoration(labelText: 'Email'),
+        ),
+        const SizedBox(height: 20),
+        ElevatedButton(
+          onPressed: () {
+            String newUsername = usernameController.text.trim();
+            String newEmail = emailController.text.trim();
+            onSave(newUsername, newEmail);
+          },
+          child: const Text('Save Changes'),
+        ),
+      ],
     );
   }
 }

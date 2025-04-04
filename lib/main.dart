@@ -37,11 +37,11 @@ class App extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
         useMaterial3: true,
       ),
-      home: const AuthGate(), // The AuthGate widget as the starting point
+      home: AuthGate(), // The AuthGate widget as the starting point
       routes: {
-        '/auth_gate': (context) => const AuthGate(), // Define the AuthGate route
+        '/auth_gate': (context) => AuthGate(), // Define the AuthGate route
         '/fix_account': (context) => const FixAccountPage(), // Define FixAccountPage route
-        '/login': (context) => const LoginScreen(), // Define LoginScreen route
+        '/login': (context) => LoginScreen(), // Define LoginScreen route
         '/signup': (context) => const SignUpScreen(), // Define SignUpScreen route
       },
     );
