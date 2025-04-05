@@ -41,11 +41,6 @@ class _LoginScreenState extends State<LoginScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Successfully logged in!')),
         );
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => const HomePage(), // replace with your actual home page
-          ),
-        );
       }
       // Navigate to home page here if necessary
 

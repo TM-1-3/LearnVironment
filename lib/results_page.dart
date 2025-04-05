@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'home_page.dart';
+
+import 'main_pages/games_page.dart';
 
 class ResultsPage extends StatelessWidget {
   final int questionsCount;
@@ -54,7 +55,7 @@ class ResultsPage extends StatelessWidget {
               onTap: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => const HomePage()), // Navigate to HomePage
+                  MaterialPageRoute(builder: (context) => GamesPage()), // Navigate to HomePage
                 );
               },
               child: Card(
