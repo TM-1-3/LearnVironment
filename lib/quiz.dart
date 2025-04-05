@@ -10,10 +10,10 @@ class Quiz extends StatefulWidget {
   const Quiz({super.key, required this.quizData});
 
   @override
-  _QuizState createState() => _QuizState();
+  QuizState createState() => QuizState();
 }
 
-class _QuizState extends State<Quiz> {
+class QuizState extends State<Quiz> {
   final Map<String, List<String>> questionsAndOptions = {
     "What is recycling?": [
       "Reusing materials",
@@ -245,7 +245,7 @@ class _QuizState extends State<Quiz> {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          Container(
+          SizedBox(
             width: 170,
             height: 100,
             child: Card(

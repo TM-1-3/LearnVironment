@@ -151,17 +151,22 @@ class GameCard extends StatelessWidget {
                 // Fetch quiz data asynchronously
                 GameData quizData = await obterQuizData();
                 // Navigate to the GamesInitialScreen with the fetched quiz data
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => GamesInitialScreen(gameData: quizData),
-                  ),
-                );
+                if (context.mounted) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          GamesInitialScreen(gameData: quizData),
+                    ),
+                  );
+                }
               } catch (e) {
                 // Show an error message if fetching the data fails
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Erro ao carregar o jogo: $e')),
-                );
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Erro ao carregar o jogo: $e')),
+                  );
+                }
               }
             },
             child: Image.asset(imagePath), // This is the image that you tap
