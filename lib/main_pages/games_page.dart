@@ -31,6 +31,22 @@ class GamesPageState extends State<GamesPage> {
     },
   ];
 
+  Future<void> loadGame(String gameId) async {
+    try {
+      GameData quizData = await fetchGameData(gameId);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => GamesInitialScreen(gameData: quizData),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro ao carregar o jogo: $e')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // Filter games based on search query, age, and tags
@@ -115,6 +131,7 @@ class GamesPageState extends State<GamesPage> {
                   imagePath: game['imagePath'],
                   gameTitle: game['gameTitle'],
                   tags: List<String>.from(game['tags']),
+                  loadGame: index == 0 ? loadGame : null, // Only make the first card clickable
                 );
               },
             )
@@ -132,12 +149,14 @@ class GameCard extends StatelessWidget {
   final String imagePath;
   final String gameTitle;
   final List<String> tags;
+  final Future<void> Function(String gameId)? loadGame; // Nullable function
 
   const GameCard({
     super.key,
     required this.imagePath,
     required this.gameTitle,
     required this.tags,
+    this.loadGame, // Nullable function
   });
 
   @override
@@ -146,23 +165,10 @@ class GameCard extends StatelessWidget {
       child: Column(
         children: <Widget>[
           GestureDetector(
-            onTap: () async {
-              try {
-                // Fetch quiz data asynchronously
-                GameData quizData = await obterQuizData();
-                // Navigate to the GamesInitialScreen with the fetched quiz data
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => GamesInitialScreen(gameData: quizData),
-                  ),
-                );
-              } catch (e) {
-                // Show an error message if fetching the data fails
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Erro ao carregar o jogo: $e')),
-                );
-              }
+            onTap: loadGame == null
+                ? null // Do nothing if loadGame is null
+                : () {
+              loadGame!("w4VgUzduoH9A9KuN9R9R"); // Only call loadGame for the first card
             },
             child: Image.asset(imagePath), // This is the image that you tap
           ),
