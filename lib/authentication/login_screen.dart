@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:learnvironment/authentication/signup_screen.dart';
+import 'package:learnvironment/home_page.dart';
 
 class LoginScreen extends StatefulWidget {
   final FirebaseAuth auth;
@@ -37,6 +38,11 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Successfully logged in!')),
+        );
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const HomePage(), // replace with your actual home page
+          ),
         );
       }
 
