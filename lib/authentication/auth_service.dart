@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 class AuthService extends ChangeNotifier {
   final FirebaseAuth _firebaseAuth;
@@ -8,7 +9,7 @@ class AuthService extends ChangeNotifier {
 
   bool get loggedIn => _loggedIn;
 
-  // Constructor to accept firebaseAuth as a parameter
+  // Constructor to accept firebaseAuth as a parameter, allowing for mock injection
   AuthService({FirebaseAuth? firebaseAuth}) : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
 
   // Initialize AuthService
