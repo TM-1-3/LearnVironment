@@ -44,10 +44,10 @@ class GameData {
     }
   }
 }
-Future<GameData> obterQuizData() async {
+Future<GameData> fetchGameData(String idDataBase) async {
   try {
     // Substitua com o seu código para obter o GameData de Firestore
-    return await GameData.fromFirestore("w4VgUzduoH9A9KuN9R9R"); // Exemplo de gameId
+    return await GameData.fromFirestore(idDataBase); // Exemplo de gameId
   } catch (e) {
     throw Exception("Erro ao carregar dados do jogo: $e");
   }
