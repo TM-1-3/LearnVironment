@@ -102,15 +102,15 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               // App Icon at the top
               AspectRatio(
-                aspectRatio: 1,
-                child: Image.asset('assets/placeholder.png'),
+                aspectRatio: 2,
+                child: Image.asset('assets/icon.png'),
               ),
               const SizedBox(height: 20),
               // Welcome Message
               const Text(
                 'Welcome to LearnVironment',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14),
+                style: TextStyle(fontSize: 20),
               ),
               const SizedBox(height: 20),
               // Email Input Field
