@@ -3,15 +3,27 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class FixAccountPage extends StatefulWidget {
-  const FixAccountPage({super.key});
+  final FirebaseFirestore? firestore;
+  final FirebaseAuth? fireauth;
+
+  // Pass firestore and fireauth to the state class via constructor.
+  const FixAccountPage({super.key, this.firestore, this.fireauth});
 
   @override
   State<FixAccountPage> createState() => _FixAccountPageState();
 }
 
 class _FixAccountPageState extends State<FixAccountPage> {
-  final FirebaseAuth auth = FirebaseAuth.instance;
-  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  late final FirebaseAuth fireauth;
+  late final FirebaseFirestore firestore;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize auth and firestore using the values passed from the widget
+    fireauth = widget.fireauth ?? FirebaseAuth.instance;
+    firestore = widget.firestore ?? FirebaseFirestore.instance;
+  }
 
   // Selected userType for the dropdown
   String? _selectedUserType;
@@ -21,7 +33,7 @@ class _FixAccountPageState extends State<FixAccountPage> {
 
   // Function to sign out the user
   Future<void> _signOut() async {
-    await FirebaseAuth.instance.signOut();
+    await fireauth.signOut();
     if (mounted) {
       Navigator.of(context).pushReplacementNamed('/login');
     }
@@ -67,7 +79,7 @@ class _FixAccountPageState extends State<FixAccountPage> {
 
   @override
   Widget build(BuildContext context) {
-    final user = auth.currentUser;
+    final user = fireauth.currentUser;
 
     return Scaffold(
       appBar: AppBar(
