@@ -8,4 +8,4 @@
 - We implemented 3 different account types ```teacher```, ```student``` and ```developer``` and added the ability for users to browse games. [#43](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/43)  
 - We added tests to existing code [#44](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/44)  
 - Fixed a bug in the register screen [#45](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/45) 
-- Added the game ```EcoMind``` [#46](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/46)  
+- Added the game ```EcoMind Challenge``` [#46](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/46)  
