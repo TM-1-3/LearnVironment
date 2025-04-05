@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:math';
+import 'results_page.dart';  // Import the ResultsPage
+import 'game_data.dart';
 
 class Quiz extends StatefulWidget {
-  const Quiz({super.key});
+  final GameData quizData;  // The quizData passed to this widget
+
+  const Quiz({super.key, required this.quizData});
 
   @override
   _QuizState createState() => _QuizState();
@@ -97,7 +101,6 @@ class _QuizState extends State<Quiz> {
   void initState() {
     super.initState();
     availableQuestions = List.from(questionsAndOptions.keys);
-    //updateQuestionAndOptions(); // Set a question on start
   }
 
   void startQuiz() {
@@ -119,10 +122,21 @@ class _QuizState extends State<Quiz> {
         selectedAnswer = null;
         rightAnswer = null;
       } else {
-        //currentQuestion = "No more questions!";
-        //currentOptions = [];
-        //correctAnswer = "";
+        // No more questions, finish the quiz
         quizFinished = true;
+        // Go to results screen
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ResultsPage(
+              correctCount: correctCount,
+              wrongCount: wrongCount,
+              questionsCount: 10,
+              gameName: widget.quizData.gameName, // Access quizData here
+              gameImage: widget.quizData.gameLogo, // Access quizData here
+            ),
+          ),
+        );
       }
     });
   }
@@ -138,19 +152,19 @@ class _QuizState extends State<Quiz> {
       }
     });
 
-    Timer(Duration(seconds: 2), () {
-      updateQuestionAndOptions(); // Move to next question after 1 second
+    Timer(const Duration(seconds: 2), () {
+      updateQuestionAndOptions(); // Move to next question after 2 seconds
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Quiz")),
+      appBar: AppBar(title: Text(widget.quizData.gameName)), // Access gameName from quizData
       body: Center(
         child: quizStarted
             ? quizFinished
-            ? _buildResultsScreen()
+            ? const SizedBox() // Empty widget since it's handled in the ResultsPage
             : _buildQuizScreen()
             : _buildHomeScreen(),
       ),
@@ -162,17 +176,17 @@ class _QuizState extends State<Quiz> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Image.asset('assets/quizLogo.png', width: 200, height: 200), // 🖼️ Logo at the top
-        SizedBox(height: 20),
-        Text("Sustainability Quiz", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
-        SizedBox(height: 40),
+        Image.asset(widget.quizData.gameLogo, width: 200, height: 200), // Access gameLogo from quizData
+        const SizedBox(height: 20),
+        Text(widget.quizData.gameName, style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)), // Access gameName from quizData
+        const SizedBox(height: 40),
         GestureDetector(
           onTap: startQuiz,
           child: Card(
             elevation: 4,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             color: Colors.green,
-            child: Padding(
+            child: const Padding(
               padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
               child: Text("Start Quiz", style: TextStyle(fontSize: 20, color: Colors.white)),
             ),
@@ -187,68 +201,35 @@ class _QuizState extends State<Quiz> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Image.asset('assets/quizLogo.png', width: 200, height: 200), // 🖼️ Image on top
-        SizedBox(height: 20),
-        Text("Question $questionNumber", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-        SizedBox(height: 30),
+        Image.asset(widget.quizData.gameLogo, width: 200, height: 200), // Access gameLogo from quizData
+        const SizedBox(height: 20),
+        Text("Question $questionNumber", style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 30),
         Card(
           elevation: 4,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           child: Padding(
-            padding: EdgeInsets.all(20),
-            child: Text(currentQuestion, style: TextStyle(fontSize: 18), textAlign: TextAlign.center),
+            padding: const EdgeInsets.all(20),
+            child: Text(currentQuestion, style: const TextStyle(fontSize: 18), textAlign: TextAlign.center),
           ),
         ),
-        SizedBox(height: 30),
+        const SizedBox(height: 30),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _buildClickableCard(currentOptions[0]),
-            SizedBox(width: 20),
+            const SizedBox(width: 20),
             _buildClickableCard(currentOptions[1]),
           ],
         ),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _buildClickableCard(currentOptions[2]),
-            SizedBox(width: 20),
+            const SizedBox(width: 20),
             _buildClickableCard(currentOptions[3]),
           ],
-        ),
-      ],
-    );
-  }
-
-  /// 📌 RESULTS SCREEN
-  Widget _buildResultsScreen() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Image.asset('assets/quizLogo.png', width: 200, height: 200), // 🖼️ Image on top
-        SizedBox(height: 20),
-        Text("Quiz Completed!", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-        SizedBox(height: 20),
-        Text("✅ Correct Answers: $correctCount", style: TextStyle(fontSize: 20, color: Colors.green)),
-        SizedBox(height: 10),
-        Text("❌ Wrong Answers: $wrongCount", style: TextStyle(fontSize: 20, color: Colors.red)),
-        SizedBox(height: 40),
-
-        // 🔹 Clickable card to return to home
-        GestureDetector(
-          onTap: () {
-            Navigator.pop(context);
-          },
-          child: Card(
-            elevation: 4,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            color: Colors.green,
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-              child: Text("Go Back to Home Page", style: TextStyle(fontSize: 20, color: Colors.white)),
-            ),
-          ),
         ),
       ],
     );
@@ -274,10 +255,10 @@ class _QuizState extends State<Quiz> {
               ),
               child: Center(
                 child: Padding(
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   child: Text(
                     text,
-                    style: TextStyle(fontSize: 18),
+                    style: const TextStyle(fontSize: 18),
                     textAlign: TextAlign.center,
                   ),
                 ),

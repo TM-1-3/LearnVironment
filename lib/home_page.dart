@@ -4,7 +4,8 @@ import 'package:provider/provider.dart';
 
 import 'auth_service.dart';  // Import the AuthService for authentication handling
 import 'profile_screen.dart';  // Import your custom ProfileScreen
-
+import 'games_initial_screen.dart';
+import 'game_data.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -28,14 +29,23 @@ class _HomePageState extends State<HomePage> {
   };
 
   // Method to handle bottom navigation tap
-  void _onItemTapped(int index) {
+  void _onItemTapped(int index) async {
     TabItem tappedTab = TabItem.values[index];
 
     if (tappedTab == TabItem.games) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const Quiz()),
-      );
+      try {
+        GameData quizData = await obterQuizData();
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => GamesInitialScreen(gameData: quizData),
+          ),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao carregar o jogo: $e')),
+        );
+      }
     } else {
       setState(() {
         selectedTab = tappedTab;
