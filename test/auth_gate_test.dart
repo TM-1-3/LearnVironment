@@ -1,85 +1,234 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:learnvironment/authentication/auth_gate.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:learnvironment/authentication/firebase_options.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+import 'package:learnvironment/authentication/auth_service.dart';
+import 'package:learnvironment/authentication/fix_account.dart';
+import 'package:learnvironment/developer/developer_home.dart';
+import 'package:learnvironment/student/student_home.dart';
+import 'package:learnvironment/teacher/teacher_home.dart';
+import 'package:mockito/mockito.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter/material.dart';
+import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
+
+// Mock NavigatorObserver for navigation tracking
+class MockNavigatorObserver extends Mock implements NavigatorObserver {}
 
 // Mock FirebaseAuth
-class MockFirebaseAuth extends Mock implements FirebaseAuth {}
+class MockFirebaseAuthUnit extends Mock implements FirebaseAuth {}
 
 // Mock User from FirebaseAuth
-class MockUser extends Mock implements User {}
+class MockUserUnit extends Mock implements User {}
 
 void main() {
-  late MockFirebaseAuth mockAuth;
-  late FakeFirebaseFirestore fakeFirestore;
-
-  setUp(() {
-    // Initialize the mocks and FakeFirestore instance before each test
-    mockAuth = MockFirebaseAuth();
-    fakeFirestore = FakeFirebaseFirestore();
-  });
-
   group('AuthGate - fetchUserType', () {
-    test('fetchUserType returns the correct user role', () async {
-      final uid = 'gY2EEgnuhcRUMjSaOJnJRz1OnPo1';
+    late MockFirebaseAuthUnit mockAuth;
+    late FakeFirebaseFirestore fakeFirestore;
 
-      // Explicitly create the document with 'role' field in Firestore mock
+    setUp(() {
+      // Initialize the mocks and FakeFirestore instance before each test
+      mockAuth = MockFirebaseAuthUnit();
+      fakeFirestore = FakeFirebaseFirestore();
+    });
+    test('fetchUserType returns developer', () async {
+      final uid = 'test';
+
+      // Prepopulate Firestore with mock data
       await fakeFirestore.collection('users').doc(uid).set({
         'role': 'developer', // Mock user role in Firestore
       });
 
-      // Create a mock user
-      final mockUser = MockUser();
-      when(() => mockUser.uid).thenReturn(uid);
-      when(() => mockUser.email).thenReturn('up202307719@g.uporto.pt');
+      // Create an instance of AuthGate
+      final authGate = AuthGate(firestore: fakeFirestore, fireauth: mockAuth);
 
-      // Mock FirebaseAuth to return the mock user
-      when(() => mockAuth.currentUser).thenReturn(mockUser);
-
-      // Create an instance of AuthGate and pass the fakeFirestore
-      final authGate = AuthGate(firestore: fakeFirestore);
-
-      // Call fetchUserType method with uid to retrieve the role
+      // Call fetchUserType directly
       final userRole = await authGate.fetchUserType(uid);
 
-      // Assert that the role is 'developer' (the role we set above)
+      // Verify the returned role matches the mock data
       expect(userRole, 'developer');
     });
 
-    test('fetchUserType returns null when no user is found', () async {
-      final uid = 'test_uid';
+    test('fetchUserType returns student', () async {
+      final uid = 'test';
 
-      // Create an instance of AuthGate and test when no user is found in Firestore
-      final authGate = AuthGate(firestore: fakeFirestore);
+      // Prepopulate Firestore with mock data
+      await fakeFirestore.collection('users').doc(uid).set({
+        'role': 'student', // Mock user role in Firestore
+      });
+
+      final authGate = AuthGate(firestore: fakeFirestore, fireauth: mockAuth);
       final userRole = await authGate.fetchUserType(uid);
 
-      // Validate that the role is null when no user is found in Firestore
+      expect(userRole, 'student');
+    });
+
+    test('fetchUserType returns null if user not found', () async {
+      final uid = 'test_uid';
+
+      final authGate = AuthGate(firestore: fakeFirestore, fireauth: mockAuth);
+      final userRole = await authGate.fetchUserType(uid);
+
       expect(userRole, null);
     });
 
     test('fetchUserType handles errors', () async {
-      // Initialize FakeFirebaseFirestore
-      final fakeFirestore = FakeFirebaseFirestore();
+      final uid = 'non_existent_uid';
 
-      // Create an instance of AuthGate using the fake Firestore
-      final authGate = AuthGate(firestore: fakeFirestore);
+      await fakeFirestore.collection('users').doc(uid).set({'role': null});
 
-      // Simulate a Firestore error by attempting to fetch data from a non-existent document
-      final uid = 'non_existent_uid'; // This UID doesn't exist in Firestore
-      fakeFirestore
-          .collection('users')
-          .doc(uid)
-          .set({'role': null}); // Add invalid data to simulate error scenario
-
-      // Ensure fetchUserType gracefully handles errors or invalid data
+      final authGate = AuthGate(firestore: fakeFirestore, fireauth: mockAuth);
       final userRole = await authGate.fetchUserType(uid);
 
-      // Validate that the error is handled and fetchUserType returns null
       expect(userRole, null);
     });
   });
-}
+
+    group('AuthGate - Widget Navigation Tests', () {
+      late FakeFirebaseFirestore fakeFirestore;
+      late MockFirebaseAuth mockAuth;
+      late Widget testWidget;
+      late MockNavigatorObserver mockNavigatorObserver;
+
+      setUp(() {
+        // Initialize mocked Firebase Authentication and Firestore
+        fakeFirestore = FakeFirebaseFirestore();
+        mockNavigatorObserver = MockNavigatorObserver();
+      });
+
+      testWidgets('Navigates to Developer home screen', (
+          WidgetTester tester,
+          ) async {
+        // Simulate authenticated user
+        mockAuth = MockFirebaseAuth(signedIn: true,
+          mockUser: MockUser(
+            uid: 'testDeveloper',
+            email: 'test@example.com',
+            displayName: 'Test User',
+          ),);
+
+        await fakeFirestore.collection('users').doc('testDeveloper').set({
+          'role': 'developer', // Mock user role in Firestore
+        });
+
+        testWidget = MultiProvider(
+          providers: [
+            ChangeNotifierProvider<AuthService>(
+              create: (_) => AuthService(firebaseAuth: mockAuth),
+            ),
+          ],
+          child: MaterialApp(
+            home: AuthGate(firestore: fakeFirestore, fireauth: mockAuth),
+            navigatorObservers: [mockNavigatorObserver],
+          ),
+        );
+
+        // Render the widget and wait for UI updates
+        await tester.pumpWidget(testWidget);
+        await tester.pumpAndSettle();
+
+        // Verify navigation to DeveloperHomePage
+        expect(find.byType(DeveloperHomePage), findsOneWidget);
+      });
+
+      testWidgets('Navigates to Student home screen', (
+          WidgetTester tester,
+          ) async {
+        mockAuth = MockFirebaseAuth(signedIn: true,
+          mockUser: MockUser(
+            uid: 'testDeveloper',
+            email: 'test@example.com',
+            displayName: 'Test User',
+          ),);
+
+        await fakeFirestore.collection('users').doc('testDeveloper').set({
+          'role': 'student', // Mock user role in Firestore
+        });
+
+        testWidget = MultiProvider(
+          providers: [
+            ChangeNotifierProvider<AuthService>(
+              create: (_) => AuthService(firebaseAuth: mockAuth),
+            ),
+          ],
+          child: MaterialApp(
+            home: AuthGate(firestore: fakeFirestore, fireauth: mockAuth),
+            navigatorObservers: [mockNavigatorObserver],
+          ),
+        );
+
+        await tester.pumpWidget(testWidget);
+        await tester.pumpAndSettle();
+
+        expect(find.byType(StudentHomePage), findsOneWidget);
+      });
+
+      testWidgets('Navigates to Teacher home screen', (
+          WidgetTester tester,
+          ) async {
+        mockAuth = MockFirebaseAuth(signedIn: true,
+          mockUser: MockUser(
+            uid: 'testDeveloper',
+            email: 'test@example.com',
+            displayName: 'Test User',
+          ),);
+
+        await fakeFirestore.collection('users').doc('testDeveloper').set({
+          'role': 'teacher', // Mock user role in Firestore
+        });
+
+        testWidget = MultiProvider(
+          providers: [
+            ChangeNotifierProvider<AuthService>(
+              create: (_) => AuthService(firebaseAuth: mockAuth),
+            ),
+          ],
+          child: MaterialApp(
+            home: AuthGate(firestore: fakeFirestore, fireauth: mockAuth),
+            navigatorObservers: [mockNavigatorObserver],
+          ),
+        );
+
+        await tester.pumpWidget(testWidget);
+        await tester.pumpAndSettle();
+
+        expect(find.byType(TeacherHomePage), findsOneWidget);
+      });
+
+      testWidgets('Navigates to FixAccountPage home screen', (
+          WidgetTester tester,
+          ) async {
+        mockAuth = MockFirebaseAuth(signedIn: true,
+          mockUser: MockUser(
+            uid: 'testDeveloper',
+            email: 'test@example.com',
+            displayName: 'Test User',
+          ),);
+
+        await fakeFirestore.collection('users').doc('testDeveloper').set({
+          'role': '', // Mock user role in Firestore
+        });
+        AuthGate authGate = AuthGate(firestore: fakeFirestore, fireauth: mockAuth);
+
+        testWidget = MultiProvider(
+          providers: [
+            ChangeNotifierProvider<AuthService>(
+              create: (_) => AuthService(firebaseAuth: mockAuth),
+            ),
+          ],
+          child: MaterialApp(
+            home: authGate,
+            navigatorObservers: [mockNavigatorObserver],
+          ),
+        );
+
+        final userRole = await authGate.fetchUserType('testDeveloper');
+        expect(userRole, '');
+
+        await tester.pumpWidget(testWidget);
+        await tester.pumpAndSettle();
+
+        expect(find.byType(FixAccountPage), findsOneWidget);
+      });
+  });
+  }

@@ -1,7 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:learnvironment/authentication/signup_screen.dart';
-import 'package:learnvironment/home_page.dart';
 
 class LoginScreen extends StatefulWidget {
   final FirebaseAuth auth;
@@ -16,12 +14,16 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _isLoading = false;
 
   // Use the passed FirebaseAuth instance (or default to FirebaseAuth.instance)
   FirebaseAuth get _auth => widget.auth;
 
-
   Future<void> _handleLogin() async {
+    setState(() {
+      _isLoading = true;
+    });
+
     try {
       final email = _emailController.text.trim();
       final password = _passwordController.text.trim();
@@ -39,16 +41,15 @@ class _LoginScreenState extends State<LoginScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Successfully logged in!')),
         );
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => const HomePage(), // replace with your actual home page
-          ),
-        );
       }
+      // Navigate to home page here if necessary
 
-      // Navigate to the home page here
+      // Clear the text fields after a successful login
+      _emailController.clear();
+      _passwordController.clear();
     } on FirebaseAuthException catch (e) {
       String errorMessage = e.code;
+
       switch (e.code) {
         case "ERROR_EMAIL_ALREADY_IN_USE":
         case "account-exists-with-different-credential":
@@ -56,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
           errorMessage = "Email already used. Go to login page.";
         case "ERROR_WRONG_PASSWORD":
         case "wrong-password":
-        errorMessage = "Wrong email/password combination.";
+          errorMessage = "Wrong email/password combination.";
         case "ERROR_USER_NOT_FOUND":
         case "user-not-found":
           errorMessage = "No user found with this email.";
@@ -64,21 +65,25 @@ class _LoginScreenState extends State<LoginScreen> {
         case "user-disabled":
           errorMessage = "User disabled.";
         case "ERROR_TOO_MANY_REQUESTS":
+        case "ERROR_OPERATION_NOT_ALLOWED":
         case "operation-not-allowed":
           errorMessage = "Too many requests to log into this account.";
-        case "ERROR_OPERATION_NOT_ALLOWED":
-          errorMessage = "Server error, please try again later.";
         case "ERROR_INVALID_EMAIL":
         case "invalid-email":
           errorMessage = "Email address is invalid.";
         default:
           errorMessage = "Login failed. Please try again.";
       }
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(errorMessage)),
         );
       }
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -97,15 +102,15 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               // App Icon at the top
               AspectRatio(
-                aspectRatio: 1,
-                child: Image.asset('assets/placeholder.png'),
+                aspectRatio: 2,
+                child: Image.asset('assets/icon.png'),
               ),
               const SizedBox(height: 20),
               // Welcome Message
               const Text(
                 'Welcome to LearnVironment',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14),
+                style: TextStyle(fontSize: 20),
               ),
               const SizedBox(height: 20),
               // Email Input Field
@@ -130,19 +135,17 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 20),
               // Login Button
               ElevatedButton(
-                onPressed: _handleLogin,
-                child: const Text('Login'),
+                onPressed: _isLoading ? null : _handleLogin,
+                child: _isLoading
+                    ? const CircularProgressIndicator()
+                    : const Text('Login'),
               ),
               const SizedBox(height: 16),
               // Registration Link
               Center(
                 child: InkWell(
                   onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const SignUpScreen(),
-                      ),
-                    );
+                    Navigator.of(context).pushReplacementNamed('/signup');
                   },
                   child: Text(
                     'Don’t have an account? Register here.',

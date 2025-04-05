@@ -48,6 +48,7 @@ flutter:
   uses-material-design: true
   assets:
   - assets/placeholder.png
+  - assets/icon.png
   - assets/right.png
   - assets/wrong.png
   - assets/quizLogo.png

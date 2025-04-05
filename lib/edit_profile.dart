@@ -1,6 +1,5 @@
-import 'package:flutter/material.dart';
 import 'dart:io';
-
+import 'package:flutter/material.dart';
 
 class EditProfileWidget extends StatelessWidget {
   final TextEditingController usernameController;
@@ -30,8 +29,7 @@ class EditProfileWidget extends StatelessWidget {
             radius: 100,
             backgroundImage: imageFile != null
                 ? FileImage(imageFile!)
-                : AssetImage('assets/default_profile_picture.png')
-            as ImageProvider,
+                : AssetImage('assets/default_profile_picture.png') as ImageProvider,
           ),
         ),
         const SizedBox(height: 20),

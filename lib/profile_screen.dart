@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:learnvironment/authentication/auth_service.dart';
+import 'edit_profile.dart';
 
 class ProfileScreen extends StatefulWidget {
   final AuthService authService;
@@ -83,6 +84,12 @@ class ProfileScreenState extends State<ProfileScreen> {
         emailController.text = user?.email ?? ''; // Update email in the UI
         _isEditing = false; // Exit edit mode
       });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Successfully saved.')),
+        );
+      }
 
     } catch (e) {
       print("Error updating profile: $e");
@@ -198,7 +205,7 @@ class ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  Future<bool> _onWillPop() async {
+  Future<bool?> _onWillPop() async {
     if (_isEditing) {
       return await showDialog<bool>(
         context: context,
@@ -282,8 +289,16 @@ class ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
 
-    return WillPopScope(
-      onWillPop: _onWillPop, // Hooking the method here
+    return PopScope<Object?>(
+        canPop: false,
+        onPopInvokedWithResult: (bool didPop, Object? result) async {
+        if (didPop) {
+          return;
+        }
+        final bool shouldPop = await _onWillPop() ?? false;
+        if (context.mounted && shouldPop) {
+          Navigator.pop(context);
+        }},
       child: Scaffold(
         appBar: AppBar(
           title: const Text('User Profile'),
@@ -358,62 +373,6 @@ class ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
       ),
-    );
-  }
-}
-
-class EditProfileWidget extends StatelessWidget {
-  final TextEditingController usernameController;
-  final TextEditingController emailController;
-  final Function(String, String) onSave;
-  final Function pickImage;
-  final File? imageFile;
-
-  const EditProfileWidget({
-    super.key,
-    required this.usernameController,
-    required this.emailController,
-    required this.onSave,
-    required this.pickImage,
-    this.imageFile,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        GestureDetector(
-          onTap: () {
-            pickImage();
-          },
-          child: CircleAvatar(
-            radius: 100,
-            backgroundImage: imageFile != null
-                ? FileImage(imageFile!)
-                : AssetImage('assets/default_profile_picture.png') as ImageProvider,
-          ),
-        ),
-        const SizedBox(height: 20),
-        TextField(
-          controller: usernameController,
-          decoration: const InputDecoration(labelText: 'Username'),
-        ),
-        const SizedBox(height: 10),
-        TextField(
-          controller: emailController,
-          keyboardType: TextInputType.emailAddress,
-          decoration: const InputDecoration(labelText: 'Email'),
-        ),
-        const SizedBox(height: 20),
-        ElevatedButton(
-          onPressed: () {
-            String newUsername = usernameController.text.trim();
-            String newEmail = emailController.text.trim();
-            onSave(newUsername, newEmail);
-          },
-          child: const Text('Save Changes'),
-        ),
-      ],
     );
   }
 }
