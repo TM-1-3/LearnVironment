@@ -1,10 +1,45 @@
-import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:learnvironment/authentication/login_screen.dart';
 import 'package:learnvironment/authentication/signup_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
+class MockFirebaseAuthWithErrors extends MockFirebaseAuth {
+  final bool shouldThrowSignInError;
+  final bool shouldThrowUserNotFoundError;
+  final bool shouldThrowUserDisabledError;
+  final bool shouldThrowOperationNotAllowedError;
+  final bool shouldThrowInvalidEmailError;
+  final bool shouldThrow;
+
+  MockFirebaseAuthWithErrors({
+    this.shouldThrowSignInError = false,
+    this.shouldThrowUserNotFoundError = false,
+    this.shouldThrowUserDisabledError = false,
+    this.shouldThrowOperationNotAllowedError = false,
+    this.shouldThrowInvalidEmailError = false,
+    this.shouldThrow = false
+  });
+
+  @override
+  Future<UserCredential> signInWithEmailAndPassword({required String email, required String password}) async {
+    if (shouldThrowSignInError) {
+      throw FirebaseAuthException(code: 'wrong-password', message: 'Wrong email/password combination.');
+    }else if (shouldThrowUserNotFoundError) {
+      throw FirebaseAuthException(code: 'user-not-found', message: 'No user found with this email.');
+    } else if (shouldThrowUserDisabledError) {
+      throw FirebaseAuthException(code: 'user-disabled', message: 'User disabled.');
+    } else if (shouldThrowOperationNotAllowedError) {
+      throw FirebaseAuthException(code: 'operation-not-allowed', message: 'Too many requests to log into this account.');
+    } else if (shouldThrowInvalidEmailError) {
+      throw FirebaseAuthException(code: 'invalid-email', message: 'Email address is invalid.');
+    } else if (shouldThrow) {
+      throw FirebaseAuthException(code: 'any', message: 'Login failed. Please try again.');
+    }
+    return super.signInWithEmailAndPassword(email: email, password: password);
+  }
+}
 
 void main() {
   late MockFirebaseAuth mockAuth;
@@ -23,13 +58,12 @@ void main() {
     late Widget testWidget;
 
     setUp(() {
-      FakeFirebaseFirestore fakeFirestore = FakeFirebaseFirestore();
       testWidget = MaterialApp(
         home: Scaffold(
           body: LoginScreen(auth: mockAuth),
         ),
         routes: {
-          '/signup': (context) => SignUpScreen(), // Define the AuthGate route
+          '/signup': (context) => SignUpScreen(),
         },
       );
     });
@@ -60,21 +94,173 @@ void main() {
       expect(find.text('Successfully logged in!'), findsOneWidget);
     });
 
-    testWidgets('shows error when email or password is empty', (WidgetTester tester) async {
-      await tester.pumpWidget(testWidget);
+    group('Error handling tests', () {
+      testWidgets('shows error when login fails with invalid credentials', (WidgetTester tester) async {
+        final mockAuthWithErrors = MockFirebaseAuthWithErrors(shouldThrowSignInError: true);
 
-      // Ensure fields are empty
-      await tester.enterText(find.byType(TextField).at(0), ''); // Email field
-      await tester.enterText(find.byType(TextField).at(1), ''); // Password field
+        final testWidget = MaterialApp(
+          home: Scaffold(
+            body: LoginScreen(auth: mockAuthWithErrors),
+          ),
+        );
 
-      // Tap the login button
-      await tester.ensureVisible(find.widgetWithText(ElevatedButton, 'Login'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Login'));
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(testWidget);
 
-      // Verify error message
-      expect(find.text('Please fill in both fields.'), findsOneWidget);
+        // Enter invalid credentials
+        await tester.enterText(find.byType(TextField).at(0), 'wrong@example.com');
+        await tester.enterText(find.byType(TextField).at(1), 'wrongpassword');
+
+        // Tap the login button
+        await tester.ensureVisible(find.widgetWithText(ElevatedButton, 'Login'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.widgetWithText(ElevatedButton, 'Login'));
+        await tester.pumpAndSettle();
+
+        // Verify error message in SnackBar
+        expect(find.text('Wrong email/password combination.'), findsOneWidget);
+      });
+
+      testWidgets('shows error when user not found', (WidgetTester tester) async {
+        final mockAuthWithErrors = MockFirebaseAuthWithErrors(shouldThrowUserNotFoundError: true);
+
+        final testWidget = MaterialApp(
+          home: Scaffold(
+            body: LoginScreen(auth: mockAuthWithErrors),
+          ),
+        );
+
+        await tester.pumpWidget(testWidget);
+
+        // Enter invalid credentials
+        await tester.enterText(find.byType(TextField).at(0), 'wrong@example.com');
+        await tester.enterText(find.byType(TextField).at(1), 'wrongpassword');
+
+        // Tap the login button
+        await tester.ensureVisible(find.widgetWithText(ElevatedButton, 'Login'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.widgetWithText(ElevatedButton, 'Login'));
+        await tester.pumpAndSettle();
+
+        // Verify error message in SnackBar
+        expect(find.text('No user found with this email.'), findsOneWidget);
+      });
+
+      testWidgets('shows error when user is disabled', (WidgetTester tester) async {
+        final mockAuthWithErrors = MockFirebaseAuthWithErrors(shouldThrowUserDisabledError: true);
+
+        final testWidget = MaterialApp(
+          home: Scaffold(
+            body: LoginScreen(auth: mockAuthWithErrors),
+          ),
+        );
+
+        await tester.pumpWidget(testWidget);
+
+        // Enter invalid credentials
+        await tester.enterText(find.byType(TextField).at(0), 'wrong@example.com');
+        await tester.enterText(find.byType(TextField).at(1), 'wrongpassword');
+
+        // Tap the login button
+        await tester.ensureVisible(find.widgetWithText(ElevatedButton, 'Login'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.widgetWithText(ElevatedButton, 'Login'));
+        await tester.pumpAndSettle();
+
+        // Verify error message in SnackBar
+        expect(find.text('User disabled.'), findsOneWidget);
+      });
+
+      testWidgets('shows error when user is disabled', (WidgetTester tester) async {
+        final mockAuthWithErrors = MockFirebaseAuthWithErrors(shouldThrowOperationNotAllowedError: true);
+
+        final testWidget = MaterialApp(
+          home: Scaffold(
+            body: LoginScreen(auth: mockAuthWithErrors),
+          ),
+        );
+
+        await tester.pumpWidget(testWidget);
+
+        // Enter invalid credentials
+        await tester.enterText(find.byType(TextField).at(0), 'wrong@example.com');
+        await tester.enterText(find.byType(TextField).at(1), 'wrongpassword');
+
+        // Tap the login button
+        await tester.ensureVisible(find.widgetWithText(ElevatedButton, 'Login'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.widgetWithText(ElevatedButton, 'Login'));
+        await tester.pumpAndSettle();
+
+        // Verify error message in SnackBar
+        expect(find.text('Too many requests to log into this account.'), findsOneWidget);
+      });
+
+      testWidgets('shows error for invalid email', (WidgetTester tester) async {
+        final mockAuthWithErrors = MockFirebaseAuthWithErrors(shouldThrowInvalidEmailError: true);
+
+        final testWidget = MaterialApp(
+          home: Scaffold(
+            body: LoginScreen(auth: mockAuthWithErrors),
+          ),
+        );
+
+        await tester.pumpWidget(testWidget);
+
+        // Enter invalid credentials
+        await tester.enterText(find.byType(TextField).at(0), 'wrong@example.com');
+        await tester.enterText(find.byType(TextField).at(1), 'wrongpassword');
+
+        // Tap the login button
+        await tester.ensureVisible(find.widgetWithText(ElevatedButton, 'Login'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.widgetWithText(ElevatedButton, 'Login'));
+        await tester.pumpAndSettle();
+
+        // Verify error message in SnackBar
+        expect(find.text('Email address is invalid.'), findsOneWidget);
+      });
+
+      testWidgets('shows error when email or password is empty', (WidgetTester tester) async {
+        await tester.pumpWidget(testWidget);
+
+        // Ensure fields are empty
+        await tester.enterText(find.byType(TextField).at(0), ''); // Email field
+        await tester.enterText(find.byType(TextField).at(1), ''); // Password field
+
+        // Tap the login button
+        await tester.ensureVisible(find.widgetWithText(ElevatedButton, 'Login'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.widgetWithText(ElevatedButton, 'Login'));
+        await tester.pumpAndSettle();
+
+        // Verify error message
+        expect(find.text('Please fill in both fields.'), findsOneWidget);
+      });
+
+      testWidgets('handle unknown error', (WidgetTester tester) async {
+        final mockAuthWithErrors = MockFirebaseAuthWithErrors(shouldThrow: true);
+
+        final testWidget = MaterialApp(
+          home: Scaffold(
+            body: LoginScreen(auth: mockAuthWithErrors),
+          ),
+        );
+
+        await tester.pumpWidget(testWidget);
+
+        // Enter invalid credentials
+        await tester.enterText(find.byType(TextField).at(0), 'wrong@example.com');
+        await tester.enterText(find.byType(TextField).at(1), 'wrongpassword');
+
+        // Tap the login button
+        await tester.ensureVisible(find.widgetWithText(ElevatedButton, 'Login'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.widgetWithText(ElevatedButton, 'Login'));
+        await tester.pumpAndSettle();
+
+        // Verify error message in SnackBar
+        expect(find.text('Login failed. Please try again.'), findsOneWidget);
+      });
     });
 
     testWidgets('navigates to SignUpScreen when tapping registration link', (WidgetTester tester) async {
@@ -91,3 +277,4 @@ void main() {
     });
   });
 }
+

@@ -65,10 +65,9 @@ class _LoginScreenState extends State<LoginScreen> {
         case "user-disabled":
           errorMessage = "User disabled.";
         case "ERROR_TOO_MANY_REQUESTS":
+        case "ERROR_OPERATION_NOT_ALLOWED":
         case "operation-not-allowed":
           errorMessage = "Too many requests to log into this account.";
-        case "ERROR_OPERATION_NOT_ALLOWED":
-          errorMessage = "Server error, please try again later.";
         case "ERROR_INVALID_EMAIL":
         case "invalid-email":
           errorMessage = "Email address is invalid.";
