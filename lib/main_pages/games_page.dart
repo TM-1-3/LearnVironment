@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:learnvironment/games_initial_screen.dart';
+import 'package:learnvironment/game_data.dart';
 
 class GamesPage extends StatefulWidget {
   @override
@@ -13,8 +15,8 @@ class GamesPageState extends State<GamesPage> {
   // List of game data
   final List<Map<String, dynamic>> games = [
     {
-      'imagePath': 'assets/placeholder.png',
-      'gameTitle': 'Game Title 1',
+      'imagePath': 'assets/quizLogo.png',
+      'gameTitle': 'EcoMind Challenge',
       'tags': <String>['Age: 12+', 'Recycling', 'Citizenship'],
     },
     {
@@ -143,8 +145,26 @@ class GameCard extends StatelessWidget {
     return Card(
       child: Column(
         children: <Widget>[
-          Image.asset(
-            imagePath
+          GestureDetector(
+            onTap: () async {
+              try {
+                // Fetch quiz data asynchronously
+                GameData quizData = await obterQuizData();
+                // Navigate to the GamesInitialScreen with the fetched quiz data
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => GamesInitialScreen(gameData: quizData),
+                  ),
+                );
+              } catch (e) {
+                // Show an error message if fetching the data fails
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Erro ao carregar o jogo: $e')),
+                );
+              }
+            },
+            child: Image.asset(imagePath), // This is the image that you tap
           ),
           Padding(
             padding: const EdgeInsets.all(10.0),
