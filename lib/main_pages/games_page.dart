@@ -9,11 +9,11 @@ class GamesPage extends StatefulWidget {
 
 class GamesPageState extends State<GamesPage> {
   String _searchQuery = "";
-  String? _selectedTag; // Set as nullable
-  String? _selectedAge; // Set as nullable
+  String? _selectedTag;
+  String? _selectedAge;
 
   // List of game data
-  final List<Map<String, dynamic>> games = [
+  late final List<Map<String, dynamic>> games = [
     {
       'imagePath': 'assets/quizLogo.png',
       'gameTitle': 'EcoMind Challenge',
@@ -34,26 +34,27 @@ class GamesPageState extends State<GamesPage> {
   Future<void> loadGame(String gameId) async {
     try {
       GameData quizData = await fetchGameData(gameId);
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => GamesInitialScreen(gameData: quizData),
-        ),
-      );
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => GamesInitialScreen(gameData: quizData),
+          ),
+        );
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao carregar o jogo: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao carregar o jogo: $e')),
+        );
+      }
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    // Filter games based on search query, age, and tags
-    final filteredGames = games.where((game) {
+  List<Map<String, dynamic>> getFilteredGames() {
+    return games.where((game) {
       final gameTitle = game['gameTitle'].toLowerCase();
-      final tags = game['tags'] as List<String>; // Explicitly cast as List<String>
-
+      final tags = game['tags'] as List<String>;
       final ageTag = tags.firstWhere(
             (tag) => tag.startsWith('Age:'),
         orElse: () => '',
@@ -65,6 +66,12 @@ class GamesPageState extends State<GamesPage> {
 
       return matchesQuery && matchesTag && matchesAge;
     }).toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Filter games based on search query, age, and tags
+    final filteredGames = getFilteredGames();
 
     return Scaffold(
       appBar: AppBar(
@@ -88,6 +95,7 @@ class GamesPageState extends State<GamesPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 DropdownButton<String>(
+                  key: Key('ageDropdown'),
                   value: _selectedAge,
                   hint: const Text('Filter by Age'),
                   items: ['12+', '8+', '10+']
@@ -103,6 +111,7 @@ class GamesPageState extends State<GamesPage> {
                   },
                 ),
                 DropdownButton<String>(
+                  key: Key('tagDropdown'),
                   value: _selectedTag,
                   hint: const Text('Filter by Tag'),
                   items: ['Recycling', 'Strategy', 'Citizenship']

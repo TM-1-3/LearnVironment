@@ -17,9 +17,7 @@ class GameData {
   });
 
   // Função para obter os dados do Firestore usando um gameId
-  static Future<GameData> fromFirestore(String gameId) async {
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
-
+  static Future<GameData> fromFirestore(String gameId, FirebaseFirestore firestore) async {
     try {
       // Buscar o documento na coleção 'game' usando o gameId
       DocumentSnapshot snapshot = await firestore.collection('games').doc(gameId).get();
@@ -44,10 +42,14 @@ class GameData {
     }
   }
 }
-Future<GameData> fetchGameData(String idDataBase) async {
+
+Future<GameData> fetchGameData(String idDataBase, {FirebaseFirestore? firestore}) async {
   try {
-    // Substitua com o seu código para obter o GameData de Firestore
-    return await GameData.fromFirestore(idDataBase); // Exemplo de gameId
+    // Use the passed firestore instance or default to FirebaseFirestore.instance
+    firestore ??= FirebaseFirestore.instance;
+
+    // Fetch the game data from Firestore using the fromFirestore method
+    return await GameData.fromFirestore(idDataBase, firestore);
   } catch (e) {
     throw Exception("Erro ao carregar dados do jogo: $e");
   }
