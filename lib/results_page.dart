@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'main_pages/games_page.dart';
+import 'package:learnvironment/main_pages/games_page.dart';
 
 class ResultsPage extends StatelessWidget {
   final int questionsCount;
@@ -20,10 +19,10 @@ class ResultsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String feedback;
-    if (wrongCount<=questionsCount){
+    if (wrongCount>0){
       feedback="Revise the Materials";
     }
-    else if (wrongCount==0){
+    else{
       feedback="Great Job!! Keep up the good work";
     }
     return Scaffold(
@@ -46,8 +45,8 @@ class ResultsPage extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             Text(
-              "Revise the Materials",
-              style: TextStyle(fontSize: 16, color: Colors.black54),
+              feedback,
+              style: const TextStyle(fontSize: 16, color: Colors.black54),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 40),
@@ -63,7 +62,7 @@ class ResultsPage extends StatelessWidget {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 child: const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-                  child: Text("Back to Home Page", style: TextStyle(fontSize: 20, color: Colors.grey)),
+                  child: Text("Back to Games Page", style: TextStyle(fontSize: 20, color: Colors.grey)),
                 ),
               ),
             ),
