@@ -63,6 +63,10 @@ class BinScreenState extends State<BinScreen> {
     _loadImagePath();
   }
 
+  bool isGameOver() {
+    return trashItems.isEmpty && remainingTrashItems.isEmpty;
+  }
+
   Future<void> _loadImagePath() async {
     try {
       final directory = await getApplicationDocumentsDirectory();
@@ -103,6 +107,10 @@ class BinScreenState extends State<BinScreen> {
       setState(() {
         showIcon = false;
       });
+
+      if (isGameOver()) {
+
+      }
     });
   }
 
