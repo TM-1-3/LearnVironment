@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'quiz.dart';
-import 'game_data.dart';
+import '../quiz.dart';
+import '../main_pages/game_data.dart';
 
 class GamesInitialScreen extends StatelessWidget {
   final GameData gameData;

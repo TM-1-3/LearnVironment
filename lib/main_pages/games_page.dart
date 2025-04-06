@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:learnvironment/games_initial_screen.dart';
-import 'package:learnvironment/game_data.dart';
+import 'package:learnvironment/games_templates/games_initial_screen.dart';
+import 'package:learnvironment/main_pages/game_data.dart';
 
 class GamesPage extends StatefulWidget {
   @override

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:math';
-import 'results_page.dart';  // Import the ResultsPage
-import 'game_data.dart';
+import 'games_templates/results_page.dart';  // Import the ResultsPage
+import 'main_pages/game_data.dart';
 
 class Quiz extends StatefulWidget {
   final GameData quizData;  // The quizData passed to this widget

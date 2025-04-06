@@ -11,3 +11,4 @@
 - We added tests to auth_gate, login screen, main and auth_service [#44](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/44)  
 - Fixed a bugs in the register screen and warnings in whole codebase [#45](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/45) 
 - Added the game ```EcoMind``` [#46](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/46)  
+- Added the ability to play any game [#47](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/47)

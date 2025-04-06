@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:learnvironment/game_data.dart';
+import 'package:learnvironment/main_pages/game_data.dart';
 import 'package:learnvironment/main_pages/games_page.dart';
 import 'package:mocktail/mocktail.dart';
 
