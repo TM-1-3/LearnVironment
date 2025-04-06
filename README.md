@@ -340,7 +340,7 @@ You can find below information and references related with the project managemen
 
 ### Sprint 1
 
-**Goal:** Create an interface for users to browse all available games; develop a couple of games for users to play; implement a system that allows users to see the mistakes they made during their playthrough.
+**Goal:** Create an interface for users to browse all available games; develop a couple of games for users to play; implement a system that allows users to see the mistakes they made during their playthrough; Allow users to register as a developer, teacher or student and browse the app according to their role.
 
 **Sprint Retrospective:**
 
@@ -354,6 +354,7 @@ You can find below information and references related with the project managemen
 
 ![beginSprint1](https://github.com/user-attachments/assets/030ace43-2236-41a2-bf9f-a5cf2c51e5ae)
 
+**Board at the End of Sprint 1**
 
 ### Sprint 2
 
