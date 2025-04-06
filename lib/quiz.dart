@@ -173,7 +173,8 @@ class QuizState extends State<Quiz> {
 
   /// 📌 HOME SCREEN
   Widget _buildHomeScreen() {
-    return Column(
+    return SingleChildScrollView(
+        child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Image.asset(widget.quizData.gameLogo, width: 200, height: 200), // Access gameLogo from quizData
@@ -193,12 +194,13 @@ class QuizState extends State<Quiz> {
           ),
         ),
       ],
-    );
+    ));
   }
 
   /// 📌 QUIZ SCREEN
   Widget _buildQuizScreen() {
-    return Column(
+    return SingleChildScrollView(
+        child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Image.asset(widget.quizData.gameLogo, width: 200, height: 200), // Access gameLogo from quizData
@@ -232,7 +234,7 @@ class QuizState extends State<Quiz> {
           ],
         ),
       ],
-    );
+    ));
   }
 
   Widget _buildClickableCard(String text) {
