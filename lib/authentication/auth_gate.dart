@@ -70,11 +70,11 @@ class AuthGate extends StatelessWidget {
 
                 final userType = userTypeSnapshot.data;
                 if (userType == 'developer') {
-                  return DeveloperHomePage();
+                  return DeveloperHomePage(firestore: firestore, auth: fireauth);
                 } else if (userType == 'student') {
-                  return const StudentHomePage();
+                  return StudentHomePage(firestore: firestore, auth: fireauth);
                 } else if (userType == 'teacher') {
-                  return const TeacherHomePage();
+                  return TeacherHomePage(firestore: firestore, auth: fireauth);
                 } else {
                   return FixAccountPage(firestore: firestore, fireauth: fireauth);
                 }
