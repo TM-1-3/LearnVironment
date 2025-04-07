@@ -1,111 +1,109 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:learnvironment/main_pages/game_data.dart';
 import 'package:mockito/mockito.dart';
-import 'package:provider/provider.dart';
 import 'package:learnvironment/bin.dart';
-import 'package:learnvironment/auth_service.dart';
+import 'package:fake_async/fake_async.dart';
 
-import 'mock_firebase.dart';
+class MockGameData extends Mock implements GameData {
+  @override
+  String get gameLogo => 'assets/widget.png';
+
+  @override
+  String get gameName => 'Bin Game';
+
+  @override
+  String get gameDescription => 'Match the right piece of trash to the correct bin';
+
+  @override
+  String get gameBibliography => 'Bibliography';
+
+  @override
+  List<String> get tags => ['8+'];
+}
 
 void main() {
-  late AuthService authService;
-  late MockFirebaseAuth mockFirebaseAuth;
-  late MockUser mockUser;
-  late BinScreenState screenState;
+  late MockGameData binData;
+  late Widget testWidget;
+  late BinScreenState binState;
 
   setUp(() {
-    mockFirebaseAuth = MockFirebaseAuth();
-    mockUser = MockUser();
-
-    // Setup top-level mock before using in constructors
-    authService = AuthService(firebaseAuth: mockFirebaseAuth);
-
-    // Stub return values separately
-    when(mockFirebaseAuth.currentUser).thenReturn(mockUser);
-    when(mockUser.uid).thenReturn('testuid');
+    binData = MockGameData();
+    testWidget = MaterialApp(
+      home: BinScreen(binData: binData),
+    );
   });
 
-  testWidgets('Test removeTrashItem with correct bin', (WidgetTester tester) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        home: ChangeNotifierProvider<AuthService>.value(
-          value: authService,
-          child: BinScreen(authService: authService),
-        ),
-      ),
-    );
+  testWidgets('BinScreen renders all bins and trash items', (WidgetTester tester) async {
+    await tester.pumpWidget(testWidget);
 
-    screenState = tester.state(find.byType(BinScreen)) as BinScreenState;
+    // Verify bins are shown
+    expect(find.byType(DragTarget<String>), findsNWidgets(5));
 
-    screenState.trashItems = {'item1': 'bin1'};
-    screenState.remainingTrashItems = {'item3': 'bin3'};
-    screenState.correctCount = 0;
-    screenState.wrongCount = 0;
-
-    screenState.removeTrashItem('item1', 'bin1', const Offset(100, 100));
-    await tester.pump();
-    await tester.pump(const Duration(seconds: 1));
-
-    expect(screenState.trashItems.containsKey('item1'), isFalse);
-    expect(screenState.correctCount, 1);
-    expect(screenState.wrongCount, 0);
-    expect(screenState.showIcon, isFalse);
-    expect(screenState.rightAnswer, isTrue);
+    // Verify all 4 initial trash items
+    expect(find.byType(Draggable<String>), findsNWidgets(4));
+    expect(find.image(const AssetImage('assets/trash1.png')), findsOneWidget);
+    expect(find.image(const AssetImage('assets/trash2.png')), findsOneWidget);
+    expect(find.image(const AssetImage('assets/trash3.png')), findsOneWidget);
+    expect(find.image(const AssetImage('assets/trash4.png')), findsOneWidget);
   });
 
-  testWidgets('Test removeTrashItem with incorrect bin', (WidgetTester tester) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        home: ChangeNotifierProvider<AuthService>.value(
-          value: authService,
-          child: BinScreen(authService: authService),
-        ),
-      ),
-    );
+  testWidgets('Dropping correct item into correct bin increments correctCount', (WidgetTester tester) async {
+    await tester.pumpWidget(testWidget);
+    final state = tester.state<BinScreenState>(find.byType(BinScreen));
 
-    screenState = tester.state(find.byType(BinScreen)) as BinScreenState;
+    fakeAsync((async) {
+      final initialCorrectCount = state.correctCount;
 
-    screenState.trashItems = {'item1': 'bin1'};
-    screenState.remainingTrashItems = {'item3': 'bin3'};
-    screenState.correctCount = 0;
-    screenState.wrongCount = 0;
+      state.removeTrashItem('trash1', 'brown', Offset.zero);
+      async.elapse(Duration(seconds: 1)); // Simulate time passing
 
-    screenState.removeTrashItem('item1', 'bin2', const Offset(200, 200));
-    await tester.pump();
-    await tester.pump(const Duration(seconds: 1));
-
-    expect(screenState.trashItems.containsKey('item1'), isFalse);
-    expect(screenState.correctCount, 0);
-    expect(screenState.wrongCount, 1);
-    expect(screenState.showIcon, isFalse);
-    expect(screenState.rightAnswer, isFalse);
+      expect(state.correctCount, initialCorrectCount + 1);
+      expect(state.trashItems.containsKey('trash1'), isFalse);
+    });
   });
 
-  testWidgets('Test removeTrashItem with no remaining trash', (WidgetTester tester) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        home: ChangeNotifierProvider<AuthService>.value(
-          value: authService,
-          child: BinScreen(authService: authService),
-        ),
-      ),
-    );
+  testWidgets('Dropping wrong item into incorrect bin increments wrongCount', (WidgetTester tester) async {
+    await tester.pumpWidget(testWidget);
+    final state = tester.state<BinScreenState>(find.byType(BinScreen));
 
-    screenState = tester.state(find.byType(BinScreen)) as BinScreenState;
+    fakeAsync((async) {
+      final initialWrongCount = state.wrongCount;
 
-    screenState.trashItems = {'item1': 'bin1'};
-    screenState.remainingTrashItems.clear();
-    screenState.correctCount = 0;
-    screenState.wrongCount = 0;
+      state.removeTrashItem('trash2', 'blue', Offset.zero);
+      async.elapse(Duration(seconds: 1)); // Simulate time passing
 
-    screenState.removeTrashItem('item1', 'bin1', const Offset(300, 300));
-    await tester.pump();
-    await tester.pump(const Duration(seconds: 1));
+      expect(state.wrongCount, initialWrongCount + 1);
+      expect(state.trashItems.containsKey('trash2'), isFalse);
+    });
+  });
 
-    expect(screenState.trashItems.isEmpty, isTrue);
-    expect(screenState.correctCount, 1);
-    expect(screenState.wrongCount, 0);
-    expect(screenState.showIcon, isFalse);
-    expect(screenState.rightAnswer, isTrue);
+  testWidgets('Game refills trash items from remainingTrashItems after removing one', (WidgetTester tester) async {
+    await tester.pumpWidget(testWidget);
+    final state = tester.state<BinScreenState>(find.byType(BinScreen));
+
+    fakeAsync((async) {
+      final initialRemainingCount = state.remainingTrashItems.length;
+      final nextTrash = state.remainingTrashItems.keys.first;
+
+      state.removeTrashItem('trash1', 'brown', Offset.zero); // correct bin
+      async.elapse(const Duration(seconds: 1)); // simulate delayed future
+
+      // Now test the state after delay
+      expect(state.trashItems.containsKey(nextTrash), isTrue);
+      expect(state.remainingTrashItems.length, initialRemainingCount - 1);
+    });
+  });
+
+  testWidgets('Game is over when all trashItems and remainingTrashItems are empty', (WidgetTester tester) async {
+    await tester.pumpWidget(testWidget);
+
+    final state = tester.state<BinScreenState>(find.byType(BinScreen));
+
+    // Clear all items
+    state.trashItems.clear();
+    state.remainingTrashItems.clear();
+
+    expect(state.isGameOver(), isTrue);
   });
 }
