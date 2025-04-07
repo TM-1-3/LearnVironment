@@ -12,3 +12,10 @@
 - Fixed a bugs in the register screen and warnings in whole codebase [#45](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/45) 
 - Added the game ```EcoMind``` [#46](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/46)  
 - Added the ability to play any game [#47](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/47)
+- Added bin game [#48](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/48)
+- Finalised tests for games_page and auth_gate [#49](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/49)
+
+### Test User
+- email: up202307719@up.pt
+- password: 123456
+- role: developer
