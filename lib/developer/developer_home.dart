@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import '../authentication/auth_service.dart';  // Import the AuthService for authentication handling
-import '../main_pages/profile_screen.dart';  // Import your custom ProfileScreen
+import '../main_pages/profile_screen.dart';
 
 import 'my_games.dart';
 import '../main_pages/games_page.dart';
@@ -38,7 +35,6 @@ class _DeveloperHomePage extends State<DeveloperHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AuthService>(builder: (context, authService, _) {
       return Scaffold(
         appBar: AppBar(
           title: const Text('LearnVironment'),
@@ -50,7 +46,7 @@ class _DeveloperHomePage extends State<DeveloperHomePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ProfileScreen(authService: authService),
+                    builder: (context) => ProfileScreen(),
                   ),
                 );
               },
@@ -86,6 +82,5 @@ class _DeveloperHomePage extends State<DeveloperHomePage> {
           ],
         ),
       );
-    });
   }
 }

@@ -38,7 +38,6 @@ class _StudentHomePage extends State<StudentHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AuthService>(builder: (context, authService, _) {
       return Scaffold(
         appBar: AppBar(
           title: const Text('LearnVironment'),
@@ -51,7 +50,7 @@ class _StudentHomePage extends State<StudentHomePage> {
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        ProfileScreen(authService: authService),
+                        ProfileScreen(),
                   ),
                 );
               },
@@ -87,6 +86,5 @@ class _StudentHomePage extends State<StudentHomePage> {
           ],
         ),
       );
-    });
-  }
+    }
 }

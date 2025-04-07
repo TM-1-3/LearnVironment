@@ -4,6 +4,11 @@ import 'package:learnvironment/games_templates/games_initial_screen.dart';
 import 'package:learnvironment/main_pages/game_data.dart';
 
 class GamesPage extends StatefulWidget {
+  final FirebaseFirestore firestore;
+
+  GamesPage({super.key, FirebaseFirestore? firestore})
+      : firestore = firestore ?? FirebaseFirestore.instance;
+
   @override
   GamesPageState createState() => GamesPageState();
 }
@@ -29,10 +34,11 @@ class GamesPageState extends State<GamesPage> {
     });
   }
 
+  // Update to use the firestore passed in the constructor
   Future<List<Map<String, dynamic>>> getAllDocuments(String collectionName) async {
     try {
-      // Fetching the collection
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection(collectionName).get();
+      // Fetching the collection using the firestore instance passed to the widget
+      QuerySnapshot querySnapshot = await widget.firestore.collection(collectionName).get();
 
       // Mapping Firestore documents to your desired map structure
       List<Map<String, dynamic>> documents = querySnapshot.docs.map((doc) {
@@ -71,7 +77,7 @@ class GamesPageState extends State<GamesPage> {
 
   Future<void> loadGame(String gameId) async {
     try {
-      GameData quizData = await fetchGameData(gameId);
+      GameData quizData = await fetchGameData(gameId, firestore: widget.firestore);
       if (mounted) {
         Navigator.push(
           context,
@@ -120,10 +126,7 @@ class GamesPageState extends State<GamesPage> {
                   value: _selectedAge,
                   hint: const Text('Filter by Age'),
                   items: ['12+', '10+', '8+', '6+']
-                      .map((age) => DropdownMenuItem<String>(
-                    value: age,
-                    child: Text(age),
-                  ))
+                      .map((age) => DropdownMenuItem<String>(value: age, child: Text(age)))
                       .toList(),
                   onChanged: (value) {
                     setState(() {
@@ -136,10 +139,7 @@ class GamesPageState extends State<GamesPage> {
                   value: _selectedTag,
                   hint: const Text('Filter by Tag'),
                   items: ['Recycling', 'Strategy', 'Citizenship']
-                      .map((tag) => DropdownMenuItem<String>(
-                    value: tag,
-                    child: Text(tag),
-                  ))
+                      .map((tag) => DropdownMenuItem<String>(value: tag, child: Text(tag)))
                       .toList(),
                   onChanged: (value) {
                     setState(() {

@@ -29,7 +29,7 @@ class EditProfileWidget extends StatelessWidget {
             radius: 100,
             backgroundImage: imageFile != null
                 ? FileImage(imageFile!)
-                : AssetImage('assets/default_profile_picture.png') as ImageProvider,
+                : AssetImage('assets/placeholder.png') as ImageProvider,
           ),
         ),
         const SizedBox(height: 20),

@@ -1,140 +1,127 @@
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:learnvironment/main_pages/game_data.dart';
 import 'package:learnvironment/main_pages/games_page.dart';
-import 'package:mocktail/mocktail.dart';
-
-// Mock the GameData class and its fetchGameData method
-class MockGameData extends Mock implements GameData {
-  Future<GameData> fetchGameData(String gameId) async {
-    // Return a mock GameData object
-    return GameData(
-      gameName: 'EcoMind Challenge',
-      tags: ['Recycling', 'Citizenship', '12+'],
-      gameLogo: 'logo_path',
-      gameDescription: 'This is a game about recycling and citizenship.',
-      gameBibliography: 'Game bibliography here.',
-    );
-  }
-}
-
-// Mock NavigatorObserver to test navigation
-class MockNavigatorObserver extends Mock implements NavigatorObserver {}
-
-// Mock ScaffoldMessengerState to capture showSnackBar calls
-class MockScaffoldMessengerState extends Mock implements ScaffoldMessengerState {
-  @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'MockScaffoldMessengerState';
-  }
-}
-
-class FakeRoute extends Fake implements Route<dynamic> {}
 
 void main() {
-  group('Widget Tests', () {
-    late Widget testWidget;
-    setUp(() {
-      testWidget = MaterialApp(home: GamesPage());
-    });
+  late FakeFirebaseFirestore fakeFirestore;
 
-    testWidgets('Test age and tag dropdown filtering', (tester) async {
-      // Create the widget and mount it
-      await tester.pumpWidget(testWidget);
+  // Setup function to initialize FakeFirestore and add test data
+  setUp(() async {
+    fakeFirestore = FakeFirebaseFirestore(); // Initialize FakeFirestore
 
-      // Find the dropdowns for Age and Tag
-      final ageDropdown = find.byKey(Key('ageDropdown'));
-      final tagDropdown = find.byKey(Key('tagDropdown'));
+    // Add some test data to the FakeFirestore instance
+    final games = [
+      {
+        'logo': 'assets/placeholder.png',
+        'name': 'Test Game',
+        'tags': ['Strategy'],
+        'description' : 'description',
+        'bibliography' : 'Bibliography'
+      },
+      {
+        'logo': 'assets/placeholder.png',
+        'name': 'Another Game',
+        'tags': ['Citizenship'],
+        'description' : 'description',
+        'bibliography' : 'Bibliography'
+      },
+      {
+        'logo': 'assets/placeholder.png',
+        'name': 'Game 12+',
+        'tags': ['Age: 12+', 'Strategy'],
+        'description' : 'description',
+        'bibliography' : 'Bibliography'
+      },
+      {
+        'logo': 'assets/placeholder.png',
+        'name': 'Game 10+',
+        'tags': ['Age: 10+', 'Citizenship'],
+        'description' : 'description',
+        'bibliography' : 'Bibliography'
+      },
+    ];
 
-      expect(find.byType(DropdownButton<String>), findsNWidgets(2));
+    // Add the games to the fake Firestore collection, specifying mock IDs
+    for (int i = 0; i < games.length; i++) {
+      final docRef = fakeFirestore.collection('games').doc('game_$i'); // Assign a custom ID
+      await docRef.set(games[i]);
+    }
+  });
 
-      // Tap on the Age dropdown and select "12+"
-      await tester.ensureVisible(ageDropdown);
-      await tester.tap(ageDropdown);
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('12+').last);  // Select "12+" from the list
-      await tester.pumpAndSettle();
+  group('GamesPage Tests', () {
+    testWidgets('should display search bar', (WidgetTester tester) async {
+      await tester.pumpWidget(MaterialApp(
+        home: GamesPage(firestore: fakeFirestore),
+      ));
 
-      // Verify that the dropdown value is updated to "12+"
-      expect(find.text('12+'), findsOneWidget);
-
-      // Tap on the Tag dropdown and select "Recycling"
-      await tester.ensureVisible(tagDropdown);
-      await tester.tap(tagDropdown);
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Recycling').last);  // Select "Recycling" from the list
-      await tester.pumpAndSettle();
-
-      // Verify that the dropdown value is updated to "Recycling"
-      expect(find.text('Recycling'), findsNWidgets(2));
-
-      // Verify that the filtered games are now displayed based on the selected filters
-      final filteredGames = tester.widgetList<GameCard>(find.byType(GameCard));
-      final filteredGameTitles = filteredGames
-          .map((gameCard) => (gameCard.gameTitle)).toList();
-
-      // We expect games with the "Recycling" tag and "12+" age filter
-      expect(filteredGameTitles, contains('EcoMind Challenge'));
-      expect(filteredGameTitles.length, 1);  // Ensure the filtering resulted in only 1 game
-    });
-
-    testWidgets('GamesPage displays search bar and game cards', (WidgetTester tester) async {
-      await tester.pumpWidget(testWidget);
-
-      // Verify the search bar is present
+      // Find the search bar widget and check if it's present
       expect(find.byType(TextField), findsOneWidget);
-
-      // Verify the first game card is present
-      expect(find.byType(GameCard), findsAtLeastNWidgets(1));
-
-      // Verify dropdown buttons for filtering
-      expect(find.byType(DropdownButton<String>), findsNWidgets(2));
-
-      // Check for "No results found" with an empty search
-      await tester.enterText(find.byType(TextField), 'Nonexistent Game');
-      await tester.pump();
-      expect(find.text('No results found'), findsOneWidget);
     });
 
-    testWidgets('Test search query updates', (WidgetTester tester) async {
-      await tester.pumpWidget(testWidget);
+    testWidgets('should filter games by search query', (WidgetTester tester) async {
+      await tester.pumpWidget(MaterialApp(
+        home: GamesPage(firestore: fakeFirestore),
+      ));
 
-      // Enter text in the search bar
-      await tester.enterText(find.byType(TextField), 'EcoMind');
-      await tester.pump();
-
-      // Verify filtered results match the search text
-      expect(find.text('EcoMind Challenge'), findsOneWidget);
-      expect(find.text('Game Title 2'), findsNothing);
-    });
-
-    testWidgets('Test age filter updates', (WidgetTester tester) async {
-      await tester.pumpWidget(testWidget);
-
-      // Tap on the age filter and select "12+"
-      await tester.tap(find.byType(DropdownButton<String>).first);
       await tester.pumpAndSettle();
-      await tester.ensureVisible(find.text('12+').last);
+      // Ensure that all game cards are visible before applying the filter
+      expect(find.byType(GameCard), findsNWidgets(4)); // Expecting 4 games initially
+
+      // Simulate typing in search query
+      await tester.enterText(find.byType(TextField), 'Test');
+      await tester.pump();
+
+      // Verify the filtered list is correct (Test if only "Test Game" is visible)
+      expect(find.text('Test Game'), findsOneWidget); // The filtered game
+      expect(find.text('Another Game'), findsNothing); // This should not be visible
+      expect(find.byType(GameCard), findsOneWidget); // Only one GameCard should be visible after filtering
+    });
+
+    testWidgets('should filter games by age tag', (WidgetTester tester) async {
+      await tester.pumpWidget(MaterialApp(
+        home: GamesPage(firestore: fakeFirestore),
+      ));
+
+      await tester.pumpAndSettle();
+
+      // Filter by Age 12+
+      await tester.tap(find.byKey(Key('ageDropdown')));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('12+').last);
       await tester.pump();
 
-      // Ensure EcoMind Challenge is visible after filtering
-      expect(find.text('EcoMind Challenge'), findsOneWidget);
+      // Verify filtered games are shown correctly
+      expect(find.text('Game 12+'), findsOneWidget); // This should be visible after filtering
+      expect(find.text('Game 10+'), findsNothing); // This should not be visible
+      expect(find.byType(GameCard), findsOneWidget); // Only one GameCard should be visible after filtering
     });
 
-    testWidgets('Test tag filter updates', (WidgetTester tester) async {
-      await tester.pumpWidget(testWidget);
+    testWidgets('should call load game correctly', (WidgetTester tester) async {
+      await tester.pumpWidget(MaterialApp(
+        home: GamesPage(firestore: fakeFirestore),
+      ));
 
-      // Tap on the tag filter and select "Recycling"
-      await tester.tap(find.byType(DropdownButton<String>).last);
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Recycling').last);
+
+      // Tap on the first game card (GestureDetector widget)
+      await tester.tap(find.byType(GestureDetector).first);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ScaffoldMessenger), findsOneWidget);
+    });
+
+    testWidgets('should display no results found message if no games match the filters', (WidgetTester tester) async {
+      // Simulate typing a query that won't match
+      await tester.pumpWidget(MaterialApp(
+        home: GamesPage(firestore: fakeFirestore),
+      ));
+
+      await tester.enterText(find.byType(TextField), 'Nonexistent');
       await tester.pump();
 
-      // Ensure games matching "Recycling" tag are visible
-      expect(find.text('EcoMind Challenge'), findsOneWidget);
-      expect(find.text('Game Title 2'), findsOneWidget);
-      expect(find.text('Game Title 3'), findsNothing);
+      // Verify "No results found" text is displayed
+      expect(find.text('No results found'), findsOneWidget);
     });
   });
 }

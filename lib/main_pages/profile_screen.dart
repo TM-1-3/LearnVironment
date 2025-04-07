@@ -3,13 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
-import 'package:learnvironment/authentication/auth_service.dart';
 import 'edit_profile.dart';
 
 class ProfileScreen extends StatefulWidget {
-  final AuthService authService;
 
-  const ProfileScreen({super.key, required this.authService});
+  const ProfileScreen({super.key});
 
   @override
   ProfileScreenState createState() => ProfileScreenState();

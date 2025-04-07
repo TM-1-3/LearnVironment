@@ -46,7 +46,7 @@ class GameData {
 Future<GameData> fetchGameData(String idDataBase, {FirebaseFirestore? firestore}) async {
   try {
     // Use the passed firestore instance or default to FirebaseFirestore.instance
-    firestore ??= FirebaseFirestore.instance;
+    firestore = firestore ?? FirebaseFirestore.instance;
 
     // Fetch the game data from Firestore using the fromFirestore method
     return await GameData.fromFirestore(idDataBase, firestore);
