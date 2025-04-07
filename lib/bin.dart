@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:learnvironment/main_pages/game_data.dart';
 
+import 'games_templates/results_page.dart';
+
 class BinScreen extends StatefulWidget {
   final GameData binData;
 
@@ -78,7 +80,22 @@ class BinScreenState extends State<BinScreen> {
       });
 
       if (isGameOver()) {
-        //???????????
+        if (mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  ResultsPage(
+                    correctCount: correctCount,
+                    wrongCount: wrongCount,
+                    questionsCount: 10,
+                    gameName: widget.binData.gameName,
+                    // Access quizData here
+                    gameImage: widget.binData.gameLogo, // Access quizData here
+                  ),
+            ),
+          );
+        }
       }
     });
   }
