@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../main_pages/profile_screen.dart';  // Import your custom ProfileScreen
+import '../main_pages/profile_screen.dart';
 import '../main_pages/main_page.dart';
 import '../main_pages/games_page.dart';
 import '../main_pages/statistics_page.dart';
@@ -81,5 +81,5 @@ class _TeacherHomePage extends State<TeacherHomePage> {
           ],
         ),
       );
-    }
+  }
 }

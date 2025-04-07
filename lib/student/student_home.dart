@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import '../authentication/auth_service.dart';  // Import the AuthService for authentication handling
-import '../main_pages/profile_screen.dart';  // Import your custom ProfileScreen
-
+import '../main_pages/profile_screen.dart';
 import '../main_pages/main_page.dart';
 import '../main_pages/games_page.dart';
 import '../main_pages/statistics_page.dart';
@@ -49,8 +45,7 @@ class _StudentHomePage extends State<StudentHomePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        ProfileScreen(),
+                    builder: (context) => ProfileScreen(),
                   ),
                 );
               },
@@ -86,5 +81,5 @@ class _StudentHomePage extends State<StudentHomePage> {
           ],
         ),
       );
-    }
+  }
 }

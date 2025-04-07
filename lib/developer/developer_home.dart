@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../main_pages/profile_screen.dart';
-
 import 'my_games.dart';
 import '../main_pages/games_page.dart';
 import 'new_game.dart';
