@@ -30,7 +30,7 @@ Please contact us!
 Thank you!
 
 * Henrique Vilarinho [up202307037@up.pt](mailto:up202307037@up.pt)
-* Leonor Bidarra [up202307719@up.pt](mailto:up202307719@up.pt)
+* Leonor Bidarra [up202307719@up.pt](mailto:up202307719@up.pt)                  
 * Maria Sousa [up202303834@up.pt](mailto:up202303834@up.pt)
 * Miguel Roque [up202304950@up.pt](mailto:up202304950@up.pt)
 * Tomás Morais [up202304692@up.pt](mailto:up202304692@up.pt)
@@ -359,15 +359,14 @@ You can find below information and references related with the project managemen
 
 **Challenges:**
 
-- The implementation of unit and widget tests in the project;
-
-- How to apply Firestore Services in our app.
+- The implementation of unit and widget tests that required mocking Firebase;
 
 **Board at the Beginning of Sprint 1**
 
 ![beginSprint1](https://github.com/user-attachments/assets/030ace43-2236-41a2-bf9f-a5cf2c51e5ae)
 
 **Board at the End of Sprint 1**
+<img width="1348" alt="endSprint1" src="https://github.com/user-attachments/assets/21752920-4ed8-4972-9df5-553cb6432b7e" />
 
 ### Sprint 2
 
