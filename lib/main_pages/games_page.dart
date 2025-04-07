@@ -43,7 +43,7 @@ class GamesPageState extends State<GamesPage> {
       // Mapping Firestore documents to your desired map structure
       List<Map<String, dynamic>> documents = querySnapshot.docs.map((doc) {
         return {
-          'imagePath': doc.get('logo') ?? 'assets/defaultImage.png',  // Default value if the field doesn't exist
+          'imagePath': doc.get('logo') ?? 'assets/placeholder.png',  // Default value if the field doesn't exist
           'gameTitle': doc.get('name') ?? 'Default Game Title',  // Default value if the field doesn't exist
           'tags': List<String>.from(doc.get('tags') ?? []),  // Ensures 'tags' is a list of strings
           'gameId': doc.id,  // Store the Firestore document ID
