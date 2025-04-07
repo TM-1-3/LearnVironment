@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:learnvironment/main_pages/game_data.dart';
 
 import 'games_templates/results_page.dart';
+import 'main_pages/games_page.dart';
 
 class BinScreen extends StatefulWidget {
   final GameData binData;
@@ -103,7 +104,16 @@ class BinScreenState extends State<BinScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text(widget.binData.gameName)),
+        appBar: AppBar(title: Text(widget.binData.gameName,),
+            leading: IconButton(  // Override the leading property
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => GamesPage()), // Navigate to GamesPage
+                );
+              },
+            )),
     body: LayoutBuilder(
     builder: (context, constraints) {
     // Calculate positions based on layout constraints
@@ -189,7 +199,7 @@ class BinScreenState extends State<BinScreen> {
 
   Widget binWidget(String color, Offset binPosition) {
     return DragTarget<String>(
-      onWillAccept: (data) {
+      onWillAcceptWithDetails: (data) {
         setState(() => binStates[color] = true);
         return true;
       },

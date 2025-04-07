@@ -27,7 +27,18 @@ class ResultsPage extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text("$gameName Results")),
+      appBar: AppBar(
+        title: Text("$gameName Results"),
+        leading: IconButton(  // Override the leading property
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => GamesPage()), // Navigate to GamesPage
+            );
+          },
+        ),
+      ),
       body: SingleChildScrollView(  // Wrap the content in a SingleChildScrollView
         child: Padding(
           padding: const EdgeInsets.all(16.0),
