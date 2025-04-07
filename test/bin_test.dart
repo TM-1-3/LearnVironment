@@ -25,7 +25,6 @@ class MockGameData extends Mock implements GameData {
 void main() {
   late MockGameData binData;
   late Widget testWidget;
-  late BinScreenState binState;
 
   setUp(() {
     binData = MockGameData();

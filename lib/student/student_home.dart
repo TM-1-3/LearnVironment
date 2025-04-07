@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 
 import '../authentication/auth_service.dart';  // Import the AuthService for authentication handling
 import '../main_pages/profile_screen.dart';  // Import your custom ProfileScreen
-import '../bin.dart'; // Import the game Bin
 
 import '../main_pages/main_page.dart';
 import '../main_pages/games_page.dart';
@@ -37,22 +36,6 @@ class _StudentHomePage extends State<StudentHomePage> {
     });
   }
 
-  // Method to handle button press and show a message
-  void _showMessage() {
-    setState(() {
-      message = 'Button Pressed!';
-    });
-  }
-
-  // Method to log out
-  void _logout() {
-    // This would call your AuthService to log out
-    // For now, just show a message
-    setState(() {
-      message = 'Logged Out';
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthService>(builder: (context, authService, _) {
@@ -67,7 +50,8 @@ class _StudentHomePage extends State<StudentHomePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ProfileScreen(authService: authService),
+                    builder: (context) =>
+                        ProfileScreen(authService: authService),
                   ),
                 );
               },

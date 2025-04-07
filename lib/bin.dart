@@ -1,10 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:learnvironment/main_pages/game_data.dart';
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
-import 'package:learnvironment/authentication/auth_service.dart';
 
 class BinScreen extends StatefulWidget {
   final GameData binData;
@@ -16,12 +11,6 @@ class BinScreen extends StatefulWidget {
 }
 
 class BinScreenState extends State<BinScreen> {
-  File? _imageFile;
-  final ImagePicker _picker = ImagePicker();
-  bool _isEditing = false;
-  late TextEditingController usernameController;
-  late TextEditingController emailController;
-
   // Bin states stored in a Map
   Map<String, bool> binStates = {
     "blue": false,
@@ -57,28 +46,10 @@ class BinScreenState extends State<BinScreen> {
   @override
   void initState() {
     super.initState();
-    usernameController = TextEditingController();
-    emailController = TextEditingController();
-    _loadImagePath();
   }
 
   bool isGameOver() {
     return trashItems.isEmpty && remainingTrashItems.isEmpty;
-  }
-
-  Future<void> _loadImagePath() async {
-    try {
-      final directory = await getApplicationDocumentsDirectory();
-      final imagePath = '${directory.path}/placeholder.png';
-      final imageFile = File(imagePath);
-      if (imageFile.existsSync()) {
-        setState(() {
-          _imageFile = imageFile;
-        });
-      }
-    } catch (e) {
-      print("Error loading image: $e");
-    }
   }
 
   void removeTrashItem(String item, String bin, Offset position) {
@@ -107,27 +78,15 @@ class BinScreenState extends State<BinScreen> {
       });
 
       if (isGameOver()) {
-
+        //???????????
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async => !_isEditing,
-      child: Scaffold(
-        appBar: AppBar(
-          leading: Padding(
-            padding: const EdgeInsets.only(left: 15), // Adjust the value as needed
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10), // Adjust the radius for roundness
-              child: Image.asset('assets/widget.png', width: 40, height: 40, fit: BoxFit.cover),
-            ),
-          ),
-
-          title: Text('Recycling Bin'),
-        ),
+    return Scaffold(
+        appBar: AppBar(title: Text(widget.binData.gameName)),
     body: LayoutBuilder(
     builder: (context, constraints) {
     // Calculate positions based on layout constraints
@@ -208,7 +167,6 @@ class BinScreenState extends State<BinScreen> {
             );
           },
         ),
-      ),
     );
   }
 

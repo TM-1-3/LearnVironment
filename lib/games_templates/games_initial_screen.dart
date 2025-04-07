@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:learnvironment/bin.dart';
 import '../quiz.dart';
 import '../main_pages/game_data.dart';
+import 'package:learnvironment/bin.dart';
 
 class GamesInitialScreen extends StatelessWidget {
   final GameData gameData;
@@ -33,10 +33,23 @@ class GamesInitialScreen extends StatelessWidget {
             GestureDetector(
               onTap: () {
                 // Action when the card is clicked
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => BinScreen(binData : gameData)),
-                );
+                if (gameData.gameName == "Recycling Bins") {
+                  // Navigate to the Bin screen if it's a "Recycling Game"
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BinScreen(binData: gameData),
+                      ),
+                    );
+                } else {
+                  // Navigate to the Quiz screen for all other games
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Quiz(quizData: gameData),
+                      ),
+                    );
+                }
               },
               child: Card(
                 elevation: 4,
