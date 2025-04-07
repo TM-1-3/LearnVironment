@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:learnvironment/bin.dart';
 import '../quiz.dart';
 import '../main_pages/game_data.dart';
 
@@ -34,7 +35,7 @@ class GamesInitialScreen extends StatelessWidget {
                 // Action when the card is clicked
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => Quiz(quizData : gameData)),
+                  MaterialPageRoute(builder: (context) => BinScreen(binData : gameData)),
                 );
               },
               child: Card(

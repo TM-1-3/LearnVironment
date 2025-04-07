@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:learnvironment/main_pages/game_data.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import 'package:learnvironment/authentication/auth_service.dart';
 
 class BinScreen extends StatefulWidget {
   final GameData binData;
@@ -127,14 +128,14 @@ class BinScreenState extends State<BinScreen> {
 
           title: Text('Recycling Bin'),
         ),
-        body: LayoutBuilder(
-          builder: (context, constraints) {
-            // Calculate positions based on layout constraints
-            Offset greenPosition = Offset(constraints.maxWidth * 0.2 + 35, constraints.maxHeight * 0.2);
-            Offset bluePosition = Offset(constraints.maxWidth * 0.6 + 65, constraints.maxHeight * 0.2);
-            Offset yellowPosition = Offset(constraints.maxWidth * 0.4 + 50, constraints.maxHeight * 0.4 + 50);
-            Offset brownPosition = Offset(constraints.maxWidth * 0.2 + 35, constraints.maxHeight * 0.6 + 100);
-            Offset redPosition = Offset(constraints.maxWidth * 0.6 + 65, constraints.maxHeight * 0.6 + 100);
+    body: LayoutBuilder(
+    builder: (context, constraints) {
+    // Calculate positions based on layout constraints
+    Offset greenPosition = Offset(constraints.maxWidth * 0.2 + 35, constraints.maxHeight * 0.2);
+    Offset bluePosition = Offset(constraints.maxWidth * 0.6 + 65, constraints.maxHeight * 0.2);
+    Offset yellowPosition = Offset(constraints.maxWidth * 0.4 + 50, constraints.maxHeight * 0.4 + 50);
+    Offset brownPosition = Offset(constraints.maxWidth * 0.2 + 35, constraints.maxHeight * 0.6 + 100);
+    Offset redPosition = Offset(constraints.maxWidth * 0.6 + 65, constraints.maxHeight * 0.6 + 100);
 
             return SafeArea(
               child: Stack(
