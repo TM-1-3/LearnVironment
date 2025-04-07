@@ -340,15 +340,28 @@ You can find below information and references related with the project managemen
 
 ### Sprint 1
 
-**Goal:** Create an interface for users to browse all available games; develop a couple of games for users to play; implement a system that allows users to see the mistakes they made during their playthrough; Allow users to register as a developer, teacher or student and browse the app according to their role.
+**Goal:** Create an interface for users to browse all available games; develop a couple of games for users to play, specifically a quiz and a game where the player must choose the correct bin for different types of trash; integrate the games with Firebase Database and our app; implement a system within the games that allows users to view the mistakes they made during their playthrough; and allow users to register as a developer, teacher, or student and navigate the app according to their role.
 
 **Sprint Retrospective:**
 
 **Did Well:**
 
+- **Regular Briefings and Team Support:** Team members consistently provided updates on their progress, reassuring others of the project's development and helping to resolve doubts or issues promptly to prevent delays.
+  
+- **Effective Work Balance and Distribution:** Tasks were assigned based on their complexity and estimated completion time, leading to a smoother workflow. No team member felt overwhelmed, and each task was handled appropriately according to its demands.
+
+- **Holding More Meetings:** More in-person meetings were held between members working on the same tasks, creating a more collaborative environment and enabling faster completion of assignments.
+  
+
 **Do Differently:**
 
+- **Revise Other Members Work Earlier:** Toward the end of the sprint, some members noticed issues in certain tasks that could have been identified and resolved earlier. Catching these problems sooner would have allowed for a calmer and higher-quality resolution.
+
 **Challenges:**
+
+- The implementation of unit and widget tests in the project;
+
+- How to apply Firestore Services in our app.
 
 **Board at the Beginning of Sprint 1**
 
