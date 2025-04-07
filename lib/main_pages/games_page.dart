@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:learnvironment/games_templates/games_initial_screen.dart';
 import 'package:learnvironment/main_pages/game_data.dart';
@@ -11,25 +12,62 @@ class GamesPageState extends State<GamesPage> {
   String _searchQuery = "";
   String? _selectedTag;
   String? _selectedAge;
+  List<Map<String, dynamic>> games = []; // List to hold the game data
 
-  // List of game data
-  late final List<Map<String, dynamic>> games = [
-    {
-      'imagePath': 'assets/quizLogo.png',
-      'gameTitle': 'EcoMind Challenge',
-      'tags': <String>['Age: 12+', 'Recycling', 'Citizenship'],
-    },
-    {
-      'imagePath': 'assets/placeholder.png',
-      'gameTitle': 'Game Title 2',
-      'tags': <String>['Age: 8+', 'Recycling'],
-    },
-    {
-      'imagePath': 'assets/placeholder.png',
-      'gameTitle': 'Game Title 3',
-      'tags': <String>['Age: 10+', 'Strategy', 'Citizenship'],
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    // Fetch the games data when the widget is first initialized
+    _loadGames();
+  }
+
+  // Fetching the game data from Firestore
+  Future<void> _loadGames() async {
+    List<Map<String, dynamic>> fetchedGames = await getAllDocuments('games');
+    setState(() {
+      games = fetchedGames; // Update the games list with the fetched data
+    });
+  }
+
+  Future<List<Map<String, dynamic>>> getAllDocuments(String collectionName) async {
+    try {
+      // Fetching the collection
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection(collectionName).get();
+
+      // Mapping Firestore documents to your desired map structure
+      List<Map<String, dynamic>> documents = querySnapshot.docs.map((doc) {
+        return {
+          'imagePath': doc.get('logo') ?? 'assets/defaultImage.png',  // Default value if the field doesn't exist
+          'gameTitle': doc.get('name') ?? 'Default Game Title',  // Default value if the field doesn't exist
+          'tags': List<String>.from(doc.get('tags') ?? []),  // Ensures 'tags' is a list of strings
+          'gameId': doc.id,  // Store the Firestore document ID
+        };
+      }).toList();
+
+      return documents;
+    } catch (e) {
+      // If an error occurs, print the error and return an empty list
+      print('Error getting documents: $e');
+      return [];
+    }
+  }
+
+  List<Map<String, dynamic>> getFilteredGames() {
+    return games.where((game) {
+      final gameTitle = game['gameTitle'].toLowerCase();
+      final tags = game['tags'] as List<String>;
+      final ageTag = tags.firstWhere(
+            (tag) => tag.startsWith('Age:'),
+        orElse: () => '',
+      );
+
+      final matchesQuery = _searchQuery.isEmpty || gameTitle.contains(_searchQuery.toLowerCase());
+      final matchesTag = _selectedTag == null || tags.contains(_selectedTag);
+      final matchesAge = _selectedAge == null || ageTag.contains(_selectedAge!);
+
+      return matchesQuery && matchesTag && matchesAge;
+    }).toList();
+  }
 
   Future<void> loadGame(String gameId) async {
     try {
@@ -49,23 +87,6 @@ class GamesPageState extends State<GamesPage> {
         );
       }
     }
-  }
-
-  List<Map<String, dynamic>> getFilteredGames() {
-    return games.where((game) {
-      final gameTitle = game['gameTitle'].toLowerCase();
-      final tags = game['tags'] as List<String>;
-      final ageTag = tags.firstWhere(
-            (tag) => tag.startsWith('Age:'),
-        orElse: () => '',
-      );
-
-      final matchesQuery = _searchQuery.isEmpty || gameTitle.contains(_searchQuery.toLowerCase());
-      final matchesTag = _selectedTag == null || tags.contains(_selectedTag);
-      final matchesAge = _selectedAge == null || ageTag.contains(_selectedAge!);
-
-      return matchesQuery && matchesTag && matchesAge;
-    }).toList();
   }
 
   @override
@@ -98,7 +119,7 @@ class GamesPageState extends State<GamesPage> {
                   key: Key('ageDropdown'),
                   value: _selectedAge,
                   hint: const Text('Filter by Age'),
-                  items: ['12+', '8+', '10+']
+                  items: ['12+', '10+', '8+', '6+']
                       .map((age) => DropdownMenuItem<String>(
                     value: age,
                     child: Text(age),
@@ -140,7 +161,8 @@ class GamesPageState extends State<GamesPage> {
                   imagePath: game['imagePath'],
                   gameTitle: game['gameTitle'],
                   tags: List<String>.from(game['tags']),
-                  loadGame: index == 0 ? loadGame : null, // Only make the first card clickable
+                  gameId: game['gameId'],
+                  loadGame: loadGame,
                 );
               },
             )
@@ -158,14 +180,16 @@ class GameCard extends StatelessWidget {
   final String imagePath;
   final String gameTitle;
   final List<String> tags;
-  final Future<void> Function(String gameId)? loadGame; // Nullable function
+  final String gameId;
+  final Future<void> Function(String gameId) loadGame; // Nullable function
 
   const GameCard({
     super.key,
     required this.imagePath,
     required this.gameTitle,
     required this.tags,
-    this.loadGame, // Nullable function
+    required this.gameId,
+    required this.loadGame, // Nullable function
   });
 
   @override
@@ -174,11 +198,7 @@ class GameCard extends StatelessWidget {
       child: Column(
         children: <Widget>[
           GestureDetector(
-            onTap: loadGame == null
-                ? null // Do nothing if loadGame is null
-                : () {
-              loadGame!("w4VgUzduoH9A9KuN9R9R"); // Only call loadGame for the first card
-            },
+            onTap:  () => loadGame(gameId),
             child: Image.asset(imagePath), // This is the image that you tap
           ),
           Padding(

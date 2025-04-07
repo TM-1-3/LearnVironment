@@ -50,7 +50,8 @@ class _StudentHomePage extends State<StudentHomePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ProfileScreen(authService: authService),
+                    builder: (context) =>
+                        ProfileScreen(authService: authService),
                   ),
                 );
               },

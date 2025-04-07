@@ -29,6 +29,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  fake_async: ^1.3.1
 
   flutter_lints: ^5.0.0
   mockito: ^5.0.16
@@ -47,8 +48,54 @@ flutter_icons:
 flutter:
   uses-material-design: true
   assets:
-  - assets/placeholder.png
+  - assets/widget.png
+  - assets/right.png
+  - assets/wrong.png
+  - assets/green_bin.png
+  - assets/blue_bin.png
+  - assets/brown_bin.png
+  - assets/yellow_bin.png
+  - assets/red_bin.png
+  - assets/trash1.png
+  - assets/trash2.png
+  - assets/trash3.png
+  - assets/trash4.png
+  - assets/trash5.png
+  - assets/trash6.png
+  - assets/trash7.png
+  - assets/trash8.png
+  - assets/trash9.png
+  - assets/trash10.png
+  - assets/open_green_bin.png
+  - assets/open_yellow_bin.png
+  - assets/open_blue_bin.png
+  - assets/open_brown_bin.png
+  - assets/open_red_bin.png
+
   - assets/icon.png
   - assets/right.png
   - assets/wrong.png
   - assets/quizLogo.png
+  - assets/placeholder.png
+  - assets/right.png
+  - assets/wrong.png
+  - assets/green_bin.png
+  - assets/blue_bin.png
+  - assets/brown_bin.png
+  - assets/yellow_bin.png
+  - assets/red_bin.png
+  - assets/trash1.png
+  - assets/trash2.png
+  - assets/trash3.png
+  - assets/trash4.png
+  - assets/trash5.png
+  - assets/trash6.png
+  - assets/trash7.png
+  - assets/trash8.png
+  - assets/trash9.png
+  - assets/trash10.png
+  - assets/open_green_bin.png
+  - assets/open_yellow_bin.png
+  - assets/open_blue_bin.png
+  - assets/open_brown_bin.png
+  - assets/open_red_bin.png
