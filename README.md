@@ -336,7 +336,7 @@ You can find below information and references related with the project managemen
 **Board at the End of Sprint 0**
 
 <img width="1351" alt="image" src="https://github.com/user-attachments/assets/1a678148-4250-476c-a9c0-473b48454d0e" />
-
+![es](https://github.com/user-attachments/assets/f6f866f6-293f-4767-9097-009856faa544)
 
 ### Sprint 1
 
