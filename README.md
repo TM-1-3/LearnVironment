@@ -335,8 +335,7 @@ You can find below information and references related with the project managemen
 
 **Board at the End of Sprint 0**
 
-<img width="1351" alt="image" src="https://github.com/user-attachments/assets/1a678148-4250-476c-a9c0-473b48454d0e" />
-![es](https://github.com/user-attachments/assets/f6f866f6-293f-4767-9097-009856faa544)
+![sprint0](https://github.com/user-attachments/assets/5e8314a4-7ba6-48aa-934a-0aac97fd9aca)
 
 ### Sprint 1
 
@@ -369,6 +368,26 @@ You can find below information and references related with the project managemen
 <img width="1348" alt="endSprint1" src="https://github.com/user-attachments/assets/21752920-4ed8-4972-9df5-553cb6432b7e" />
 
 ### Sprint 2
+
+**Goal:** Create a way for teachers to have their classes; implement a way for teachers to add students to a class and create an assigment; allow users to register and edit their profile; fix bugs in app relative to back buttons, the game results page and add accessibility to the Bin game; allow students to receive notifications of their assignments. 
+
+**Sprint Retrospective:**
+
+**Did Well:**
+  
+
+**Do Differently:**
+
+
+**Challenges:**
+
+
+**Board at the Beginning of Sprint 2**
+
+<img width="1341" alt="image" src="https://github.com/user-attachments/assets/7d56763c-336e-4a8e-ac2e-3e9ffb03c2c9" />
+
+**Board at the End of Sprint 2**
+
 
 ### Sprint 3
 
