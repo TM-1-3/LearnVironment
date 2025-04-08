@@ -19,3 +19,18 @@
 - email: up202307719@up.pt
 - password: 123456
 - role: developer
+
+
+# Sprint 2
+### We implemented the following user stories:
+- As a student I want the games to provide feedback so that I know how I did. [#4](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/4)
+- As a student I want to be able to browse all games so that I can see what games I can play. [#19](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/19)
+- As a teacher I want to be able to create a class so that I can use the app with multiple classrooms of different age groups and needs. [#6](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/6)
+  
+### Detailed description
+- Fixed bug in results screen [#52](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/52)
+
+### Test User
+- email: 
+- password: 
+- role: teacher
