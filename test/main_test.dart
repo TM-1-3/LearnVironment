@@ -67,7 +67,7 @@ void main() async {
             '/auth_gate': (context) => AuthGate(fireauth: mockAuth, firestore: fakeFirestore),
             '/fix_account': (context) => FixAccountPage(firestore: fakeFirestore, fireauth: mockAuth),
             '/login': (context) => LoginScreen(auth: mockAuth),
-            '/signup': (context) => const SignUpScreen(),
+            '/signup': (context) => SignUpScreen(firestore: fakeFirestore, auth: mockAuth),
           },
           home: App(firestore: fakeFirestore, fireauth: mockAuth),
         ),
