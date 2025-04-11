@@ -128,7 +128,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         case "ERROR_TOO_MANY_REQUESTS":
         case "ERROR_OPERATION_NOT_ALLOWED":
         case "operation-not-allowed":
-          errorMessage = "Too many requests to log into this account.";
+          errorMessage = "Too many requests to register into this account.";
         case "ERROR_INVALID_EMAIL":
         case "invalid-email":
           errorMessage = "Email address is invalid.";
