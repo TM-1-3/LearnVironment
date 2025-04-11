@@ -62,7 +62,7 @@ class _StudentHomePage extends State<StudentHomePage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ProfileScreen(),
+                  builder: (context) => ProfileScreen(auth: widget.auth),
                 ),
               );
             },
