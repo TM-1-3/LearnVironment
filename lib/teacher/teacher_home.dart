@@ -10,7 +10,6 @@ class TeacherHomePage extends StatefulWidget {
   final FirebaseFirestore firestore; // Declare the Firestore instance
   final FirebaseAuth auth; // Declare the FirebaseAuth instance
 
-  // Constructor now takes firestore and auth as arguments, with defaults
   TeacherHomePage({
     super.key,
     FirebaseFirestore? firestore, // Make firestore nullable
@@ -61,7 +60,7 @@ class _TeacherHomePage extends State<TeacherHomePage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ProfileScreen(),
+                  builder: (context) => ProfileScreen(auth: widget.auth),
                 ),
               );
             },
