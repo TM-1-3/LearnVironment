@@ -6,8 +6,12 @@ import 'package:path_provider/path_provider.dart';
 import 'edit_profile.dart';
 
 class ProfileScreen extends StatefulWidget {
+  final FirebaseAuth auth;
 
-  const ProfileScreen({super.key});
+  ProfileScreen({
+    super.key,
+    FirebaseAuth? auth,
+  }) : auth = auth ?? FirebaseAuth.instance;
 
   @override
   ProfileScreenState createState() => ProfileScreenState();
@@ -44,7 +48,7 @@ class ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _loadUserProfile() async {
-    final user = FirebaseAuth.instance.currentUser;
+    final user = widget.auth.currentUser;
     if (user != null) {
       setState(() {
         usernameController.text = user.displayName ?? '';
@@ -55,7 +59,7 @@ class ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _updateProfile(String newUsername, String newEmail) async {
     try {
-      User? user = FirebaseAuth.instance.currentUser;
+      User? user = widget.auth.currentUser;
 
       if (user == null) {
         _showErrorDialog("No user is logged in.", "Error");
@@ -74,7 +78,7 @@ class ProfileScreenState extends State<ProfileScreen> {
 
       // Reload the user to reflect the changes
       await user.reload();
-      user = FirebaseAuth.instance.currentUser; // Get the updated user
+      user = widget.auth.currentUser; // Get the updated user
 
       // After reloading, update the local controllers to reflect the changes
       setState(() {
@@ -161,7 +165,7 @@ class ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _deleteAccount() async {
     try {
-      await FirebaseAuth.instance.currentUser?.delete();
+      await widget.auth.currentUser?.delete();
       if (mounted) {
         Navigator.of(context).pushReplacementNamed('/signup');
       }
@@ -197,7 +201,7 @@ class ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _signOut() async {
-    await FirebaseAuth.instance.signOut();
+    await widget.auth.signOut();
     if (mounted) {
       Navigator.of(context).pushReplacementNamed('/login');
     }
@@ -285,7 +289,7 @@ class ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
+    final user = widget.auth.currentUser;
 
     return PopScope<Object?>(
         canPop: false,
