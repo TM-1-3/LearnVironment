@@ -1,3 +1,4 @@
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -56,14 +57,16 @@ void main() {
 
   group('LoginScreen Tests', () {
     late Widget testWidget;
+    late FakeFirebaseFirestore mockFirestore;
 
     setUp(() {
+      mockFirestore = FakeFirebaseFirestore();
       testWidget = MaterialApp(
         home: Scaffold(
           body: LoginScreen(auth: mockAuth),
         ),
         routes: {
-          '/signup': (context) => SignUpScreen(),
+          '/signup': (context) => SignUpScreen(auth: mockAuth, firestore: mockFirestore),
         },
       );
     });

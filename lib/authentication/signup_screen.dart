@@ -3,7 +3,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
+  final FirebaseAuth auth;
+  final FirebaseFirestore firestore;
+
+  SignUpScreen({super.key, FirebaseAuth? auth, FirebaseFirestore? firestore})
+      : auth = auth ?? FirebaseAuth.instance,
+        firestore = firestore ?? FirebaseFirestore.instance;
 
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
@@ -67,7 +72,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       });
 
       // Register the user with Firebase Authentication
-      UserCredential userCredential = await FirebaseAuth.instance
+      UserCredential userCredential = await widget.auth
           .createUserWithEmailAndPassword(
         email: email,
         password: password,
@@ -77,7 +82,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       await userCredential.user?.updateDisplayName(username);
 
       // Save user information to Firestore
-      await FirebaseFirestore.instance
+      await widget.firestore
           .collection('users')
           .doc(userCredential.user?.uid)
           .set({
@@ -128,7 +133,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         case "invalid-email":
           errorMessage = "Email address is invalid.";
         default:
-          errorMessage = "Registering failed. Please try again.";
+          errorMessage = "Registration failed. Please try again.";
       }
 
       if (mounted) {
@@ -171,6 +176,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               const SizedBox(height: 16),
               GestureDetector(
+                key: ValueKey('birthDate'),
                 onTap: _pickBirthDate,
                 child: AbsorbPointer(
                   child: TextField(
