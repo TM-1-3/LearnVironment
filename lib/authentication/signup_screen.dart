@@ -14,9 +14,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+
+  DateTime? _birthDate;
+
   String? _selectedAccountType;
   final List<String> _accountTypes = ['developer', 'student', 'teacher'];
-  bool _isButtonEnabled = true; // Track button enabled/disabled state
+  bool _isButtonEnabled = true;
+
+  Future<void> _pickBirthDate() async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime(2000, 1, 1),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+
+    if (picked != null && picked != _birthDate) {
+      setState(() {
+        _birthDate = picked;
+      });
+    }
+  }
 
   Future<void> _registerUser() async {
     try {
@@ -25,9 +44,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
       String password = _passwordController.text.trim();
       String confirmPassword = _confirmPasswordController.text.trim();
       String username = _usernameController.text.trim();
+      String name = _nameController.text.trim();
 
       if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty ||
-          username.isEmpty || _selectedAccountType == null) {
+          username.isEmpty || name.isEmpty || _birthDate == null || _selectedAccountType == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Please fill in all fields.')),
         );
@@ -58,12 +78,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
       // Save user information to Firestore
       await FirebaseFirestore.instance
-          .collection('users') // Target the 'users' collection
-          .doc(userCredential.user?.uid) // Use the user's UID as the document ID
+          .collection('users')
+          .doc(userCredential.user?.uid)
           .set({
-        'username': username, // Set the username
-        'role': _selectedAccountType, // Set the account type/role
-        'email': email, // (Optional) Save the email for reference
+        'name': name,
+        'username': username,
+        'role': _selectedAccountType,
+        'email': email,
+        'birthdate': _birthDate?.toIso8601String(),
       });
 
       // Send the email verification
@@ -138,6 +160,32 @@ class _SignUpScreenState extends State<SignUpScreen> {
               AspectRatio(
                 aspectRatio: 2,
                 child: Image.asset('assets/icon.png'),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _nameController,
+                decoration: const InputDecoration(
+                  labelText: 'Name',
+                  hintText: 'Enter your full name',
+                ),
+              ),
+              const SizedBox(height: 16),
+              GestureDetector(
+                onTap: _pickBirthDate,
+                child: AbsorbPointer(
+                  child: TextField(
+                    decoration: InputDecoration(
+                      labelText: 'Birthdate',
+                      hintText: 'Select your birthdate',
+                      suffixIcon: const Icon(Icons.calendar_today),
+                    ),
+                    controller: TextEditingController(
+                      text: _birthDate == null
+                          ? ''
+                          : '${_birthDate!.year}-${_birthDate!.month.toString().padLeft(2, '0')}-${_birthDate!.day.toString().padLeft(2, '0')}',
+                    ),
+                  ),
+                ),
               ),
               const SizedBox(height: 16),
               TextField(
