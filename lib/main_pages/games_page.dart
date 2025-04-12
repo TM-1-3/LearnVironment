@@ -78,19 +78,19 @@ class GamesPageState extends State<GamesPage> {
 
   Future<void> loadGame(String gameId) async {
     try {
-      GameData quizData = await fetchGameData(gameId, firestore: widget.firestore);
+      GameData gameData = await fetchGameData(gameId, firestore: widget.firestore);
       if (mounted) {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => GamesInitialScreen(gameData: quizData),
+            builder: (context) => GamesInitialScreen(gameData: gameData),
           ),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao carregar o jogo: $e')),
+          SnackBar(content: Text('Error Loading game: $e')),
         );
       }
     }

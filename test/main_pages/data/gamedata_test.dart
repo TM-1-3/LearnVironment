@@ -19,6 +19,7 @@ void main() {
       'description': 'Game Description',
       'bibliography': 'Game Bibliography',
       'tags': ['action', 'adventure'],
+      'template' : 'quiz'
     });
 
     // Fetch the GameData from Firestore
@@ -30,16 +31,17 @@ void main() {
     expect(gameData.gameDescription, 'Game Description');
     expect(gameData.gameBibliography, 'Game Bibliography');
     expect(gameData.tags, ['action', 'adventure']);
+    expect(gameData.gameTemplate, 'quiz');
   });
 
-  test('GameData.fromFirestore should throw exception if game not found', () async {
+  test('Game not found exception', () async {
     try {
       // Attempt to fetch a game that does not exist
       await GameData.fromFirestore('non_existing_game', firestore);
       fail('Expected an exception to be thrown');
     } catch (e) {
       // Verify that the exception is thrown
-      expect(e.toString(), contains('Jogo não encontrado!'));
+      expect(e.toString(), contains('Game not found!'));
     }
   });
 
@@ -51,6 +53,7 @@ void main() {
       'description': 'Game 2 Description',
       'bibliography': 'Game 2 Bibliography',
       'tags': ['strategy', 'simulation'],
+      'template' : 'drag'
     });
 
     // Call the fetchGameData function
@@ -62,6 +65,7 @@ void main() {
     expect(gameData.gameDescription, 'Game 2 Description');
     expect(gameData.gameBibliography, 'Game 2 Bibliography');
     expect(gameData.tags, ['strategy', 'simulation']);
+    expect(gameData.gameTemplate, 'drag');
   });
 
   test('fetchGameData should throw exception if error occurs', () async {
@@ -71,7 +75,7 @@ void main() {
       fail('Expected an exception to be thrown');
     } catch (e) {
       // Ensure that the exception message is what we expect
-      expect(e.toString(), contains('Erro ao carregar dados do jogo'));
+      expect(e.toString(), contains('Error Loading data from firestore'));
     }
   });
 }

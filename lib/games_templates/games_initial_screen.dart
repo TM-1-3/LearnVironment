@@ -33,20 +33,24 @@ class GamesInitialScreen extends StatelessWidget {
             GestureDetector(
               onTap: () {
                 // Action when the card is clicked
-                if (gameData.gameName == "Recycling Bins") {
+                if (gameData.gameTemplate == "drag") {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => BinScreen(binData: gameData),
                       ),
                     );
-                } else {
+                } else if (gameData.gameTemplate == "quiz") {
                   // Navigate to the Quiz screen for all other games
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => Quiz(quizData: gameData),
                       ),
+                    );
+                } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error Game Data Corrupted.')),
                     );
                 }
               },

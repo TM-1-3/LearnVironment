@@ -6,52 +6,48 @@ class GameData {
   final String gameDescription;
   final String gameBibliography;
   final List<String> tags;
+  final String gameTemplate;
 
-  // Construtor normal para inicializar os dados manualmente
   GameData({
     required this.gameLogo,
     required this.gameName,
     required this.gameDescription,
     required this.gameBibliography,
     required this.tags,
+    required this.gameTemplate
   });
 
-  // Função para obter os dados do Firestore usando um gameId
   static Future<GameData> fromFirestore(String gameId, FirebaseFirestore firestore) async {
     try {
-      // Buscar o documento na coleção 'game' usando o gameId
       DocumentSnapshot snapshot = await firestore.collection('games').doc(gameId).get();
 
-      // Verifica se o documento existe
       if (snapshot.exists) {
         var data = snapshot.data() as Map<String, dynamic>;
 
-        // Cria e retorna um objeto GameData com os dados extraídos
         return GameData(
-          gameLogo: data['logo'], // 'logo' é o nome do campo no Firestore
-          gameName: data['name'], // 'name' é o nome do campo no Firestore
-          gameDescription: data['description'], // 'description' no Firestore
-          gameBibliography: data['bibliography'], // 'bibliografia' no Firestore
-          tags: List<String>.from(data['tags'] ?? []), // 'tags' no Firestore
+          gameLogo: data['logo'],
+          gameName: data['name'],
+          gameDescription: data['description'],
+          gameBibliography: data['bibliography'],
+          tags: List<String>.from(data['tags'] ?? []),
+          gameTemplate: data['template']
         );
       } else {
-        throw Exception("Jogo não encontrado!");
+        throw Exception("Game not found!");
       }
     } catch (e) {
-      throw Exception("Erro ao buscar dados do Firestore: $e");
+      throw Exception("Error getting data from firestore: $e");
     }
   }
 }
 
 Future<GameData> fetchGameData(String idDataBase, {FirebaseFirestore? firestore}) async {
   try {
-    // Use the passed firestore instance or default to FirebaseFirestore.instance
     firestore = firestore ?? FirebaseFirestore.instance;
 
-    // Fetch the game data from Firestore using the fromFirestore method
     return await GameData.fromFirestore(idDataBase, firestore);
   } catch (e) {
-    throw Exception("Erro ao carregar dados do jogo: $e");
+    throw Exception("Error Loading data from firestore: $e");
   }
 }
 
