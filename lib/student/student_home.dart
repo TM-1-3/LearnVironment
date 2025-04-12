@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../main_pages/profile_screen.dart';
-import '../main_pages/main_page.dart';
-import '../main_pages/games_page.dart';
-import '../main_pages/statistics_page.dart';
+import 'package:learnvironment/main_pages/games_page.dart';
+import 'package:learnvironment/main_pages/main_page.dart';
+import 'package:learnvironment/main_pages/profile_screen.dart';
+import 'package:learnvironment/main_pages/statistics_page.dart';
 
 class StudentHomePage extends StatefulWidget {
   final FirebaseFirestore firestore; // Declare the Firestore instance

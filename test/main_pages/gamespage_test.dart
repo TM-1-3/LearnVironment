@@ -2,49 +2,52 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:learnvironment/main_pages/games_page.dart';
+import 'package:learnvironment/main_pages/widgets/game_card.dart';
 
 void main() {
   late FakeFirebaseFirestore fakeFirestore;
 
-  // Setup function to initialize FakeFirestore and add test data
   setUp(() async {
-    fakeFirestore = FakeFirebaseFirestore(); // Initialize FakeFirestore
+    fakeFirestore = FakeFirebaseFirestore();
 
-    // Add some test data to the FakeFirestore instance
     final games = [
       {
         'logo': 'assets/placeholder.png',
         'name': 'Test Game',
         'tags': ['Strategy'],
         'description' : 'description',
-        'bibliography' : 'Bibliography'
+        'bibliography' : 'Bibliography',
+        'template' : 'drag'
       },
       {
         'logo': 'assets/placeholder.png',
         'name': 'Another Game',
         'tags': ['Citizenship'],
         'description' : 'description',
-        'bibliography' : 'Bibliography'
+        'bibliography' : 'Bibliography',
+        'template' : 'quiz'
       },
       {
         'logo': 'assets/placeholder.png',
         'name': 'Game 12+',
         'tags': ['Age: 12+', 'Strategy'],
         'description' : 'description',
-        'bibliography' : 'Bibliography'
+        'bibliography' : 'Bibliography',
+        'template' : 'quiz'
       },
       {
         'logo': 'assets/placeholder.png',
         'name': 'Game 10+',
         'tags': ['Age: 10+', 'Citizenship'],
         'description' : 'description',
-        'bibliography' : 'Bibliography'
+        'bibliography' : 'Bibliography',
+        'template' : 'drag'
       },
     ];
 
-    // Add the games to the fake Firestore collection, specifying mock IDs
+    //Add games to my firestore mock
     for (int i = 0; i < games.length; i++) {
-      final docRef = fakeFirestore.collection('games').doc('game_$i'); // Assign a custom ID
+      final docRef = fakeFirestore.collection('games').doc('game_$i');
       await docRef.set(games[i]);
     }
   });
@@ -72,7 +75,7 @@ void main() {
       await tester.enterText(find.byType(TextField), 'Test');
       await tester.pump();
 
-      // Verify the filtered list is correct (Test if only "Test Game" is visible)
+      // Verify the filtered list is correct
       expect(find.text('Test Game'), findsOneWidget); // The filtered game
       expect(find.text('Another Game'), findsNothing); // This should not be visible
       expect(find.byType(GameCard), findsOneWidget); // Only one GameCard should be visible after filtering

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:learnvironment/main_pages/game_data.dart';
+import 'package:learnvironment/main_pages/data/game_data.dart';
 
-import 'games_templates/results_page.dart';
-import 'main_pages/games_page.dart';
+import 'results_page.dart';
+import '../main_pages/games_page.dart';
 
 class BinScreen extends StatefulWidget {
   final GameData binData;

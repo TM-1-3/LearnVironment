@@ -44,14 +44,34 @@ void main() {
   group('AuthService', () {
     late AuthService authService;
     late MockFirebaseAuth mockFirebaseAuth;
+    late MockUser mockUser;
 
     setUp(() {
       mockFirebaseAuth = MockFirebaseAuth();
+      mockUser = MockUser();
       authService = AuthService(firebaseAuth: mockFirebaseAuth);
     });
 
     test('initializes with loggedIn as false', () {
       expect(authService.loggedIn, false);
+    });
+
+    test('authStateChanges returns null for unauthenticated user', () async {
+      when(mockFirebaseAuth.authStateChanges()).thenAnswer(
+            (_) => Stream<User?>.value(null),
+      );
+      await authService.init();
+
+      expect(authService.loggedIn, false);
+    });
+
+    test('authStateChanges returns a user when authenticated', () async {
+      when(mockFirebaseAuth.authStateChanges()).thenAnswer(
+            (_) => Stream<User?>.value(mockUser),
+      );
+      await authService.init();
+
+      expect(authService.loggedIn, true);
     });
 
     test('should update loggedIn when authStateChanges emits a user', () async {

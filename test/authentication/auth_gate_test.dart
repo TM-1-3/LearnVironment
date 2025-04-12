@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:learnvironment/authentication/auth_service.dart';
-import 'package:learnvironment/authentication/fix_account.dart';
+import 'package:learnvironment/authentication/pages/fix_account.dart';
 import 'package:learnvironment/developer/developer_home.dart';
 import 'package:learnvironment/student/student_home.dart';
 import 'package:learnvironment/teacher/teacher_home.dart';

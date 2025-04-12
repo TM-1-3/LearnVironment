@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:learnvironment/games_templates/games_initial_screen.dart';
-import 'package:learnvironment/main_pages/game_data.dart';
+import 'package:learnvironment/main_pages/data/game_data.dart';
+import 'package:learnvironment/main_pages/widgets/game_card.dart';
 
 class GamesPage extends StatefulWidget {
   final FirebaseFirestore firestore;
@@ -77,19 +78,19 @@ class GamesPageState extends State<GamesPage> {
 
   Future<void> loadGame(String gameId) async {
     try {
-      GameData quizData = await fetchGameData(gameId, firestore: widget.firestore);
+      GameData gameData = await fetchGameData(gameId, firestore: widget.firestore);
       if (mounted) {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => GamesInitialScreen(gameData: quizData),
+            builder: (context) => GamesInitialScreen(gameData: gameData),
           ),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao carregar o jogo: $e')),
+          SnackBar(content: Text('Error Loading game: $e')),
         );
       }
     }
@@ -168,53 +169,6 @@ class GamesPageState extends State<GamesPage> {
             )
                 : const Center(
               child: Text('No results found'),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class GameCard extends StatelessWidget {
-  final String imagePath;
-  final String gameTitle;
-  final List<String> tags;
-  final String gameId;
-  final Future<void> Function(String gameId) loadGame; // Nullable function
-
-  const GameCard({
-    super.key,
-    required this.imagePath,
-    required this.gameTitle,
-    required this.tags,
-    required this.gameId,
-    required this.loadGame, // Nullable function
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Column(
-        children: <Widget>[
-          GestureDetector(
-            onTap:  () => loadGame(gameId),
-            child: Image.asset(imagePath), // This is the image that you tap
-          ),
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Column(
-              children: <Widget>[
-                Text(gameTitle),
-                Row(
-                  children: tags
-                      .map((tag) => Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: Chip(label: Text(tag)),
-                  ))
-                      .toList(),
-                ),
-              ],
             ),
           ),
         ],

@@ -1,12 +1,52 @@
 import 'package:flutter/material.dart';
-import '../quiz.dart';
-import '../main_pages/game_data.dart';
-import 'package:learnvironment/bin.dart';
+import 'package:learnvironment/games_templates/quiz.dart';
+import 'package:learnvironment/main_pages/data/game_data.dart';
+import 'package:learnvironment/games_templates/bin.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class GamesInitialScreen extends StatelessWidget {
   final GameData gameData;
+  final FirebaseAuth firebaseAuth;
+  final FirebaseFirestore firestore;
 
-  const GamesInitialScreen({super.key,required this.gameData});
+  // Constructor now accepts optional FirebaseAuth and FirebaseFirestore parameters
+  GamesInitialScreen({
+    super.key,
+    required this.gameData,
+    FirebaseAuth? firebaseAuth,
+    FirebaseFirestore? firestore,
+  })  : firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
+        firestore = firestore ?? FirebaseFirestore.instance;
+
+  // Function to update the user's gamesPlayed array
+  Future<void> updateUserGamesPlayed(String gameId) async {
+    try {
+      User? user = firebaseAuth.currentUser;
+
+      if (user == null) {
+        throw Exception("No user logged in");
+      }
+
+      DocumentReference userDoc = firestore.collection('users').doc(user.uid);
+      DocumentSnapshot userSnapshot = await userDoc.get();
+
+      List<dynamic> gamesPlayed = [];
+
+      if (userSnapshot.exists && userSnapshot.data() != null) {
+        var data = userSnapshot.data() as Map<String, dynamic>;
+        gamesPlayed = List<String>.from(data['gamesPlayed'] ?? []);
+      }
+
+      // Remove it if it already exists, then insert at the beginning
+      gamesPlayed.remove(gameId);
+      gamesPlayed.insert(0, gameId);
+
+      await userDoc.update({'gamesPlayed': gamesPlayed});
+    } catch (e) {
+      print("Error updating user's gamesPlayed: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,24 +71,35 @@ class GamesInitialScreen extends StatelessWidget {
 
             /// 🎯 Clickable Card
             GestureDetector(
-              onTap: () {
+              onTap: () async {
+                // Update the user's gamesPlayed field first
+                await updateUserGamesPlayed(gameData.documentName);
+
                 // Action when the card is clicked
-                if (gameData.gameName == "Recycling Bins") {
-                  // Navigate to the Bin screen if it's a "Recycling Game"
+                if (gameData.gameTemplate == "drag") {
+                  if (context.mounted) {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => BinScreen(binData: gameData),
                       ),
                     );
-                } else {
-                  // Navigate to the Quiz screen for all other games
+                  }
+                } else if (gameData.gameTemplate == "quiz") {
+                  if (context.mounted) {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => Quiz(quizData: gameData),
                       ),
                     );
+                  }
+                } else {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error Game Data Corrupted.')),
+                    );
+                  }
                 }
               },
               child: Card(
