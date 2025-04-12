@@ -11,27 +11,102 @@ void main() {
     firestore = FakeFirebaseFirestore();
   });
 
-  test('GameData.fromFirestore should return a valid GameData object', () async {
-    // Prepare mock data in Firestore
+  test('GameData handles quizzes', () async {
+    // Sample quiz-specific fields
+    final Map<String, List<String>> questionsAndOptions = {
+      "What is recycling?": [
+        "Reusing materials",
+        "Throwing trash",
+        "Saving money",
+        "Buying new things"
+      ],
+      "Why should we save water?": [
+        "It helps the earth",
+        "Water is unlimited",
+        "For fun",
+        "It doesn't matter"
+      ],
+      "What do trees do for us?": [
+        "Give oxygen",
+        "Make noise",
+        "Take water",
+        "Eat food"
+      ],
+      "How can we reduce waste?": [
+        "Recycle",
+        "Burn trash",
+        "Throw in rivers",
+        "Ignore it"
+      ],
+      "What animals live in the ocean?": ["Sharks", "Lions", "Elephants", "Cows"],
+      "What happens if we pollute rivers?": [
+        "Fish die",
+        "More water appears",
+        "Trees grow faster",
+        "It smells better"
+      ],
+      "Why is the sun important?": [
+        "Gives us light",
+        "Cools the earth",
+        "Makes rain",
+        "Creates snow"
+      ],
+      "How can we help the planet?": [
+        "Pick up trash",
+        "Cut all trees",
+        "Pollute more",
+        "Use plastic"
+      ],
+      "What is composting?": [
+        "Turning food waste into soil",
+        "Burning paper",
+        "Throwing food in the trash",
+        "Using plastic"
+      ],
+      "Why should we turn off the lights?": [
+        "Save energy",
+        "Break the bulb",
+        "Change the color",
+        "Make it brighter"
+      ]
+    };
+
+    final Map<String, String> correctAnswers = {
+      "What is recycling?": "Reusing materials",
+      "Why should we save water?": "It helps the earth",
+      "What do trees do for us?": "Give oxygen",
+      "How can we reduce waste?": "Recycle",
+      "What animals live in the ocean?": "Sharks",
+      "What happens if we pollute rivers?": "Fish die",
+      "Why is the sun important?": "Gives us light",
+      "How can we help the planet?": "Pick up trash",
+      "What is composting?": "Turning food waste into soil",
+      "Why should we turn off the lights?": "Save energy"
+    };
+
+    //Update file
     await firestore.collection('games').doc('game1').set({
       'logo': 'game_logo.png',
       'name': 'Game Name',
       'description': 'Game Description',
       'bibliography': 'Game Bibliography',
       'tags': ['action', 'adventure'],
-      'template' : 'quiz'
+      'template': 'quiz',
+      'questionsAndOptions': questionsAndOptions,
+      'correctAnswers': correctAnswers,
     });
 
-    // Fetch the GameData from Firestore
+    //Fetch
     GameData gameData = await GameData.fromFirestore('game1', firestore);
 
-    // Verify that the fetched data matches the expected values
     expect(gameData.gameLogo, 'game_logo.png');
     expect(gameData.gameName, 'Game Name');
     expect(gameData.gameDescription, 'Game Description');
     expect(gameData.gameBibliography, 'Game Bibliography');
     expect(gameData.tags, ['action', 'adventure']);
     expect(gameData.gameTemplate, 'quiz');
+    expect(gameData.questionsAndOptions, questionsAndOptions);
+    expect(gameData.correctAnswers, correctAnswers);
   });
 
   test('Game not found exception', () async {
@@ -75,7 +150,7 @@ void main() {
       fail('Expected an exception to be thrown');
     } catch (e) {
       // Ensure that the exception message is what we expect
-      expect(e.toString(), contains('Error Loading data from firestore'));
+      expect(e.toString(), contains('Error loading data from Firestore'));
     }
   });
 }
