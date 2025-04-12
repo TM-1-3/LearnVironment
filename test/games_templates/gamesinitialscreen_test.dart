@@ -61,18 +61,27 @@ void main() {
     expect(find.text('Play'), findsOneWidget);
   });
 
-  test('updateUserGamesPlayed updates Firestore correctly', () async {
+  test('updateUserGamesPlayed updates Firestore correctly with game at front', () async {
     final screen = GamesInitialScreen(
       gameData: gameData,
       firebaseAuth: mockAuth,
       firestore: mockFirestore,
     );
 
+    // Simulate playing two games
+    await screen.updateUserGamesPlayed('game123');
+    await screen.updateUserGamesPlayed('game456');
+
+    // Re-play 'game123', it should now be at the front
     await screen.updateUserGamesPlayed('game123');
 
     DocumentSnapshot userDoc = await mockFirestore.collection('users').doc('user123').get();
+    List<dynamic> gamesPlayed = userDoc['gamesPlayed'];
 
-    expect(userDoc['gamesPlayed'], contains('game123'));
+    // Check the order and contents
+    expect(gamesPlayed.length, 2);
+    expect(gamesPlayed[0], 'game123');
+    expect(gamesPlayed[1], 'game456');
   });
 
   testWidgets('Play button navigates to correct screen based on game template', (WidgetTester tester) async {

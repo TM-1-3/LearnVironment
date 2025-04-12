@@ -27,11 +27,22 @@ class GamesInitialScreen extends StatelessWidget {
       if (user == null) {
         throw Exception("No user logged in");
       }
-      DocumentReference userDoc = firestore.collection('users').doc(user.uid);
 
-      await userDoc.update({
-        'gamesPlayed': FieldValue.arrayUnion([gameId]),
-      });
+      DocumentReference userDoc = firestore.collection('users').doc(user.uid);
+      DocumentSnapshot userSnapshot = await userDoc.get();
+
+      List<dynamic> gamesPlayed = [];
+
+      if (userSnapshot.exists && userSnapshot.data() != null) {
+        var data = userSnapshot.data() as Map<String, dynamic>;
+        gamesPlayed = List<String>.from(data['gamesPlayed'] ?? []);
+      }
+
+      // Remove it if it already exists, then insert at the beginning
+      gamesPlayed.remove(gameId);
+      gamesPlayed.insert(0, gameId);
+
+      await userDoc.update({'gamesPlayed': gamesPlayed});
     } catch (e) {
       print("Error updating user's gamesPlayed: $e");
     }
