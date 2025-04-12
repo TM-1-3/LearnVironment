@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../quiz.dart';
-import '../main_pages/game_data.dart';
-import 'package:learnvironment/bin.dart';
+import 'package:learnvironment/games_templates/quiz.dart';
+import 'package:learnvironment/main_pages/game_data.dart';
+import 'package:learnvironment/games_templates/bin.dart';
 
 class GamesInitialScreen extends StatelessWidget {
   final GameData gameData;
@@ -34,7 +34,6 @@ class GamesInitialScreen extends StatelessWidget {
               onTap: () {
                 // Action when the card is clicked
                 if (gameData.gameName == "Recycling Bins") {
-                  // Navigate to the Bin screen if it's a "Recycling Game"
                     Navigator.push(
                       context,
                       MaterialPageRoute(

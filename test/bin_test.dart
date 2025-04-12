@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:learnvironment/main_pages/game_data.dart';
 import 'package:mockito/mockito.dart';
-import 'package:learnvironment/bin.dart';
+import 'package:learnvironment/games_templates/bin.dart';
 import 'package:fake_async/fake_async.dart';
 
 class MockGameData extends Mock implements GameData {

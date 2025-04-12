@@ -31,14 +31,6 @@ class _FixAccountPageState extends State<FixAccountPage> {
   // Options for the dropdown menu
   final List<String> _userTypes = ['developer', 'student', 'teacher'];
 
-  // Function to sign out the user
-  Future<void> _signOut() async {
-    await fireauth.signOut();
-    if (mounted) {
-      Navigator.of(context).pushReplacementNamed('/login');
-    }
-  }
-
   // Function to update or create the user's document in Firestore
   Future<void> updateUserType(String uid, String userType) async {
     try {
@@ -142,12 +134,6 @@ class _FixAccountPageState extends State<FixAccountPage> {
                 }
               },
               child: const Text('Save and Continue'),
-            ),
-            const SizedBox(height: 30),
-            ElevatedButton.icon(
-              onPressed: _signOut,
-              icon: const Icon(Icons.exit_to_app),
-              label: const Text('Sign Out'),
             ),
           ],
         ),

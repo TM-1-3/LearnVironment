@@ -2,13 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:learnvironment/authentication/auth_gate.dart';
+import 'package:learnvironment/authentication/auth_service.dart';
+import 'package:learnvironment/authentication/fix_account.dart';
+import 'package:learnvironment/authentication/login_screen.dart';
+import 'package:learnvironment/authentication/signup_screen.dart';
+import 'package:learnvironment/firebase_options.dart';
 import 'package:provider/provider.dart';
-import 'firebase_options.dart';
-import 'authentication/auth_gate.dart';
-import 'authentication/auth_service.dart'; // Import the AuthService
-import 'authentication/fix_account.dart';
-import '../authentication/login_screen.dart'; // Import the Login Screen
-import '../authentication/signup_screen.dart'; // Import the Sign-Up Screen
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,12 +44,12 @@ class App extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
         useMaterial3: true,
       ),
-      home: AuthGate(firestore: firestore, fireauth: fireauth), // The AuthGate widget as the starting point
+      home: AuthGate(firestore: firestore, fireauth: fireauth),
       routes: {
-        '/auth_gate': (context) => AuthGate(firestore: firestore, fireauth: fireauth), // Define the AuthGate route
-        '/fix_account': (context) => FixAccountPage(firestore: firestore, fireauth: fireauth), // Define FixAccountPage route
-        '/login': (context) => LoginScreen(auth: fireauth), // Define LoginScreen route
-        '/signup': (context) => SignUpScreen(auth: fireauth, firestore: firestore), // Define SignUpScreen route
+        '/auth_gate': (context) => AuthGate(firestore: firestore, fireauth: fireauth),
+        '/fix_account': (context) => FixAccountPage(firestore: firestore, fireauth: fireauth),
+        '/login': (context) => LoginScreen(auth: fireauth),
+        '/signup': (context) => SignUpScreen(auth: fireauth, firestore: firestore),
       },
     );
   }

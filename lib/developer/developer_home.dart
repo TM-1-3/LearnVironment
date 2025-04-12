@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../main_pages/profile_screen.dart';
-import 'my_games.dart';
-import '../main_pages/games_page.dart';
-import 'new_game.dart';
+import 'package:learnvironment/developer/my_games.dart';
+import 'package:learnvironment/developer/new_game.dart';
+import 'package:learnvironment/main_pages/games_page.dart';
+import 'package:learnvironment/main_pages/profile_screen.dart';
 
 class DeveloperHomePage extends StatefulWidget {
   final FirebaseFirestore firestore; // Declare the Firestore instance
@@ -61,7 +61,7 @@ class _DeveloperHomePage extends State<DeveloperHomePage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ProfileScreen(),
+                  builder: (context) => ProfileScreen(auth: widget.auth),
                 ),
               );
             },

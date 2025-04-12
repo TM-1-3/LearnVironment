@@ -28,11 +28,13 @@
 - As a teacher I want to be able to create a class so that I can use the app with multiple classrooms of different age groups and needs. [#6](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/6)
 - As a non-registered user I want to be able to register so that I can use the app. [#3](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/3)
 - As a teacher I want to be able to play a game before I assign them to my students so that I can ensure the games are appropriate and accurate. [#24](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/24)
+- As a student I want to be able to view the games I have played so that I can keep track of my progress [#11](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/11)
 
 ### Detailed description
 - Fixed bug in results screen [#52](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/52)
 - Students can browse and play games [#54](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/54)
 - Any user can register with name, username, email, birthdate and password [#55](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/55)
+- Teachers can now play any game [#56](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/56)
 
 ### Test User
 - email: 

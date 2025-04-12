@@ -34,8 +34,6 @@ void main() {
     authService = AuthService(firebaseAuth: mockFirebaseAuth);  // Inject mock FirebaseAuth
   });
 
-  // 1. Authentication Tests
-  // 1. Authentication Tests
   test('authStateChanges returns null for unauthenticated user', () async {
     // Mock the behavior of authStateChanges() to return a stream that emits null (unauthenticated user)
     when(mockFirebaseAuth.authStateChanges()).thenAnswer(

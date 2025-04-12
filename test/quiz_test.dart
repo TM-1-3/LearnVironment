@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:learnvironment/games_templates/results_page.dart';
 import 'package:learnvironment/main_pages/game_data.dart';
-import 'package:learnvironment/quiz.dart';
+import 'package:learnvironment/games_templates/quiz.dart';
 import 'package:mockito/mockito.dart';
 
 class MockGameData extends Mock implements GameData {
