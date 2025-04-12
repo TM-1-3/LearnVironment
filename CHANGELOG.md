@@ -35,6 +35,7 @@
 - Students can browse and play games [#54](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/54)
 - Any user can register with name, username, email, birthdate and password [#55](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/55)
 - Teachers can now play any game [#56](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/56)
+- The games that a user plays are now stored in the database [#60](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/60)
 
 ### Test User
 - email: 
