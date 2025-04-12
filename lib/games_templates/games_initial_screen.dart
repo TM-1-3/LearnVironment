@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/games_templates/quiz.dart';
-import 'package:learnvironment/main_pages/data/game_data.dart';
 import 'package:learnvironment/games_templates/bin.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';

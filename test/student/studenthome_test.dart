@@ -5,8 +5,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:learnvironment/student/student_home.dart';
 import 'package:learnvironment/main_pages/main_page.dart';
 import 'package:learnvironment/main_pages/games_page.dart';
-import 'package:learnvironment/main_pages/statistics_page.dart';
 import 'package:learnvironment/main_pages/profile_screen.dart';
+import 'package:learnvironment/student/student_stats.dart';
 
 void main() {
   late FakeFirebaseFirestore fakeFirestore;
@@ -32,12 +32,12 @@ void main() {
       expect(find.byType(MainPage), findsOneWidget);
     });
 
-    testWidgets('Navigates to Statistics page', (tester) async {
+    testWidgets('Navigates to StudentStatsPage page', (tester) async {
       await tester.pumpWidget(testWidget);
       await tester.tap(find.byIcon(Icons.pie_chart));
       await tester.pumpAndSettle();
 
-      expect(find.byType(StatisticsPage), findsOneWidget);
+      expect(find.byType(StudentStatsPage), findsOneWidget);
     });
 
     testWidgets('Navigates to Games page', (tester) async {

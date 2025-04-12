@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/games_templates/games_initial_screen.dart';
-import 'package:learnvironment/main_pages/data/game_data.dart';
 import 'package:learnvironment/main_pages/widgets/game_card.dart';
+import 'package:learnvironment/services/firestore_service.dart';
 
 class GamesPage extends StatefulWidget {
   final FirebaseFirestore firestore;
@@ -18,45 +19,21 @@ class GamesPageState extends State<GamesPage> {
   String _searchQuery = "";
   String? _selectedTag;
   String? _selectedAge;
-  List<Map<String, dynamic>> games = []; // List to hold the game data
+  List<Map<String, dynamic>> games = [];
+  late FirestoreService firestoreService;
 
   @override
   void initState() {
     super.initState();
-    // Fetch the games data when the widget is first initialized
-    _loadGames();
+    firestoreService = FirestoreService(firestore: widget.firestore);
+    _fetchGames();
   }
 
-  // Fetching the game data from Firestore
-  Future<void> _loadGames() async {
-    List<Map<String, dynamic>> fetchedGames = await getAllDocuments('games');
+  Future<void> _fetchGames() async {
+    List<Map<String, dynamic>> fetchedGames = await firestoreService.getAllGames();
     setState(() {
-      games = fetchedGames; // Update the games list with the fetched data
+      games = fetchedGames;
     });
-  }
-
-  // Update to use the firestore passed in the constructor
-  Future<List<Map<String, dynamic>>> getAllDocuments(String collectionName) async {
-    try {
-      // Fetching the collection using the firestore instance passed to the widget
-      QuerySnapshot querySnapshot = await widget.firestore.collection(collectionName).get();
-
-      // Mapping Firestore documents to your desired map structure
-      List<Map<String, dynamic>> documents = querySnapshot.docs.map((doc) {
-        return {
-          'imagePath': doc.get('logo') ?? 'assets/placeholder.png',  // Default value if the field doesn't exist
-          'gameTitle': doc.get('name') ?? 'Default Game Title',  // Default value if the field doesn't exist
-          'tags': List<String>.from(doc.get('tags') ?? []),  // Ensures 'tags' is a list of strings
-          'gameId': doc.id,  // Store the Firestore document ID
-        };
-      }).toList();
-
-      return documents;
-    } catch (e) {
-      // If an error occurs, print the error and return an empty list
-      print('Error getting documents: $e');
-      return [];
-    }
   }
 
   List<Map<String, dynamic>> getFilteredGames() {
@@ -78,7 +55,7 @@ class GamesPageState extends State<GamesPage> {
 
   Future<void> loadGame(String gameId) async {
     try {
-      GameData gameData = await fetchGameData(gameId, firestore: widget.firestore);
+      GameData gameData = await firestoreService.fetchGameData(gameId);
       if (mounted) {
         Navigator.push(
           context,

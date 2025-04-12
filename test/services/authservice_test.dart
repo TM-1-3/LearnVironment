@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:learnvironment/services/auth_service.dart';
 import 'package:mockito/mockito.dart';
-import 'package:learnvironment/authentication/auth_service.dart';
 
 // Mock FirebaseAuth
 class MockFirebaseAuth extends Mock implements FirebaseAuth {

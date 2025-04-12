@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:learnvironment/main_pages/games_page.dart';
 import 'package:learnvironment/main_pages/main_page.dart';
 import 'package:learnvironment/main_pages/profile_screen.dart';
-import 'package:learnvironment/main_pages/statistics_page.dart';
+import 'package:learnvironment/student/student_stats.dart';
 
 class StudentHomePage extends StatefulWidget {
   final FirebaseFirestore firestore; // Declare the Firestore instance
@@ -36,7 +36,7 @@ class _StudentHomePage extends State<StudentHomePage> {
     super.initState();
 
     // Initialize the _pages map with the passed firestore and auth
-    _pages[TabItem.statistics] = StatisticsPage();
+    _pages[TabItem.statistics] = StudentStatsPage();
     _pages[TabItem.home] = MainPage();
     _pages[TabItem.games] = GamesPage(firestore: widget.firestore);
   }
