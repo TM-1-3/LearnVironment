@@ -1,42 +1,48 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:learnvironment/app_state.dart';
-import 'dart:async';
-import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
-
   group('ApplicationState', () {
-    late ApplicationState appState;
-    late StreamController<User?> authStateController;
-    late MockFirebaseAuth auth;
+    late MockFirebaseAuth mockFirebaseAuth;
+    late MockUser user;
 
-    setUp(() async {
-      authStateController = StreamController<User?>.broadcast();
-      auth = MockFirebaseAuth(signedIn: true,
-        mockUser: MockUser(
-          uid: 'testDeveloper',
-          email: 'test@example.com',
-          displayName: 'Test User',
-        ),);
-
-      appState = ApplicationState(firebaseAuth: auth);
-      await Future.delayed(Duration(milliseconds: 100)); // Wait for async init
+    setUp(() {
+      user = MockUser(uid: '123', email: 'email');
+      mockFirebaseAuth = MockFirebaseAuth(mockUser: user);
     });
 
-    tearDown(() {
-      authStateController.close();
+    test('Initial loggedIn state is false', () {
+      final appState = ApplicationState(firebaseAuth: mockFirebaseAuth);
+      expect(appState.loggedIn, isFalse);
     });
 
-    test('initially not logged in', () {
-      expect(appState.loggedIn, false);
+    test('loggedIn becomes true when user is signed in', () async {
+      final appState = ApplicationState(firebaseAuth: mockFirebaseAuth);
+      await mockFirebaseAuth.signInWithEmailAndPassword(email: 'email', password: 'pass');
+      await Future.delayed(Duration(milliseconds: 100));
+
+      expect(appState.loggedIn, isTrue);
     });
 
-    test('updates loggedIn when user signs out', () async {
-      authStateController.add(null);
-      expect(appState.loggedIn, false);
+    test('loggedIn becomes false when user is signed out', () async {
+      final appState = ApplicationState(firebaseAuth: mockFirebaseAuth);
+      await mockFirebaseAuth.signInWithEmailAndPassword(email: 'email', password: 'pass');
+      await mockFirebaseAuth.signOut();
+      await Future.delayed(Duration(milliseconds: 100));
+
+      expect(appState.loggedIn, isFalse);
+    });
+
+    test('updateLoggedInStatus works', () {
+      final appState = ApplicationState(firebaseAuth: mockFirebaseAuth);
+
+      appState.updateLoggedInStatus(true);
+      expect(appState.loggedIn, isTrue);
+
+      appState.updateLoggedInStatus(false);
+      expect(appState.loggedIn, isFalse);
     });
   });
 }
