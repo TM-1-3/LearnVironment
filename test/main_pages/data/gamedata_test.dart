@@ -7,7 +7,6 @@ void main() {
   late FirebaseFirestore firestore;
 
   setUp(() {
-    // Initialize fake Firestore before each test
     firestore = FakeFirebaseFirestore();
   });
 
@@ -84,7 +83,7 @@ void main() {
       "Why should we turn off the lights?": "Save energy"
     };
 
-    //Update file
+    // Set up Firestore document
     await firestore.collection('games').doc('game1').set({
       'logo': 'game_logo.png',
       'name': 'Game Name',
@@ -96,9 +95,10 @@ void main() {
       'correctAnswers': correctAnswers,
     });
 
-    //Fetch
+    // Fetch GameData
     GameData gameData = await GameData.fromFirestore('game1', firestore);
 
+    // Verify that the data matches and the documentName is set correctly
     expect(gameData.gameLogo, 'game_logo.png');
     expect(gameData.gameName, 'Game Name');
     expect(gameData.gameDescription, 'Game Description');
@@ -107,6 +107,7 @@ void main() {
     expect(gameData.gameTemplate, 'quiz');
     expect(gameData.questionsAndOptions, questionsAndOptions);
     expect(gameData.correctAnswers, correctAnswers);
+    expect(gameData.documentName, 'game1');
   });
 
   test('Game not found exception', () async {
@@ -141,10 +142,10 @@ void main() {
     expect(gameData.gameBibliography, 'Game 2 Bibliography');
     expect(gameData.tags, ['strategy', 'simulation']);
     expect(gameData.gameTemplate, 'drag');
+    expect(gameData.documentName, 'game2');
   });
 
   test('fetchGameData should throw exception if error occurs', () async {
-    // Mock an error by calling a non-existent document
     try {
       await fetchGameData('non_existing_game');
       fail('Expected an exception to be thrown');

@@ -7,6 +7,7 @@ class GameData {
   final String gameBibliography;
   final List<String> tags;
   final String gameTemplate;
+  final String documentName;
 
   // Optional fields for quiz template
   final Map<String, List<String>>? questionsAndOptions;
@@ -19,6 +20,7 @@ class GameData {
     required this.gameBibliography,
     required this.tags,
     required this.gameTemplate,
+    required this.documentName,
     this.questionsAndOptions,
     this.correctAnswers,
   });
@@ -63,6 +65,7 @@ class GameData {
         gameBibliography: data['bibliography'],
         tags: List<String>.from(data['tags'] ?? []),
         gameTemplate: template,
+        documentName: snapshot.id,
         questionsAndOptions: questionsAndOptions,
         correctAnswers: correctAnswers,
       );
