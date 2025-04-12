@@ -2,11 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:learnvironment/games_templates/quiz.dart';
 import 'package:learnvironment/main_pages/data/game_data.dart';
 import 'package:learnvironment/games_templates/bin.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class GamesInitialScreen extends StatelessWidget {
   final GameData gameData;
+  final FirebaseAuth firebaseAuth;
+  final FirebaseFirestore firestore;
 
-  const GamesInitialScreen({super.key,required this.gameData});
+  // Constructor now accepts optional FirebaseAuth and FirebaseFirestore parameters
+  GamesInitialScreen({
+    super.key,
+    required this.gameData,
+    FirebaseAuth? firebaseAuth,
+    FirebaseFirestore? firestore,
+  })  : firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
+        firestore = firestore ?? FirebaseFirestore.instance;
+
+  // Function to update the user's gamesPlayed array
+  Future<void> updateUserGamesPlayed(String gameId) async {
+    try {
+      User? user = firebaseAuth.currentUser;
+
+      if (user == null) {
+        throw Exception("No user logged in");
+      }
+      DocumentReference userDoc = firestore.collection('users').doc(user.uid);
+
+      await userDoc.update({
+        'gamesPlayed': FieldValue.arrayUnion([gameId]),
+      });
+    } catch (e) {
+      print("Error updating user's gamesPlayed: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,27 +60,35 @@ class GamesInitialScreen extends StatelessWidget {
 
             /// 🎯 Clickable Card
             GestureDetector(
-              onTap: () {
+              onTap: () async {
+                // Update the user's gamesPlayed field first
+                await updateUserGamesPlayed(gameData.documentName);
+
                 // Action when the card is clicked
                 if (gameData.gameTemplate == "drag") {
+                  if (context.mounted) {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => BinScreen(binData: gameData),
                       ),
                     );
+                  }
                 } else if (gameData.gameTemplate == "quiz") {
-                  // Navigate to the Quiz screen for all other games
+                  if (context.mounted) {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => Quiz(quizData: gameData),
                       ),
                     );
+                  }
                 } else {
+                  if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Error Game Data Corrupted.')),
                     );
+                  }
                 }
               },
               child: Card(
