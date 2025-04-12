@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
-import 'package:learnvironment/main_pages/game_data.dart';
+import 'package:learnvironment/main_pages/data/game_data.dart';
 
 void main() {
   late FirebaseFirestore firestore;

@@ -3,8 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart'
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:learnvironment/authentication/auth_service.dart';
-import 'package:learnvironment/authentication/fix_account.dart';
-import 'package:learnvironment/authentication/login_screen.dart';
+import 'package:learnvironment/authentication/pages/fix_account.dart';
+import 'package:learnvironment/authentication/pages/login_screen.dart';
 import 'package:learnvironment/developer/developer_home.dart';
 import 'package:learnvironment/student/student_home.dart';
 import 'package:learnvironment/teacher/teacher_home.dart';

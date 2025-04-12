@@ -7,15 +7,11 @@ import 'package:learnvironment/main_pages/games_page.dart';
 import 'package:learnvironment/main_pages/profile_screen.dart';
 
 class DeveloperHomePage extends StatefulWidget {
-  final FirebaseFirestore firestore; // Declare the Firestore instance
-  final FirebaseAuth auth; // Declare the FirebaseAuth instance
+  final FirebaseFirestore firestore;
+  final FirebaseAuth auth;
 
-  // Constructor now takes firestore and auth as arguments, with defaults
-  DeveloperHomePage({
-    super.key,
-    FirebaseFirestore? firestore, // Make firestore nullable
-    FirebaseAuth? auth, // Make auth nullable
-  })  : firestore = firestore ?? FirebaseFirestore.instance,
+  DeveloperHomePage({super.key, FirebaseFirestore? firestore, FirebaseAuth? auth})
+      : firestore = firestore ?? FirebaseFirestore.instance,
         auth = auth ?? FirebaseAuth.instance;
 
   @override
@@ -25,7 +21,6 @@ class DeveloperHomePage extends StatefulWidget {
 enum TabItem { statistics, home, games }
 
 class _DeveloperHomePage extends State<DeveloperHomePage> {
-  // Default to the Home tab
   TabItem selectedTab = TabItem.home;
 
   // Map of tabs to corresponding pages

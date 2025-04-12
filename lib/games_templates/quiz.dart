@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:math';
 import 'package:learnvironment/games_templates/results_page.dart';
-import 'package:learnvironment/main_pages/game_data.dart';
+import 'package:learnvironment/main_pages/data/game_data.dart';
 
 class Quiz extends StatefulWidget {
   final GameData quizData;  // The quizData passed to this widget

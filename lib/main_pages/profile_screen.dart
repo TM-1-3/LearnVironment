@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:learnvironment/main_pages/edit_profile.dart';
+import 'package:learnvironment/main_pages/widgets/edit_profile.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
