@@ -128,10 +128,16 @@ class GamesPageState extends State<GamesPage> {
               ],
             ),
           ),
-          // Display filtered game cards
+          // Display filtered game cards in a GridView
           Expanded(
             child: filteredGames.isNotEmpty
-                ? ListView.builder(
+                ? GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2, // 2 cards per row
+                crossAxisSpacing: 10.0, // Space between columns
+                mainAxisSpacing: 10.0,
+                mainAxisExtent: 380
+              ),
               itemCount: filteredGames.length,
               itemBuilder: (context, index) {
                 final game = filteredGames[index];

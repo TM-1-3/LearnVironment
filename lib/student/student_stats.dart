@@ -76,36 +76,45 @@ class StudentStatsPageState extends State<StudentStatsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Text(
-                'Recommended Games',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 32.0), // Increased padding for exterior space
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text(
+                  'Recommended Games',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
               ),
-            ),
-            Expanded(
-              child: games.isNotEmpty
-                  ? ListView.builder(
-                itemCount: games.length,
-                itemBuilder: (context, index) {
-                  final game = games[index];
-                  return GameCard(
-                    imagePath: game['imagePath'],
-                    gameTitle: game['gameTitle'],
-                    tags: List<String>.from(game['tags']),
-                    gameId: game['gameId'],
-                    loadGame: loadGame,
-                  );
-                },
-              )
-                  : const Center(
-                child: Text('No games have been played yet!'),
+              Expanded(
+                child: games.isNotEmpty
+                    ? GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2, // 2 cards per row
+                      crossAxisSpacing: 10.0, // Space between columns
+                      mainAxisSpacing: 10.0,
+                      mainAxisExtent: 380
+                  ),
+                  itemCount: games.length,
+                  itemBuilder: (context, index) {
+                    final game = games[index];
+                    return GameCard(
+                      imagePath: game['imagePath'],
+                      gameTitle: game['gameTitle'],
+                      tags: List<String>.from(game['tags']),
+                      gameId: game['gameId'],
+                      loadGame: loadGame,
+                    );
+                  },
+                )
+                    : const Center(
+                  child: Text('No games have been played yet!'),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
