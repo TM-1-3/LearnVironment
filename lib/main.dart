@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:learnvironment/authentication/login_screen.dart';
-import 'package:learnvironment/services/auth_gate.dart';
+import 'package:learnvironment/authentication/auth_gate.dart';
 import 'package:learnvironment/authentication/fix_account.dart';
 import 'package:learnvironment/authentication/signup_screen.dart';
 import 'package:learnvironment/firebase_options.dart';

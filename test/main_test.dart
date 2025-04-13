@@ -6,7 +6,7 @@ import 'package:learnvironment/authentication/signup_screen.dart';
 import 'package:learnvironment/main.dart';
 import 'package:learnvironment/services/auth_service.dart';
 import 'package:provider/provider.dart';
-import 'package:learnvironment/services/auth_gate.dart';
+import 'package:learnvironment/authentication/auth_gate.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 

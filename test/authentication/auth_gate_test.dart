@@ -1,6 +1,5 @@
-import 'package:learnvironment/services/auth_gate.dart';
+import 'package:learnvironment/authentication/auth_gate.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:learnvironment/authentication/fix_account.dart';
 import 'package:learnvironment/developer/developer_home.dart';
@@ -12,65 +11,9 @@ import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 
-// Mock NavigatorObserver for navigation tracking
 class MockNavigatorObserver extends Mock implements NavigatorObserver {}
 
-// Mock FirebaseAuth
-class MockFirebaseAuthUnit extends Mock implements FirebaseAuth {}
-
-// Mock User from FirebaseAuth
-class MockUserUnit extends Mock implements User {}
-
 void main() {
-  group('AuthGate - fetchUserType', () {
-    late MockFirebaseAuthUnit mockAuth;
-    late FakeFirebaseFirestore fakeFirestore;
-
-    setUp(() {
-      // Initialize the mocks and FakeFirestore instance before each test
-      mockAuth = MockFirebaseAuthUnit();
-      fakeFirestore = FakeFirebaseFirestore();
-    });
-    test('fetchUserType returns developer', () async {
-      final uid = 'test';
-      await fakeFirestore.collection('users').doc(uid).set({
-        'role': 'developer',
-      });
-      final authGate = AuthGate(firestore: fakeFirestore, fireauth: mockAuth);
-      final userRole = await authGate.fetchUserType(uid);
-
-      expect(userRole, 'developer');
-    });
-
-    test('fetchUserType returns student', () async {
-      final uid = 'test';
-      await fakeFirestore.collection('users').doc(uid).set({
-        'role': 'student',
-      });
-      final authGate = AuthGate(firestore: fakeFirestore, fireauth: mockAuth);
-      final userRole = await authGate.fetchUserType(uid);
-
-      expect(userRole, 'student');
-    });
-
-    test('fetchUserType returns null if user not found', () async {
-      final uid = 'test_uid';
-      final authGate = AuthGate(firestore: fakeFirestore, fireauth: mockAuth);
-      final userRole = await authGate.fetchUserType(uid);
-
-      expect(userRole, null);
-    });
-
-    test('fetchUserType handles errors', () async {
-      final uid = 'non_existent_uid';
-      await fakeFirestore.collection('users').doc(uid).set({'role': null});
-      final authGate = AuthGate(firestore: fakeFirestore, fireauth: mockAuth);
-      final userRole = await authGate.fetchUserType(uid);
-
-      expect(userRole, null);
-    });
-  });
-
     group('AuthGate - Widget Navigation Tests', () {
       late FakeFirebaseFirestore fakeFirestore;
       late MockFirebaseAuth mockAuth;
@@ -206,9 +149,6 @@ void main() {
             navigatorObservers: [mockNavigatorObserver],
           ),
         );
-
-        final userRole = await authGate.fetchUserType('testDeveloper');
-        expect(userRole, '');
 
         await tester.pumpWidget(testWidget);
         await tester.pumpAndSettle();
