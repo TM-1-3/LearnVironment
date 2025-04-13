@@ -22,13 +22,12 @@ class StudentStatsPage extends StatefulWidget {
 
 class StudentStatsPageState extends State<StudentStatsPage> {
   late final FirestoreService firestoreService;
-  List<Map<String, dynamic>> games = []; // Declare the games list
+  List<Map<String, dynamic>> games = [];
 
   @override
   void initState() {
     super.initState();
     final firestore = widget.firestore ?? FirebaseFirestore.instance;
-
     firestoreService = FirestoreService(firestore: firestore);
     loadGames();
   }
@@ -77,7 +76,7 @@ class StudentStatsPageState extends State<StudentStatsPage> {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 32.0), // Increased padding for exterior space
+          padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 32.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -89,28 +88,43 @@ class StudentStatsPageState extends State<StudentStatsPage> {
                 ),
               ),
               Expanded(
-                child: games.isNotEmpty
-                    ? GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2, // 2 cards per row
-                      crossAxisSpacing: 10.0, // Space between columns
-                      mainAxisSpacing: 10.0,
-                      mainAxisExtent: 380
-                  ),
-                  itemCount: games.length,
-                  itemBuilder: (context, index) {
-                    final game = games[index];
-                    return GameCard(
-                      imagePath: game['imagePath'],
-                      gameTitle: game['gameTitle'],
-                      tags: List<String>.from(game['tags']),
-                      gameId: game['gameId'],
-                      loadGame: loadGame,
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    var mainAxisExtent = 600.0;
+                    if (constraints.maxWidth <= 600) {
+                      mainAxisExtent = constraints.maxWidth - 40;
+                    } else if (constraints.maxWidth <= 1000) {
+                      mainAxisExtent = 650;
+                    } else if (constraints.maxWidth <= 2000) {
+                      mainAxisExtent = 1050;
+                    } else {
+                      mainAxisExtent = 1500;
+                    }
+                    return games.isNotEmpty
+                        ? GridView.builder(
+                      padding: const EdgeInsets.all(8),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 10.0,
+                        mainAxisSpacing: 10.0,
+                        mainAxisExtent: mainAxisExtent, // Fixed height for items
+                      ),
+                      itemCount: games.length,
+                      itemBuilder: (context, index) {
+                        final game = games[index];
+                        return GameCard(
+                          imagePath: game['imagePath'],
+                          gameTitle: game['gameTitle'],
+                          tags: List<String>.from(game['tags']),
+                          gameId: game['gameId'],
+                          loadGame: loadGame,
+                        );
+                      },
+                    )
+                        : const Center(
+                      child: Text('No games have been played yet!'),
                     );
                   },
-                )
-                    : const Center(
-                  child: Text('No games have been played yet!'),
                 ),
               ),
             ],

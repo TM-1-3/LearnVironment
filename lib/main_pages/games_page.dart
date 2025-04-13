@@ -47,7 +47,7 @@ class GamesPageState extends State<GamesPage> {
 
       final matchesQuery = _searchQuery.isEmpty || gameTitle.contains(_searchQuery.toLowerCase());
       final matchesTag = _selectedTag == null || tags.contains(_selectedTag);
-      final matchesAge = _selectedAge == null || ageTag.contains(_selectedAge!);
+      final matchesAge = _selectedAge == null || ageTag == 'Age: ${_selectedAge!}';
 
       return matchesQuery && matchesTag && matchesAge;
     }).toList();
@@ -75,7 +75,6 @@ class GamesPageState extends State<GamesPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Filter games based on search query, age, and tags
     final filteredGames = getFilteredGames();
 
     return Scaffold(
@@ -93,7 +92,6 @@ class GamesPageState extends State<GamesPage> {
       ),
       body: Column(
         children: [
-          // Filters for Age and Tags
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
@@ -103,8 +101,11 @@ class GamesPageState extends State<GamesPage> {
                   key: Key('ageDropdown'),
                   value: _selectedAge,
                   hint: const Text('Filter by Age'),
-                  items: ['12+', '10+', '8+', '6+']
-                      .map((age) => DropdownMenuItem<String>(value: age, child: Text(age)))
+                  items: [null, '12+', '10+', '8+', '6+']
+                      .map((age) => DropdownMenuItem<String>(
+                    value: age,
+                    child: Text(age ?? 'All Ages'),
+                  ))
                       .toList(),
                   onChanged: (value) {
                     setState(() {
@@ -116,8 +117,11 @@ class GamesPageState extends State<GamesPage> {
                   key: Key('tagDropdown'),
                   value: _selectedTag,
                   hint: const Text('Filter by Tag'),
-                  items: ['Recycling', 'Strategy', 'Citizenship']
-                      .map((tag) => DropdownMenuItem<String>(value: tag, child: Text(tag)))
+                  items: [null, 'Recycling', 'Strategy', 'Citizenship']
+                      .map((tag) => DropdownMenuItem<String>(
+                    value: tag,
+                    child: Text(tag ?? 'All Tags'),
+                  ))
                       .toList(),
                   onChanged: (value) {
                     setState(() {
@@ -128,30 +132,45 @@ class GamesPageState extends State<GamesPage> {
               ],
             ),
           ),
-          // Display filtered game cards in a GridView
           Expanded(
-            child: filteredGames.isNotEmpty
-                ? GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, // 2 cards per row
-                crossAxisSpacing: 10.0, // Space between columns
-                mainAxisSpacing: 10.0,
-                mainAxisExtent: 380
-              ),
-              itemCount: filteredGames.length,
-              itemBuilder: (context, index) {
-                final game = filteredGames[index];
-                return GameCard(
-                  imagePath: game['imagePath'],
-                  gameTitle: game['gameTitle'],
-                  tags: List<String>.from(game['tags']),
-                  gameId: game['gameId'],
-                  loadGame: loadGame,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                var mainAxisExtent = 600.0;
+                if (constraints.maxWidth <= 600) {
+                  mainAxisExtent = constraints.maxWidth - 40;
+                } else if (constraints.maxWidth <= 1000) {
+                  mainAxisExtent = 650;
+                } else if (constraints.maxWidth <= 2000) {
+                  mainAxisExtent = 1050;
+                } else {
+                  mainAxisExtent = 1500;
+                }
+
+                return filteredGames.isNotEmpty
+                    ? GridView.builder(
+                  padding: const EdgeInsets.all(8),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 10.0,
+                    mainAxisSpacing: 10.0,
+                    mainAxisExtent: mainAxisExtent, // Fixed height for items
+                  ),
+                  itemCount: filteredGames.length,
+                  itemBuilder: (context, index) {
+                    final game = filteredGames[index];
+                    return GameCard(
+                      imagePath: game['imagePath'],
+                      gameTitle: game['gameTitle'],
+                      tags: List<String>.from(game['tags']),
+                      gameId: game['gameId'],
+                      loadGame: loadGame,
+                    );
+                  },
+                )
+                    : const Center(
+                  child: Text('No results found'),
                 );
               },
-            )
-                : const Center(
-              child: Text('No results found'),
             ),
           ),
         ],
