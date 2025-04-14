@@ -36,7 +36,6 @@ void main() async {
   group('Widget Rendering Tests', () {
     testWidgets('AuthGate widget renders correctly', (tester) async {
       MockFirebaseAuth mockAuth = MockFirebaseAuth();
-      FakeFirebaseFirestore fakeFirestore = FakeFirebaseFirestore();
       await tester.pumpWidget(
           MultiProvider(
               providers: [
@@ -45,7 +44,7 @@ void main() async {
                 ),
               ],
               child: MaterialApp(
-                home: AuthGate(firestore: fakeFirestore, fireauth: mockAuth),
+                home: AuthGate(),
               ),
       ));
 
@@ -64,7 +63,7 @@ void main() async {
         ],
         child: MaterialApp(
           routes: {
-            '/auth_gate': (context) => AuthGate(fireauth: mockAuth, firestore: fakeFirestore),
+            '/auth_gate': (context) => AuthGate(),
             '/fix_account': (context) => FixAccountPage(),
             '/login': (context) => LoginScreen(),
             '/signup': (context) => SignUpScreen(),

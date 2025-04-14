@@ -2,36 +2,79 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:learnvironment/data/user_data.dart';
 
 class UserCacheService {
+  // Cache user data with error handling and debug prints
   Future<void> cacheUserData(UserData user) async {
-    final prefs = await SharedPreferences.getInstance();
-    final data = user.toCache();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final data = user.toCache();
 
-    for (final entry in data.entries) {
-      await prefs.setString(entry.key, entry.value);
+      print('[CACHE] Saving user data: $data');
+
+      for (final entry in data.entries) {
+        final success = await prefs.setString(entry.key, entry.value);
+        if (!success) {
+          print('[CACHE ERROR] Failed to cache data for key: ${entry.key}');
+          throw Exception('Failed to cache data for key: ${entry.key}');
+        }
+      }
+
+      print('[CACHE] User data saved to cache successfully.');
+    } catch (e) {
+      print('[CACHE ERROR] Error caching user data: $e');
+      rethrow;  // Re-throw the error to handle it higher up the call stack
     }
   }
 
+  // Retrieve cached user data with error handling and debug prints
   Future<UserData?> getCachedUserData() async {
-    final prefs = await SharedPreferences.getInstance();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final keys = ['id', 'username', 'email', 'name', 'role', 'birthdate'];
+      final Map<String, String> cachedData = {};
 
-    final keys = ['username', 'email', 'name', 'role', 'birthdate'];
-    final Map<String, String> cachedData = {};
+      print('[CACHE] Loading user data from cache...');
 
-    for (final key in keys) {
-      final value = prefs.getString(key);
-      if (value == null) return null; // If any key is missing, return null
-      cachedData[key] = value;
+      // Attempt to retrieve each key from SharedPreferences
+      for (final key in keys) {
+        final value = prefs.getString(key);
+        if (value == null) {
+          print('[CACHE] Cache miss for key: $key');
+          return null;  // If any key is missing, return null and abort
+        }
+        cachedData[key] = value;
+      }
+
+      print('[CACHE] Loaded user data from cache: $cachedData');
+
+      // Convert cached data into a UserData object
+      return UserData.fromCache(cachedData);
+    } catch (e) {
+      print('[CACHE ERROR] Error retrieving cached user data: $e');
+      return null;  // Return null if an error occurs during retrieval
     }
-
-    return UserData.fromCache(cachedData);
   }
 
+  // Clear user data from cache with error handling and debug prints
   Future<void> clearUserCache() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('username');
-    await prefs.remove('email');
-    await prefs.remove('name');
-    await prefs.remove('role');
-    await prefs.remove('birthdate');
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final keys = ['id', 'username', 'email', 'name', 'role', 'birthdate'];
+
+      print('[CACHE] Clearing user cache...');
+
+      // Attempt to remove each key
+      for (final key in keys) {
+        final success = await prefs.remove(key);
+        if (!success) {
+          print('[CACHE ERROR] Failed to remove key: $key');
+        } else {
+          print('[CACHE] Successfully removed key: $key');
+        }
+      }
+
+      print('[CACHE] User cache cleared successfully.');
+    } catch (e) {
+      print('[CACHE ERROR] Error clearing user cache: $e');
+    }
   }
 }

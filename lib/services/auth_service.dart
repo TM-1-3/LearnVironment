@@ -1,13 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 
 class AuthService extends ChangeNotifier {
   final FirebaseAuth _firebaseAuth;
   bool _loggedIn = false;
   bool get loggedIn => _loggedIn;
 
-  AuthService({FirebaseAuth? firebaseAuth}) : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
+  Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
+
+  AuthService({FirebaseAuth? firebaseAuth})
+      : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
 
   Future<void> init() async {
     _firebaseAuth.authStateChanges().listen((user) {
@@ -16,7 +18,7 @@ class AuthService extends ChangeNotifier {
     });
   }
 
-  //Method to get the user id
+  // Method to get the user id
   Future<String> getUid() async {
     User? user = _firebaseAuth.currentUser;
 
@@ -31,7 +33,7 @@ class AuthService extends ChangeNotifier {
   Future<void> signOut() async {
     await _firebaseAuth.signOut();
     _loggedIn = false;
-    notifyListeners();
+    notifyListeners(); // Notify listeners when the user signs out
   }
 
   // Delete account method
@@ -59,7 +61,7 @@ class AuthService extends ChangeNotifier {
         password: password,
       );
       _loggedIn = true;
-      notifyListeners();
+      notifyListeners(); // Notify listeners after successful login
     } on FirebaseAuthException catch (e) {
       throw Exception(_getErrorMessage(e.code));
     } catch (e) {
@@ -69,9 +71,10 @@ class AuthService extends ChangeNotifier {
 
   // Register User
   Future<String?> registerUser({
-  required String email,
-  required String username,
-  required String password}) async {
+    required String email,
+    required String username,
+    required String password,
+  }) async {
     try {
       UserCredential userCredential = await _firebaseAuth
           .createUserWithEmailAndPassword(
@@ -89,6 +92,7 @@ class AuthService extends ChangeNotifier {
     }
   }
 
+  // Helper method to handle FirebaseAuth exceptions
   String _getErrorMessage(String code) {
     switch (code) {
       case "ERROR_EMAIL_ALREADY_IN_USE":

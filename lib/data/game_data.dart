@@ -30,10 +30,17 @@ class GameData {
     try {
       DocumentSnapshot snapshot = await firestore.collection('games').doc(gameId).get();
 
-      if (!snapshot.exists) throw Exception("Game not found!");
+      if (!snapshot.exists) {
+        throw Exception("Game not found in Firestore for ID: $gameId");
+      }
 
       var data = snapshot.data() as Map<String, dynamic>;
-      String template = data['template'];
+
+      // Ensure we have all necessary fields
+      String template = data['template'] ?? '';
+      if (template.isEmpty) {
+        throw Exception("Game template is missing in Firestore document.");
+      }
 
       Map<String, List<String>>? questionsAndOptions;
       Map<String, String>? correctAnswers;
@@ -51,16 +58,17 @@ class GameData {
                 (key, value) => MapEntry(key, value.toString()),
           );
         } catch (e) {
-          throw Exception("Error parsing quiz fields: $e");
+          throw Exception("Error parsing quiz fields for game $gameId: $e");
         }
       }
 
+      // Handle quiz-specific and non-quiz games
       if (template == "quiz") {
         return GameData(
-          gameLogo: data['logo'],
-          gameName: data['name'],
-          gameDescription: data['description'],
-          gameBibliography: data['bibliography'],
+          gameLogo: data['logo'] ?? 'default_logo.png',  // Use default logo if missing
+          gameName: data['name'] ?? 'Unnamed Game',
+          gameDescription: data['description'] ?? 'No description available.',
+          gameBibliography: data['bibliography'] ?? 'No bibliography available.',
           tags: List<String>.from(data['tags'] ?? []),
           gameTemplate: template,
           documentName: snapshot.id,
@@ -69,17 +77,17 @@ class GameData {
         );
       } else {
         return GameData(
-          gameLogo: data['logo'],
-          gameName: data['name'],
-          gameDescription: data['description'],
-          gameBibliography: data['bibliography'],
+          gameLogo: data['logo'] ?? 'default_logo.png',
+          gameName: data['name'] ?? 'Unnamed Game',
+          gameDescription: data['description'] ?? 'No description available.',
+          gameBibliography: data['bibliography'] ?? 'No bibliography available.',
           tags: List<String>.from(data['tags'] ?? []),
           gameTemplate: template,
           documentName: snapshot.id,
         );
       }
     } catch (e) {
-      throw Exception("Error getting data from Firestore: $e");
+      throw Exception("Error fetching game data from Firestore (Game ID: $gameId): $e");
     }
   }
 
@@ -97,13 +105,17 @@ class GameData {
 
     // Add quiz-specific fields only if it's a quiz game
     if (gameTemplate == "quiz") {
-      cacheData['questionsAndOptions'] = jsonEncode(questionsAndOptions);
-      cacheData['correctAnswers'] = jsonEncode(correctAnswers);
+      try {
+        cacheData['questionsAndOptions'] = jsonEncode(questionsAndOptions);
+        cacheData['correctAnswers'] = jsonEncode(correctAnswers);
+      } catch (e) {
+        print("Error serializing quiz data to cache: $e");
+      }
     }
     return cacheData;
   }
 
-// Deserialize from cache
+  // Deserialize from cache
   factory GameData.fromCache(Map<String, String> data) {
     String gameTemplate = data['gameTemplate'] ?? '';
 
@@ -113,21 +125,27 @@ class GameData {
 
     // Only deserialize quiz fields if it's a "quiz" game
     if (gameTemplate == "quiz") {
-      questionsAndOptions = data['questionsAndOptions'] != null
-          ? (jsonDecode(data['questionsAndOptions']!) as Map<String, dynamic>)
-          .map((key, value) => MapEntry(key, List<String>.from(value)))
-          : null;
+      try {
+        questionsAndOptions = data['questionsAndOptions'] != null
+            ? (jsonDecode(data['questionsAndOptions']!) as Map<String, dynamic>)
+            .map((key, value) => MapEntry(key, List<String>.from(value)))
+            : null;
 
-      correctAnswers = data['correctAnswers'] != null
-          ? Map<String, String>.from(jsonDecode(data['correctAnswers']!))
-          : null;
+        correctAnswers = data['correctAnswers'] != null
+            ? Map<String, String>.from(jsonDecode(data['correctAnswers']!))
+            : null;
+      } catch (e) {
+        print("Error deserializing quiz data from cache: $e");
+      }
+    }
 
-      // For quiz games, return the GameData with questionsAndOptions and correctAnswers
+    // Handle non-quiz games or quiz games
+    if (gameTemplate == "quiz") {
       return GameData(
-        gameLogo: data['gameLogo'] ?? '',
-        gameName: data['gameName'] ?? '',
-        gameDescription: data['gameDescription'] ?? '',
-        gameBibliography: data['gameBibliography'] ?? '',
+        gameLogo: data['gameLogo'] ?? 'default_logo.png',
+        gameName: data['gameName'] ?? 'Unnamed Game',
+        gameDescription: data['gameDescription'] ?? 'No description available.',
+        gameBibliography: data['gameBibliography'] ?? 'No bibliography available.',
         tags: List<String>.from(jsonDecode(data['tags'] ?? '[]')),
         gameTemplate: gameTemplate,
         documentName: data['documentName'] ?? '',
@@ -136,10 +154,10 @@ class GameData {
       );
     } else {
       return GameData(
-        gameLogo: data['gameLogo'] ?? '',
-        gameName: data['gameName'] ?? '',
-        gameDescription: data['gameDescription'] ?? '',
-        gameBibliography: data['gameBibliography'] ?? '',
+        gameLogo: data['gameLogo'] ?? 'default_logo.png',
+        gameName: data['gameName'] ?? 'Unnamed Game',
+        gameDescription: data['gameDescription'] ?? 'No description available.',
+        gameBibliography: data['gameBibliography'] ?? 'No bibliography available.',
         tags: List<String>.from(jsonDecode(data['tags'] ?? '[]')),
         gameTemplate: gameTemplate,
         documentName: data['documentName'] ?? '',

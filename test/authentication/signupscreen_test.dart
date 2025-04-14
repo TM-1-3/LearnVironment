@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -54,10 +53,7 @@ class MockAuthService extends AuthService {
 
 class MockAuthGate extends AuthGate {
   MockAuthGate({
-    super.key,
-    required FirebaseAuth super.fireauth,
-    required FirebaseFirestore super.firestore,
-    required FirestoreService super.firestoreService,
+    key,
   });
 
   @override
@@ -98,7 +94,7 @@ void main() {
         ],
         child: MaterialApp(
           routes: {
-            '/auth_gate': (context) => MockAuthGate(fireauth: mockAuth, firestore: mockFirestore, firestoreService: firestoreService),
+            '/auth_gate': (context) => MockAuthGate(),
             '/login': (context) => MockLoginScreen(authService: authService)
           },
           home: SignUpScreen(authService: authService, firestoreService: firestoreService),
