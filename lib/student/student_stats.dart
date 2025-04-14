@@ -83,7 +83,7 @@ class StudentStatsPageState extends State<StudentStatsPage> {
               const Padding(
                 padding: EdgeInsets.all(16.0),
                 child: Text(
-                  'Recommended Games',
+                  'Recently Played',
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
               ),

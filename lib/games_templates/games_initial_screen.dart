@@ -114,18 +114,43 @@ class GamesInitialScreen extends StatelessWidget {
 
             SizedBox(height: 30),
 
-            /// 📝 First Text
-            Text(
-              gameData.gameDescription,
-              style: TextStyle(fontSize: 18, color: Colors.black54),
-            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  /// Description Label
+                  Text(
+                    "Description:",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    gameData.gameDescription,
+                    style: TextStyle(fontSize: 18, color: Colors.black54),
+                  ),
+                  SizedBox(height: 20),
 
-            SizedBox(height: 10),
-
-            /// 📝 Second Text
-            Text(
-              gameData.gameBibliography,
-              style: TextStyle(fontSize: 18, color: Colors.black54),
+                  /// Bibliography Label
+                  Text(
+                    "Bibliography:",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    gameData.gameBibliography,
+                    style: TextStyle(fontSize: 18, color: Colors.black54),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

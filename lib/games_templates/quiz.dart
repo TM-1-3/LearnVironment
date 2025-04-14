@@ -109,30 +109,39 @@ class QuizState extends State<Quiz> {
     );
   }
 
-  /// 📌 HOME SCREEN
   Widget _buildHomeScreen() {
     return SingleChildScrollView(
+      child: Center(
         child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Image.asset(widget.quizData.gameLogo, width: 200, height: 200), // Access gameLogo from quizData
-        const SizedBox(height: 20),
-        Text(widget.quizData.gameName, style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)), // Access gameName from quizData
-        const SizedBox(height: 40),
-        GestureDetector(
-          onTap: startQuiz,
-          child: Card(
-            elevation: 4,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            color: Colors.green,
-            child: const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-              child: Text("Start Quiz", style: TextStyle(fontSize: 20, color: Colors.white)),
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center, // optional, for safety
+          children: [
+            const SizedBox(height: 80),
+            Image.asset(widget.quizData.gameLogo, width: 200, height: 200),
+            const SizedBox(height: 20),
+            Text(
+              widget.quizData.gameName,
+              style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
             ),
-          ),
+            const SizedBox(height: 40),
+            GestureDetector(
+              onTap: startQuiz,
+              child: Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                color: Colors.green,
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+                  child: Text("Start Quiz", style: TextStyle(fontSize: 20, color: Colors.white)),
+                ),
+              ),
+            ),
+            const SizedBox(height: 40),
+          ],
         ),
-      ],
-    ));
+      ),
+    );
   }
 
   /// 📌 QUIZ SCREEN
