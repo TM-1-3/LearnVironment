@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class UserData {
   final String id;
   final String username;
@@ -19,43 +17,6 @@ class UserData {
     this.gamesPlayed = const [],
   });
 
-  // From Firestore method with better error handling
-  static Future<UserData> fromFirestore(String userId, FirebaseFirestore firestore) async {
-    try {
-      DocumentSnapshot snapshot = await firestore.collection('users').doc(userId).get();
-
-      if (!snapshot.exists) {
-        throw Exception("User not found in Firestore for ID: $userId");
-      }
-
-      var data = snapshot.data() as Map<String, dynamic>;
-
-      var birthdateField = data['birthdate'];
-      DateTime birthdateValue;
-
-      if (birthdateField is Timestamp) {
-        birthdateValue = birthdateField.toDate();
-      } else if (birthdateField is String) {
-        birthdateValue = DateTime.tryParse(birthdateField) ?? DateTime(2000);
-      } else {
-        birthdateValue = DateTime(2000);
-      }
-
-      return UserData(
-        id: userId,
-        username: data['username'] ?? 'Unknown User',
-        email: data['email'] ?? 'Unknown Email',
-        name: data['name'] ?? 'Unknown Name',
-        role: data['role'] ?? 'Unknown Role',
-        birthdate: birthdateValue,
-        gamesPlayed: List<String>.from(data['gamesPlayed'] ?? []),
-      );
-    } catch (e) {
-      print('Error loading user data for userId: $userId: $e');
-      throw Exception("Error getting data from Firestore for userId: $userId: $e");
-    }
-  }
-
   // Method to convert UserData to cache format
   Map<String, String> toCache() {
     return {
@@ -65,7 +26,7 @@ class UserData {
       'name': name,
       'role': role,
       'birthdate': birthdate.toIso8601String(),
-      'gamesPlayed': gamesPlayed.join(','),
+      'gamesPlayed': gamesPlayed.join(','), // Comma-separated list
     };
   }
 

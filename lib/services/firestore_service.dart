@@ -97,9 +97,51 @@ class FirestoreService {
     }
   }
 
-  Future<GameData> fetchGameData(String idDataBase) async {
+  Future<GameData> fetchGameData(String gameId) async {
     try {
-      return await GameData.fromFirestore(idDataBase, _firestore);
+      // Fetch game data from Firestore
+      DocumentSnapshot snapshot = await _firestore.collection('games').doc(gameId).get();
+
+      if (!snapshot.exists) {
+        throw Exception("Game not found in Firestore for ID: $gameId");
+      }
+
+      var data = snapshot.data() as Map<String, dynamic>;
+
+      String template = data['template'] ?? '';
+      Map<String, List<String>>? questionsAndOptions;
+      Map<String, String>? correctAnswers;
+
+      // If it's a quiz game, extract questions and answers
+      if (template == "quiz") {
+        try {
+          var rawQuestionsAndOptions = Map<String, dynamic>.from(data['questionsAndOptions'] ?? {});
+          var rawCorrectAnswers = Map<String, dynamic>.from(data['correctAnswers'] ?? {});
+
+          questionsAndOptions = rawQuestionsAndOptions.map(
+                (key, value) => MapEntry(key, List<String>.from(value)),
+          );
+
+          correctAnswers = rawCorrectAnswers.map(
+                (key, value) => MapEntry(key, value.toString()),
+          );
+        } catch (e) {
+          throw Exception("Error parsing quiz fields for game $gameId: $e");
+        }
+      }
+
+      // Return GameData object populated with Firestore data
+      return GameData(
+        gameLogo: data['logo'] ?? 'default_logo.png',
+        gameName: data['name'] ?? 'Unnamed Game',
+        gameDescription: data['description'] ?? 'No description available.',
+        gameBibliography: data['bibliography'] ?? 'No bibliography available.',
+        tags: List<String>.from(data['tags'] ?? []),
+        gameTemplate: template,
+        documentName: snapshot.id,
+        questionsAndOptions: questionsAndOptions,
+        correctAnswers: correctAnswers,
+      );
     } catch (e, stackTrace) {
       debugPrint("Error loading GameData: $e\n$stackTrace");
       rethrow;
@@ -108,7 +150,34 @@ class FirestoreService {
 
   Future<UserData> fetchUserData(String userId) async {
     try {
-      return await UserData.fromFirestore(userId, _firestore);
+      DocumentSnapshot snapshot = await _firestore.collection('users').doc(userId).get();
+
+      if (!snapshot.exists) {
+        throw Exception("User not found in Firestore for ID: $userId");
+      }
+
+      var data = snapshot.data() as Map<String, dynamic>;
+
+      var birthdateField = data['birthdate'];
+      DateTime birthdateValue;
+
+      if (birthdateField is Timestamp) {
+        birthdateValue = birthdateField.toDate();
+      } else if (birthdateField is String) {
+        birthdateValue = DateTime.tryParse(birthdateField) ?? DateTime(2000);
+      } else {
+        birthdateValue = DateTime(2000);
+      }
+
+      return UserData(
+        id: userId,
+        username: data['username'] ?? 'Unknown User',
+        email: data['email'] ?? 'Unknown Email',
+        name: data['name'] ?? 'Unknown Name',
+        role: data['role'] ?? 'Unknown Role',
+        birthdate: birthdateValue,
+        gamesPlayed: List<String>.from(data['gamesPlayed'] ?? []),
+      );
     } catch (e, stackTrace) {
       debugPrint("Error loading UserData: $e\n$stackTrace");
       rethrow;

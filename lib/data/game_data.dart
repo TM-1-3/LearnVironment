@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class GameData {
   final String gameLogo;
@@ -25,71 +24,6 @@ class GameData {
     this.questionsAndOptions,
     this.correctAnswers,
   });
-
-  static Future<GameData> fromFirestore(String gameId, FirebaseFirestore firestore) async {
-    try {
-      DocumentSnapshot snapshot = await firestore.collection('games').doc(gameId).get();
-
-      if (!snapshot.exists) {
-        throw Exception("Game not found in Firestore for ID: $gameId");
-      }
-
-      var data = snapshot.data() as Map<String, dynamic>;
-
-      // Ensure we have all necessary fields
-      String template = data['template'] ?? '';
-      if (template.isEmpty) {
-        throw Exception("Game template is missing in Firestore document.");
-      }
-
-      Map<String, List<String>>? questionsAndOptions;
-      Map<String, String>? correctAnswers;
-
-      if (template == "quiz") {
-        try {
-          var rawQuestionsAndOptions = Map<String, dynamic>.from(data['questionsAndOptions'] ?? {});
-          var rawCorrectAnswers = Map<String, dynamic>.from(data['correctAnswers'] ?? {});
-
-          questionsAndOptions = rawQuestionsAndOptions.map(
-                (key, value) => MapEntry(key, List<String>.from(value)),
-          );
-
-          correctAnswers = rawCorrectAnswers.map(
-                (key, value) => MapEntry(key, value.toString()),
-          );
-        } catch (e) {
-          throw Exception("Error parsing quiz fields for game $gameId: $e");
-        }
-      }
-
-      // Handle quiz-specific and non-quiz games
-      if (template == "quiz") {
-        return GameData(
-          gameLogo: data['logo'] ?? 'default_logo.png',  // Use default logo if missing
-          gameName: data['name'] ?? 'Unnamed Game',
-          gameDescription: data['description'] ?? 'No description available.',
-          gameBibliography: data['bibliography'] ?? 'No bibliography available.',
-          tags: List<String>.from(data['tags'] ?? []),
-          gameTemplate: template,
-          documentName: snapshot.id,
-          questionsAndOptions: questionsAndOptions,
-          correctAnswers: correctAnswers,
-        );
-      } else {
-        return GameData(
-          gameLogo: data['logo'] ?? 'default_logo.png',
-          gameName: data['name'] ?? 'Unnamed Game',
-          gameDescription: data['description'] ?? 'No description available.',
-          gameBibliography: data['bibliography'] ?? 'No bibliography available.',
-          tags: List<String>.from(data['tags'] ?? []),
-          gameTemplate: template,
-          documentName: snapshot.id,
-        );
-      }
-    } catch (e) {
-      throw Exception("Error fetching game data from Firestore (Game ID: $gameId): $e");
-    }
-  }
 
   // Convert to cache format: Only serialize quiz fields if applicable
   Map<String, String> toCache() {
