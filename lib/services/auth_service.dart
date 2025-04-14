@@ -4,20 +4,27 @@ import 'package:flutter/foundation.dart';
 
 class AuthService extends ChangeNotifier {
   final FirebaseAuth _firebaseAuth;
-
   bool _loggedIn = false;
-
   bool get loggedIn => _loggedIn;
 
-  // Constructor to accept firebaseAuth as a parameter, allowing for mock injection
   AuthService({FirebaseAuth? firebaseAuth}) : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
 
-  // Initialize AuthService
   Future<void> init() async {
     _firebaseAuth.authStateChanges().listen((user) {
       _loggedIn = user != null;
       notifyListeners();
     });
+  }
+
+  //Method to get the user id
+  Future<String> getUid() async {
+    User? user = _firebaseAuth.currentUser;
+
+    if (user == null) {
+      throw Exception("No user logged in");
+    } else {
+      return user.uid;
+    }
   }
 
   // Sign out method
@@ -30,9 +37,11 @@ class AuthService extends ChangeNotifier {
   // Delete account method
   Future<void> deleteAccount() async {
     try {
-      User? user = _firebaseAuth.currentUser; // Use _firebaseAuth instead of _auth
+      User? user = _firebaseAuth.currentUser;
       if (user != null) {
-        await user.delete(); // Deletes the user account
+        await user.delete();
+      } else {
+        throw Exception("Error deleting account");
       }
     } catch (e) {
       throw Exception("Error deleting account: $e");

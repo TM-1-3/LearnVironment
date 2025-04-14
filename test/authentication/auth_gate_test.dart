@@ -4,6 +4,7 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:learnvironment/authentication/fix_account.dart';
 import 'package:learnvironment/developer/developer_home.dart';
 import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/services/firestore_service.dart';
 import 'package:learnvironment/student/student_home.dart';
 import 'package:learnvironment/teacher/teacher_home.dart';
 import 'package:mockito/mockito.dart';
@@ -13,8 +14,12 @@ import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 
 class MockNavigatorObserver extends Mock implements NavigatorObserver {}
 
+class MockFirestoreService extends FirestoreService {
+  MockFirestoreService({super.firestore});}
+
 void main() {
     group('AuthGate - Widget Navigation Tests', () {
+      late MockFirestoreService firestoreService;
       late FakeFirebaseFirestore fakeFirestore;
       late MockFirebaseAuth mockAuth;
       late Widget testWidget;
@@ -22,6 +27,7 @@ void main() {
 
       setUp(() {
         fakeFirestore = FakeFirebaseFirestore();
+        firestoreService = MockFirestoreService(firestore: fakeFirestore);
         mockNavigatorObserver = MockNavigatorObserver();
       });
 

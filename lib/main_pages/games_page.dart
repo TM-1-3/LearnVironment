@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/games_templates/games_initial_screen.dart';
@@ -7,9 +8,13 @@ import 'package:learnvironment/services/firestore_service.dart';
 
 class GamesPage extends StatefulWidget {
   final FirebaseFirestore firestore;
+  final FirebaseAuth auth;
+  final FirestoreService firestoreService;
 
-  GamesPage({super.key, FirebaseFirestore? firestore})
-      : firestore = firestore ?? FirebaseFirestore.instance;
+  GamesPage({super.key, FirebaseFirestore? firestore, FirebaseAuth? auth, FirestoreService? firestoreService})
+      : firestore = firestore ?? FirebaseFirestore.instance,
+        auth = auth ?? FirebaseAuth.instance,
+        firestoreService = firestoreService ?? FirestoreService(firestore: firestore);
 
   @override
   GamesPageState createState() => GamesPageState();
@@ -20,17 +25,15 @@ class GamesPageState extends State<GamesPage> {
   String? _selectedTag;
   String? _selectedAge;
   List<Map<String, dynamic>> games = [];
-  late FirestoreService firestoreService;
 
   @override
   void initState() {
     super.initState();
-    firestoreService = FirestoreService(firestore: widget.firestore);
     _fetchGames();
   }
 
   Future<void> _fetchGames() async {
-    List<Map<String, dynamic>> fetchedGames = await firestoreService.getAllGames();
+    List<Map<String, dynamic>> fetchedGames = await widget.firestoreService.getAllGames();
     setState(() {
       games = fetchedGames;
     });
@@ -55,12 +58,12 @@ class GamesPageState extends State<GamesPage> {
 
   Future<void> loadGame(String gameId) async {
     try {
-      GameData gameData = await firestoreService.fetchGameData(gameId);
+      GameData gameData = await widget.firestoreService.fetchGameData(gameId);
       if (mounted) {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => GamesInitialScreen(gameData: gameData),
+            builder: (context) => GamesInitialScreen(gameData: gameData, firestore: widget.firestore, firebaseAuth: widget.auth),
           ),
         );
       }

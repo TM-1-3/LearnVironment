@@ -10,7 +10,6 @@ class GamesInitialScreen extends StatelessWidget {
   final FirebaseAuth firebaseAuth;
   final FirebaseFirestore firestore;
 
-  // Constructor now accepts optional FirebaseAuth and FirebaseFirestore parameters
   GamesInitialScreen({
     super.key,
     required this.gameData,
@@ -44,7 +43,7 @@ class GamesInitialScreen extends StatelessWidget {
 
       await userDoc.update({'gamesPlayed': gamesPlayed});
     } catch (e) {
-      print("Error updating user's gamesPlayed: $e");
+      throw Exception("Error updating user's gamesPlayed: $e");
     }
   }
 
@@ -56,20 +55,13 @@ class GamesInitialScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            /// 🖼️ Image at the Top
             Image.asset(gameData.gameLogo, width: 200, height: 200),
-
             SizedBox(height: 20),
-
-            /// 📌 Main Text
             Text(
               gameData.gameName,
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-
             SizedBox(height: 30),
-
-            /// 🎯 Clickable Card
             GestureDetector(
               onTap: () async {
                 // Update the user's gamesPlayed field first
@@ -119,7 +111,6 @@ class GamesInitialScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  /// Description Label
                   Text(
                     "Description:",
                     style: TextStyle(
@@ -134,8 +125,6 @@ class GamesInitialScreen extends StatelessWidget {
                     style: TextStyle(fontSize: 18, color: Colors.black54),
                   ),
                   SizedBox(height: 20),
-
-                  /// Bibliography Label
                   Text(
                     "Bibliography:",
                     style: TextStyle(

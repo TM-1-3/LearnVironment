@@ -1,16 +1,64 @@
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:learnvironment/data/game_data.dart';
+import 'package:learnvironment/games_templates/games_initial_screen.dart';
 import 'package:learnvironment/main_pages/games_page.dart';
 import 'package:learnvironment/main_pages/widgets/game_card.dart';
+import 'package:learnvironment/services/firestore_service.dart';
+
+// Mock Firestore Service
+class MockFirestoreService extends FirestoreService {
+  MockFirestoreService({super.firestore});
+
+  List<Map<String, dynamic>> _mockGames = [];
+
+  // Set mock data with correct format
+  void setMockGames(List<Map<String, dynamic>> games) {
+    _mockGames = games.map((game) {
+      return {
+        'imagePath': game['logo'] ?? 'assets/placeholder.png',
+        'gameTitle': game['name'] ?? 'Default Game Title',
+        'tags': List<String>.from(game['tags'] ?? []),
+        'gameId': game['gameId'],
+      };
+    }).toList();
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> getAllGames() async {
+    return Future.value(_mockGames);
+  }
+
+  @override
+  Future<GameData> fetchGameData(String gameId) async {
+    final game = _mockGames.firstWhere((g) => g['gameId'] == gameId);
+    return GameData(
+      documentName: game['gameId'],
+      gameName: game['gameTitle'],
+      gameDescription: game['description'],
+      gameBibliography: game['bibliography'],
+      gameTemplate: game['template'],
+      gameLogo: game['imagePath'],
+      tags: List<String>.from(game['tags']),
+    );
+  }
+}
 
 void main() {
   group('GamesPage Tests', () {
     late FakeFirebaseFirestore fakeFirestore;
+    late MockFirebaseAuth auth;
     late Widget testWidget;
+    late MockFirestoreService firestoreService;
 
     setUp(() async {
       fakeFirestore = FakeFirebaseFirestore();
+      auth = MockFirebaseAuth(mockUser: MockUser(
+      uid: 'test_uid',
+      email: 'test@example.com',
+      ), signedIn: true);
 
       final games = [
         {
@@ -56,12 +104,15 @@ void main() {
           'description': games[i]['description'],
           'bibliography': games[i]['bibliography'],
           'template': games[i]['template'],
-          'gameId': docRef,
+          'gameId': docRef.id,
         });
+        games[i]['gameId'] = docRef.id;
       }
 
+      firestoreService = MockFirestoreService(firestore: fakeFirestore);
+      firestoreService.setMockGames(games);
       testWidget = MaterialApp(
-        home: GamesPage(firestore: fakeFirestore),
+        home: GamesPage(firestore: fakeFirestore, auth: auth, firestoreService: firestoreService),
       );
     });
     
@@ -141,11 +192,10 @@ void main() {
       await tester.pumpWidget(testWidget);
       await tester.pumpAndSettle();
 
-      // Test load game functionality by tapping on the first card
       await tester.tap(find.byType(GestureDetector).first);
       await tester.pumpAndSettle();
 
-      expect(find.byType(ScaffoldMessenger), findsOneWidget);
+      expect(find.byType(GamesInitialScreen), findsOneWidget);
     });
 
     testWidgets('should display no results found message if no games match the filters', (WidgetTester tester) async {
