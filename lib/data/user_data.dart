@@ -1,14 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserData {
-  final String userName;
+  final String username;
   final String email;
   final String name;
   final String role;
   final DateTime birthdate;
 
   UserData({
-    required this.userName,
+    required this.username,
     required this.email,
     required this.name,
     required this.role,
@@ -26,7 +26,7 @@ class UserData {
       var data = snapshot.data() as Map<String, dynamic>;
 
       return UserData(
-        userName: data['username'],
+        username: data['username'],
         email: data['email'],
         name: data['name'],
         role: data['role'],
@@ -35,14 +35,5 @@ class UserData {
     } catch (e) {
       throw Exception("Error getting data from Firestore: $e");
     }
-  }
-}
-
-Future<UserData> fetchUserData(String userId, {FirebaseFirestore? firestore}) async {
-  try {
-    firestore ??= FirebaseFirestore.instance;
-    return await UserData.fromFirestore(userId, firestore);
-  } catch (e) {
-    throw Exception("Error loading data from Firestore: $e");
   }
 }

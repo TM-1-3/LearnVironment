@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:learnvironment/main_pages/widgets/tag.dart';
 
 class GameCard extends StatelessWidget {
   final String imagePath;
   final String gameTitle;
   final List<String> tags;
   final String gameId;
-  final Future<void> Function(String gameId) loadGame; // Nullable function
+  final Future<void> Function(String gameId) loadGame;
 
   const GameCard({
     super.key,
@@ -13,35 +14,77 @@ class GameCard extends StatelessWidget {
     required this.gameTitle,
     required this.tags,
     required this.gameId,
-    required this.loadGame, // Nullable function
+    required this.loadGame,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Column(
-        children: <Widget>[
-          GestureDetector(
-            onTap:  () => loadGame(gameId),
-            child: Image.asset(imagePath), // This is the image that you tap
-          ),
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Column(
-              children: <Widget>[
-                Text(gameTitle),
-                Row(
-                  children: tags
-                      .map((tag) => Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: Chip(label: Text(tag)),
-                  ))
-                      .toList(),
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.shade400,
+              blurRadius: 5,
+              spreadRadius: 2,
+              offset: Offset(0, 3),
+            )
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            GestureDetector(
+              onTap: () => loadGame(gameId),
+              child: ClipRRect(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+                child: Image.asset(
+                  imagePath,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
                 ),
-              ],
+              ),
             ),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    gameTitle,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 8),
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      List<Widget> tagWidgets = [];
+                      for (int i = 0; i < tags.length && i < 3; i++) {
+                        tagWidgets.add(TagWidget(tag: tags[i]));
+                      }
+                      if (tags.length > 3) {
+                        tagWidgets.add(
+                          TagWidget(tag: '+${tags.length - 3} more'),
+                        );
+                      }
+                      return Wrap(
+                        spacing: 5,
+                        runSpacing: 5,
+                        children: tagWidgets,
+                      );
+                    },
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

@@ -74,12 +74,3 @@ class GameData {
     }
   }
 }
-
-Future<GameData> fetchGameData(String idDataBase, {FirebaseFirestore? firestore}) async {
-  try {
-    firestore ??= FirebaseFirestore.instance;
-    return await GameData.fromFirestore(idDataBase, firestore);
-  } catch (e) {
-    throw Exception("Error loading data from Firestore: $e");
-  }
-}

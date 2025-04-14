@@ -2,10 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart'
     hide EmailAuthProvider;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:learnvironment/authentication/auth_service.dart';
-import 'package:learnvironment/authentication/pages/fix_account.dart';
-import 'package:learnvironment/authentication/pages/login_screen.dart';
+import 'package:learnvironment/authentication/fix_account.dart';
+import 'package:learnvironment/authentication/login_screen.dart';
 import 'package:learnvironment/developer/developer_home.dart';
+import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/services/firestore_service.dart';
 import 'package:learnvironment/student/student_home.dart';
 import 'package:learnvironment/teacher/teacher_home.dart';
 import 'package:provider/provider.dart';
@@ -14,26 +15,13 @@ import 'package:provider/provider.dart';
 class AuthGate extends StatelessWidget {
   final FirebaseFirestore firestore;
   final FirebaseAuth fireauth;
+  final FirestoreService firestoreService;
 
   // Constructor to accept firestore dependency
   AuthGate({super.key, FirebaseFirestore? firestore, FirebaseAuth? fireauth})
       : firestore = firestore ?? FirebaseFirestore.instance,
-        fireauth = fireauth ?? FirebaseAuth.instance;
-
-  // Function to fetch userType from Firestore
-  Future<String?> fetchUserType(String uid) async {
-    try {
-      final userDoc = await firestore.collection('users').doc(uid).get();
-      if (userDoc.exists) {
-        return userDoc['role']; // Fetch the "role" field
-      } else {
-        return null;
-      }
-    } catch (e) {
-      print("Error fetching user role: $e");
-      return null;
-    }
-  }
+        fireauth = fireauth ?? FirebaseAuth.instance,
+        firestoreService = FirestoreService(firestore: firestore);
 
   @override
   Widget build(BuildContext context) {
@@ -48,12 +36,12 @@ class AuthGate extends StatelessWidget {
 
             // If the user is not authenticated, navigate to the LoginScreen
             if (!snapshot.hasData) {
-              return LoginScreen(auth: fireauth); // Use your custom LoginScreen here
+              return LoginScreen(auth: fireauth);
             }
 
             final user = snapshot.data!;
             return FutureBuilder<String?>(
-              future: fetchUserType(user.uid),
+              future: firestoreService.fetchUserType(user.uid),
               builder: (context, userTypeSnapshot) {
                 if (userTypeSnapshot.connectionState ==
                     ConnectionState.waiting) {

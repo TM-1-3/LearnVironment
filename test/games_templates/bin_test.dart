@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:learnvironment/main_pages/data/game_data.dart';
+import 'package:learnvironment/data/game_data.dart';
 import 'package:mockito/mockito.dart';
 import 'package:learnvironment/games_templates/bin.dart';
 import 'package:fake_async/fake_async.dart';

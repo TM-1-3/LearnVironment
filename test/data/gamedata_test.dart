@@ -1,10 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
-import 'package:learnvironment/main_pages/data/game_data.dart';
+import 'package:learnvironment/data/game_data.dart';
 
 void main() {
-  late FirebaseFirestore firestore;
+  late FakeFirebaseFirestore firestore;
 
   setUp(() {
     firestore = FakeFirebaseFirestore();
@@ -133,7 +132,7 @@ void main() {
     });
 
     // Call the fetchGameData function
-    GameData gameData = await fetchGameData('game2', firestore: firestore);
+    GameData gameData = await GameData.fromFirestore('game2', firestore);
 
     // Verify that the fetched data is correct
     expect(gameData.gameLogo, 'game_logo.png');
@@ -143,15 +142,5 @@ void main() {
     expect(gameData.tags, ['strategy', 'simulation']);
     expect(gameData.gameTemplate, 'drag');
     expect(gameData.documentName, 'game2');
-  });
-
-  test('fetchGameData should throw exception if error occurs', () async {
-    try {
-      await fetchGameData('non_existing_game');
-      fail('Expected an exception to be thrown');
-    } catch (e) {
-      // Ensure that the exception message is what we expect
-      expect(e.toString(), contains('Error loading data from Firestore'));
-    }
   });
 }
