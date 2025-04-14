@@ -37,7 +37,7 @@ class _TeacherHomePage extends State<TeacherHomePage> {
     // Initialize the _pages map with the passed firestore and auth
     _pages[TabItem.statistics] = StatisticsPage();
     _pages[TabItem.home] = MainPage();
-    _pages[TabItem.games] = GamesPage(firestore: widget.firestore);
+    _pages[TabItem.games] = GamesPage();
   }
 
   // Method to handle bottom navigation tap

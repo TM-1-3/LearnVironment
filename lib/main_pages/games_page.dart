@@ -1,20 +1,18 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/games_templates/games_initial_screen.dart';
 import 'package:learnvironment/main_pages/widgets/game_card.dart';
 import 'package:learnvironment/services/firestore_service.dart';
+import 'package:learnvironment/services/game_cache_service.dart';
 
 class GamesPage extends StatefulWidget {
-  final FirebaseFirestore firestore;
   final FirebaseAuth auth;
   final FirestoreService firestoreService;
 
-  GamesPage({super.key, FirebaseFirestore? firestore, FirebaseAuth? auth, FirestoreService? firestoreService})
-      : firestore = firestore ?? FirebaseFirestore.instance,
-        auth = auth ?? FirebaseAuth.instance,
-        firestoreService = firestoreService ?? FirestoreService(firestore: firestore);
+  GamesPage({super.key, FirebaseAuth? auth, FirestoreService? firestoreService})
+      : auth = auth ?? FirebaseAuth.instance,
+        firestoreService = firestoreService ?? FirestoreService();
 
   @override
   GamesPageState createState() => GamesPageState();
@@ -33,7 +31,35 @@ class GamesPageState extends State<GamesPage> {
   }
 
   Future<void> _fetchGames() async {
-    List<Map<String, dynamic>> fetchedGames = await widget.firestoreService.getAllGames();
+    final cacheService = GameCacheService();
+    final cachedIds = await cacheService.getCachedGameIds();
+    List<Map<String, dynamic>> loadedGames = [];
+    // Try to load each cached game
+    for (final id in cachedIds) {
+      final cachedGame = await cacheService.getCachedGameData(id);
+      if (cachedGame != null) {
+        loadedGames.add({
+          'imagePath': cachedGame.gameLogo,
+          'gameTitle': cachedGame.gameName,
+          'tags': cachedGame.tags,
+          'gameId': cachedGame.documentName,
+        });
+      }
+    }
+    // Show cached games first (even if empty)
+    setState(() {
+      games = loadedGames;
+    });
+
+    // Fetch from Firestore in background to update list
+    final fetchedGames = await widget.firestoreService.getAllGames();
+
+    for (final game in fetchedGames) {
+      final gameId = game['gameId'];
+      final gameData = await widget.firestoreService.fetchGameData(gameId);
+      await cacheService.cacheGameData(gameData);
+    }
+
     setState(() {
       games = fetchedGames;
     });
@@ -57,20 +83,31 @@ class GamesPageState extends State<GamesPage> {
   }
 
   Future<void> loadGame(String gameId) async {
+    final cacheService = GameCacheService();
     try {
-      GameData gameData = await widget.firestoreService.fetchGameData(gameId);
+      GameData? gameData = await cacheService.getCachedGameData(gameId);
+
+      // If not cached, fetch and cache it
+      if (gameData == null) {
+        gameData = await widget.firestoreService.fetchGameData(gameId);
+        await cacheService.cacheGameData(gameData);
+      }
+
       if (mounted) {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => GamesInitialScreen(gameData: gameData, firestore: widget.firestore, firebaseAuth: widget.auth),
+            builder: (context) => GamesInitialScreen(
+              gameData: gameData!,
+              firebaseAuth: widget.auth,
+            ),
           ),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error Loading game: $e')),
+          SnackBar(content: Text('Error loading game: $e')),
         );
       }
     }

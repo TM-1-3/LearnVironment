@@ -64,7 +64,7 @@ class AuthGate extends StatelessWidget {
                 } else if (userType == 'teacher') {
                   return TeacherHomePage(firestore: firestore, auth: fireauth);
                 } else {
-                  return FixAccountPage(firestore: firestore, fireauth: fireauth);
+                  return FixAccountPage(firestoreService: firestoreService);
                 }
               },
             );

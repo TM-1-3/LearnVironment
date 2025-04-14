@@ -33,7 +33,7 @@ class _DeveloperHomePage extends State<DeveloperHomePage> {
     // Initialize the _pages map with the passed firestore and auth
     _pages[TabItem.statistics] = NewGamePage();
     _pages[TabItem.home] = MyGamesPage();
-    _pages[TabItem.games] = GamesPage(firestore: widget.firestore);
+    _pages[TabItem.games] = GamesPage();
   }
 
   // Method to handle bottom navigation tap

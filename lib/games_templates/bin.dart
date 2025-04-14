@@ -104,12 +104,12 @@ class BinScreenState extends State<BinScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: Text(widget.binData.gameName,),
-            leading: IconButton(  // Override the leading property
+            leading: IconButton(
               icon: Icon(Icons.arrow_back),
               onPressed: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => GamesPage()), // Navigate to GamesPage
+                  MaterialPageRoute(builder: (context) => GamesPage()),
                 );
               },
             )),

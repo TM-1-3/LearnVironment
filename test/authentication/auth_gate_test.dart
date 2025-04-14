@@ -20,12 +20,14 @@ class MockFirestoreService extends FirestoreService {
 void main() {
     group('AuthGate - Widget Navigation Tests', () {
       late FakeFirebaseFirestore fakeFirestore;
+      late MockFirestoreService firestoreService;
       late MockFirebaseAuth mockAuth;
       late Widget testWidget;
       late MockNavigatorObserver mockNavigatorObserver;
 
       setUp(() {
         fakeFirestore = FakeFirebaseFirestore();
+        firestoreService = MockFirestoreService(firestore: fakeFirestore);
         mockNavigatorObserver = MockNavigatorObserver();
       });
 
@@ -50,7 +52,7 @@ void main() {
             ),
           ],
           child: MaterialApp(
-            home: AuthGate(firestore: fakeFirestore, fireauth: mockAuth),
+            home: AuthGate(firestore: fakeFirestore, fireauth: mockAuth, firestoreService: firestoreService),
             navigatorObservers: [mockNavigatorObserver],
           ),
         );
@@ -84,7 +86,7 @@ void main() {
             ),
           ],
           child: MaterialApp(
-            home: AuthGate(firestore: fakeFirestore, fireauth: mockAuth),
+            home: AuthGate(firestore: fakeFirestore, fireauth: mockAuth, firestoreService: firestoreService),
             navigatorObservers: [mockNavigatorObserver],
           ),
         );
@@ -116,7 +118,7 @@ void main() {
             ),
           ],
           child: MaterialApp(
-            home: AuthGate(firestore: fakeFirestore, fireauth: mockAuth),
+            home: AuthGate(firestore: fakeFirestore, fireauth: mockAuth, firestoreService: firestoreService),
             navigatorObservers: [mockNavigatorObserver],
           ),
         );
@@ -140,7 +142,7 @@ void main() {
         await fakeFirestore.collection('users').doc('testDeveloper').set({
           'role': '', // Mock user role in Firestore
         });
-        AuthGate authGate = AuthGate(firestore: fakeFirestore, fireauth: mockAuth);
+        AuthGate authGate = AuthGate(firestore: fakeFirestore, fireauth: mockAuth, firestoreService: firestoreService);
 
         testWidget = MultiProvider(
           providers: [

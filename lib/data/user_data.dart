@@ -36,4 +36,24 @@ class UserData {
       throw Exception("Error getting data from Firestore: $e");
     }
   }
+
+  Map<String, String> toCache() {
+    return {
+      'username': username,
+      'email': email,
+      'name': name,
+      'role': role,
+      'birthdate': birthdate.toIso8601String(),
+    };
+  }
+
+  factory UserData.fromCache(Map<String, String> data) {
+    return UserData(
+      username: data['username'] ?? '',
+      email: data['email'] ?? '',
+      name: data['name'] ?? '',
+      role: data['role'] ?? '',
+      birthdate: DateTime.tryParse(data['birthdate'] ?? '') ?? DateTime(2000),
+    );
+  }
 }

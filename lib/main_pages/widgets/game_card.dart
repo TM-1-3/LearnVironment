@@ -51,15 +51,17 @@ class GameCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(10),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center, // Center content
                 children: [
-                  Text(
-                    gameTitle,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                  Center(  // Center the game title
+                    child: Text(
+                      gameTitle,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 8),
                   LayoutBuilder(
@@ -73,10 +75,12 @@ class GameCard extends StatelessWidget {
                           TagWidget(tag: '+${tags.length - 3} more'),
                         );
                       }
-                      return Wrap(
-                        spacing: 5,
-                        runSpacing: 5,
-                        children: tagWidgets,
+                      return Center(  // Center the tags
+                        child: Wrap(
+                          spacing: 5,
+                          runSpacing: 5,
+                          children: tagWidgets,
+                        ),
                       );
                     },
                   ),

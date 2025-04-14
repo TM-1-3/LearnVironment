@@ -65,7 +65,7 @@ void main() async {
         child: MaterialApp(
           routes: {
             '/auth_gate': (context) => AuthGate(fireauth: mockAuth, firestore: fakeFirestore),
-            '/fix_account': (context) => FixAccountPage(firestore: fakeFirestore, fireauth: mockAuth),
+            '/fix_account': (context) => FixAccountPage(),
             '/login': (context) => LoginScreen(),
             '/signup': (context) => SignUpScreen(),
           },

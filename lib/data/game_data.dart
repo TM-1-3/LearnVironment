@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class GameData {
@@ -9,7 +10,7 @@ class GameData {
   final String gameTemplate;
   final String documentName;
 
-  // Optional fields for quiz template
+  // These fields will only exist for quizzes
   final Map<String, List<String>>? questionsAndOptions;
   final Map<String, String>? correctAnswers;
 
@@ -29,48 +30,120 @@ class GameData {
     try {
       DocumentSnapshot snapshot = await firestore.collection('games').doc(gameId).get();
 
-      if (!snapshot.exists) {
-        throw Exception("Game not found!");
-      }
+      if (!snapshot.exists) throw Exception("Game not found!");
 
       var data = snapshot.data() as Map<String, dynamic>;
-
-      // Read template type
       String template = data['template'];
 
-      // Initialize optional fields
       Map<String, List<String>>? questionsAndOptions;
       Map<String, String>? correctAnswers;
 
-      // Add fields based on gameTemplate
       if (template == "quiz") {
         try {
           var rawQuestionsAndOptions = Map<String, dynamic>.from(data['questionsAndOptions'] ?? {});
           var rawCorrectAnswers = Map<String, dynamic>.from(data['correctAnswers'] ?? {});
 
-          questionsAndOptions = rawQuestionsAndOptions.map((key, value) {
-            return MapEntry(key, List<String>.from(value));
-          });
+          questionsAndOptions = rawQuestionsAndOptions.map(
+                (key, value) => MapEntry(key, List<String>.from(value)),
+          );
 
-          correctAnswers = rawCorrectAnswers.map((key, value) => MapEntry(key, value.toString()));
+          correctAnswers = rawCorrectAnswers.map(
+                (key, value) => MapEntry(key, value.toString()),
+          );
         } catch (e) {
           throw Exception("Error parsing quiz fields: $e");
         }
       }
 
+      if (template == "quiz") {
+        return GameData(
+          gameLogo: data['logo'],
+          gameName: data['name'],
+          gameDescription: data['description'],
+          gameBibliography: data['bibliography'],
+          tags: List<String>.from(data['tags'] ?? []),
+          gameTemplate: template,
+          documentName: snapshot.id,
+          questionsAndOptions: questionsAndOptions,
+          correctAnswers: correctAnswers,
+        );
+      } else {
+        return GameData(
+          gameLogo: data['logo'],
+          gameName: data['name'],
+          gameDescription: data['description'],
+          gameBibliography: data['bibliography'],
+          tags: List<String>.from(data['tags'] ?? []),
+          gameTemplate: template,
+          documentName: snapshot.id,
+        );
+      }
+    } catch (e) {
+      throw Exception("Error getting data from Firestore: $e");
+    }
+  }
+
+  // Convert to cache format: Only serialize quiz fields if applicable
+  Map<String, String> toCache() {
+    final Map<String, String> cacheData = {
+      'gameLogo': gameLogo,
+      'gameName': gameName,
+      'gameDescription': gameDescription,
+      'gameBibliography': gameBibliography,
+      'tags': jsonEncode(tags),
+      'gameTemplate': gameTemplate,
+      'documentName': documentName,
+    };
+
+    // Add quiz-specific fields only if it's a quiz game
+    if (gameTemplate == "quiz") {
+      cacheData['questionsAndOptions'] = jsonEncode(questionsAndOptions);
+      cacheData['correctAnswers'] = jsonEncode(correctAnswers);
+    }
+    return cacheData;
+  }
+
+// Deserialize from cache
+  factory GameData.fromCache(Map<String, String> data) {
+    String gameTemplate = data['gameTemplate'] ?? '';
+
+    // Declare quiz-specific fields
+    Map<String, List<String>>? questionsAndOptions;
+    Map<String, String>? correctAnswers;
+
+    // Only deserialize quiz fields if it's a "quiz" game
+    if (gameTemplate == "quiz") {
+      questionsAndOptions = data['questionsAndOptions'] != null
+          ? (jsonDecode(data['questionsAndOptions']!) as Map<String, dynamic>)
+          .map((key, value) => MapEntry(key, List<String>.from(value)))
+          : null;
+
+      correctAnswers = data['correctAnswers'] != null
+          ? Map<String, String>.from(jsonDecode(data['correctAnswers']!))
+          : null;
+
+      // For quiz games, return the GameData with questionsAndOptions and correctAnswers
       return GameData(
-        gameLogo: data['logo'],
-        gameName: data['name'],
-        gameDescription: data['description'],
-        gameBibliography: data['bibliography'],
-        tags: List<String>.from(data['tags'] ?? []),
-        gameTemplate: template,
-        documentName: snapshot.id,
+        gameLogo: data['gameLogo'] ?? '',
+        gameName: data['gameName'] ?? '',
+        gameDescription: data['gameDescription'] ?? '',
+        gameBibliography: data['gameBibliography'] ?? '',
+        tags: List<String>.from(jsonDecode(data['tags'] ?? '[]')),
+        gameTemplate: gameTemplate,
+        documentName: data['documentName'] ?? '',
         questionsAndOptions: questionsAndOptions,
         correctAnswers: correctAnswers,
       );
-    } catch (e) {
-      throw Exception("Error getting data from Firestore: $e");
+    } else {
+      return GameData(
+        gameLogo: data['gameLogo'] ?? '',
+        gameName: data['gameName'] ?? '',
+        gameDescription: data['gameDescription'] ?? '',
+        gameBibliography: data['gameBibliography'] ?? '',
+        tags: List<String>.from(jsonDecode(data['tags'] ?? '[]')),
+        gameTemplate: gameTemplate,
+        documentName: data['documentName'] ?? '',
+      );
     }
   }
 }

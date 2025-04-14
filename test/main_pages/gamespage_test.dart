@@ -112,7 +112,7 @@ void main() {
       firestoreService = MockFirestoreService(firestore: fakeFirestore);
       firestoreService.setMockGames(games);
       testWidget = MaterialApp(
-        home: GamesPage(firestore: fakeFirestore, auth: auth, firestoreService: firestoreService),
+        home: GamesPage(auth: auth, firestoreService: firestoreService),
       );
     });
     
