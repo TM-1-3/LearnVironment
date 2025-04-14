@@ -1,18 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:learnvironment/developer/my_games.dart';
 import 'package:learnvironment/developer/new_game.dart';
 import 'package:learnvironment/main_pages/games_page.dart';
 import 'package:learnvironment/main_pages/profile_screen.dart';
 
 class DeveloperHomePage extends StatefulWidget {
-  final FirebaseFirestore firestore;
-  final FirebaseAuth auth;
-
-  DeveloperHomePage({super.key, FirebaseFirestore? firestore, FirebaseAuth? auth})
-      : firestore = firestore ?? FirebaseFirestore.instance,
-        auth = auth ?? FirebaseAuth.instance;
+  DeveloperHomePage({super.key});
 
   @override
   State<DeveloperHomePage> createState() => _DeveloperHomePage();
@@ -56,7 +49,7 @@ class _DeveloperHomePage extends State<DeveloperHomePage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ProfileScreen(auth: widget.auth),
+                  builder: (context) => ProfileScreen(),
                 ),
               );
             },

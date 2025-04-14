@@ -53,7 +53,7 @@ void main() {
       }
 
       testWidget = MaterialApp(
-        home: StudentStatsPage(firestore: fakeFirestore),
+        home: StudentStatsPage(),
       );
     });
 
@@ -92,7 +92,7 @@ void main() {
       final emptyFirestore = FakeFirebaseFirestore();
 
       testWidget = MaterialApp(
-        home: StudentStatsPage(firestore: emptyFirestore),
+        home: StudentStatsPage(),
       );
 
       await tester.pumpWidget(testWidget);

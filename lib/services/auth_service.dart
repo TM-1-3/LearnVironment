@@ -29,6 +29,39 @@ class AuthService extends ChangeNotifier {
     }
   }
 
+  Future<void> updateUsername(String newUsername) async {
+    try {
+      _firebaseAuth.currentUser?.updateDisplayName(newUsername);
+    } catch (e) {
+      throw Exception("Error updating username: $e");
+    }
+  }
+
+  Future<void> updateEmail(String newEmail, String password) async {
+    try {
+      User? user = _firebaseAuth.currentUser;
+      final AuthCredential credential = EmailAuthProvider.credential(
+        email: user?.email ?? '',
+        password: password,
+      );
+
+      await user?.reauthenticateWithCredential(credential);
+
+      // Only update the email if the new email is different from the current one
+      if (newEmail != user?.email) {
+        await user?.verifyBeforeUpdateEmail(newEmail); // Update email in Firebase
+        print("Email updated successfully.");
+
+        // Send verification email only if the email is not already verified
+        if (!user!.emailVerified) {
+          await user.sendEmailVerification();
+        }
+      }
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
   // Sign out method
   Future<void> signOut() async {
     await _firebaseAuth.signOut();

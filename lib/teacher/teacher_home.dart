@@ -60,7 +60,7 @@ class _TeacherHomePage extends State<TeacherHomePage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ProfileScreen(auth: widget.auth),
+                  builder: (context) => ProfileScreen(),
                 ),
               );
             },
