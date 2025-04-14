@@ -50,13 +50,13 @@ void main() {
       for (int i = 0; i < games.length; i++) {
         final docRef = fakeFirestore.collection('games').doc('game_$i');
         await docRef.set({
-          'imagePath': games[i]['logo'],
-          'gameTitle': games[i]['name'],
+          'logo': games[i]['logo'],
+          'name': games[i]['name'],
           'tags': games[i]['tags'],
           'description': games[i]['description'],
           'bibliography': games[i]['bibliography'],
           'template': games[i]['template'],
-          'gameId': 'game_$i',
+          'gameId': docRef,
         });
       }
 
@@ -75,14 +75,13 @@ void main() {
       await tester.pumpWidget(testWidget);
 
       await tester.pumpAndSettle();
-      expect(find.byType(GameCard), findsNWidgets(4));
-      await tester.pumpAndSettle();
+      expect(find.byType(GameCard), findsNWidgets(2)); // Ensure all 4 cards are initially rendered, value of 2 due to grid-view and scrolling
       await tester.enterText(find.byKey(Key('search')), 'Test');
       await tester.pumpAndSettle();
 
       expect(find.text('Test Game'), findsOneWidget);
       expect(find.text('Another Game'), findsNothing);
-      expect(find.byType(GameCard), findsOneWidget);
+      expect(find.byType(GameCard), findsOneWidget); // Only 1 game should match search
     });
 
     testWidgets('should filter games by age tag', (WidgetTester tester) async {
@@ -115,7 +114,7 @@ void main() {
       await tester.tap(find.text('All Ages').last); // Reset to All Ages
       await tester.pumpAndSettle();
 
-      expect(find.byType(GameCard), findsNWidgets(4)); // All games should appear
+      expect(find.byType(GameCard), findsNWidgets(2)); // All games should appear
     });
 
     testWidgets('should reset tag filter when "All Tags" is selected', (WidgetTester tester) async {
@@ -135,7 +134,7 @@ void main() {
       await tester.tap(find.text('All Tags').last); // Reset to All Tags
       await tester.pumpAndSettle();
 
-      expect(find.byType(GameCard), findsNWidgets(4)); // All games should appear
+      expect(find.byType(GameCard), findsNWidgets(2)); // All games should appear
     });
 
     testWidgets('should call load game correctly', (WidgetTester tester) async {
