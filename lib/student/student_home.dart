@@ -35,7 +35,7 @@ class _StudentHomePage extends State<StudentHomePage> {
   void initState() {
     super.initState();
 
-    _pages[TabItem.statistics] = StudentStatsPage(firestore: widget.firestore, auth: widget.auth);
+    _pages[TabItem.statistics] = StudentStatsPage();
     _pages[TabItem.home] = MainPage();
     _pages[TabItem.games] = GamesPage();
   }

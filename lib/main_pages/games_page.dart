@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/games_templates/games_initial_screen.dart';
 import 'package:learnvironment/main_pages/widgets/game_card.dart';
 import 'package:learnvironment/services/auth_service.dart';
@@ -42,8 +41,6 @@ class GamesPageState extends State<GamesPage> {
       // Handle error if necessary
     }
   }
-
-
 
   List<Map<String, dynamic>> getFilteredGames() {
     return games.where((game) {

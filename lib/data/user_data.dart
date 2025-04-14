@@ -14,10 +14,10 @@ class UserData {
     required this.name,
     required this.role,
     required this.birthdate,
-    this.gamesPlayed = const [],
+    required this.gamesPlayed,
   });
 
-  // Method to convert UserData to cache format
+  // Convert UserData to a Map for cache storage
   Map<String, String> toCache() {
     return {
       'id': id,
@@ -26,11 +26,11 @@ class UserData {
       'name': name,
       'role': role,
       'birthdate': birthdate.toIso8601String(),
-      'gamesPlayed': gamesPlayed.join(','), // Comma-separated list
+      'gamesPlayed': gamesPlayed.join(','),
     };
   }
 
-  // Cache recovery with default fallbacks in case of missing or malformed data
+  // Convert Map back to UserData (factory method)
   factory UserData.fromCache(Map<String, String> data) {
     return UserData(
       id: data['id'] ?? '',
@@ -60,7 +60,7 @@ class UserData {
       name: name ?? this.name,
       role: role ?? this.role,
       birthdate: birthdate ?? this.birthdate,
-      gamesPlayed: gamesPlayed ?? this.gamesPlayed,  // Modify gamesPlayed if needed
+      gamesPlayed: gamesPlayed ?? this.gamesPlayed,
     );
   }
 }

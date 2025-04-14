@@ -6,7 +6,6 @@ import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/games_templates/games_initial_screen.dart';
 import 'package:learnvironment/games_templates/quiz.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
-import 'package:learnvironment/services/data_service.dart';
 
 void main() {
   late MockFirebaseAuth mockAuth;
@@ -14,7 +13,6 @@ void main() {
   late GameData gameData;
   late MockUser mockUser;
   late Widget testWidget;
-  late DataService dataService;
 
   setUp(() async {
     mockUser = MockUser(uid: 'user123', email: 'email@gmail.com');

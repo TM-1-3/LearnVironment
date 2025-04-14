@@ -29,30 +29,44 @@ class UserCacheService {
   Future<UserData?> getCachedUserData() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final keys = ['id', 'username', 'email', 'name', 'role', 'birthdate'];
+      final keys = ['id', 'username', 'email', 'name', 'role', 'birthdate', 'gamesPlayed'];
       final Map<String, String> cachedData = {};
 
       print('[CACHE] Loading user data from cache...');
 
-      // Attempt to retrieve each key from SharedPreferences
+      // Log and retrieve each key
       for (final key in keys) {
         final value = prefs.getString(key);
+        print('[CACHE DEBUG] $key => $value');
+
         if (value == null) {
           print('[CACHE] Cache miss for key: $key');
-          return null;  // If any key is missing, return null and abort
+          return null; // Fail early if anything is missing
         }
+
         cachedData[key] = value;
       }
 
       print('[CACHE] Loaded user data from cache: $cachedData');
 
-      // Convert cached data into a UserData object
-      return UserData.fromCache(cachedData);
+      // Return reconstructed UserData
+      return UserData(
+        id: cachedData['id']!,
+        username: cachedData['username']!,
+        email: cachedData['email']!,
+        name: cachedData['name']!,
+        role: cachedData['role']!,
+        birthdate: DateTime.tryParse(cachedData['birthdate']!) ?? DateTime(2000),
+        gamesPlayed: cachedData['gamesPlayed']!.isEmpty
+            ? []
+            : cachedData['gamesPlayed']!.split(','),
+      );
     } catch (e) {
       print('[CACHE ERROR] Error retrieving cached user data: $e');
-      return null;  // Return null if an error occurs during retrieval
+      return null;
     }
   }
+
 
   // Clear user data from cache with error handling and debug prints
   Future<void> clearUserCache() async {
@@ -101,6 +115,25 @@ class UserCacheService {
     } catch (e) {
       print('[UserCacheService] Error updating cached gamesPlayed: $e');
       rethrow;
+    }
+  }
+
+  Future<List<String>> getCachedGamesPlayed() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final rawGamesPlayed = prefs.getString('gamesPlayed');
+
+      if (rawGamesPlayed == null || rawGamesPlayed.isEmpty) {
+        print('[CACHE] No cached gamesPlayed found.');
+        return [];
+      }
+
+      final games = rawGamesPlayed.split(',').where((id) => id.isNotEmpty).toList();
+      print('[CACHE] Loaded gamesPlayed from cache: $games');
+      return games;
+    } catch (e) {
+      print('[CACHE ERROR] Failed to get cached gamesPlayed: $e');
+      return [];
     }
   }
 }

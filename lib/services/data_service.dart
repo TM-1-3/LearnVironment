@@ -17,19 +17,56 @@ class DataService {
     _gameCacheService = Provider.of<GameCacheService>(context, listen: false);
   }
 
+  Future<List<Map<String, dynamic>>> getPlayedGames(String userId) async {
+    try {
+      // Try from cache first
+      final cachedGames = await _userCacheService.getCachedGamesPlayed();
+
+      if (cachedGames.isNotEmpty) {
+        print('[DataService] Loaded gamesPlayed from cache: $cachedGames');
+
+        final games = await Future.wait(cachedGames.map((id) async {
+          final game = await getGameData(id); // Uses cache or Firestore internally
+          if (game != null) {
+            return {
+              'imagePath': game.gameLogo,
+              'gameTitle': game.gameName,
+              'tags': game.tags,
+              'gameId': game.documentName,
+            };
+          }
+          return null;
+        }));
+
+        return games.whereType<Map<String, dynamic>>().toList();
+      }
+
+      // Fallback to Firestore if cache is empty
+      print('[DataService] Cache empty — falling back to Firestore');
+
+      return await _firestoreService.getPlayedGames(userId);
+    } catch (e, stack) {
+      print('[DataService] Error in getPlayedGames: $e\n$stack');
+      return [];
+    }
+  }
+
   // Function to update the 'gamesPlayed' array in both Firestore and the cache
   Future<void> updateUserGamesPlayed(String userId, String gameId) async {
     try {
+      print('[DataService] Updating gamesPlayed for userId: $userId, gameId: $gameId');
+
       // Update Firestore
       await _firestoreService.updateUserGamesPlayed(userId, gameId);
+      print('[DataService] Firestore updated successfully');
 
-      // Fetch the user data from cache and update it
+      // Fetch the user data from cache
       final cachedUser = await _userCacheService.getCachedUserData();
       if (cachedUser != null && cachedUser.id == userId) {
-        // If user data is cached, update the 'gamesPlayed' field in the cache
-        List<String> updatedGamesPlayed = List.from(cachedUser.gamesPlayed); // Copy current list
-        updatedGamesPlayed.remove(gameId);  // Remove the old gameId
-        updatedGamesPlayed.insert(0, gameId);  // Add the new gameId at the beginning
+        print('[DataService] Loaded cached user data');
+        List<String> updatedGamesPlayed = List.from(cachedUser.gamesPlayed);
+        updatedGamesPlayed.remove(gameId);
+        updatedGamesPlayed.insert(0, gameId);
 
         // Create a new UserData object with updated gamesPlayed using copyWith
         final updatedUser = cachedUser.copyWith(
@@ -38,7 +75,11 @@ class DataService {
 
         // Cache the updated user data
         await _userCacheService.cacheUserData(updatedUser);
+        print('[DataService] Cached user data updated with new gamesPlayed');
+      } else {
+        print('[DataService] User data not found in cache');
       }
+
     } catch (e) {
       print('[DataService] Error updating user\'s gamesPlayed: $e');
       throw Exception("Error updating user's gamesPlayed");
@@ -47,7 +88,9 @@ class DataService {
 
   Future<UserData?> getUserData(String userId) async {
     try {
+      // Try loading user data from cache
       final cachedUser = await _userCacheService.getCachedUserData();
+
       if (cachedUser != null && cachedUser.id == userId) {
         print('[DataService] Loaded user from cache');
         return cachedUser;
@@ -56,12 +99,14 @@ class DataService {
       final freshUser = await _firestoreService.fetchUserData(userId);
       await _userCacheService.cacheUserData(freshUser);
       print('[DataService] Loaded user from Firestore and cached it');
+
       return freshUser;
     } catch (e) {
       print('[DataService] Error getting user data: $e');
       return null;
     }
   }
+
 
   Future<GameData?> getGameData(String gameId) async {
     try {
