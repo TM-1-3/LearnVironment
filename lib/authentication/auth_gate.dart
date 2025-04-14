@@ -18,10 +18,10 @@ class AuthGate extends StatelessWidget {
   final FirestoreService firestoreService;
 
   // Constructor to accept firestore dependency
-  AuthGate({super.key, FirebaseFirestore? firestore, FirebaseAuth? fireauth})
+  AuthGate({super.key, FirebaseFirestore? firestore, FirebaseAuth? fireauth, FirestoreService? firestoreService})
       : firestore = firestore ?? FirebaseFirestore.instance,
         fireauth = fireauth ?? FirebaseAuth.instance,
-        firestoreService = FirestoreService(firestore: firestore);
+        firestoreService = firestoreService ?? FirestoreService(firestore: firestore);
 
   @override
   Widget build(BuildContext context) {
@@ -34,9 +34,8 @@ class AuthGate extends StatelessWidget {
               return const Center(child: CircularProgressIndicator());
             }
 
-            // If the user is not authenticated, navigate to the LoginScreen
             if (!snapshot.hasData) {
-              return LoginScreen(auth: fireauth);
+              return LoginScreen();
             }
 
             final user = snapshot.data!;

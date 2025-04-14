@@ -66,8 +66,8 @@ void main() async {
           routes: {
             '/auth_gate': (context) => AuthGate(fireauth: mockAuth, firestore: fakeFirestore),
             '/fix_account': (context) => FixAccountPage(firestore: fakeFirestore, fireauth: mockAuth),
-            '/login': (context) => LoginScreen(auth: mockAuth),
-            '/signup': (context) => SignUpScreen(firestore: fakeFirestore, auth: mockAuth),
+            '/login': (context) => LoginScreen(),
+            '/signup': (context) => SignUpScreen(),
           },
           home: App(firestore: fakeFirestore, fireauth: mockAuth),
         ),

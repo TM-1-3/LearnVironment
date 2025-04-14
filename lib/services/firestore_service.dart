@@ -104,4 +104,31 @@ class FirestoreService {
       return null;
     }
   }
+
+  Future<void> registerUser({
+    required String uid,
+    required String name,
+    required String username,
+    required String selectedAccountType,
+    required String email,
+    required String birthDate
+}) async {
+    try {
+      if (selectedAccountType == '') {
+        throw Exception("No selected Account Type");
+      }
+      await _firestore
+          .collection('users')
+          .doc(uid)
+          .set({
+        'name': name,
+        'username': username,
+        'role': selectedAccountType,
+        'email': email,
+        'birthdate': birthDate,
+      });
+    } catch(e) {
+      throw Exception("Unable to create user!");
+    }
+  }
 }

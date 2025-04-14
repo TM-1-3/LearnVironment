@@ -1,14 +1,14 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/services/firestore_service.dart';
 
 class SignUpScreen extends StatefulWidget {
-  final FirebaseAuth auth;
-  final FirebaseFirestore firestore;
+  final AuthService authService;
+  final FirestoreService firestoreService;
 
-  SignUpScreen({super.key, FirebaseAuth? auth, FirebaseFirestore? firestore})
-      : auth = auth ?? FirebaseAuth.instance,
-        firestore = firestore ?? FirebaseFirestore.instance;
+  SignUpScreen({super.key, AuthService? authService, FirestoreService? firestoreService})
+      : authService = authService ?? AuthService(),
+        firestoreService = firestoreService ?? FirestoreService();
 
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
@@ -20,7 +20,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _confirmPasswordController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
-
   DateTime? _birthDate;
 
   String? _selectedAccountType;
@@ -43,6 +42,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Future<void> _registerUser() async {
+    setState(() {
+      _isButtonEnabled = false;
+    });
     try {
       // Retrieve user input
       String email = _emailController.text.trim();
@@ -66,83 +68,44 @@ class _SignUpScreenState extends State<SignUpScreen> {
         return;
       }
 
-      // Disable the register button to prevent multiple clicks
-      setState(() {
-        _isButtonEnabled = false;
-      });
+      String? uid = await widget.authService.registerUser(username: username, email: email, password: password);
 
-      // Register the user with Firebase Authentication
-      UserCredential userCredential = await widget.auth
-          .createUserWithEmailAndPassword(
+      if (uid == null) {
+        throw Exception("Error registering user");
+      }
+
+      await widget.firestoreService.registerUser(
+        uid: uid,
+        name: name,
+        username: username,
         email: email,
-        password: password,
+        selectedAccountType: _selectedAccountType ?? '',
+        birthDate: _birthDate!.toIso8601String(),
       );
 
-      // Update the display name for the user in Firebase Authentication
-      await userCredential.user?.updateDisplayName(username);
-
-      // Save user information to Firestore
-      await widget.firestore
-          .collection('users')
-          .doc(userCredential.user?.uid)
-          .set({
-        'name': name,
-        'username': username,
-        'role': _selectedAccountType,
-        'email': email,
-        'birthdate': _birthDate?.toIso8601String(),
-      });
-
-      // Send the email verification
-      await userCredential.user?.sendEmailVerification();
-
-      // Show confirmation message
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text(
-              'Account created successfully! Please verify your email.')),
+          const SnackBar(content: Text('Account created successfully! Please verify your email.')),
         );
       }
 
-      // Go to the next page
+      _emailController.clear();
+      _passwordController.clear();
+      _confirmPasswordController.clear();
+      _usernameController.clear();
+      _nameController.clear();
+
       if (mounted) {
         Navigator.of(context).pushReplacementNamed('/auth_gate');
       }
-    } on FirebaseAuthException catch (e) {
-      String errorMessage = e.code;
 
-      switch (e.code) {
-        case "ERROR_EMAIL_ALREADY_IN_USE":
-        case "account-exists-with-different-credential":
-        case "email-already-in-use":
-          errorMessage = "Email already used. Use login page.";
-        case "ERROR_WRONG_PASSWORD":
-        case "wrong-password":
-          errorMessage = "Wrong email/password combination.";
-        case "ERROR_USER_NOT_FOUND":
-        case "user-not-found":
-          errorMessage = "No user found with this email.";
-        case "ERROR_USER_DISABLED":
-        case "user-disabled":
-          errorMessage = "User disabled.";
-        case "ERROR_TOO_MANY_REQUESTS":
-        case "ERROR_OPERATION_NOT_ALLOWED":
-        case "operation-not-allowed":
-          errorMessage = "Too many requests to register into this account.";
-        case "ERROR_INVALID_EMAIL":
-        case "invalid-email":
-          errorMessage = "Email address is invalid.";
-        default:
-          errorMessage = "Registration failed. Please try again.";
-      }
-
+    } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(errorMessage)),
+          SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
         );
       }
     } finally {
-      // Re-enable the button after the operation is complete
       setState(() {
         _isButtonEnabled = true;
       });

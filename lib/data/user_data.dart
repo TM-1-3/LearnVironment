@@ -30,7 +30,7 @@ class UserData {
         email: data['email'],
         name: data['name'],
         role: data['role'],
-        birthdate: (data['birthdate'] as Timestamp).toDate(),  // Convert Firestore Timestamp to DateTime
+        birthdate: (data['birthdate'] as Timestamp).toDate(),
       );
     } catch (e) {
       throw Exception("Error getting data from Firestore: $e");

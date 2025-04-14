@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:learnvironment/games_templates/games_initial_screen.dart';
 import 'package:learnvironment/main_pages/widgets/game_card.dart';
-import 'package:learnvironment/services/firestore_service.dart';
 import 'package:learnvironment/student/student_stats.dart';
 
 void main() {

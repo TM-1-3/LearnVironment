@@ -19,7 +19,6 @@ class MockFirestoreService extends FirestoreService {
 
 void main() {
     group('AuthGate - Widget Navigation Tests', () {
-      late MockFirestoreService firestoreService;
       late FakeFirebaseFirestore fakeFirestore;
       late MockFirebaseAuth mockAuth;
       late Widget testWidget;
@@ -27,7 +26,6 @@ void main() {
 
       setUp(() {
         fakeFirestore = FakeFirebaseFirestore();
-        firestoreService = MockFirestoreService(firestore: fakeFirestore);
         mockNavigatorObserver = MockNavigatorObserver();
       });
 

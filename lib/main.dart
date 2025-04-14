@@ -48,8 +48,8 @@ class App extends StatelessWidget {
       routes: {
         '/auth_gate': (context) => AuthGate(firestore: firestore, fireauth: fireauth),
         '/fix_account': (context) => FixAccountPage(firestore: firestore, fireauth: fireauth),
-        '/login': (context) => LoginScreen(auth: fireauth),
-        '/signup': (context) => SignUpScreen(auth: fireauth, firestore: firestore),
+        '/login': (context) => LoginScreen(),
+        '/signup': (context) => SignUpScreen(),
       },
     );
   }
