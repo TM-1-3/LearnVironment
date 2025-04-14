@@ -5,10 +5,9 @@ import 'package:learnvironment/authentication/login_screen.dart';
 import 'package:learnvironment/data/user_data.dart';
 import 'package:learnvironment/developer/developer_home.dart';
 import 'package:learnvironment/services/auth_service.dart';
-import 'package:learnvironment/services/firestore_service.dart';
-import 'package:learnvironment/services/user_cache_service.dart';
 import 'package:learnvironment/student/student_home.dart';
 import 'package:learnvironment/teacher/teacher_home.dart';
+import 'package:learnvironment/services/data_service.dart';
 import 'package:provider/provider.dart';
 
 class AuthGate extends StatelessWidget {
@@ -17,22 +16,20 @@ class AuthGate extends StatelessWidget {
     return Consumer<AuthService>(
       builder: (context, authService, _) {
         return StreamBuilder<User?>(
-          stream: authService.authStateChanges, // Listen to auth state changes
+          stream: authService.authStateChanges,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             }
 
-            // If user is not logged in, show login screen
             if (!snapshot.hasData) {
               return LoginScreen();
             }
 
             final user = snapshot.data!;
 
-            // Using FutureBuilder to fetch user data
             return FutureBuilder<UserData?>(
-              future: _getUserData(context, user.uid),
+              future: _loadUserData(context, user.uid),
               builder: (context, userDataSnapshot) {
                 if (userDataSnapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
@@ -49,12 +46,10 @@ class AuthGate extends StatelessWidget {
 
                 final userData = userDataSnapshot.data;
 
-                // If user data is not found or invalid role, navigate to fix account page
                 if (userData == null || userData.role.isEmpty) {
                   return FixAccountPage();
                 }
 
-                // Navigate to appropriate home page based on role
                 return _navigateToHomePage(userData.role);
               },
             );
@@ -64,27 +59,11 @@ class AuthGate extends StatelessWidget {
     );
   }
 
-  // Fetch user data and return it
-  Future<UserData?> _getUserData(BuildContext context, String userId) async {
-    final userCacheService = Provider.of<UserCacheService>(context, listen: false);
-
-    // Try to get cached user data
-    UserData? userData = await userCacheService.getCachedUserData();
-
-    // If cached data is unavailable, fetch it from Firestore
-    if (userData == null) {
-      if (context.mounted) {
-        final firestoreService = Provider.of<FirestoreService>(
-            context, listen: false);
-        userData = await firestoreService.fetchUserData(userId);
-        await userCacheService.cacheUserData(userData);
-      }
-    }
-
-    return userData;
+  Future<UserData?> _loadUserData(BuildContext context, String userId) async {
+    final dataService = Provider.of<DataService>(context, listen: false);
+    return await dataService.getUserData(userId);
   }
 
-  // Navigate to the correct page based on user role
   Widget _navigateToHomePage(String role) {
     switch (role) {
       case 'developer':

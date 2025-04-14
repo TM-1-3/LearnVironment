@@ -7,6 +7,7 @@ class UserData {
   final String name;
   final String role;
   final DateTime birthdate;
+  final List<String> gamesPlayed;
 
   UserData({
     required this.id,
@@ -15,42 +16,31 @@ class UserData {
     required this.name,
     required this.role,
     required this.birthdate,
+    this.gamesPlayed = const [],
   });
 
   // From Firestore method with better error handling
   static Future<UserData> fromFirestore(String userId, FirebaseFirestore firestore) async {
     try {
-      // Fetch the document from Firestore
       DocumentSnapshot snapshot = await firestore.collection('users').doc(userId).get();
 
-      // Check if the document exists
       if (!snapshot.exists) {
         throw Exception("User not found in Firestore for ID: $userId");
       }
 
       var data = snapshot.data() as Map<String, dynamic>;
 
-      // Check for the required fields in the data
-      if (data['username'] == null || data['email'] == null || data['name'] == null || data['role'] == null || data['birthdate'] == null) {
-        throw Exception("Missing required user fields in Firestore document for user ID: $userId");
-      }
-
-      // Safely parse the birthdate field and handle potential issues
       var birthdateField = data['birthdate'];
       DateTime birthdateValue;
 
-      // Check if the birthdate is a Timestamp
       if (birthdateField is Timestamp) {
         birthdateValue = birthdateField.toDate();
       } else if (birthdateField is String) {
-        // If the birthdate is a String, try to parse it to DateTime
-        birthdateValue = DateTime.tryParse(birthdateField) ?? DateTime(2000); // Fallback date if parsing fails
+        birthdateValue = DateTime.tryParse(birthdateField) ?? DateTime(2000);
       } else {
-        // If the birthdate is neither a Timestamp nor a String, throw an error
-        throw Exception("Invalid birthdate format for user ID: $userId");
+        birthdateValue = DateTime(2000);
       }
 
-      // Return the UserData object
       return UserData(
         id: userId,
         username: data['username'] ?? 'Unknown User',
@@ -58,9 +48,9 @@ class UserData {
         name: data['name'] ?? 'Unknown Name',
         role: data['role'] ?? 'Unknown Role',
         birthdate: birthdateValue,
+        gamesPlayed: List<String>.from(data['gamesPlayed'] ?? []),
       );
     } catch (e) {
-      // Log detailed error message and rethrow
       print('Error loading user data for userId: $userId: $e');
       throw Exception("Error getting data from Firestore for userId: $userId: $e");
     }
@@ -74,7 +64,8 @@ class UserData {
       'email': email,
       'name': name,
       'role': role,
-      'birthdate': birthdate.toIso8601String(), // Convert birthdate to string for caching
+      'birthdate': birthdate.toIso8601String(),
+      'gamesPlayed': gamesPlayed.join(','),
     };
   }
 
@@ -86,7 +77,29 @@ class UserData {
       email: data['email'] ?? 'Unknown Email',
       name: data['name'] ?? 'Unknown Name',
       role: data['role'] ?? 'Unknown Role',
-      birthdate: DateTime.tryParse(data['birthdate'] ?? '') ?? DateTime(2000), // Fallback to 2000 if parsing fails
+      birthdate: DateTime.tryParse(data['birthdate'] ?? '') ?? DateTime(2000),
+      gamesPlayed: (data['gamesPlayed']?.split(',') ?? []),
+    );
+  }
+
+  // CopyWith method to create a new UserData instance with modified fields
+  UserData copyWith({
+    String? id,
+    String? username,
+    String? email,
+    String? name,
+    String? role,
+    DateTime? birthdate,
+    List<String>? gamesPlayed,
+  }) {
+    return UserData(
+      id: id ?? this.id,
+      username: username ?? this.username,
+      email: email ?? this.email,
+      name: name ?? this.name,
+      role: role ?? this.role,
+      birthdate: birthdate ?? this.birthdate,
+      gamesPlayed: gamesPlayed ?? this.gamesPlayed,  // Modify gamesPlayed if needed
     );
   }
 }

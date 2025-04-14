@@ -1,18 +1,13 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/games_templates/games_initial_screen.dart';
 import 'package:learnvironment/main_pages/widgets/game_card.dart';
-import 'package:learnvironment/services/firestore_service.dart';
-import 'package:learnvironment/services/game_cache_service.dart';
+import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/services/data_service.dart';
+import 'package:provider/provider.dart';
 
 class GamesPage extends StatefulWidget {
-  final FirebaseAuth auth;
-  final FirestoreService firestoreService;
-
-  GamesPage({super.key, FirebaseAuth? auth, FirestoreService? firestoreService})
-      : auth = auth ?? FirebaseAuth.instance,
-        firestoreService = firestoreService ?? FirestoreService();
+  const GamesPage({super.key});
 
   @override
   GamesPageState createState() => GamesPageState();
@@ -31,39 +26,24 @@ class GamesPageState extends State<GamesPage> {
   }
 
   Future<void> _fetchGames() async {
-    final cacheService = GameCacheService();
-    final cachedIds = await cacheService.getCachedGameIds();
-    List<Map<String, dynamic>> loadedGames = [];
-    // Try to load each cached game
-    for (final id in cachedIds) {
-      final cachedGame = await cacheService.getCachedGameData(id);
-      if (cachedGame != null) {
-        loadedGames.add({
-          'imagePath': cachedGame.gameLogo,
-          'gameTitle': cachedGame.gameName,
-          'tags': cachedGame.tags,
-          'gameId': cachedGame.documentName,
-        });
-      }
+    try {
+      // Use DataService to handle everything
+      final dataService = Provider.of<DataService>(context, listen: false);
+
+      // Fetch the games (this method should handle fetching from cache and Firestore)
+      final fetchedGames = await dataService.getAllGames();
+
+      // Update the UI with the games
+      setState(() {
+        games = fetchedGames;
+      });
+    } catch (e) {
+      print('[GamesPage] Error fetching games: $e');
+      // Handle error if necessary
     }
-    // Show cached games first (even if empty)
-    setState(() {
-      games = loadedGames;
-    });
-
-    // Fetch from Firestore in background to update list
-    final fetchedGames = await widget.firestoreService.getAllGames();
-
-    for (final game in fetchedGames) {
-      final gameId = game['gameId'];
-      final gameData = await widget.firestoreService.fetchGameData(gameId);
-      await cacheService.cacheGameData(gameData);
-    }
-
-    setState(() {
-      games = fetchedGames;
-    });
   }
+
+
 
   List<Map<String, dynamic>> getFilteredGames() {
     return games.where((game) {
@@ -74,7 +54,8 @@ class GamesPageState extends State<GamesPage> {
         orElse: () => '',
       );
 
-      final matchesQuery = _searchQuery.isEmpty || gameTitle.contains(_searchQuery.toLowerCase());
+      final matchesQuery =
+          _searchQuery.isEmpty || gameTitle.contains(_searchQuery.toLowerCase());
       final matchesTag = _selectedTag == null || tags.contains(_selectedTag);
       final matchesAge = _selectedAge == null || ageTag == 'Age: ${_selectedAge!}';
 
@@ -83,26 +64,22 @@ class GamesPageState extends State<GamesPage> {
   }
 
   Future<void> loadGame(String gameId) async {
-    final cacheService = GameCacheService();
     try {
-      GameData? gameData = await cacheService.getCachedGameData(gameId);
+      final dataService = Provider.of<DataService>(context, listen: false);
+      final authService = Provider.of<AuthService>(context, listen: false);
 
-      // If not cached, fetch and cache it
-      if (gameData == null) {
-        gameData = await widget.firestoreService.fetchGameData(gameId);
-        await cacheService.cacheGameData(gameData);
-      }
+      final gameData = await dataService.getGameData(gameId);
+      final userId = await authService.getUid();
 
-      if (mounted) {
+      if (gameData != null && userId.isNotEmpty && mounted) {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => GamesInitialScreen(
-              gameData: gameData!,
-              firebaseAuth: widget.auth,
-            ),
+            builder: (context) => GamesInitialScreen(gameData: gameData),
           ),
         );
+
+        await dataService.updateUserGamesPlayed(userId, gameId);
       }
     } catch (e) {
       if (mounted) {
@@ -176,7 +153,7 @@ class GamesPageState extends State<GamesPage> {
           Expanded(
             child: LayoutBuilder(
               builder: (context, constraints) {
-                var mainAxisExtent = 600.0;
+                double mainAxisExtent = 600.0;
                 if (constraints.maxWidth <= 600) {
                   mainAxisExtent = constraints.maxWidth - 40;
                 } else if (constraints.maxWidth <= 1000) {
@@ -194,7 +171,7 @@ class GamesPageState extends State<GamesPage> {
                     crossAxisCount: 2,
                     crossAxisSpacing: 10.0,
                     mainAxisSpacing: 10.0,
-                    mainAxisExtent: mainAxisExtent, // Fixed height for items
+                    mainAxisExtent: mainAxisExtent,
                   ),
                   itemCount: filteredGames.length,
                   itemBuilder: (context, index) {

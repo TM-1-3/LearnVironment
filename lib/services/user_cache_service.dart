@@ -77,4 +77,30 @@ class UserCacheService {
       print('[CACHE ERROR] Error clearing user cache: $e');
     }
   }
+
+  Future<void> updateCachedGamesPlayed(String gameId) async {
+    try {
+      // Fetch cached user data
+      UserData? cachedUser = await getCachedUserData();
+
+      if (cachedUser != null) {
+        // Update the gamesPlayed list in the cached data
+        List<String> gamesPlayed = List.from(cachedUser.gamesPlayed);
+
+        // Remove the gameId if it already exists, and add it at the start
+        gamesPlayed.remove(gameId);
+        gamesPlayed.insert(0, gameId);
+
+        // Create a new UserData with updated gamesPlayed
+        UserData updatedUser = cachedUser.copyWith(gamesPlayed: gamesPlayed);
+
+        // Cache the updated user data
+        await cacheUserData(updatedUser);
+        print('[UserCacheService] Updated cached gamesPlayed');
+      }
+    } catch (e) {
+      print('[UserCacheService] Error updating cached gamesPlayed: $e');
+      rethrow;
+    }
+  }
 }

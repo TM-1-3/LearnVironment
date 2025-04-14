@@ -6,6 +6,7 @@ import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/games_templates/games_initial_screen.dart';
 import 'package:learnvironment/games_templates/quiz.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+import 'package:learnvironment/services/data_service.dart';
 
 void main() {
   late MockFirebaseAuth mockAuth;
@@ -13,6 +14,7 @@ void main() {
   late GameData gameData;
   late MockUser mockUser;
   late Widget testWidget;
+  late DataService dataService;
 
   setUp(() async {
     mockUser = MockUser(uid: 'user123', email: 'email@gmail.com');
@@ -45,8 +47,6 @@ void main() {
     testWidget = MaterialApp(
       home: GamesInitialScreen(
         gameData: gameData,
-        firebaseAuth: mockAuth,
-        firestore: mockFirestore,
       ),
     );
   });
@@ -64,16 +64,14 @@ void main() {
   test('updateUserGamesPlayed updates Firestore correctly with game at front', () async {
     final screen = GamesInitialScreen(
       gameData: gameData,
-      firebaseAuth: mockAuth,
-      firestore: mockFirestore,
     );
 
     // Simulate playing two games
-    await screen.updateUserGamesPlayed('game123');
-    await screen.updateUserGamesPlayed('game456');
+    await screen.updateUserGamesPlayed('user123', 'game123');
+    await screen.updateUserGamesPlayed('user123', 'game456');
 
     // Re-play 'game123', it should now be at the front
-    await screen.updateUserGamesPlayed('game123');
+    await screen.updateUserGamesPlayed('user123', 'game123');
 
     DocumentSnapshot userDoc = await mockFirestore.collection('users').doc('user123').get();
     List<dynamic> gamesPlayed = userDoc['gamesPlayed'];
@@ -113,8 +111,6 @@ void main() {
       MaterialApp(
         home: GamesInitialScreen(
           gameData: corruptedGameData,
-          firebaseAuth: mockAuth,
-          firestore: mockFirestore,
         ),
       ),
     );
