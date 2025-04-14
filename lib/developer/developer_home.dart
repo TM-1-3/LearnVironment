@@ -5,7 +5,7 @@ import 'package:learnvironment/main_pages/games_page.dart';
 import 'package:learnvironment/main_pages/profile_screen.dart';
 
 class DeveloperHomePage extends StatefulWidget {
-  DeveloperHomePage({super.key});
+  const DeveloperHomePage({super.key});
 
   @override
   State<DeveloperHomePage> createState() => _DeveloperHomePage();
