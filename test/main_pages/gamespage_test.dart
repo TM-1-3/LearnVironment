@@ -5,99 +5,90 @@ import 'package:learnvironment/main_pages/games_page.dart';
 import 'package:learnvironment/main_pages/widgets/game_card.dart';
 
 void main() {
-  late FakeFirebaseFirestore fakeFirestore;
-
-  setUp(() async {
-    fakeFirestore = FakeFirebaseFirestore();
-
-    final games = [
-      {
-        'logo': 'assets/placeholder.png',
-        'name': 'Test Game',
-        'tags': ['Strategy'],
-        'description': 'description',
-        'bibliography': 'Bibliography',
-        'template': 'drag',
-      },
-      {
-        'logo': 'assets/placeholder.png',
-        'name': 'Another Game',
-        'tags': ['Citizenship'],
-        'description': 'description',
-        'bibliography': 'Bibliography',
-        'template': 'quiz',
-      },
-      {
-        'logo': 'assets/placeholder.png',
-        'name': 'Game 12+',
-        'tags': ['Age: 12+', 'Strategy'],
-        'description': 'description',
-        'bibliography': 'Bibliography',
-        'template': 'quiz',
-      },
-      {
-        'logo': 'assets/placeholder.png',
-        'name': 'Game 10+',
-        'tags': ['Age: 10+', 'Citizenship'],
-        'description': 'description',
-        'bibliography': 'Bibliography',
-        'template': 'drag',
-      },
-    ];
-
-    for (int i = 0; i < games.length; i++) {
-      final docRef = fakeFirestore.collection('games').doc('game_$i');
-      await docRef.set({
-        'imagePath': games[i]['logo'],
-        'gameTitle': games[i]['name'],
-        'tags': games[i]['tags'],
-        'description': games[i]['description'],
-        'bibliography': games[i]['bibliography'],
-        'template': games[i]['template'],
-        'gameId': 'game_$i',
-      });
-    }
-  });
-
   group('GamesPage Tests', () {
-    testWidgets('should display search bar', (WidgetTester tester) async {
-      await tester.pumpWidget(MaterialApp(
-        home: GamesPage(firestore: fakeFirestore),
-      ));
+    late FakeFirebaseFirestore fakeFirestore;
+    late Widget testWidget;
 
-      expect(find.byType(TextField), findsOneWidget);
+    setUp(() async {
+      fakeFirestore = FakeFirebaseFirestore();
+
+      final games = [
+        {
+          'logo': 'assets/placeholder.png',
+          'name': 'Test Game',
+          'tags': ['Strategy'],
+          'description': 'description',
+          'bibliography': 'Bibliography',
+          'template': 'drag',
+        },
+        {
+          'logo': 'assets/placeholder.png',
+          'name': 'Another Game',
+          'tags': ['Citizenship'],
+          'description': 'description',
+          'bibliography': 'Bibliography',
+          'template': 'quiz',
+        },
+        {
+          'logo': 'assets/placeholder.png',
+          'name': 'Game 12+',
+          'tags': ['Age: 12+', 'Strategy'],
+          'description': 'description',
+          'bibliography': 'Bibliography',
+          'template': 'quiz',
+        },
+        {
+          'logo': 'assets/placeholder.png',
+          'name': 'Game 10+',
+          'tags': ['Age: 10+', 'Citizenship'],
+          'description': 'description',
+          'bibliography': 'Bibliography',
+          'template': 'drag',
+        },
+      ];
+
+      for (int i = 0; i < games.length; i++) {
+        final docRef = fakeFirestore.collection('games').doc('game_$i');
+        await docRef.set({
+          'imagePath': games[i]['logo'],
+          'gameTitle': games[i]['name'],
+          'tags': games[i]['tags'],
+          'description': games[i]['description'],
+          'bibliography': games[i]['bibliography'],
+          'template': games[i]['template'],
+          'gameId': 'game_$i',
+        });
+      }
+
+      testWidget = MaterialApp(
+        home: GamesPage(firestore: fakeFirestore),
+      );
+    });
+    
+    testWidgets('should display search bar', (WidgetTester tester) async {
+      await tester.pumpWidget(testWidget);
+
+      expect(find.byKey(Key('search')), findsOneWidget);
     });
 
     testWidgets('should filter games by search query', (WidgetTester tester) async {
-      await tester.pumpWidget(MaterialApp(
-        home: GamesPage(firestore: fakeFirestore),
-      ));
+      await tester.pumpWidget(testWidget);
 
-      // Wait for all the widgets to settle
+      await tester.pumpAndSettle();
+      expect(find.byType(GameCard), findsNWidgets(4));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byKey(Key('search')), 'Test');
       await tester.pumpAndSettle();
 
-      // Verify initial widget count
-      expect(find.byType(GameCard), findsNWidgets(4)); // Expect 4 widgets initially
-
-      // Apply search filter by entering "Test" in the search bar
-      await tester.enterText(find.byType(TextField), 'Test');
-      await tester.pumpAndSettle();  // Wait for widget tree to rebuild
-
-      // After the search, only "Test Game" should be displayed
-      expect(find.text('Test Game'), findsOneWidget);  // "Test Game" should match
-      expect(find.text('Another Game'), findsNothing);  // "Another Game" should not be visible
-
-      // Ensure only 1 GameCard widget is visible after filtering
-      expect(find.byType(GameCard), findsOneWidget); // Only one "Test Game" should remain
+      expect(find.text('Test Game'), findsOneWidget);
+      expect(find.text('Another Game'), findsNothing);
+      expect(find.byType(GameCard), findsOneWidget);
     });
 
     testWidgets('should filter games by age tag', (WidgetTester tester) async {
-      await tester.pumpWidget(MaterialApp(
-        home: GamesPage(firestore: fakeFirestore),
-      ));
+      await tester.pumpWidget(testWidget);
       await tester.pumpAndSettle();
 
-      // Test selecting the "12+" age filter
       await tester.tap(find.byKey(Key('ageDropdown')));
       await tester.pumpAndSettle();
       await tester.tap(find.text('12+').last);
@@ -109,9 +100,7 @@ void main() {
     });
 
     testWidgets('should reset age filter when "All Ages" is selected', (WidgetTester tester) async {
-      await tester.pumpWidget(MaterialApp(
-        home: GamesPage(firestore: fakeFirestore),
-      ));
+      await tester.pumpWidget(testWidget);
       await tester.pumpAndSettle();
 
       await tester.tap(find.byKey(Key('ageDropdown')));
@@ -130,9 +119,7 @@ void main() {
     });
 
     testWidgets('should reset tag filter when "All Tags" is selected', (WidgetTester tester) async {
-      await tester.pumpWidget(MaterialApp(
-        home: GamesPage(firestore: fakeFirestore),
-      ));
+      await tester.pumpWidget(testWidget);
       await tester.pumpAndSettle();
 
       await tester.tap(find.byKey(Key('tagDropdown')));
@@ -141,7 +128,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Test Game'), findsOneWidget);
-      expect(find.byType(GameCard), findsNWidgets(2)); // "Test Game" and "Game 12+" match "Strategy"
+      expect(find.byType(GameCard), findsNWidgets(2));
 
       await tester.tap(find.byKey(Key('tagDropdown')));
       await tester.pumpAndSettle();
@@ -152,9 +139,7 @@ void main() {
     });
 
     testWidgets('should call load game correctly', (WidgetTester tester) async {
-      await tester.pumpWidget(MaterialApp(
-        home: GamesPage(firestore: fakeFirestore),
-      ));
+      await tester.pumpWidget(testWidget);
       await tester.pumpAndSettle();
 
       // Test load game functionality by tapping on the first card
@@ -165,11 +150,9 @@ void main() {
     });
 
     testWidgets('should display no results found message if no games match the filters', (WidgetTester tester) async {
-      await tester.pumpWidget(MaterialApp(
-        home: GamesPage(firestore: fakeFirestore),
-      ));
+      await tester.pumpWidget(testWidget);
 
-      await tester.enterText(find.byType(TextField), 'Nonexistent');
+      await tester.enterText(find.byKey(Key('search')), 'Nonexistent');
       await tester.pumpAndSettle();
 
       expect(find.text('No results found'), findsOneWidget); // No games should match

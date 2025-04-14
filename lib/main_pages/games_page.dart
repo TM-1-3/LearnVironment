@@ -80,6 +80,7 @@ class GamesPageState extends State<GamesPage> {
     return Scaffold(
       appBar: AppBar(
         title: TextField(
+          key: Key('search'),
           onChanged: (query) {
             setState(() {
               _searchQuery = query.toLowerCase();
