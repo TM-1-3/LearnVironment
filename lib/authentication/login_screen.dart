@@ -76,20 +76,17 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // App Icon at the top
               AspectRatio(
                 aspectRatio: 2,
                 child: Image.asset('assets/icon.png'),
               ),
               const SizedBox(height: 20),
-              // Welcome Message
               const Text(
                 'Welcome to LearnVironment',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 20),
               ),
               const SizedBox(height: 20),
-              // Email Input Field
               TextField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
@@ -99,7 +96,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              // Password Input Field
               TextField(
                 controller: _passwordController,
                 decoration: const InputDecoration(
@@ -109,7 +105,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 obscureText: true,
               ),
               const SizedBox(height: 20),
-              // Login Button
               ElevatedButton(
                 onPressed: _isLoading ? null : _handleLogin,
                 child: _isLoading
@@ -117,7 +112,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     : const Text('Login'),
               ),
               const SizedBox(height: 16),
-              // Registration Link
               Center(
                 child: InkWell(
                   onTap: () {
@@ -125,6 +119,20 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                   child: Text(
                     'Don’t have an account? Register here.',
+                    style: TextStyle(
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Center(
+                child: InkWell(
+                  onTap: () {
+                    Navigator.of(context).pushNamed('/reset_password');
+                  },
+                  child: Text(
+                    'Forgot your password? Reset it here.',
                     style: TextStyle(
                       color: Theme.of(context).primaryColor,
                     ),
