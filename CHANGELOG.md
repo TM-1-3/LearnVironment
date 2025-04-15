@@ -39,6 +39,7 @@
 - The games that a user plays are now stored in the database [#60](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/60)
 - Added a new quiz game about citizenship [#65](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/65)
 - Students can now view the games they have previously played [#66](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/66)
+- Fixed bug deleting account [#58](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/58)
 
 ### Test User
 - email: 
