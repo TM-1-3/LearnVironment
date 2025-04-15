@@ -63,18 +63,7 @@ class DataService {
       // Fetch the user data from cache
       final cachedUser = await _userCacheService.getCachedUserData();
       if (cachedUser != null && cachedUser.id == userId) {
-        print('[DataService] Loaded cached user data');
-        List<String> updatedGamesPlayed = List.from(cachedUser.gamesPlayed);
-        updatedGamesPlayed.remove(gameId);
-        updatedGamesPlayed.insert(0, gameId);
-
-        // Create a new UserData object with updated gamesPlayed using copyWith
-        final updatedUser = cachedUser.copyWith(
-          gamesPlayed: updatedGamesPlayed,
-        );
-
-        // Cache the updated user data
-        await _userCacheService.cacheUserData(updatedUser);
+        _userCacheService.updateCachedGamesPlayed(gameId);
         print('[DataService] Cached user data updated with new gamesPlayed');
       } else {
         print('[DataService] User data not found in cache');

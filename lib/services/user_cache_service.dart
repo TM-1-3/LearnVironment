@@ -37,8 +37,6 @@ class UserCacheService {
       // Log and retrieve each key
       for (final key in keys) {
         final value = prefs.getString(key);
-        print('[CACHE DEBUG] $key => $value');
-
         if (value == null) {
           print('[CACHE] Cache miss for key: $key');
           return null; // Fail early if anything is missing

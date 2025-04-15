@@ -16,7 +16,7 @@ class GamesInitialScreen extends StatelessWidget {
   });
 
   // Function to update the user's gamesPlayed array via DataService
-  Future<void> updateUserGamesPlayed(String userId, String gameId, DataService dataService) async {
+  Future<void> _updateUserGamesPlayed(String userId, String gameId, DataService dataService) async {
     try {
       await dataService.updateUserGamesPlayed(userId, gameId);
       print('[GamesInitialScreen] Updated gamesPlayed for the user');
@@ -29,31 +29,11 @@ class GamesInitialScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Access the AuthService from the Provider
-    final authService = Provider.of<AuthService>(context);
+    final authService = Provider.of<AuthService>(context, listen: false);
 
     return Scaffold(
       appBar: AppBar(title: Text(gameData.gameName)),
-      body: FutureBuilder<String?>(
-        // Use FutureBuilder to wait for the userId from AuthService
-        future: authService.getUid(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator()); // Loading state
-          }
-
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}')); // Error state
-          }
-
-          // Get userId once the Future is complete
-          final String userId = snapshot.data ?? '';
-
-          // If no userId is found, return a message
-          if (userId.isEmpty) {
-            return Center(child: Text('No user is currently logged in.'));
-          }
-
-          return Center(
+      body: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -67,32 +47,45 @@ class GamesInitialScreen extends StatelessWidget {
                 GestureDetector(
                   onTap: () async {
                     final dataService = Provider.of<DataService>(context, listen: false);
-                    await updateUserGamesPlayed(userId, gameData.documentName, dataService);
-
-                    // Action when the card is clicked based on game template
-                    if (gameData.gameTemplate == "drag") {
-                      if (context.mounted) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => BinScreen(binData: gameData),
-                          ),
-                        );
-                      }
-                    } else if (gameData.gameTemplate == "quiz") {
-                      if (context.mounted) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => Quiz(quizData: gameData),
-                          ),
-                        );
-                      }
-                    } else {
+                    try {
+                      await _updateUserGamesPlayed(await authService.getUid(), gameData.documentName, dataService);
+                    } catch (e) {
+                      print("[GamesInitialScreen] Exception caught: $e");
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Error Game Data Corrupted.')),
+                          SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
                         );
+                      }
+                    } finally {
+                      // Action when the card is clicked based on game template
+                      if (gameData.gameTemplate == "drag") {
+                        if (context.mounted) {
+                          print("[GamesInitialScreen] Navigating to Bin screen");
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  BinScreen(binData: gameData),
+                            ),
+                          );
+                        }
+                      } else if (gameData.gameTemplate == "quiz") {
+                        print("[GamesInitialScreen] Navigating to Quiz screen");
+                        if (context.mounted) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Quiz(quizData: gameData),
+                            ),
+                          );
+                        }
+                      } else {
+                        if (context.mounted) {
+                          print("[GamesInitialScreen] Corrupted Game");
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Error Game Data Corrupted.')),
+                          );
+                        }
                       }
                     }
                   },
@@ -143,9 +136,7 @@ class GamesInitialScreen extends StatelessWidget {
                 ),
               ],
             ),
-          );
-        },
-      ),
-    );
+          )
+      );
   }
 }

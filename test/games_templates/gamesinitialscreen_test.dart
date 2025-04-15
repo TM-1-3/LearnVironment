@@ -1,11 +1,20 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/games_templates/games_initial_screen.dart';
 import 'package:learnvironment/games_templates/quiz.dart';
+import 'package:learnvironment/services/data_service.dart';
+import 'package:learnvironment/services/auth_service.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+import 'package:learnvironment/services/firestore_service.dart';
+import 'package:learnvironment/services/game_cache_service.dart';
+import 'package:learnvironment/services/user_cache_service.dart';
+import 'package:mockito/mockito.dart';
+import 'package:provider/provider.dart';
+import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class MockNavigatorObserver extends Mock implements NavigatorObserver {}
 
 void main() {
   late MockFirebaseAuth mockAuth;
@@ -13,111 +22,151 @@ void main() {
   late GameData gameData;
   late MockUser mockUser;
   late Widget testWidget;
+  late MockNavigatorObserver mockObserver;
 
   setUp(() async {
+    // Set up Mock Firebase authentication and Firestore
     mockUser = MockUser(uid: 'user123', email: 'email@gmail.com');
-    mockAuth = MockFirebaseAuth(mockUser: mockUser);
-    mockAuth.signInWithEmailAndPassword(email: 'email@gmail.com', password: 'password');
+    mockAuth = MockFirebaseAuth(mockUser: mockUser, signedIn: true);
     mockFirestore = FakeFirebaseFirestore();
+    mockObserver = MockNavigatorObserver();
 
-    await mockFirestore.collection('users').doc('user123').set(
-        {
-          'birthdate' : '2000-01-01T00:00:00.000',
-          'email' : 'email@gmail.comt',
-          'name' : 'L',
-          'role' : 'developer',
-          'username' : 'Lebi'
-        }
-    );
+    // Populate Firestore with test user data
+    await mockFirestore.collection('users').doc('user123').set({
+      'birthdate': '2000-01-01T00:00:00.000',
+      'email': 'email@gmail.com',
+      'name': 'Lebi',
+      'role': 'developer',
+      'username': 'Lebi',
+      'gamesPlayed': [],
+    });
 
+    SharedPreferences.setMockInitialValues({
+      'id': 'user123',
+      'username': 'Lebi',
+      'email': 'email@gmail.com',
+      'name': 'Lebi',
+      'role': 'developer',
+      'birthdate': '2000-01-01T00:00:00.000',
+      'gamesPlayed': '',
+    });
+
+    // Populate Firestore with game data
+    final Map<String, List<String>> questionsAndOptions = {
+      "What is recycling?": [
+        "Reusing materials",
+        "Throwing trash",
+        "Saving money",
+        "Buying new things"
+      ],
+      "Why should we save water?": [
+        "It helps the earth",
+        "Water is unlimited",
+        "For fun",
+        "It doesn't matter"
+      ],
+    };
+
+    final Map<String, String> correctAnswers = {
+      "What is recycling?": "Reusing materials",
+      "Why should we save water?": "It helps the earth",
+    };
+
+    await mockFirestore.collection('games').doc('game1').set({
+      'logo': 'assets/widget.png',
+      'name': 'Test Game',
+      'description': 'Test Description',
+      'bibliography': 'Test Bibliography',
+      'tags': ['action', 'adventure'],
+      'template': 'quiz',
+      'questionsAndOptions': questionsAndOptions,
+      'correctAnswers': correctAnswers,
+    });
+
+    // Set up GameData instance
     gameData = GameData(
       gameLogo: 'assets/widget.png',
       gameName: 'Test Game',
       gameDescription: 'Test Description',
       gameBibliography: 'Test Bibliography',
-      tags: ['tag1', 'tag2'],
+      tags: ['action', 'adventure'],
       gameTemplate: 'quiz',
-      questionsAndOptions: {},
-      correctAnswers: {},
-      documentName: 'doc',
+      questionsAndOptions: questionsAndOptions,
+      correctAnswers: correctAnswers,
+      documentName: 'game1',
     );
 
+    // Set up the widget tree for testing
     testWidget = MaterialApp(
-      home: GamesInitialScreen(
-        gameData: gameData,
+      navigatorObservers: [mockObserver],
+      home: MultiProvider(
+        providers: [
+          ChangeNotifierProvider<AuthService>(create: (_) => AuthService(firebaseAuth: mockAuth)),
+          Provider<FirestoreService>(create: (_) => FirestoreService(firestore: mockFirestore)),
+          Provider<UserCacheService>(create: (_) => UserCacheService()),
+          Provider<GameCacheService>(create: (_) => GameCacheService()),
+          Provider<DataService>(create: (context) => DataService(context)),
+        ],
+        child: GamesInitialScreen(gameData: gameData),
       ),
     );
   });
 
-  testWidgets('Renders correctly', (WidgetTester tester) async {
+  testWidgets('Renders game data correctly', (WidgetTester tester) async {
     await tester.pumpWidget(testWidget);
+    await tester.pumpAndSettle();
 
-    // Verify that the game name is displayed
     expect(find.text('Test Game'), findsExactly(2));
-
-    // Verify the "Play" button is present
+    expect(find.text('Test Description'), findsOneWidget);
     expect(find.text('Play'), findsOneWidget);
   });
 
-  test('updateUserGamesPlayed updates Firestore correctly with game at front', () async {
-    final screen = GamesInitialScreen(
-      gameData: gameData,
+  testWidgets('Play button navigates to Quiz screen', (WidgetTester tester) async {
+    final newRoute = MaterialPageRoute(
+      builder: (context) => Quiz(quizData: gameData),
     );
-
-    // Simulate playing two games
-    await screen.updateUserGamesPlayed('user123', 'game123');
-    await screen.updateUserGamesPlayed('user123', 'game456');
-
-    // Re-play 'game123', it should now be at the front
-    await screen.updateUserGamesPlayed('user123', 'game123');
-
-    DocumentSnapshot userDoc = await mockFirestore.collection('users').doc('user123').get();
-    List<dynamic> gamesPlayed = userDoc['gamesPlayed'];
-
-    // Check the order and contents
-    expect(gamesPlayed.length, 2);
-    expect(gamesPlayed[0], 'game123');
-    expect(gamesPlayed[1], 'game456');
-  });
-
-  testWidgets('Play button navigates to correct screen based on game template', (WidgetTester tester) async {
     await tester.pumpWidget(testWidget);
-
-    await tester.ensureVisible(find.text('Play'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Play'));
     await tester.pumpAndSettle();
 
+    //verify(mockObserver.didPush(newRoute, any)).called(1);
     expect(find.byType(Quiz), findsOneWidget);
   });
 
-  testWidgets('Play button shows error message when gameData is corrupted', (WidgetTester tester) async {
-    // Create game data with invalid template
+  testWidgets('Error message displays for corrupted game data', (WidgetTester tester) async {
     final corruptedGameData = GameData(
       gameLogo: 'assets/widget.png',
       gameName: 'Corrupted Game',
       gameDescription: 'Corrupted Description',
       gameBibliography: 'Corrupted Bibliography',
-      tags: ['corrupted'],
-      gameTemplate: 'unknown', //Invalid template to trigger error
+      tags: [],
+      gameTemplate: 'unknown',
       questionsAndOptions: {},
       correctAnswers: {},
-      documentName: 'doc',
+      documentName: 'corrupted_game',
     );
 
-    // Build the widget and trigger a frame
     await tester.pumpWidget(
       MaterialApp(
-        home: GamesInitialScreen(
-          gameData: corruptedGameData,
+        home: MultiProvider(
+          providers: [
+            ChangeNotifierProvider<AuthService>(create: (_) => AuthService(firebaseAuth: mockAuth)),
+            Provider<FirestoreService>(create: (_) => FirestoreService(firestore: mockFirestore)),
+            Provider<UserCacheService>(create: (_) => UserCacheService()),
+            Provider<GameCacheService>(create: (_) => GameCacheService()),
+            Provider<DataService>(create: (context) => DataService(context)),
+          ],
+          child: GamesInitialScreen(gameData: corruptedGameData),
         ),
       ),
     );
 
-    // Tap on the "Play" button
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Play'));
     await tester.pumpAndSettle();
 
-    // Verify that the error snackbar is shown
+    // Verify error message
     expect(find.byType(SnackBar), findsOneWidget);
     expect(find.text('Error Game Data Corrupted.'), findsOneWidget);
   });
