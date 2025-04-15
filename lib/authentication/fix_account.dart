@@ -52,8 +52,8 @@ class _FixAccountPageState extends State<FixAccountPage> {
         return;
       }
 
-      final authService = Provider.of<AuthService>(context);
-      final firestoreService = Provider.of<FirestoreService>(context);
+      final authService = Provider.of<AuthService>(context, listen: false);
+      final firestoreService = Provider.of<FirestoreService>(context, listen: false);
       String? uid = await authService.getUid();
 
       await firestoreService.registerUser(
@@ -80,6 +80,7 @@ class _FixAccountPageState extends State<FixAccountPage> {
       }
 
     } catch (e) {
+      print(e);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),

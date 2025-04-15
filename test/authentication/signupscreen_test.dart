@@ -10,6 +10,39 @@ import 'package:learnvironment/services/auth_service.dart';
 import 'package:learnvironment/services/firestore_service.dart';
 import 'package:provider/provider.dart';
 
+class MockFirestoreService extends FirestoreService {
+  MockFirestoreService({FakeFirebaseFirestore? firestore}) : super(firestore: firestore);
+
+  @override
+  Future<void> registerUser({
+    required String uid,
+    required String name,
+    required String username,
+    required String selectedAccountType,
+    required String email,
+    required String birthDate,
+  }) async {
+  }
+}
+
+class MockAuthService extends AuthService {
+  MockAuthService({MockFirebaseAuth? firebaseAuth})
+      : super(firebaseAuth: firebaseAuth);
+
+  @override
+  Future<String?> registerUser({
+    required String email,
+    required String username,
+    required String password,
+  }) async {
+    return "mockUserId123";
+  }
+
+  @override
+  Stream<User?> get authStateChanges => Stream.value(MockUser());
+}
+
+
 class MockLoginScreen extends LoginScreen {
   MockLoginScreen({super.key});
 
@@ -28,37 +61,11 @@ class _MockLoginScreenState extends State<LoginScreen> {
   }
 }
 
-class MockAuthService extends AuthService {
-  final FirebaseAuth _firebaseAuth;
-
-  MockAuthService({required FirebaseAuth firebaseAuth})
-      : _firebaseAuth = firebaseAuth,
-        super(firebaseAuth: firebaseAuth);
-
-  Future<UserCredential?> signUp({
-    required String email,
-    required String password,
-  }) async {
-    return await _firebaseAuth.createUserWithEmailAndPassword(
-        email: email, password: password);
-  }
-
-  @override
-  Future<void> signOut() async {
-    return await _firebaseAuth.signOut();
-  }
-
-  User? get currentUser => _firebaseAuth.currentUser;
-}
-
 class MockAuthGate extends AuthGate {
-  MockAuthGate({
-    key,
-  });
+  MockAuthGate({key});
 
   @override
   Widget build(BuildContext context) {
-    // You can provide a mock response for the build method if needed
     return const Scaffold(
       body: Center(
         child: Text('Mock AuthGate Screen'),
@@ -72,7 +79,6 @@ void main() {
   late MockFirebaseAuth mockAuth;
   late FakeFirebaseFirestore mockFirestore;
   late Widget testWidget;
-  late FirestoreService firestoreService;
   late MockAuthService authService;
 
   setUp(() {
@@ -80,17 +86,16 @@ void main() {
       uid: 'abc123',
       email: 'test@example.com',
       displayName: 'testuser',
+      isEmailVerified: false,
     );
     mockAuth = MockFirebaseAuth(mockUser: mockUser);
     mockFirestore = FakeFirebaseFirestore();
-    firestoreService = FirestoreService(firestore: mockFirestore);
     authService = MockAuthService(firebaseAuth: mockAuth);
 
     testWidget = MultiProvider(
         providers: [
-          ChangeNotifierProvider<AuthService>(
-            create: (_) => authService,
-          ),
+          ChangeNotifierProvider<AuthService>(create: (_) => authService),
+          Provider<FirestoreService>(create: (_) => MockFirestoreService(firestore: mockFirestore)),
         ],
         child: MaterialApp(
           routes: {
@@ -246,8 +251,12 @@ void main() {
 
       await tester.ensureVisible(find.text('Register'));
       await tester.tap(find.text('Register'));
-      await tester.pumpAndSettle();
 
+      await tester.pump(); // starts the frame
+      await tester.pump(const Duration(seconds: 2)); // gives time for async op
+      await tester.pumpAndSettle(); // waits until animations and async are done
+
+      expect(find.byType(SnackBar), findsOneWidget);
       expect(find.text('Account created successfully! Please verify your email.'), findsOneWidget);
       expect(find.byType(MockAuthGate), findsOneWidget);
     });

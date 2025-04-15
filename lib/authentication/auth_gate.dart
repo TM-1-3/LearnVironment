@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 
 class AuthGate extends StatelessWidget {
   Future<UserData?> _loadUserData(BuildContext context) async {
-    final authService = Provider.of<AuthService>(context);
+    final authService = Provider.of<AuthService>(context, listen: false);
     final dataService = Provider.of<DataService>(context, listen: false);
     return await dataService.getUserData(await authService.getUid());
   }
@@ -31,7 +31,7 @@ class AuthGate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authService = Provider.of<AuthService>(context);
+    final authService = Provider.of<AuthService>(context, listen: false);
     if (!authService.loggedIn) {
       return LoginScreen();
     }
@@ -44,9 +44,9 @@ class AuthGate extends StatelessWidget {
         }
 
         if (userDataSnapshot.hasError) {
+          print('Error: ${userDataSnapshot.error}');
           return Center(
-            child: Text(
-              'Error: ${userDataSnapshot.error}',
+            child: Text('Error: ${userDataSnapshot.error}',
               style: const TextStyle(color: Colors.red),
             ),
           );

@@ -29,7 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
 
-      final authService = Provider.of<AuthService>(context);
+      final authService = Provider.of<AuthService>(context, listen: false);
       await authService.signInWithEmailAndPassword(
         email: email,
         password: password,
@@ -49,6 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
       }
 
     } catch (e) {
+      print(e);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),

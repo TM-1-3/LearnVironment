@@ -51,4 +51,39 @@ void main() async {
       await tester.pumpAndSettle();
       expect(find.byType(LoginScreen), findsOneWidget);
     });
+
+    testWidgets('App Initialization Is OK - signed in user', (tester) async {
+      MockFirebaseAuth mockAuth = MockFirebaseAuth(mockUser: MockUser(
+        uid: 'test-uid',
+        email: 'test@example.com',
+        isAnonymous: false,
+      ), signedIn: true);
+      FakeFirebaseFirestore firestore = FakeFirebaseFirestore();
+      final authService = AuthService(firebaseAuth: mockAuth);
+      await authService.init();
+      await tester.pumpWidget(MultiProvider(
+        providers: [
+          ChangeNotifierProvider<AuthService>(create: (_) => authService),
+          Provider<FirestoreService>(create: (_) => FirestoreService(firestore: firestore)),
+          Provider<UserCacheService>(create: (_) => UserCacheService()),
+          Provider<GameCacheService>(create: (_) => GameCacheService()),
+          Provider<DataService>(create: (context) => DataService(context)),
+        ],
+        child: MaterialApp(
+          routes: {
+            '/auth_gate': (context) => AuthGate(),
+            '/fix_account': (context) => FixAccountPage(),
+            '/login': (context) => LoginScreen(),
+            '/signup': (context) => SignUpScreen(),
+          },
+          home: App(),
+        ),
+      ));
+      expect(
+        Provider.of<AuthService>(
+            tester.element(find.byType(App)), listen: false),
+        isNotNull,
+      );
+      expect(find.byType(AuthGate), findsOneWidget);
+    });
 }

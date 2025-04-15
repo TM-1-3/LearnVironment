@@ -64,15 +64,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
         return;
       }
 
-      final authService = Provider.of<AuthService>(context);
+      final authService = Provider.of<AuthService>(context, listen: false);
       String? uid = await authService.registerUser(username: username, email: email, password: password);
+
 
       if (uid == null) {
         throw Exception("Error registering user");
       }
 
       if (mounted) {
-        final firestoreService = Provider.of<FirestoreService>(context);
+        final firestoreService = Provider.of<FirestoreService>(context, listen: false);
         await firestoreService.registerUser(
           uid: uid,
           name: name,
@@ -101,6 +102,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       }
     } catch (e) {
       if (mounted) {
+        print(e);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
         );

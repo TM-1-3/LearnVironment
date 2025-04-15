@@ -1,11 +1,48 @@
-import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:learnvironment/authentication/auth_gate.dart';
+import 'package:learnvironment/authentication/fix_account.dart';
 import 'package:learnvironment/authentication/login_screen.dart';
 import 'package:learnvironment/authentication/signup_screen.dart';
+import 'package:learnvironment/data/user_data.dart';
 import 'package:learnvironment/services/auth_service.dart';
-import 'package:learnvironment/services/firestore_service.dart';
+import 'package:learnvironment/services/data_service.dart';
+import 'package:mockito/mockito.dart';
+import 'package:provider/provider.dart';
+
+class MockDataService extends Mock implements DataService {
+  @override
+  Future<UserData?> getUserData(String userId) {
+    // Return different roles based on userId for different tests
+    if (userId == 'testDeveloper') {
+      return Future.value(UserData(role: 'developer', id: 'testDeveloper', username: 'Test User', email: 'test@example.com', name: 'Dev', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: []));
+    } else if (userId == 'testStudent') {
+      return Future.value(UserData(role: 'student', id: '', username: '', email: '', name: '', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: []));
+    } else if (userId == 'testTeacher') {
+      return Future.value(UserData(role: 'teacher', id: '', username: '', email: '', name: '', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: []));
+    } else {
+      return Future.value(UserData(role: '', id: '', username: '', name: '', email: '', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: []));
+    }
+  }
+}
+
+class MockAuthService extends AuthService {
+  MockAuthService({MockFirebaseAuth? firebaseAuth})
+      : super(firebaseAuth: firebaseAuth);
+
+  @override
+  Future<void> signInWithEmailAndPassword({
+    required String email,
+    required String password,
+  }) async {
+
+  }
+
+  @override
+  Stream<User?> get authStateChanges => Stream.value(MockUser());
+}
 
 void main() {
   late MockFirebaseAuth mockAuth;
@@ -21,21 +58,25 @@ void main() {
 
   group('LoginScreen Tests', () {
     late Widget testWidget;
-    late FirestoreService firestoreService;
-    late FakeFirebaseFirestore mockFirestore;
-    late AuthService authService;
 
-    setUp(() {
-      mockFirestore = FakeFirebaseFirestore();
-      firestoreService = FirestoreService(firestore: mockFirestore);
-      authService = AuthService(firebaseAuth: mockAuth);
-      testWidget = MaterialApp(
-        home: Scaffold(
-          body: LoginScreen(),
+    setUp(() async {
+      final authService = AuthService(firebaseAuth: mockAuth);
+      await authService.init();
+
+      testWidget = MultiProvider(
+        providers: [
+          ChangeNotifierProvider<AuthService>(create: (_) => authService),
+          Provider<DataService>(create: (context) => MockDataService()),
+        ],
+        child: MaterialApp(
+          home: LoginScreen(),
+          routes: {
+            '/auth_gate': (context) => AuthGate(),
+            '/fix_account': (context) => FixAccountPage(),
+            '/login': (context) => LoginScreen(),
+            '/signup': (context) => SignUpScreen(),
+          },
         ),
-        routes: {
-          '/signup': (context) => SignUpScreen(),
-        },
       );
     });
 
@@ -61,7 +102,6 @@ void main() {
       await tester.tap(find.widgetWithText(ElevatedButton, 'Login'));
       await tester.pumpAndSettle();
 
-      // Verify success message (e.g., SnackBar shows success)
       expect(find.text('Successfully logged in!'), findsOneWidget);
     });
 

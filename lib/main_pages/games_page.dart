@@ -26,10 +26,8 @@ class GamesPageState extends State<GamesPage> {
 
   Future<void> _fetchGames() async {
     try {
-      // Use DataService to handle everything
       final dataService = Provider.of<DataService>(context, listen: false);
 
-      // Fetch the games (this method should handle fetching from cache and Firestore)
       final fetchedGames = await dataService.getAllGames();
       print('[GamesPage] Fetched Games');
       setState(() {
@@ -37,7 +35,6 @@ class GamesPageState extends State<GamesPage> {
       });
     } catch (e) {
       print('[GamesPage] Error fetching games: $e');
-      // Handle error if necessary
     }
   }
 
@@ -69,14 +66,14 @@ class GamesPageState extends State<GamesPage> {
       final userId = await authService.getUid();
 
       if (gameData != null && userId.isNotEmpty && mounted) {
-        Navigator.push(
-          context,
+        Navigator.push(context,
           MaterialPageRoute(
             builder: (context) => GamesInitialScreen(gameData: gameData),
           ),
         );
       }
     } catch (e) {
+      print(e);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error loading game: $e')),
