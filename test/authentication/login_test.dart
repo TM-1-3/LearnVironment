@@ -31,10 +31,10 @@ void main() {
       authService = AuthService(firebaseAuth: mockAuth);
       testWidget = MaterialApp(
         home: Scaffold(
-          body: LoginScreen(authService: authService),
+          body: LoginScreen(),
         ),
         routes: {
-          '/signup': (context) => SignUpScreen(authService: authService, firestoreService: firestoreService),
+          '/signup': (context) => SignUpScreen(),
         },
       );
     });

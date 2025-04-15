@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:learnvironment/services/auth_service.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
-  final AuthService authService;
-
-  LoginScreen({super.key, AuthService? authService})
-      : authService = authService ?? AuthService();
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -31,7 +29,8 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
 
-      await widget.authService.signInWithEmailAndPassword(
+      final authService = Provider.of<AuthService>(context);
+      await authService.signInWithEmailAndPassword(
         email: email,
         password: password,
       );

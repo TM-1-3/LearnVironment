@@ -54,7 +54,7 @@ class AuthService extends ChangeNotifier {
 
         // Send verification email only if the email is not already verified
         if (!user!.emailVerified) {
-          await user?.sendEmailVerification();
+          await user.sendEmailVerification();
         }
       }
     } catch (e) {

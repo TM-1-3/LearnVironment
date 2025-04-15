@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:learnvironment/services/auth_service.dart';
 import 'package:learnvironment/services/firestore_service.dart';
+import 'package:provider/provider.dart';
 
 class SignUpScreen extends StatefulWidget {
-  final AuthService authService;
-  final FirestoreService firestoreService;
-
-  SignUpScreen({super.key, AuthService? authService, FirestoreService? firestoreService})
-      : authService = authService ?? AuthService(),
-        firestoreService = firestoreService ?? FirestoreService();
+  const SignUpScreen({super.key});
 
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
@@ -68,37 +64,41 @@ class _SignUpScreenState extends State<SignUpScreen> {
         return;
       }
 
-      String? uid = await widget.authService.registerUser(username: username, email: email, password: password);
+      final authService = Provider.of<AuthService>(context);
+      String? uid = await authService.registerUser(username: username, email: email, password: password);
 
       if (uid == null) {
         throw Exception("Error registering user");
       }
 
-      await widget.firestoreService.registerUser(
-        uid: uid,
-        name: name,
-        username: username,
-        email: email,
-        selectedAccountType: _selectedAccountType ?? '',
-        birthDate: _birthDate!.toIso8601String(),
-      );
-
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Account created successfully! Please verify your email.')),
+        final firestoreService = Provider.of<FirestoreService>(context);
+        await firestoreService.registerUser(
+          uid: uid,
+          name: name,
+          username: username,
+          email: email,
+          selectedAccountType: _selectedAccountType ?? '',
+          birthDate: _birthDate!.toIso8601String(),
         );
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text(
+                'Account created successfully! Please verify your email.')),
+          );
+        }
+
+        _emailController.clear();
+        _passwordController.clear();
+        _confirmPasswordController.clear();
+        _usernameController.clear();
+        _nameController.clear();
+
+        if (mounted) {
+          Navigator.of(context).pushReplacementNamed('/auth_gate');
+        }
       }
-
-      _emailController.clear();
-      _passwordController.clear();
-      _confirmPasswordController.clear();
-      _usernameController.clear();
-      _nameController.clear();
-
-      if (mounted) {
-        Navigator.of(context).pushReplacementNamed('/auth_gate');
-      }
-
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

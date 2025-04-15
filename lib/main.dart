@@ -28,9 +28,7 @@ void main() async {
         Provider<FirestoreService>(create: (_) => FirestoreService()),
         Provider<UserCacheService>(create: (_) => UserCacheService()),
         Provider<GameCacheService>(create: (_) => GameCacheService()),
-        Provider<DataService>(
-          create: (context) => DataService(context),
-        ),
+        Provider<DataService>(create: (context) => DataService(context)),
       ],
       child: App(),
     ),
@@ -38,12 +36,7 @@ void main() async {
 }
 
 class App extends StatelessWidget {
-  final FirebaseFirestore firestore;
-  final FirebaseAuth fireauth;
-
-  App({super.key, FirebaseFirestore? firestore, FirebaseAuth? fireauth})
-      : firestore = firestore ?? FirebaseFirestore.instance,
-        fireauth = fireauth ?? FirebaseAuth.instance;
+  const App({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +50,7 @@ class App extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
         useMaterial3: true,
       ),
-      home: AuthGate(),  // AuthGate will handle routing logic
+      home: AuthGate(),
       routes: {
         '/auth_gate': (context) => AuthGate(),
         '/fix_account': (context) => FixAccountPage(),

@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:learnvironment/services/auth_service.dart';
 import 'package:learnvironment/services/firestore_service.dart';
+import 'package:provider/provider.dart';
 
 class FixAccountPage extends StatefulWidget {
-  final AuthService authService;
-  final FirestoreService firestoreService;
-
-  FixAccountPage({super.key, AuthService? authService, FirestoreService? firestoreService})
-      : authService = authService ?? AuthService(),
-        firestoreService = firestoreService ?? FirestoreService();
+  const FixAccountPage({super.key});
 
   @override
   State<FixAccountPage> createState() => _FixAccountPageState();
@@ -56,9 +52,11 @@ class _FixAccountPageState extends State<FixAccountPage> {
         return;
       }
 
-      String? uid = await widget.authService.getUid();
+      final authService = Provider.of<AuthService>(context);
+      final firestoreService = Provider.of<FirestoreService>(context);
+      String? uid = await authService.getUid();
 
-      await widget.firestoreService.registerUser(
+      await firestoreService.registerUser(
         uid: uid,
         name: name,
         username: username,

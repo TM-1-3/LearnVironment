@@ -11,7 +11,7 @@ import 'package:learnvironment/services/firestore_service.dart';
 import 'package:provider/provider.dart';
 
 class MockLoginScreen extends LoginScreen {
-  MockLoginScreen({super.key, super.authService});
+  MockLoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _MockLoginScreenState();
@@ -95,9 +95,9 @@ void main() {
         child: MaterialApp(
           routes: {
             '/auth_gate': (context) => MockAuthGate(),
-            '/login': (context) => MockLoginScreen(authService: authService)
+            '/login': (context) => MockLoginScreen()
           },
-          home: SignUpScreen(authService: authService, firestoreService: firestoreService),
+          home: SignUpScreen(),
         )
     );
   });
