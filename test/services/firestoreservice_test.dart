@@ -7,24 +7,103 @@ void main() {
   late FakeFirebaseFirestore firestore;
   late FirestoreService firestoreService;
 
-  setUp(() {
+  setUp(() async {
     firestore = FakeFirebaseFirestore();
+    final Map<String, List<String>> questionsAndOptions = {
+      "What is recycling?": [
+        "Reusing materials",
+        "Throwing trash",
+        "Saving money",
+        "Buying new things"
+      ],
+      "Why should we save water?": [
+        "It helps the earth",
+        "Water is unlimited",
+        "For fun",
+        "It doesn't matter"
+      ],
+      "What do trees do for us?": [
+        "Give oxygen",
+        "Make noise",
+        "Take water",
+        "Eat food"
+      ],
+      "How can we reduce waste?": [
+        "Recycle",
+        "Burn trash",
+        "Throw in rivers",
+        "Ignore it"
+      ],
+      "What animals live in the ocean?": ["Sharks", "Lions", "Elephants", "Cows"],
+      "What happens if we pollute rivers?": [
+        "Fish die",
+        "More water appears",
+        "Trees grow faster",
+        "It smells better"
+      ],
+      "Why is the sun important?": [
+        "Gives us light",
+        "Cools the earth",
+        "Makes rain",
+        "Creates snow"
+      ],
+      "How can we help the planet?": [
+        "Pick up trash",
+        "Cut all trees",
+        "Pollute more",
+        "Use plastic"
+      ],
+      "What is composting?": [
+        "Turning food waste into soil",
+        "Burning paper",
+        "Throwing food in the trash",
+        "Using plastic"
+      ],
+      "Why should we turn off the lights?": [
+        "Save energy",
+        "Break the bulb",
+        "Change the color",
+        "Make it brighter"
+      ]
+    };
+
+    final Map<String, String> correctAnswers = {
+      "What is recycling?": "Reusing materials",
+      "Why should we save water?": "It helps the earth",
+      "What do trees do for us?": "Give oxygen",
+      "How can we reduce waste?": "Recycle",
+      "What animals live in the ocean?": "Sharks",
+      "What happens if we pollute rivers?": "Fish die",
+      "Why is the sun important?": "Gives us light",
+      "How can we help the planet?": "Pick up trash",
+      "What is composting?": "Turning food waste into soil",
+      "Why should we turn off the lights?": "Save energy"
+    };
+
+    // Set up Firestore document
+    await firestore.collection('games').doc('game1').set({
+      'logo': 'game_logo.png',
+      'name': 'Game Name',
+      'description': 'Game Description',
+      'bibliography': 'Game Bibliography',
+      'tags': ['action', 'adventure'],
+      'template': 'quiz',
+      'questionsAndOptions': questionsAndOptions,
+      'correctAnswers': correctAnswers,
+    });
+
     firestoreService = FirestoreService(firestore: firestore);
   });
 
   group('getAllGames Tests', () {
     test('getAllGames should return empty list if no games exist', () async {
+      firestore = FakeFirebaseFirestore();
+      firestoreService = FirestoreService(firestore: firestore);
       final games = await firestoreService.getAllGames();
       expect(games, isEmpty);
     });
 
     test('getAllGames should return list of games', () async {
-      await firestore.collection('games').add({
-        'logo': 'assets/logo.png',
-        'name': 'Test Game',
-        'tags': ['educational', 'math']
-      });
-
       final games = await firestoreService.getAllGames();
 
       expect(games.length, 1);
