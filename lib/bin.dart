@@ -28,6 +28,7 @@ class BinScreenState extends State<BinScreen> {
   Offset iconPosition = Offset(0, 0);
   int correctCount = 0;
   int wrongCount = 0;
+  List<String> tipsToAppear=[];
 
   // Trash items mapped to their correct bin
   Map<String, String> trashItems = {
@@ -46,8 +47,24 @@ class BinScreenState extends State<BinScreen> {
     "trash10": "brown",
   };
 
+  Map<String,String> tipItems = {
+    "trash1": "Organic trash goes to the brown can",
+    "trash2": "Batteries go to the red can",
+    "trash3": "Plastic and metal go to the yellow can",
+    "trash4": "Paper and cardboard go to the blue can",
+    "trash5": "Glass goes to the green can",
+    "trash6": "Paper and cardboard go to the blue can",
+    "trash7": "Batteries go to the red can",
+    "trash8": "Glass goes to the green can",
+    "trash9": "Plastic and metal go to the yellow can",
+    "trash10": "Organic trash goes to the brown can",
+  };
+
+  late DateTime startTime;
+
   @override
   void initState() {
+    startTime = DateTime.now();
     super.initState();
   }
 
@@ -61,7 +78,9 @@ class BinScreenState extends State<BinScreen> {
       rightAnswer = trashItems[item] == bin;
       if (rightAnswer) {
         correctCount++;
-      } else { wrongCount++; }
+      } else { wrongCount++;
+        tipsToAppear.add(tipItems[item]!);
+      }
       iconPosition = position;
       showIcon = true;
 
@@ -81,6 +100,8 @@ class BinScreenState extends State<BinScreen> {
       });
 
       if (isGameOver()) {
+        final endTime = DateTime.now();
+        final duration = endTime.difference(startTime);
         if (mounted) {
           Navigator.push(
             context,
@@ -93,6 +114,9 @@ class BinScreenState extends State<BinScreen> {
                     gameName: widget.binData.gameName,
                     // Access quizData here
                     gameImage: widget.binData.gameLogo, // Access quizData here
+                    tipsToAppear: tipsToAppear.toSet().toList(),
+                    duration: duration,
+                      onReplay: () => BinScreen(binData: widget.binData)
                   ),
             ),
           );
