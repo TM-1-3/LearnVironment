@@ -214,7 +214,9 @@ class FirestoreService {
         'birthdate': birthDate,
         'gamesPlayed': [],
       });
+      print("[FirestoreService] User created successfully!");
     } catch (e) {
+      print("[FirestoreService] Unable to create user!");
       throw Exception("Unable to create user!");
     }
   }
@@ -222,8 +224,10 @@ class FirestoreService {
   Future<void> deleteAccount(String uid) async {
     try {
       await _firestore.collection('users').doc(uid).delete();
+      print("[FirestoreService] Account Deleted");
     } catch (e) {
-      throw Exception("Error deleting account: $e");
+      print("[FirestoreService] Error deleting account $uid");
+      rethrow;
     }
   }
 }

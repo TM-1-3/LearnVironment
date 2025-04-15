@@ -161,6 +161,7 @@ class DataService {
     try {
       await _firestoreService.deleteAccount(uid);
       await _userCacheService.clearUserCache();
+      print("[DataService] Account deleted");
     } catch(e) {
       print("[DataService] Error deleting account");
       rethrow;
