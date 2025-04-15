@@ -5,9 +5,8 @@ import 'package:learnvironment/main_pages/game_data.dart';
 
 class GamesPage extends StatefulWidget {
   final FirebaseFirestore firestore;
-  final bool skipFirebase;
 
-  GamesPage({super.key, FirebaseFirestore? firestore, this.skipFirebase=false})
+  GamesPage({super.key, FirebaseFirestore? firestore})
       : firestore = firestore ?? FirebaseFirestore.instance;
 
   @override
@@ -23,9 +22,7 @@ class GamesPageState extends State<GamesPage> {
   @override
   void initState() {
     super.initState();
-    if (!widget.skipFirebase) {
-      _loadGames();
-    }
+    _loadGames();
   }
 
   // Fetching the game data from Firestore
