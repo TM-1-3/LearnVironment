@@ -7,33 +7,70 @@ import 'package:learnvironment/authentication/auth_gate.dart';
 import 'package:learnvironment/authentication/signup_screen.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/services/firestore_service.dart';
 import 'package:provider/provider.dart';
 
-class MockFirebaseAuthWithErrors extends MockFirebaseAuth {
-  final bool shouldThrowEmailUsedError;
-  final bool shouldThrowOperationNotAllowedError;
-  final bool shouldThrowInvalidEmailError;
-  final bool shouldThrow;
-
-  MockFirebaseAuthWithErrors({
-    this.shouldThrowEmailUsedError = false,
-    this.shouldThrowOperationNotAllowedError = false,
-    this.shouldThrowInvalidEmailError = false,
-    this.shouldThrow = false
-  });
+class MockFirestoreService extends FirestoreService {
+  MockFirestoreService({FakeFirebaseFirestore? firestore}) : super(firestore: firestore);
 
   @override
-  Future<UserCredential> createUserWithEmailAndPassword({required String email, required String password}) async {
-    if (shouldThrowEmailUsedError) {
-      throw FirebaseAuthException(code: 'email-already-in-use', message: 'Email already used. Use login page.');
-    } else if (shouldThrowOperationNotAllowedError) {
-      throw FirebaseAuthException(code: 'operation-not-allowed', message: 'Too many requests to register into this account.');
-    } else if (shouldThrowInvalidEmailError) {
-      throw FirebaseAuthException(code: 'invalid-email', message: 'Email address is invalid.');
-    } else if (shouldThrow) {
-      throw FirebaseAuthException(code: 'any', message: 'Registration failed. Please try again.');
-    }
-    return super.createUserWithEmailAndPassword(email: email, password: password);
+  Future<void> registerUser({
+    required String uid,
+    required String name,
+    required String username,
+    required String selectedAccountType,
+    required String email,
+    required String birthDate,
+  }) async {
+  }
+}
+
+class MockAuthService extends AuthService {
+  MockAuthService({MockFirebaseAuth? firebaseAuth})
+      : super(firebaseAuth: firebaseAuth);
+
+  @override
+  Future<String?> registerUser({
+    required String email,
+    required String username,
+    required String password,
+  }) async {
+    return "mockUserId123";
+  }
+
+  @override
+  Stream<User?> get authStateChanges => Stream.value(MockUser());
+}
+
+
+class MockLoginScreen extends LoginScreen {
+  MockLoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _MockLoginScreenState();
+}
+
+class _MockLoginScreenState extends State<LoginScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(
+        child: Text('Mock Login Screen'),
+      ),
+    );
+  }
+}
+
+class MockAuthGate extends AuthGate {
+  MockAuthGate({key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(
+        child: Text('Mock AuthGate Screen'),
+      ),
+    );
   }
 }
 
@@ -42,28 +79,30 @@ void main() {
   late MockFirebaseAuth mockAuth;
   late FakeFirebaseFirestore mockFirestore;
   late Widget testWidget;
+  late MockAuthService authService;
 
   setUp(() {
     mockUser = MockUser(
       uid: 'abc123',
       email: 'test@example.com',
       displayName: 'testuser',
+      isEmailVerified: false,
     );
     mockAuth = MockFirebaseAuth(mockUser: mockUser);
     mockFirestore = FakeFirebaseFirestore();
+    authService = MockAuthService(firebaseAuth: mockAuth);
 
     testWidget = MultiProvider(
         providers: [
-          ChangeNotifierProvider<AuthService>(
-            create: (_) => AuthService(firebaseAuth: mockAuth),
-          ),
+          ChangeNotifierProvider<AuthService>(create: (_) => authService),
+          Provider<FirestoreService>(create: (_) => MockFirestoreService(firestore: mockFirestore)),
         ],
         child: MaterialApp(
           routes: {
-            '/auth_gate': (context) => AuthGate(fireauth: mockAuth, firestore: mockFirestore),
-            '/login': (context) => LoginScreen(auth: mockAuth)
+            '/auth_gate': (context) => MockAuthGate(),
+            '/login': (context) => MockLoginScreen()
           },
-          home: SignUpScreen(firestore: mockFirestore, auth: mockAuth),
+          home: SignUpScreen(),
         )
     );
   });
@@ -102,7 +141,7 @@ void main() {
       await tester.tap(find.text('Already have an account? Log in here.'));
       await tester.pumpAndSettle();
 
-      expect(find.byType(LoginScreen), findsOneWidget);
+      expect(find.byType(MockLoginScreen), findsOneWidget);
     });
 
     testWidgets('Birthdate selector works', (WidgetTester tester) async {
@@ -182,170 +221,6 @@ void main() {
       expect(find.text('Please fill in all fields.'), findsOneWidget);
     });
 
-    testWidgets('Error Email is in use', (WidgetTester tester) async {
-      final mockAuthWithErrors = MockFirebaseAuthWithErrors(shouldThrowEmailUsedError: true);
-
-      final testWidget = MaterialApp(
-            home: SignUpScreen(firestore: mockFirestore, auth: mockAuthWithErrors),
-      );
-
-      await tester.pumpWidget(testWidget);
-
-      await tester.enterText(find.widgetWithText(TextField, 'Name'), 'Test User');
-      await tester.enterText(find.widgetWithText(TextField, 'Username'), 'testuser');
-      await tester.enterText(find.widgetWithText(TextField, 'Email'), 'up202307719@up.pt');
-      await tester.enterText(find.widgetWithText(TextField, 'Password'), 'password123');
-      await tester.enterText(find.widgetWithText(TextField, 'Confirm Password'), 'password123');
-
-      //Select Student
-      await tester.ensureVisible(find.byType(DropdownButton<String>));
-      await tester.tap(find.byType(DropdownButton<String>));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('student').last);
-      await tester.pumpAndSettle();
-
-      //Select Birthdate
-      final dateField = find.byKey(Key("birthDate"));
-      await tester.ensureVisible(dateField);
-      await tester.pumpAndSettle();
-      await tester.tap(dateField);
-      await tester.pumpAndSettle();
-      expect(find.byType(CalendarDatePicker), findsOneWidget);
-      await tester.ensureVisible(find.text('OK'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('OK'));
-      await tester.pumpAndSettle();
-
-      await tester.ensureVisible(find.text('Register'));
-      await tester.tap(find.text('Register'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Email already used. Use login page.'), findsOneWidget);
-    });
-
-    testWidgets('Error Invalid Email', (WidgetTester tester) async {
-      final mockAuthWithErrors = MockFirebaseAuthWithErrors(shouldThrowInvalidEmailError: true);
-
-      final testWidget = MaterialApp(
-        home: SignUpScreen(firestore: mockFirestore, auth: mockAuthWithErrors),
-      );
-
-      await tester.pumpWidget(testWidget);
-
-      await tester.enterText(find.widgetWithText(TextField, 'Name'), 'Test User');
-      await tester.enterText(find.widgetWithText(TextField, 'Username'), 'testuser');
-      await tester.enterText(find.widgetWithText(TextField, 'Email'), 'up202307719@up.pt');
-      await tester.enterText(find.widgetWithText(TextField, 'Password'), 'password123');
-      await tester.enterText(find.widgetWithText(TextField, 'Confirm Password'), 'password123');
-
-      //Select Student
-      await tester.ensureVisible(find.byType(DropdownButton<String>));
-      await tester.tap(find.byType(DropdownButton<String>));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('student').last);
-      await tester.pumpAndSettle();
-
-      //Select Birthdate
-      final dateField = find.byKey(Key("birthDate"));
-      await tester.ensureVisible(dateField);
-      await tester.pumpAndSettle();
-      await tester.tap(dateField);
-      await tester.pumpAndSettle();
-      expect(find.byType(CalendarDatePicker), findsOneWidget);
-      await tester.ensureVisible(find.text('OK'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('OK'));
-      await tester.pumpAndSettle();
-
-      await tester.ensureVisible(find.text('Register'));
-      await tester.tap(find.text('Register'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Email address is invalid.'), findsOneWidget);
-    });
-
-    testWidgets('Unknown Error', (WidgetTester tester) async {
-      final mockAuthWithErrors = MockFirebaseAuthWithErrors(shouldThrow: true);
-
-      final testWidget = MaterialApp(
-        home: SignUpScreen(firestore: mockFirestore, auth: mockAuthWithErrors),
-      );
-
-      await tester.pumpWidget(testWidget);
-
-      await tester.enterText(find.widgetWithText(TextField, 'Name'), 'Test User');
-      await tester.enterText(find.widgetWithText(TextField, 'Username'), 'testuser');
-      await tester.enterText(find.widgetWithText(TextField, 'Email'), 'up202307719@up.pt');
-      await tester.enterText(find.widgetWithText(TextField, 'Password'), 'password123');
-      await tester.enterText(find.widgetWithText(TextField, 'Confirm Password'), 'password123');
-
-      //Select Student
-      await tester.ensureVisible(find.byType(DropdownButton<String>));
-      await tester.tap(find.byType(DropdownButton<String>));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('student').last);
-      await tester.pumpAndSettle();
-
-      //Select Birthdate
-      final dateField = find.byKey(Key("birthDate"));
-      await tester.ensureVisible(dateField);
-      await tester.pumpAndSettle();
-      await tester.tap(dateField);
-      await tester.pumpAndSettle();
-      expect(find.byType(CalendarDatePicker), findsOneWidget);
-      await tester.ensureVisible(find.text('OK'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('OK'));
-      await tester.pumpAndSettle();
-
-      await tester.ensureVisible(find.text('Register'));
-      await tester.tap(find.text('Register'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Registration failed. Please try again.'), findsOneWidget);
-    });
-
-    testWidgets('Error Too many requests', (WidgetTester tester) async {
-      final mockAuthWithErrors = MockFirebaseAuthWithErrors(shouldThrowOperationNotAllowedError: true);
-
-      final testWidget = MaterialApp(
-        home: SignUpScreen(firestore: mockFirestore, auth: mockAuthWithErrors),
-      );
-
-      await tester.pumpWidget(testWidget);
-
-      await tester.enterText(find.widgetWithText(TextField, 'Name'), 'Test User');
-      await tester.enterText(find.widgetWithText(TextField, 'Username'), 'testuser');
-      await tester.enterText(find.widgetWithText(TextField, 'Email'), 'up202307719@up.pt');
-      await tester.enterText(find.widgetWithText(TextField, 'Password'), 'password123');
-      await tester.enterText(find.widgetWithText(TextField, 'Confirm Password'), 'password123');
-
-      //Select Student
-      await tester.ensureVisible(find.byType(DropdownButton<String>));
-      await tester.tap(find.byType(DropdownButton<String>));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('student').last);
-      await tester.pumpAndSettle();
-
-      //Select Birthdate
-      final dateField = find.byKey(Key("birthDate"));
-      await tester.ensureVisible(dateField);
-      await tester.pumpAndSettle();
-      await tester.tap(dateField);
-      await tester.pumpAndSettle();
-      expect(find.byType(CalendarDatePicker), findsOneWidget);
-      await tester.ensureVisible(find.text('OK'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('OK'));
-      await tester.pumpAndSettle();
-
-      await tester.ensureVisible(find.text('Register'));
-      await tester.tap(find.text('Register'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Too many requests to register into this account.'), findsOneWidget);
-    });
-
     testWidgets('successful registration', (WidgetTester tester) async {
       await tester.pumpWidget(testWidget);
 
@@ -376,9 +251,14 @@ void main() {
 
       await tester.ensureVisible(find.text('Register'));
       await tester.tap(find.text('Register'));
-      await tester.pumpAndSettle();
 
+      await tester.pump(); // starts the frame
+      await tester.pump(const Duration(seconds: 2)); // gives time for async op
+      await tester.pumpAndSettle(); // waits until animations and async are done
+
+      expect(find.byType(SnackBar), findsOneWidget);
       expect(find.text('Account created successfully! Please verify your email.'), findsOneWidget);
+      expect(find.byType(MockAuthGate), findsOneWidget);
     });
   });
 

@@ -1,25 +1,50 @@
-import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:learnvironment/data/user_data.dart';
 import 'package:learnvironment/main_pages/main_page.dart';
 import 'package:learnvironment/main_pages/games_page.dart';
 import 'package:learnvironment/main_pages/statistics_page.dart';
 import 'package:learnvironment/main_pages/profile_screen.dart';
+import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/services/data_service.dart';
 import 'package:learnvironment/teacher/teacher_home.dart';
+import 'package:mockito/mockito.dart';
+import 'package:provider/provider.dart';
+
+class MockDataService extends Mock implements DataService {
+  @override
+  Future<UserData?> getUserData(String userId) {
+    // Return different roles based on userId for different tests
+    if (userId == 'testDeveloper') {
+      return Future.value(UserData(role: 'developer', id: 'testDeveloper', username: 'Test User', email: 'test@example.com', name: 'Dev', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: []));
+    } else if (userId == 'testStudent') {
+      return Future.value(UserData(role: 'student', id: '', username: '', email: '', name: '', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: []));
+    } else if (userId == 'testTeacher') {
+      return Future.value(UserData(role: 'teacher', id: '', username: '', email: '', name: '', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: []));
+    } else {
+      return Future.value(UserData(role: '', id: '', username: '', name: '', email: '', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: []));
+    }
+  }
+}
 
 void main() {
-  late FakeFirebaseFirestore fakeFirestore;
   late MockFirebaseAuth mockAuth;
   late Widget testWidget;
+  late MockDataService mockDataService;
 
   setUp(() {
-    fakeFirestore = FakeFirebaseFirestore();
-    mockAuth = MockFirebaseAuth();
-    testWidget = MaterialApp(
-      home: TeacherHomePage(
-        firestore: fakeFirestore,
-        auth: mockAuth,
+    mockAuth = MockFirebaseAuth(mockUser: MockUser(uid: 'test', displayName: 'Test', email: 'email'),signedIn: true);
+    mockDataService = MockDataService();
+    testWidget = MultiProvider(
+      providers: [
+        ChangeNotifierProvider<AuthService>(
+          create: (_) => AuthService(firebaseAuth: mockAuth),
+        ),
+        Provider<DataService>(create: (_) => mockDataService),
+      ],
+      child: MaterialApp(
+          home: TeacherHomePage()
       ),
     );
   });

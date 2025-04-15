@@ -7,34 +7,117 @@ void main() {
   late FakeFirebaseFirestore firestore;
   late FirestoreService firestoreService;
 
-  setUp(() {
+  setUp(() async {
     firestore = FakeFirebaseFirestore();
+    final Map<String, List<String>> questionsAndOptions = {
+      "What is recycling?": [
+        "Reusing materials",
+        "Throwing trash",
+        "Saving money",
+        "Buying new things"
+      ],
+      "Why should we save water?": [
+        "It helps the earth",
+        "Water is unlimited",
+        "For fun",
+        "It doesn't matter"
+      ],
+      "What do trees do for us?": [
+        "Give oxygen",
+        "Make noise",
+        "Take water",
+        "Eat food"
+      ],
+      "How can we reduce waste?": [
+        "Recycle",
+        "Burn trash",
+        "Throw in rivers",
+        "Ignore it"
+      ],
+      "What animals live in the ocean?": ["Sharks", "Lions", "Elephants", "Cows"],
+      "What happens if we pollute rivers?": [
+        "Fish die",
+        "More water appears",
+        "Trees grow faster",
+        "It smells better"
+      ],
+      "Why is the sun important?": [
+        "Gives us light",
+        "Cools the earth",
+        "Makes rain",
+        "Creates snow"
+      ],
+      "How can we help the planet?": [
+        "Pick up trash",
+        "Cut all trees",
+        "Pollute more",
+        "Use plastic"
+      ],
+      "What is composting?": [
+        "Turning food waste into soil",
+        "Burning paper",
+        "Throwing food in the trash",
+        "Using plastic"
+      ],
+      "Why should we turn off the lights?": [
+        "Save energy",
+        "Break the bulb",
+        "Change the color",
+        "Make it brighter"
+      ]
+    };
+
+    final Map<String, String> correctAnswers = {
+      "What is recycling?": "Reusing materials",
+      "Why should we save water?": "It helps the earth",
+      "What do trees do for us?": "Give oxygen",
+      "How can we reduce waste?": "Recycle",
+      "What animals live in the ocean?": "Sharks",
+      "What happens if we pollute rivers?": "Fish die",
+      "Why is the sun important?": "Gives us light",
+      "How can we help the planet?": "Pick up trash",
+      "What is composting?": "Turning food waste into soil",
+      "Why should we turn off the lights?": "Save energy"
+    };
+
+    // Set up Firestore document
+    await firestore.collection('games').doc('game1').set({
+      'logo': 'game_logo.png',
+      'name': 'Game Name',
+      'description': 'Game Description',
+      'bibliography': 'Game Bibliography',
+      'tags': ['action', 'adventure'],
+      'template': 'quiz',
+      'questionsAndOptions': questionsAndOptions,
+      'correctAnswers': correctAnswers,
+    });
+
     firestoreService = FirestoreService(firestore: firestore);
   });
 
   group('getAllGames Tests', () {
     test('getAllGames should return empty list if no games exist', () async {
+      firestore = FakeFirebaseFirestore();
+      firestoreService = FirestoreService(firestore: firestore);
       final games = await firestoreService.getAllGames();
       expect(games, isEmpty);
     });
 
     test('getAllGames should return list of games', () async {
-      await firestore.collection('games').add({
-        'logo': 'assets/logo.png',
-        'name': 'Test Game',
-        'tags': ['educational', 'math']
-      });
-
       final games = await firestoreService.getAllGames();
 
       expect(games.length, 1);
-      expect(games[0]['imagePath'], 'assets/logo.png');
-      expect(games[0]['gameTitle'], 'Test Game');
-      expect(games[0]['tags'], contains('math'));
+      expect(games[0]['imagePath'], 'game_logo.png');
+      expect(games[0]['gameTitle'], 'Game Name');
+      expect(games[0]['tags'], contains('action'));
+      expect(games[0]['tags'], contains('adventure'));
+      expect(games[0]['gameId'], 'game1');
     });
 
     test('getAllGames should handle missing fields safely', () async {
-      await firestore.collection('games').add({}); // Missing all expected fields
+      firestore = FakeFirebaseFirestore();
+      firestoreService = FirestoreService(firestore: firestore);
+      await firestore.collection('games').add({});
 
       final games = await firestoreService.getAllGames();
 
@@ -51,7 +134,7 @@ void main() {
         await firestoreService.fetchGameData('non_existing_game');
         fail('Expected an exception to be thrown');
       } catch (e) {
-        expect(e.toString(), contains('Game not found!'));
+        expect(e.toString(), contains('Game not found'));
       }
     });
 
@@ -83,7 +166,7 @@ void main() {
         await firestoreService.fetchUserData('non_existing_user');
         fail('Expected an exception to be thrown');
       } catch (e) {
-        expect(e.toString(), contains('User not found!'));
+        expect(e.toString(), contains('User not found'));
       }
     });
 
@@ -160,29 +243,24 @@ void main() {
   group('getPlayedGames Tests', () {
     test('getPlayedGames should return empty list if no games are played', () async {
       final uid = 'userWithNoGames';
-      // Set gamesPlayed as an empty list
       await firestore.collection('users').doc(uid).set({
         'gamesPlayed': [],
       });
-
       final games = await firestoreService.getPlayedGames(uid);
-
       expect(games, isEmpty);
     });
 
     test('getPlayedGames should return list of games if user has played games', () async {
       final uid = 'userWithGames';
 
-      // Add a game to the 'games' collection first
       await firestore.collection('games').doc('game1').set({
         'logo': 'assets/logo.png',
         'name': 'Test Game',
         'tags': ['educational', 'math'],
       });
 
-      // Now set the 'gamesPlayed' field with game IDs (array of strings)
       await firestore.collection('users').doc(uid).set({
-        'gamesPlayed': ['game1'], // List of game IDs as strings
+        'gamesPlayed': ['game1'],
       });
 
       final games = await firestoreService.getPlayedGames(uid);
@@ -195,7 +273,6 @@ void main() {
 
     test('getPlayedGames should return empty list if gamesPlayed field is missing', () async {
       final uid = 'userWithoutGamesField';
-      // User document without 'gamesPlayed' field
       await firestore.collection('users').doc(uid).set({});
       final games = await firestoreService.getPlayedGames(uid);
 
@@ -204,19 +281,12 @@ void main() {
 
     test('getPlayedGames should handle invalid data structure in gamesPlayed field', () async {
       final uid = 'userWithInvalidGamesData';
-
-      // Add a game to the 'games' collection first
       await firestore.collection('games').doc('game1').set({
         'logo': 'assets/logo.png',
         'name': 'Test Game',
         'tags': ['educational', 'math'],
       });
-
-      // Now set the 'gamesPlayed' field with invalid data structure (e.g., non-string values)
-      await firestore.collection('users').doc(uid).set({
-        'gamesPlayed': [12345], // Invalid game ID (not a string)
-      });
-
+      await firestore.collection('users').doc(uid).set({'gamesPlayed': [12345],});
       final games = await firestoreService.getPlayedGames(uid);
 
       expect(games, isEmpty);
@@ -224,15 +294,88 @@ void main() {
 
     test('getPlayedGames should return empty list if game ID does not exist in the games collection', () async {
       final uid = 'userWithNonExistingGameId';
-
-      // Set the 'gamesPlayed' field with a non-existing game ID
       await firestore.collection('users').doc(uid).set({
         'gamesPlayed': ['non_existing_game_id'],
       });
-
       final games = await firestoreService.getPlayedGames(uid);
 
-      expect(games, isEmpty); // No game data should be returned
+      expect(games, isEmpty);
     });
   });
+
+  group('updateUserGamesPlayed() Tests', () {
+    test('should update the gamesPlayed list correctly', () async {
+      final docRef = await firestore.collection('users').add({
+        'username': 'Lebi',
+        'email': 'up202307719@g.uporto.pt',
+        'name': 'L',
+        'role': 'developer',
+        'birthdate': Timestamp.fromDate(DateTime(2000, 1, 1)),
+      });
+      String uid = docRef.id;
+      String gameId = "myGame";
+      await firestoreService.updateUserGamesPlayed(uid, gameId);
+      final docSnapshot = await firestore.collection('users').doc(uid).get();
+      if (docSnapshot.exists) {
+        final data = docSnapshot.data();
+        final gamesPlayed = List<String>.from(data?['gamesPlayed'] ?? []);
+        final isGamePlayed = gamesPlayed.contains(gameId);
+        expect(isGamePlayed, isTrue);
+      } else {
+        fail("No user data");
+      }
+    });
+
+    test('should handle error during updateUserGamesPlayed', () async {
+      try {
+        String uid = "user";
+        String gameId = "myGame";
+        await firestoreService.updateUserGamesPlayed(uid, gameId);
+        fail("Did not trow error");
+      } catch(e) {
+        expect(e, isA<FirebaseException>());
+      }
+    });
+  });
+
+  group('registerUser() Tests', () {
+    test('registerUser successfully creates a user', () async {
+      await firestoreService.registerUser(
+        uid: 'user1',
+        name: 'User One',
+        username: 'user1',
+        selectedAccountType: 'developer',
+        email: 'user1@example.com',
+        birthDate: '2000-01-01',
+      );
+      final docSnapshot = await firestore.collection('users').doc('user1').get();
+      if (docSnapshot.exists) {
+        final data = docSnapshot.data();
+        expect(data?['name'], 'User One');
+        expect(data?['username'], 'user1');
+        expect(data?['role'], 'developer');
+        expect(data?['email'], 'user1@example.com');
+        expect(data?['birthdate'], '2000-01-01');
+      } else {
+        fail("No user data");
+      }
+    });
+
+    test('registerUser throws exception if no selectedAccountType', () async {
+      try {
+        await firestoreService.registerUser(
+          uid: 'user1',
+          name: 'User One',
+          username: 'user1',
+          selectedAccountType: '',
+          email: 'user1@example.com',
+          birthDate: '2000-01-01',
+        );
+        fail("No exception thrown");
+      } catch (e) {
+        expect(e.toString(), contains("Unable to create user!"));
+      }
+    });
+  });
+
 }

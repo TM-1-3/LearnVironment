@@ -1,11 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:learnvironment/services/auth_service.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
-  final FirebaseAuth auth;
-
-  LoginScreen({super.key, FirebaseAuth? auth})
-      : auth = auth ?? FirebaseAuth.instance;
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -16,14 +14,10 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
 
-  // Use the passed FirebaseAuth instance (or default to FirebaseAuth.instance)
-  FirebaseAuth get _auth => widget.auth;
-
   Future<void> _handleLogin() async {
     setState(() {
       _isLoading = true;
     });
-
     try {
       final email = _emailController.text.trim();
       final password = _passwordController.text.trim();
@@ -35,49 +29,30 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
 
-      // Directly attempt to log in
-      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      final authService = Provider.of<AuthService>(context, listen: false);
+      await authService.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Successfully logged in!')),
         );
       }
-      // Navigate to home page here if necessary
 
-      // Clear the text fields after a successful login
       _emailController.clear();
       _passwordController.clear();
-    } on FirebaseAuthException catch (e) {
-      String errorMessage = e.code;
-
-      switch (e.code) {
-        case "ERROR_EMAIL_ALREADY_IN_USE":
-        case "account-exists-with-different-credential":
-        case "email-already-in-use":
-          errorMessage = "Email already used. Go to login page.";
-        case "ERROR_WRONG_PASSWORD":
-        case "wrong-password":
-          errorMessage = "Wrong email/password combination.";
-        case "ERROR_USER_NOT_FOUND":
-        case "user-not-found":
-          errorMessage = "No user found with this email.";
-        case "ERROR_USER_DISABLED":
-        case "user-disabled":
-          errorMessage = "User disabled.";
-        case "ERROR_TOO_MANY_REQUESTS":
-        case "ERROR_OPERATION_NOT_ALLOWED":
-        case "operation-not-allowed":
-          errorMessage = "Too many requests to log into this account.";
-        case "ERROR_INVALID_EMAIL":
-        case "invalid-email":
-          errorMessage = "Email address is invalid.";
-        default:
-          errorMessage = "Login failed. Please try again.";
-      }
 
       if (mounted) {
+        Navigator.of(context).pushReplacementNamed('/auth_gate');
+      }
+
+    } catch (e) {
+      print(e);
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(errorMessage)),
+          SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
         );
       }
     } finally {

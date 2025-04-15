@@ -5,8 +5,7 @@ import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/games_templates/results_page.dart';
 
 class Quiz extends StatefulWidget {
-  final GameData quizData;  // The quizData passed to this widget
-
+  final GameData quizData;
   const Quiz({super.key, required this.quizData});
 
   @override

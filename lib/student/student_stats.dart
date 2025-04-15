@@ -1,66 +1,68 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/games_templates/games_initial_screen.dart';
 import 'package:learnvironment/main_pages/widgets/game_card.dart';
-import 'package:learnvironment/services/firestore_service.dart';
+import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/services/data_service.dart';
+import 'package:provider/provider.dart';
 
 class StudentStatsPage extends StatefulWidget {
-  final FirebaseAuth? auth;
-  final FirebaseFirestore? firestore;
-
-  const StudentStatsPage({
-    super.key,
-    this.auth,
-    this.firestore,
-  });
+  const StudentStatsPage({super.key});
 
   @override
   StudentStatsPageState createState() => StudentStatsPageState();
 }
 
 class StudentStatsPageState extends State<StudentStatsPage> {
-  late final FirestoreService firestoreService;
   List<Map<String, dynamic>> games = [];
 
   @override
   void initState() {
     super.initState();
-    final firestore = widget.firestore ?? FirebaseFirestore.instance;
-    firestoreService = FirestoreService(firestore: firestore);
-    loadGames();
+    _loadGames();
   }
 
-  Future<void> loadGames() async {
+  Future<void> _loadGames() async {
     try {
-      final gamesList = await firestoreService.getPlayedGames(widget.auth!.currentUser!.uid);
-      if (mounted) {
+      final dataService = Provider.of<DataService>(context, listen: false);
+      final authService = Provider.of<AuthService>(context, listen: false);
+
+      final uid = await authService.getUid();
+      final fetchedGames = await dataService.getPlayedGames(uid);
+
+      if (fetchedGames.isNotEmpty) {
         setState(() {
-          games = gamesList;
+          games = fetchedGames;
         });
+      } else {
+        print('[STATS] No games played yet.');
       }
     } catch (e) {
       if (mounted) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error loading games: $e')),
-          );
-        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error loading games: $e')),
+        );
       }
+      print('[STATS ERROR] $e');
     }
   }
 
-  Future<void> loadGame(String gameId) async {
+  Future<void> _loadGame(String gameId) async {
     try {
-      GameData gameData = await firestoreService.fetchGameData(gameId);
-      if (mounted) {
+      final dataService = Provider.of<DataService>(context, listen: false);
+
+      // Ensure you check for null or handle this properly
+      GameData? gameData = await dataService.getGameData(gameId);
+
+      if (gameData != null && mounted) {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => GamesInitialScreen(gameData: gameData),
           ),
         );
+      } else {
+        throw 'Game data not found';
       }
     } catch (e) {
       if (mounted) {
@@ -76,7 +78,7 @@ class StudentStatsPageState extends State<StudentStatsPage> {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 32.0),
+          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -92,7 +94,7 @@ class StudentStatsPageState extends State<StudentStatsPage> {
                   builder: (context, constraints) {
                     var mainAxisExtent = 600.0;
                     if (constraints.maxWidth <= 600) {
-                      mainAxisExtent = constraints.maxWidth - 40;
+                      mainAxisExtent = constraints.maxWidth;
                     } else if (constraints.maxWidth <= 1000) {
                       mainAxisExtent = 650;
                     } else if (constraints.maxWidth <= 2000) {
@@ -117,7 +119,7 @@ class StudentStatsPageState extends State<StudentStatsPage> {
                           gameTitle: game['gameTitle'],
                           tags: List<String>.from(game['tags']),
                           gameId: game['gameId'],
-                          loadGame: loadGame,
+                          loadGame: _loadGame,
                         );
                       },
                     )

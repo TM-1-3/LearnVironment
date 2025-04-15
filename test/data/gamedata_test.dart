@@ -1,16 +1,11 @@
+import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:learnvironment/data/game_data.dart';
 
 void main() {
-  late FakeFirebaseFirestore firestore;
+  late GameData gameData;
 
   setUp(() {
-    firestore = FakeFirebaseFirestore();
-  });
-
-  test('GameData handles quizzes', () async {
-    // Sample quiz-specific fields
     final Map<String, List<String>> questionsAndOptions = {
       "What is recycling?": [
         "Reusing materials",
@@ -82,65 +77,127 @@ void main() {
       "Why should we turn off the lights?": "Save energy"
     };
 
-    // Set up Firestore document
-    await firestore.collection('games').doc('game1').set({
-      'logo': 'game_logo.png',
-      'name': 'Game Name',
-      'description': 'Game Description',
-      'bibliography': 'Game Bibliography',
-      'tags': ['action', 'adventure'],
-      'template': 'quiz',
-      'questionsAndOptions': questionsAndOptions,
-      'correctAnswers': correctAnswers,
-    });
+    gameData = GameData(
+      gameLogo: 'game_logo.png',
+      gameName: 'Game Name',
+      gameDescription: 'Game Description',
+      gameBibliography: 'Game Bibliography',
+      tags: ['action', 'adventure'],
+      gameTemplate: 'quiz',
+      documentName: 'game1',
+      questionsAndOptions: questionsAndOptions,
+      correctAnswers: correctAnswers,
+    );
+  });
 
-    // Fetch GameData
-    GameData gameData = await GameData.fromFirestore('game1', firestore);
-
-    // Verify that the data matches and the documentName is set correctly
+  test('Test getters of GameData', () {
     expect(gameData.gameLogo, 'game_logo.png');
     expect(gameData.gameName, 'Game Name');
     expect(gameData.gameDescription, 'Game Description');
     expect(gameData.gameBibliography, 'Game Bibliography');
     expect(gameData.tags, ['action', 'adventure']);
     expect(gameData.gameTemplate, 'quiz');
-    expect(gameData.questionsAndOptions, questionsAndOptions);
-    expect(gameData.correctAnswers, correctAnswers);
     expect(gameData.documentName, 'game1');
   });
 
-  test('Game not found exception', () async {
-    try {
-      // Attempt to fetch a game that does not exist
-      await GameData.fromFirestore('non_existing_game', firestore);
-      fail('Expected an exception to be thrown');
-    } catch (e) {
-      // Verify that the exception is thrown
-      expect(e.toString(), contains('Game not found!'));
-    }
+  test('Test toCache function', () {
+    final cacheData = gameData.toCache();
+
+    // Ensure fields are correctly serialized
+    expect(cacheData['gameLogo'], 'game_logo.png');
+    expect(cacheData['gameName'], 'Game Name');
+    expect(cacheData['gameDescription'], 'Game Description');
+    expect(cacheData['gameBibliography'], 'Game Bibliography');
+    expect(jsonDecode(cacheData['tags']!), ['action', 'adventure']);
+    expect(cacheData['gameTemplate'], 'quiz');
+    expect(cacheData['documentName'], 'game1');
+
+    // Test quiz-specific data
+    final questionsAndOptionsCache = jsonDecode(cacheData['questionsAndOptions']!);
+    expect(questionsAndOptionsCache['What is recycling?'][0], 'Reusing materials');
+    expect(questionsAndOptionsCache['Why should we save water?'][0], 'It helps the earth');
+
+    final correctAnswersCache = jsonDecode(cacheData['correctAnswers']!);
+    expect(correctAnswersCache['What is recycling?'], 'Reusing materials');
+    expect(correctAnswersCache['Why should we save water?'], 'It helps the earth');
   });
 
-  test('fetchGameData should return valid GameData', () async {
-    // Set up the mock Firestore data
-    await firestore.collection('games').doc('game2').set({
-      'logo': 'game_logo.png',
-      'name': 'Game 2',
-      'description': 'Game 2 Description',
-      'bibliography': 'Game 2 Bibliography',
-      'tags': ['strategy', 'simulation'],
-      'template' : 'drag'
-    });
+  test('Test fromCache function', () {
+    final cacheData = gameData.toCache();
+    final deserializedGameData = GameData.fromCache(cacheData);
 
-    // Call the fetchGameData function
-    GameData gameData = await GameData.fromFirestore('game2', firestore);
+    // Verify all fields are deserialized correctly
+    expect(deserializedGameData.gameLogo, 'game_logo.png');
+    expect(deserializedGameData.gameName, 'Game Name');
+    expect(deserializedGameData.gameDescription, 'Game Description');
+    expect(deserializedGameData.gameBibliography, 'Game Bibliography');
+    expect(deserializedGameData.tags, ['action', 'adventure']);
+    expect(deserializedGameData.gameTemplate, 'quiz');
+    expect(deserializedGameData.documentName, 'game1');
 
-    // Verify that the fetched data is correct
-    expect(gameData.gameLogo, 'game_logo.png');
-    expect(gameData.gameName, 'Game 2');
-    expect(gameData.gameDescription, 'Game 2 Description');
-    expect(gameData.gameBibliography, 'Game 2 Bibliography');
-    expect(gameData.tags, ['strategy', 'simulation']);
-    expect(gameData.gameTemplate, 'drag');
-    expect(gameData.documentName, 'game2');
+    // Verify quiz-specific fields are deserialized correctly
+    expect(deserializedGameData.questionsAndOptions!['What is recycling?']![0], 'Reusing materials');
+    expect(deserializedGameData.correctAnswers!['What is recycling?'], 'Reusing materials');
+  });
+
+  test('Test fromCache with missing fields (error handling)', () {
+    final Map<String, String> incompleteCacheData = {
+      'gameLogo': 'game_logo.png',
+      'gameName': 'Game Name',
+      'gameDescription': 'Game Description',
+      'gameBibliography': 'Game Bibliography',
+      'tags': jsonEncode(['action', 'adventure']),
+      'gameTemplate': 'quiz',
+      'documentName': 'game1',
+    };
+
+    // Attempt to deserialize with missing quiz data fields (questionsAndOptions, correctAnswers)
+    final deserializedGameData = GameData.fromCache(incompleteCacheData);
+
+    // Check that missing fields are handled gracefully (should be null)
+    expect(deserializedGameData.questionsAndOptions, null);
+    expect(deserializedGameData.correctAnswers, null);
+  });
+
+  test('Test toCache with malformed data', () {
+    final malformedGameData = GameData(
+      gameLogo: 'game_logo.png',
+      gameName: 'Game Name',
+      gameDescription: 'Game Description',
+      gameBibliography: 'Game Bibliography',
+      tags: ['action', 'adventure'],
+      gameTemplate: 'quiz',
+      documentName: 'game1',
+      questionsAndOptions: {},
+      correctAnswers: {},
+    );
+
+    final cacheData = malformedGameData.toCache();
+
+    // Ensure that the empty maps are serialized as empty JSON objects
+    expect(cacheData['questionsAndOptions'], '{}');
+    expect(cacheData['correctAnswers'], '{}');
+  });
+
+  test('Test toCache with empty string values', () {
+    final gameDataWithEmptyStrings = GameData(
+      gameLogo: '',
+      gameName: 'Game Name',
+      gameDescription: '',
+      gameBibliography: 'Game Bibliography',
+      tags: ['action', 'adventure'],
+      gameTemplate: 'quiz',
+      documentName: 'game1',
+      questionsAndOptions: {},
+      correctAnswers: {},
+    );
+
+    final cacheData = gameDataWithEmptyStrings.toCache();
+
+    // Verify that empty fields are handled correctly and converted as expected
+    expect(cacheData['gameLogo'], '');
+    expect(cacheData['gameDescription'], '');
+    expect(cacheData['questionsAndOptions'], '{}');
+    expect(cacheData['correctAnswers'], '{}');
   });
 }

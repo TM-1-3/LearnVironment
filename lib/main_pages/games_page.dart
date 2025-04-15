@@ -1,15 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/games_templates/games_initial_screen.dart';
 import 'package:learnvironment/main_pages/widgets/game_card.dart';
-import 'package:learnvironment/services/firestore_service.dart';
+import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/services/data_service.dart';
+import 'package:provider/provider.dart';
 
 class GamesPage extends StatefulWidget {
-  final FirebaseFirestore firestore;
-
-  GamesPage({super.key, FirebaseFirestore? firestore})
-      : firestore = firestore ?? FirebaseFirestore.instance;
+  const GamesPage({super.key});
 
   @override
   GamesPageState createState() => GamesPageState();
@@ -20,20 +17,25 @@ class GamesPageState extends State<GamesPage> {
   String? _selectedTag;
   String? _selectedAge;
   List<Map<String, dynamic>> games = [];
-  late FirestoreService firestoreService;
 
   @override
   void initState() {
     super.initState();
-    firestoreService = FirestoreService(firestore: widget.firestore);
     _fetchGames();
   }
 
   Future<void> _fetchGames() async {
-    List<Map<String, dynamic>> fetchedGames = await firestoreService.getAllGames();
-    setState(() {
-      games = fetchedGames;
-    });
+    try {
+      final dataService = Provider.of<DataService>(context, listen: false);
+
+      final fetchedGames = await dataService.getAllGames();
+      print('[GamesPage] Fetched Games');
+      setState(() {
+        games = fetchedGames;
+      });
+    } catch (e) {
+      print('[GamesPage] Error fetching games: $e');
+    }
   }
 
   List<Map<String, dynamic>> getFilteredGames() {
@@ -45,7 +47,8 @@ class GamesPageState extends State<GamesPage> {
         orElse: () => '',
       );
 
-      final matchesQuery = _searchQuery.isEmpty || gameTitle.contains(_searchQuery.toLowerCase());
+      final matchesQuery =
+          _searchQuery.isEmpty || gameTitle.contains(_searchQuery.toLowerCase());
       final matchesTag = _selectedTag == null || tags.contains(_selectedTag);
       final matchesAge = _selectedAge == null || ageTag == 'Age: ${_selectedAge!}';
 
@@ -55,19 +58,25 @@ class GamesPageState extends State<GamesPage> {
 
   Future<void> loadGame(String gameId) async {
     try {
-      GameData gameData = await firestoreService.fetchGameData(gameId);
-      if (mounted) {
-        Navigator.push(
-          context,
+      print('[Games Page] Loading Game');
+      final dataService = Provider.of<DataService>(context, listen: false);
+      final authService = Provider.of<AuthService>(context, listen: false);
+
+      final gameData = await dataService.getGameData(gameId);
+      final userId = await authService.getUid();
+
+      if (gameData != null && userId.isNotEmpty && mounted) {
+        Navigator.push(context,
           MaterialPageRoute(
             builder: (context) => GamesInitialScreen(gameData: gameData),
           ),
         );
       }
     } catch (e) {
+      print(e);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error Loading game: $e')),
+          SnackBar(content: Text('Error loading game: $e')),
         );
       }
     }
@@ -136,9 +145,9 @@ class GamesPageState extends State<GamesPage> {
           Expanded(
             child: LayoutBuilder(
               builder: (context, constraints) {
-                var mainAxisExtent = 600.0;
+                double mainAxisExtent = 600.0;
                 if (constraints.maxWidth <= 600) {
-                  mainAxisExtent = constraints.maxWidth - 40;
+                  mainAxisExtent = constraints.maxWidth;
                 } else if (constraints.maxWidth <= 1000) {
                   mainAxisExtent = 650;
                 } else if (constraints.maxWidth <= 2000) {
@@ -154,7 +163,7 @@ class GamesPageState extends State<GamesPage> {
                     crossAxisCount: 2,
                     crossAxisSpacing: 10.0,
                     mainAxisSpacing: 10.0,
-                    mainAxisExtent: mainAxisExtent, // Fixed height for items
+                    mainAxisExtent: mainAxisExtent,
                   ),
                   itemCount: filteredGames.length,
                   itemBuilder: (context, index) {

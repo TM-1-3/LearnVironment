@@ -1,42 +1,69 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:learnvironment/services/auth_service.dart';
-import 'package:mockito/mockito.dart';
 
-// Mock FirebaseAuth
-class MockFirebaseAuth extends Mock implements FirebaseAuth {
-  @override
-  Stream<User?> authStateChanges() {
-    return super.noSuchMethod(
-      Invocation.method(#authStateChanges, []),
-      returnValue: Stream.value(
-          null), // Return null for unauthenticated user by default
-    );
-  }
-  @override
-  User? get currentUser {
-    return super.noSuchMethod(
-      Invocation.method(#currentUser, []),
-      returnValue: null,
-    );
-  }
-  @override
-  Future<void> signOut() async {
-    return super.noSuchMethod(
-      Invocation.method(#signOut, []),
-      returnValue: Future.value(
-          null), // Return null for unauthenticated user by default
-    );
-  }
-}
+class MockFirebaseAuthWithErrors extends MockFirebaseAuth {
+  final bool shouldThrowEmailUsedError;
+  final bool shouldThrowRegistrationOperationNotAllowedError;
+  final bool shouldThrowRegistrationInvalidEmailError;
 
-// Mock User class, overriding necessary methods
-class MockUser extends Mock implements User {
+  final bool shouldThrowSignInError;
+  final bool shouldThrowUserNotFoundError;
+  final bool shouldThrowUserDisabledError;
+  final bool shouldThrowSignInOperationNotAllowedError;
+  final bool shouldThrowSignInInvalidEmailError;
+
+  final bool shouldThrow;
+
+  MockFirebaseAuthWithErrors({
+    this.shouldThrowEmailUsedError = false,
+    this.shouldThrowRegistrationOperationNotAllowedError = false,
+    this.shouldThrowRegistrationInvalidEmailError = false,
+    this.shouldThrowSignInError = false,
+    this.shouldThrowUserNotFoundError = false,
+    this.shouldThrowUserDisabledError = false,
+    this.shouldThrowSignInOperationNotAllowedError = false,
+    this.shouldThrowSignInInvalidEmailError = false,
+    this.shouldThrow = false,
+  });
+
   @override
-  Future<void> delete() async {
-    super.noSuchMethod(
-        Invocation.method(#delete, []),
-        returnValue: Stream.value(null), );
+  Future<UserCredential> createUserWithEmailAndPassword({
+    required String email,
+    required String password,
+  }) async {
+    if (shouldThrowEmailUsedError) {
+      throw FirebaseAuthException(code: 'email-already-in-use');
+    } else if (shouldThrowRegistrationOperationNotAllowedError) {
+      throw FirebaseAuthException(code: 'operation-not-allowed');
+    } else if (shouldThrowRegistrationInvalidEmailError) {
+      throw FirebaseAuthException(code: 'invalid-email');
+    } else if (shouldThrow) {
+      throw FirebaseAuthException(code: 'any');
+    }
+    return super.createUserWithEmailAndPassword(email: email, password: password);
+  }
+
+  @override
+  Future<UserCredential> signInWithEmailAndPassword({
+    required String email,
+    required String password,
+  }) async {
+    if (shouldThrowSignInError) {
+      throw FirebaseAuthException(code: 'wrong-password');
+    } else if (shouldThrowUserNotFoundError) {
+      throw FirebaseAuthException(code: 'user-not-found');
+    } else if (shouldThrowUserDisabledError) {
+      throw FirebaseAuthException(code: 'user-disabled');
+    } else if (shouldThrowSignInOperationNotAllowedError) {
+      throw FirebaseAuthException(code: 'operation-not-allowed');
+    } else if (shouldThrowSignInInvalidEmailError) {
+      throw FirebaseAuthException(code: 'invalid-email');
+    } else if (shouldThrow) {
+      throw FirebaseAuthException(code: 'any');
+    }
+    return super.signInWithEmailAndPassword(email: email, password: password);
   }
 }
 
@@ -47,8 +74,12 @@ void main() {
     late MockUser mockUser;
 
     setUp(() {
-      mockFirebaseAuth = MockFirebaseAuth();
-      mockUser = MockUser();
+      mockUser = MockUser(
+        uid: 'test',
+        email: 'test@email.com',
+        displayName: 'Test User',
+      );
+      mockFirebaseAuth = MockFirebaseAuth(mockUser: mockUser);
       authService = AuthService(firebaseAuth: mockFirebaseAuth);
     });
 
@@ -56,66 +87,36 @@ void main() {
       expect(authService.loggedIn, false);
     });
 
-    test('authStateChanges returns null for unauthenticated user', () async {
-      when(mockFirebaseAuth.authStateChanges()).thenAnswer(
-            (_) => Stream<User?>.value(null),
-      );
+    test('init should set loggedIn to true when a user is logged in', () async {
+      mockFirebaseAuth = MockFirebaseAuth(mockUser: mockUser, signedIn: true);
+      authService = AuthService(firebaseAuth: mockFirebaseAuth);
       await authService.init();
-
-      expect(authService.loggedIn, false);
-    });
-
-    test('authStateChanges returns a user when authenticated', () async {
-      when(mockFirebaseAuth.authStateChanges()).thenAnswer(
-            (_) => Stream<User?>.value(mockUser),
-      );
-      await authService.init();
-
+      await Future.delayed(Duration.zero);
       expect(authService.loggedIn, true);
     });
 
     test('should update loggedIn when authStateChanges emits a user', () async {
-      final mockUser = MockUser();
-
-      // Ensure we mock authStateChanges before calling init
-      when(mockFirebaseAuth.authStateChanges()).thenAnswer(
-            (_) => Stream.value(mockUser),
-      );
-
+      mockFirebaseAuth = MockFirebaseAuth(mockUser: mockUser, signedIn: true);
+      authService = AuthService(firebaseAuth: mockFirebaseAuth);
       await authService.init();
-
       expect(authService.loggedIn, true);
     });
 
     test('should update loggedIn when authStateChanges emits null', () async {
-      // Ensure we mock authStateChanges before calling init
-      when(mockFirebaseAuth.authStateChanges()).thenAnswer(
-            (_) => Stream.value(null),
-      );
-
       await authService.init();
-
       expect(authService.loggedIn, false);
     });
 
     test('signOut should set loggedIn to false', () async {
-      when(mockFirebaseAuth.signOut()).thenAnswer((_) async {});
-
+      mockFirebaseAuth = MockFirebaseAuth(mockUser: mockUser, signedIn: true);
+      authService = AuthService(firebaseAuth: mockFirebaseAuth);
       await authService.signOut();
-
       expect(authService.loggedIn, false);
-      verify(mockFirebaseAuth.signOut()).called(1);
     });
 
     test('deleteAccount should handle errors', () async {
-      final mockUser = MockUser();
-
-      // Mock currentUser to return a mock user
-      when(mockFirebaseAuth.currentUser).thenReturn(mockUser);
-
-      // Mock the delete() method to throw an exception
-      when(mockUser.delete()).thenThrow(Exception('Error deleting account'));
-
+      mockFirebaseAuth = MockFirebaseAuth();
+      authService = AuthService(firebaseAuth: mockFirebaseAuth);
       try {
         await authService.deleteAccount();
         fail('Exception not thrown');
@@ -125,17 +126,145 @@ void main() {
       }
     });
 
-    test('deleteAccount should call delete on current user', () async {
-      final mockUser = MockUser();
-      when(mockFirebaseAuth.currentUser).thenReturn(mockUser);
+    test('getUid should return the user UID when a user is logged in', () async {
+      mockFirebaseAuth = MockFirebaseAuth(mockUser: mockUser, signedIn: true);
+      authService = AuthService(firebaseAuth: mockFirebaseAuth);
+      final uid = await authService.getUid();
+      expect(uid, 'test');
+    });
 
-      // Mock the delete method to simply return without any errors
-      when(mockUser.delete()).thenAnswer((_) async {});
+    test('getUid should throw an exception when no user is logged in', () async {
+      try {
+        await authService.getUid();
+        fail('Exception not thrown');
+      } catch (e) {
+        expect(e, isA<Exception>());
+        expect(e.toString(), contains('No user logged in'));
+      }
+    });
 
-      await authService.deleteAccount();
+    test('shows error when login fails with invalid credentials', () async {
+      mockFirebaseAuth = MockFirebaseAuthWithErrors(shouldThrowSignInError: true);
+      authService = AuthService(firebaseAuth: mockFirebaseAuth);
 
-      // Verify that delete was called once
-      verify(mockUser.delete()).called(1);
+      try {
+        await authService.signInWithEmailAndPassword(email: 'x', password: 'y');
+        fail('Exception not thrown');
+      } catch (e) {
+        expect(e.toString(), contains('Wrong email/password combination.'));
+      }
+    });
+
+    test('shows error when user not found', () async {
+      mockFirebaseAuth = MockFirebaseAuthWithErrors(shouldThrowUserNotFoundError: true);
+      authService = AuthService(firebaseAuth: mockFirebaseAuth);
+
+      try {
+        await authService.signInWithEmailAndPassword(email: 'x', password: 'y');
+        fail('Exception not thrown');
+      } catch (e) {
+        expect(e.toString(), contains('No user found with this email.'));
+      }
+    });
+
+    test('shows error when user is disabled', () async {
+      mockFirebaseAuth = MockFirebaseAuthWithErrors(shouldThrowUserDisabledError: true);
+      authService = AuthService(firebaseAuth: mockFirebaseAuth);
+
+      try {
+        await authService.signInWithEmailAndPassword(email: 'x', password: 'y');
+        fail('Exception not thrown');
+      } catch (e) {
+        expect(e.toString(), contains('User disabled.'));
+      }
+    });
+
+    test('shows error when too many requests', () async {
+      mockFirebaseAuth = MockFirebaseAuthWithErrors(shouldThrowSignInOperationNotAllowedError: true);
+      authService = AuthService(firebaseAuth: mockFirebaseAuth);
+
+      try {
+        await authService.signInWithEmailAndPassword(email: 'x', password: 'y');
+        fail('Exception not thrown');
+      } catch (e) {
+        expect(e.toString(), contains('Too many requests.'));
+      }
+    });
+
+    test('shows error when invalid email', () async {
+      mockFirebaseAuth = MockFirebaseAuthWithErrors(shouldThrowSignInInvalidEmailError: true);
+      authService = AuthService(firebaseAuth: mockFirebaseAuth);
+
+      try {
+        await authService.signInWithEmailAndPassword(email: 'x', password: 'y');
+        fail('Exception not thrown');
+      } catch (e) {
+        expect(e.toString(), contains('Email address is invalid.'));
+      }
+    });
+
+    test('handle unknown error', () async {
+      mockFirebaseAuth = MockFirebaseAuthWithErrors(shouldThrow: true);
+      authService = AuthService(firebaseAuth: mockFirebaseAuth);
+
+      try {
+        await authService.signInWithEmailAndPassword(email: 'x', password: 'y');
+        fail('Exception not thrown');
+      } catch (e) {
+        expect(e.toString(), contains('Operation failed. Please try again.'));
+      }
+    });
+
+    test('Error Email is in use', () async {
+      mockFirebaseAuth = MockFirebaseAuthWithErrors(shouldThrowEmailUsedError: true);
+      authService = AuthService(firebaseAuth: mockFirebaseAuth);
+
+      try {
+        await authService.registerUser(
+            email: 'used@example.com', username: 'user', password: 'pass123');
+        fail('Exception not thrown');
+      } catch (e) {
+        expect(e.toString(), contains('Email already used. Go to login page.'));
+      }
+    });
+
+    test('Error Invalid Email', () async {
+      mockFirebaseAuth = MockFirebaseAuthWithErrors(shouldThrowRegistrationInvalidEmailError: true);
+      authService = AuthService(firebaseAuth: mockFirebaseAuth);
+
+      try {
+        await authService.registerUser(
+            email: 'bademail', username: 'user', password: 'pass123');
+        fail('Exception not thrown');
+      } catch (e) {
+        expect(e.toString(), contains('Email address is invalid.'));
+      }
+    });
+
+    test('Unknown Error', () async {
+      mockFirebaseAuth = MockFirebaseAuthWithErrors(shouldThrow: true);
+      authService = AuthService(firebaseAuth: mockFirebaseAuth);
+
+      try {
+        await authService.registerUser(
+            email: 'error@example.com', username: 'user', password: 'pass123');
+        fail('Exception not thrown');
+      } catch (e) {
+        expect(e.toString(), contains('Operation failed. Please try again.'));
+      }
+    });
+
+    test('Error Too many requests', () async {
+      mockFirebaseAuth = MockFirebaseAuthWithErrors(shouldThrowRegistrationOperationNotAllowedError: true);
+      authService = AuthService(firebaseAuth: mockFirebaseAuth);
+
+      try {
+        await authService.registerUser(
+            email: 'rate@example.com', username: 'user', password: 'pass123');
+        fail('Exception not thrown');
+      } catch (e) {
+        expect(e.toString(), contains('Too many requests.'));
+      }
     });
   });
 }

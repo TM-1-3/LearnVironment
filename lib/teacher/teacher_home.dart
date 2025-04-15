@@ -1,21 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:learnvironment/main_pages/games_page.dart';
 import 'package:learnvironment/main_pages/main_page.dart';
 import 'package:learnvironment/main_pages/profile_screen.dart';
 import 'package:learnvironment/main_pages/statistics_page.dart';
 
 class TeacherHomePage extends StatefulWidget {
-  final FirebaseFirestore firestore; // Declare the Firestore instance
-  final FirebaseAuth auth; // Declare the FirebaseAuth instance
-
-  TeacherHomePage({
-    super.key,
-    FirebaseFirestore? firestore, // Make firestore nullable
-    FirebaseAuth? auth, // Make auth nullable
-  })  : firestore = firestore ?? FirebaseFirestore.instance,
-        auth = auth ?? FirebaseAuth.instance;
+  const TeacherHomePage({super.key});
 
   @override
   State<TeacherHomePage> createState() => _TeacherHomePage();
@@ -37,7 +27,7 @@ class _TeacherHomePage extends State<TeacherHomePage> {
     // Initialize the _pages map with the passed firestore and auth
     _pages[TabItem.statistics] = StatisticsPage();
     _pages[TabItem.home] = MainPage();
-    _pages[TabItem.games] = GamesPage(firestore: widget.firestore);
+    _pages[TabItem.games] = const GamesPage();
   }
 
   // Method to handle bottom navigation tap
@@ -60,7 +50,7 @@ class _TeacherHomePage extends State<TeacherHomePage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ProfileScreen(auth: widget.auth),
+                  builder: (context) => ProfileScreen(),
                 ),
               );
             },
@@ -71,9 +61,8 @@ class _TeacherHomePage extends State<TeacherHomePage> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Wrap the page in Expanded to give it proper constraints
           Expanded(
-            child: _pages[selectedTab]!, // Display the selected page
+            child: _pages[selectedTab]!,
           ),
         ],
       ),
