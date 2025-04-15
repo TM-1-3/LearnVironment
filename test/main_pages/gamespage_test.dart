@@ -1,4 +1,3 @@
-import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter/material.dart';
@@ -152,21 +151,20 @@ class MockDataService extends Mock implements DataService {
 
 void main() {
   group('GamesPage Tests', () {
-    late FakeFirebaseFirestore fakeFirestore;
     late MockFirebaseAuth auth;
     late Widget testWidget;
 
     setUp(() async {
       auth = MockFirebaseAuth(mockUser: MockUser(uid: 'user123', email: 'email@gmail.com'), signedIn: true);
 
-      testWidget = MaterialApp(
-        home: MultiProvider(
+      testWidget = MultiProvider(
           providers: [
             ChangeNotifierProvider<AuthService>(
                 create: (_) => MockAuthService(firebaseAuth: auth)),
             Provider<DataService>(create: (context) => MockDataService()),
           ],
-          child: GamesPage(),
+          child: MaterialApp(
+            home: GamesPage(),
         ),
       );
     });

@@ -78,7 +78,7 @@ class StudentStatsPageState extends State<StudentStatsPage> {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 32.0),
+          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -94,7 +94,7 @@ class StudentStatsPageState extends State<StudentStatsPage> {
                   builder: (context, constraints) {
                     var mainAxisExtent = 600.0;
                     if (constraints.maxWidth <= 600) {
-                      mainAxisExtent = constraints.maxWidth - 40;
+                      mainAxisExtent = constraints.maxWidth;
                     } else if (constraints.maxWidth <= 1000) {
                       mainAxisExtent = 650;
                     } else if (constraints.maxWidth <= 2000) {

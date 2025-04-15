@@ -3,19 +3,17 @@ import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/games_templates/quiz.dart';
 import 'package:learnvironment/games_templates/bin.dart';
 import 'package:learnvironment/services/data_service.dart';
-import 'package:learnvironment/services/auth_service.dart';  // Import AuthService
-import 'package:provider/provider.dart'; // Import Provider
+import 'package:learnvironment/services/auth_service.dart';
+import 'package:provider/provider.dart';
 
 class GamesInitialScreen extends StatelessWidget {
   final GameData gameData;
 
-  // Constructor no longer requires DataService as a parameter
   GamesInitialScreen({
     super.key,
     required this.gameData,
   });
 
-  // Function to update the user's gamesPlayed array via DataService
   Future<void> _updateUserGamesPlayed(String userId, String gameId, DataService dataService) async {
     try {
       await dataService.updateUserGamesPlayed(userId, gameId);
@@ -28,7 +26,6 @@ class GamesInitialScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Access the AuthService from the Provider
     final authService = Provider.of<AuthService>(context, listen: false);
 
     return Scaffold(

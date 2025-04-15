@@ -147,7 +147,7 @@ class GamesPageState extends State<GamesPage> {
               builder: (context, constraints) {
                 double mainAxisExtent = 600.0;
                 if (constraints.maxWidth <= 600) {
-                  mainAxisExtent = constraints.maxWidth - 40;
+                  mainAxisExtent = constraints.maxWidth;
                 } else if (constraints.maxWidth <= 1000) {
                   mainAxisExtent = 650;
                 } else if (constraints.maxWidth <= 2000) {
