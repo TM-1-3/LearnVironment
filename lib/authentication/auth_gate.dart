@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:learnvironment/authentication/fix_account.dart';
 import 'package:learnvironment/authentication/login_screen.dart';
@@ -11,54 +10,6 @@ import 'package:learnvironment/services/data_service.dart';
 import 'package:provider/provider.dart';
 
 class AuthGate extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<AuthService>(
-      builder: (context, authService, _) {
-        return StreamBuilder<User?>(
-          stream: authService.authStateChanges,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            if (!snapshot.hasData) {
-              return LoginScreen();
-            }
-
-            final user = snapshot.data!;
-
-            return FutureBuilder<UserData?>(
-              future: _loadUserData(context, user.uid),
-              builder: (context, userDataSnapshot) {
-                if (userDataSnapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                if (userDataSnapshot.hasError) {
-                  return Center(
-                    child: Text(
-                      'Error: ${userDataSnapshot.error}',
-                      style: const TextStyle(color: Colors.red),
-                    ),
-                  );
-                }
-
-                final userData = userDataSnapshot.data;
-
-                if (userData == null || userData.role.isEmpty) {
-                  return FixAccountPage();
-                }
-
-                return _navigateToHomePage(userData.role);
-              },
-            );
-          },
-        );
-      },
-    );
-  }
-
   Future<UserData?> _loadUserData(BuildContext context, String userId) async {
     final dataService = Provider.of<DataService>(context, listen: false);
     return await dataService.getUserData(userId);
@@ -75,5 +26,41 @@ class AuthGate extends StatelessWidget {
       default:
         return FixAccountPage();
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
+    final user = authService.currentUser;
+
+    if (!authService.loggedIn) {
+      return LoginScreen();
+    }
+
+    return FutureBuilder<UserData?>(
+      future: _loadUserData(context, user!.uid),
+      builder: (context, userDataSnapshot) {
+        if (userDataSnapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (userDataSnapshot.hasError) {
+          return Center(
+            child: Text(
+              'Error: ${userDataSnapshot.error}',
+              style: const TextStyle(color: Colors.red),
+            ),
+          );
+        }
+
+        final userData = userDataSnapshot.data;
+
+        if (userData == null || userData.role.isEmpty) {
+          return FixAccountPage();
+        }
+
+        return _navigateToHomePage(userData.role);
+      },
+    );
   }
 }

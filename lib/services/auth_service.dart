@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 
 class AuthService extends ChangeNotifier {
   final FirebaseAuth _firebaseAuth;
-  bool _loggedIn = false;
-  bool get loggedIn => _loggedIn;
-
+  User? _currentUser;
+  User? get currentUser => _currentUser;
+  bool get loggedIn => _currentUser != null;
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
 
   AuthService({FirebaseAuth? firebaseAuth})
@@ -13,15 +13,14 @@ class AuthService extends ChangeNotifier {
 
   Future<void> init() async {
     _firebaseAuth.authStateChanges().listen((user) {
-      _loggedIn = user != null;
+      _currentUser = user;
       notifyListeners();
     });
   }
 
   // Method to get the user id
   Future<String> getUid() async {
-    User? user = _firebaseAuth.currentUser;
-
+    User? user = _currentUser;
     if (user == null) {
       throw Exception("No user logged in");
     } else {
@@ -65,16 +64,17 @@ class AuthService extends ChangeNotifier {
   // Sign out method
   Future<void> signOut() async {
     await _firebaseAuth.signOut();
-    _loggedIn = false;
-    notifyListeners(); // Notify listeners when the user signs out
+    _currentUser = null;
+    notifyListeners();
   }
 
   // Delete account method
   Future<void> deleteAccount() async {
     try {
-      User? user = _firebaseAuth.currentUser;
+      User? user = _currentUser;
       if (user != null) {
         await user.delete();
+        _currentUser = null;
       } else {
         throw Exception("Error deleting account");
       }
@@ -93,8 +93,8 @@ class AuthService extends ChangeNotifier {
         email: email,
         password: password,
       );
-      _loggedIn = true;
-      notifyListeners(); // Notify listeners after successful login
+      _currentUser = _firebaseAuth.currentUser;
+      notifyListeners();
     } on FirebaseAuthException catch (e) {
       throw Exception(_getErrorMessage(e.code));
     } catch (e) {
@@ -116,6 +116,9 @@ class AuthService extends ChangeNotifier {
       );
       await userCredential.user?.updateDisplayName(username);
       await userCredential.user?.sendEmailVerification();
+
+      _currentUser = _firebaseAuth.currentUser;
+      notifyListeners();
 
       return userCredential.user?.uid;
     } on FirebaseAuthException catch (e) {
