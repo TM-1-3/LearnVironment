@@ -31,8 +31,7 @@ class GamesPageState extends State<GamesPage> {
 
       // Fetch the games (this method should handle fetching from cache and Firestore)
       final fetchedGames = await dataService.getAllGames();
-
-      // Update the UI with the games
+      print('[GamesPage] Fetched Games');
       setState(() {
         games = fetchedGames;
       });
@@ -62,6 +61,7 @@ class GamesPageState extends State<GamesPage> {
 
   Future<void> loadGame(String gameId) async {
     try {
+      print('[Games Page] Loading Game');
       final dataService = Provider.of<DataService>(context, listen: false);
       final authService = Provider.of<AuthService>(context, listen: false);
 
@@ -75,8 +75,6 @@ class GamesPageState extends State<GamesPage> {
             builder: (context) => GamesInitialScreen(gameData: gameData),
           ),
         );
-
-        await dataService.updateUserGamesPlayed(userId, gameId);
       }
     } catch (e) {
       if (mounted) {

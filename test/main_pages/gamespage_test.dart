@@ -2,63 +2,120 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/games_templates/games_initial_screen.dart';
 import 'package:learnvironment/main_pages/games_page.dart';
 import 'package:learnvironment/main_pages/widgets/game_card.dart';
+import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/services/data_service.dart';
 import 'package:learnvironment/services/firestore_service.dart';
-
-// Mock Firestore Service
-class MockFirestoreService extends FirestoreService {
-  MockFirestoreService({super.firestore});
-
-  List<Map<String, dynamic>> _mockGames = [];
-
-  // Set mock data with correct format
-  void setMockGames(List<Map<String, dynamic>> games) {
-    _mockGames = games.map((game) {
-      return {
-        'imagePath': game['logo'] ?? 'assets/placeholder.png',
-        'gameTitle': game['name'] ?? 'Default Game Title',
-        'tags': List<String>.from(game['tags'] ?? []),
-        'gameId': game['gameId'],
-      };
-    }).toList();
-  }
-
-  @override
-  Future<List<Map<String, dynamic>>> getAllGames() async {
-    return Future.value(_mockGames);
-  }
-
-  @override
-  Future<GameData> fetchGameData(String gameId) async {
-    final game = _mockGames.firstWhere((g) => g['gameId'] == gameId);
-    return GameData(
-      documentName: game['gameId'],
-      gameName: game['gameTitle'],
-      gameDescription: game['description'],
-      gameBibliography: game['bibliography'],
-      gameTemplate: game['template'],
-      gameLogo: game['imagePath'],
-      tags: List<String>.from(game['tags']),
-    );
-  }
-}
+import 'package:learnvironment/services/game_cache_service.dart';
+import 'package:learnvironment/services/user_cache_service.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   group('GamesPage Tests', () {
     late FakeFirebaseFirestore fakeFirestore;
     late MockFirebaseAuth auth;
     late Widget testWidget;
-    late MockFirestoreService firestoreService;
+    late GameCacheService gamecache;
 
     setUp(() async {
+      auth = MockFirebaseAuth(mockUser: MockUser(uid: 'user123', email: 'email@gmail.com'), signedIn: true);
       fakeFirestore = FakeFirebaseFirestore();
-      auth = MockFirebaseAuth(mockUser: MockUser(
-      uid: 'test_uid',
-      email: 'test@example.com',
-      ), signedIn: true);
+
+      await fakeFirestore.collection('users').doc('user123').set({
+        'birthdate': '2000-01-01T00:00:00.000',
+        'email': 'email@gmail.com',
+        'name': 'Lebi',
+        'role': 'developer',
+        'username': 'Lebi',
+        'gamesPlayed': [],
+      });
+
+      SharedPreferences.setMockInitialValues({
+        // User data
+        'id': 'user123',
+        'username': 'Lebi',
+        'email': 'email@gmail.com',
+        'name': 'Lebi',
+        'role': 'developer',
+        'birthdate': '2000-01-01T00:00:00.000',
+        'gamesPlayed': '[]',
+
+        'game_game_0': {
+          'gameLogo': 'assets/placeholder.png',
+          'gameName': 'Test Game',
+          'gameDescription': 'description',
+          'gameBibliography': 'Bibliography',
+          'gameTemplate': 'drag',
+          'documentName': 'game_0'
+        },
+
+        'game_game_1': {
+          'gameLogo': 'assets/placeholder.png',
+          'gameName': 'Another Game',
+          'gameDescription': 'description',
+          'gameBibliography': 'Bibliography',
+          'gameTemplate': 'quiz',
+          'questionsAndOptions': {
+            'What is recycling?': ['Reusing materials', 'Throwing trash', 'Saving money', 'Buying new things'],
+            'Why should we save water?': ['It helps the earth', 'Water is unlimited', 'For fun', 'It doesn’t matter']
+          },
+          'correctAnswers': {
+            'What is recycling?': 'Reusing materials',
+            'Why should we save water?': 'It helps the earth'
+          },
+          'documentName': 'game_1'
+        },
+
+        'game_game_2': {
+          'gameLogo': 'assets/placeholder.png',
+          'gameName': 'Game 12+',
+          'gameDescription': 'description',
+          'gameBibliography': 'Bibliography',
+          'gameTemplate': 'quiz',
+          'questionsAndOptions': {
+            'What is recycling?': ['Reusing materials', 'Throwing trash', 'Saving money', 'Buying new things'],
+            'Why should we save water?': ['It helps the earth', 'Water is unlimited', 'For fun', 'It doesn’t matter']
+          },
+          'correctAnswers': {
+            'What is recycling?': 'Reusing materials',
+            'Why should we save water?': 'It helps the earth'
+          },
+          'documentName': 'game_2'
+        },
+
+        'game_game_3': {
+          'gameLogo': 'assets/placeholder.png',
+          'gameName': 'Game 10+',
+          'gameDescription': 'description',
+          'gameBibliography': 'Bibliography',
+          'gameTemplate': 'drag',
+          'documentName': 'game_3'
+        }
+      });
+
+
+      final Map<String, List<String>> questionsAndOptions = {
+        "What is recycling?": [
+          "Reusing materials",
+          "Throwing trash",
+          "Saving money",
+          "Buying new things"
+        ],
+        "Why should we save water?": [
+          "It helps the earth",
+          "Water is unlimited",
+          "For fun",
+          "It doesn't matter"
+        ],
+      };
+
+      final Map<String, String> correctAnswers = {
+        "What is recycling?": "Reusing materials",
+        "Why should we save water?": "It helps the earth",
+      };
 
       final games = [
         {
@@ -76,6 +133,8 @@ void main() {
           'description': 'description',
           'bibliography': 'Bibliography',
           'template': 'quiz',
+          'questionsAndOptions': questionsAndOptions,
+          'correctAnswers': correctAnswers,
         },
         {
           'logo': 'assets/placeholder.png',
@@ -84,6 +143,8 @@ void main() {
           'description': 'description',
           'bibliography': 'Bibliography',
           'template': 'quiz',
+          'questionsAndOptions': questionsAndOptions,
+          'correctAnswers': correctAnswers,
         },
         {
           'logo': 'assets/placeholder.png',
@@ -109,23 +170,31 @@ void main() {
         games[i]['gameId'] = docRef.id;
       }
 
-      firestoreService = MockFirestoreService(firestore: fakeFirestore);
-      firestoreService.setMockGames(games);
+      gamecache = GameCacheService();
       testWidget = MaterialApp(
-        home: GamesPage(),
+        home: MultiProvider(
+          providers: [
+            ChangeNotifierProvider<AuthService>(create: (_) => AuthService(firebaseAuth: auth)),
+            Provider<FirestoreService>(create: (_) => FirestoreService(firestore: fakeFirestore)),
+            Provider<UserCacheService>(create: (_) => UserCacheService()),
+            Provider<GameCacheService>(create: (_) => gamecache),
+            Provider<DataService>(create: (context) => DataService(context)),
+          ],
+          child: GamesPage(),
+        ),
       );
     });
     
     testWidgets('should display search bar', (WidgetTester tester) async {
       await tester.pumpWidget(testWidget);
-
+      await tester.pumpAndSettle();
       expect(find.byKey(Key('search')), findsOneWidget);
     });
 
     testWidgets('should filter games by search query', (WidgetTester tester) async {
       await tester.pumpWidget(testWidget);
-
       await tester.pumpAndSettle();
+
       expect(find.byType(GameCard), findsNWidgets(2)); // Ensure all 4 cards are initially rendered, value of 2 due to grid-view and scrolling
       await tester.enterText(find.byKey(Key('search')), 'Test');
       await tester.pumpAndSettle();
@@ -182,16 +251,15 @@ void main() {
 
       await tester.tap(find.byKey(Key('tagDropdown')));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('All Tags').last); // Reset to All Tags
+      await tester.tap(find.text('All Tags').last);
       await tester.pumpAndSettle();
 
-      expect(find.byType(GameCard), findsNWidgets(2)); // All games should appear
+      expect(find.byType(GameCard), findsNWidgets(2));
     });
 
     testWidgets('should call load game correctly', (WidgetTester tester) async {
       await tester.pumpWidget(testWidget);
       await tester.pumpAndSettle();
-
       await tester.tap(find.byType(GestureDetector).first);
       await tester.pumpAndSettle();
 

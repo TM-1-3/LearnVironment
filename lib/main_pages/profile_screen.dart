@@ -109,10 +109,8 @@ class ProfileScreenState extends State<ProfileScreen> {
   Future<void> _updateUsername(newUsername) async {
     try {
       if (mounted) {
-        DataService dataService = Provider.of<DataService>(
-            context, listen: false);
-        AuthService authService = Provider.of<AuthService>(
-            context, listen: false);
+        DataService dataService = Provider.of<DataService>(context, listen: false);
+        AuthService authService = Provider.of<AuthService>(context, listen: false);
 
         //Change data in dataService
 

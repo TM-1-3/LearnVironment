@@ -72,7 +72,6 @@ class FirestoreService {
     }
   }
 
-  // Update the user's gamesPlayed list both in Firestore and the cache
   Future<void> updateUserGamesPlayed(String uid, String gameId) async {
     final userDoc = _firestore.collection('users').doc(uid);
     final userSnapshot = await userDoc.get();
@@ -213,7 +212,6 @@ class FirestoreService {
         'role': selectedAccountType,
         'email': email,
         'birthdate': birthDate,
-        // Add 'gamesPlayed' field to Firestore with an empty list for new users
         'gamesPlayed': [],
       });
     } catch (e) {

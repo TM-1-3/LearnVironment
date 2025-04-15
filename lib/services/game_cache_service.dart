@@ -22,7 +22,7 @@ class GameCacheService {
           cachedIds.add(gameData.documentName);
           await prefs.setStringList('cached_game_ids', cachedIds);
         }
-        print('[CACHE] Game ${gameData.documentName} cached successfully.');
+        print('[CACHE] Game ${gameData.documentName} cached successfully: $data');
       } else {
         print('[CACHE ERROR] Failed to save game ${gameData.documentName} to cache.');
       }

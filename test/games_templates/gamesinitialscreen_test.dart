@@ -9,12 +9,9 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:learnvironment/services/firestore_service.dart';
 import 'package:learnvironment/services/game_cache_service.dart';
 import 'package:learnvironment/services/user_cache_service.dart';
-import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-class MockNavigatorObserver extends Mock implements NavigatorObserver {}
 
 void main() {
   late MockFirebaseAuth mockAuth;
@@ -22,16 +19,12 @@ void main() {
   late GameData gameData;
   late MockUser mockUser;
   late Widget testWidget;
-  late MockNavigatorObserver mockObserver;
 
   setUp(() async {
-    // Set up Mock Firebase authentication and Firestore
     mockUser = MockUser(uid: 'user123', email: 'email@gmail.com');
     mockAuth = MockFirebaseAuth(mockUser: mockUser, signedIn: true);
     mockFirestore = FakeFirebaseFirestore();
-    mockObserver = MockNavigatorObserver();
 
-    // Populate Firestore with test user data
     await mockFirestore.collection('users').doc('user123').set({
       'birthdate': '2000-01-01T00:00:00.000',
       'email': 'email@gmail.com',
@@ -98,7 +91,6 @@ void main() {
 
     // Set up the widget tree for testing
     testWidget = MaterialApp(
-      navigatorObservers: [mockObserver],
       home: MultiProvider(
         providers: [
           ChangeNotifierProvider<AuthService>(create: (_) => AuthService(firebaseAuth: mockAuth)),
@@ -122,15 +114,11 @@ void main() {
   });
 
   testWidgets('Play button navigates to Quiz screen', (WidgetTester tester) async {
-    final newRoute = MaterialPageRoute(
-      builder: (context) => Quiz(quizData: gameData),
-    );
     await tester.pumpWidget(testWidget);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Play'));
     await tester.pumpAndSettle();
 
-    //verify(mockObserver.didPush(newRoute, any)).called(1);
     expect(find.byType(Quiz), findsOneWidget);
   });
 

@@ -146,7 +146,6 @@ class DataService {
       for (final game in fetchedGames) {
         final gameId = game['gameId'];
         final gameData = await _firestoreService.fetchGameData(gameId);
-        // Cache the new game
         await _gameCacheService.cacheGameData(gameData);
       }
 

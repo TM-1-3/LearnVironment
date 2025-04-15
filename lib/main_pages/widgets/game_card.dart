@@ -38,7 +38,10 @@ class GameCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             GestureDetector(
-              onTap: () => loadGame(gameId),
+              onTap: () {
+                print("Tapped on game with ID: $gameId");
+                loadGame(gameId);
+              },
               child: ClipRRect(
                 borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
                 child: Image.asset(
