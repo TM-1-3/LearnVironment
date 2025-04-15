@@ -31,8 +31,9 @@ class AuthService extends ChangeNotifier {
   Future<void> updateUsername(String newUsername) async {
     try {
       User? user = _firebaseAuth.currentUser;
-      user?.updateDisplayName(newUsername);
+      await user?.updateDisplayName(newUsername);
     } catch (e) {
+      print(e);
       throw Exception("Error updating username: $e");
     }
   }
@@ -47,9 +48,8 @@ class AuthService extends ChangeNotifier {
 
       await user?.reauthenticateWithCredential(credential);
 
-      // Only update the email if the new email is different from the current one
       if (newEmail != user?.email) {
-        await user?.verifyBeforeUpdateEmail(newEmail); // Update email in Firebase
+        await user?.verifyBeforeUpdateEmail(newEmail);
         print("Email updated successfully.");
 
         // Send verification email only if the email is not already verified
@@ -58,7 +58,7 @@ class AuthService extends ChangeNotifier {
         }
       }
     } catch (e) {
-      throw Exception(e);
+      throw Exception("Error updating email: $e");
     }
   }
 
@@ -97,6 +97,14 @@ class AuthService extends ChangeNotifier {
       throw Exception(_getErrorMessage(e.code));
     } catch (e) {
       throw Exception("An unexpected error occurred.");
+    }
+  }
+
+  Future<void> sendPasswordResetEmail(String email) async {
+    try {
+      await _firebaseAuth.sendPasswordResetEmail(email: email);
+    } on FirebaseAuthException catch (e) {
+      throw Exception('Failed to send password reset email: ${e.message}');
     }
   }
 
