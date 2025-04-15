@@ -10,9 +10,10 @@ import 'package:learnvironment/services/data_service.dart';
 import 'package:provider/provider.dart';
 
 class AuthGate extends StatelessWidget {
-  Future<UserData?> _loadUserData(BuildContext context, String userId) async {
+  Future<UserData?> _loadUserData(BuildContext context) async {
+    final authService = Provider.of<AuthService>(context);
     final dataService = Provider.of<DataService>(context, listen: false);
-    return await dataService.getUserData(userId);
+    return await dataService.getUserData(await authService.getUid());
   }
 
   Widget _navigateToHomePage(String role) {
@@ -31,14 +32,12 @@ class AuthGate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
-    final user = authService.currentUser;
-
     if (!authService.loggedIn) {
       return LoginScreen();
     }
 
     return FutureBuilder<UserData?>(
-      future: _loadUserData(context, user!.uid),
+      future: _loadUserData(context),
       builder: (context, userDataSnapshot) {
         if (userDataSnapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -58,7 +57,6 @@ class AuthGate extends StatelessWidget {
         if (userData == null || userData.role.isEmpty) {
           return FixAccountPage();
         }
-
         return _navigateToHomePage(userData.role);
       },
     );

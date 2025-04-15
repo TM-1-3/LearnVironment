@@ -34,7 +34,7 @@ void main() {
   late MockDataService mockDataService;
 
   setUp(() {
-    mockAuth = MockFirebaseAuth(signedIn: true);
+    mockAuth = MockFirebaseAuth(mockUser: MockUser(uid: 'test', displayName: 'Test', email: 'email'),signedIn: true);
     mockDataService = MockDataService();
     testWidget = MultiProvider(
       providers: [
