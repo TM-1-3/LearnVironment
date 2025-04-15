@@ -156,4 +156,15 @@ class DataService {
       return [];
     }
   }
+
+  Future<void> deleteAccount(String uid) async {
+    try {
+      await _firestoreService.deleteAccount(uid);
+      await _userCacheService.clearUserCache();
+      print("[DataService] Account deleted");
+    } catch(e) {
+      print("[DataService] Error deleting account");
+      rethrow;
+    }
+  }
 }

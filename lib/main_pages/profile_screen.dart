@@ -189,14 +189,14 @@ class ProfileScreenState extends State<ProfileScreen> {
   // Delete account function
   Future<void> _deleteAccount() async {
     try {
-      DataService dataService = Provider.of<DataService>(
-          context, listen: false);
-      AuthService authService = Provider.of<AuthService>(
-          context, listen: false);
+      DataService dataService = Provider.of<DataService>(context, listen: false);
+      AuthService authService = Provider.of<AuthService>(context, listen: false);
+      String uid = await authService.getUid();
 
       //Delete account in authService
-      authService.deleteAccount();
+      await authService.deleteAccount();
       //Delete account from Firestore and cache using dataService
+      await dataService.deleteAccount(uid);
 
       if (mounted) {
         Navigator.of(context).pushReplacementNamed('/signup');
@@ -236,15 +236,14 @@ class ProfileScreenState extends State<ProfileScreen> {
 
   // Sign out the user
   Future<void> _signOut() async {
-    UserCacheService userCacheService = Provider.of<UserCacheService>(
-        context, listen: false);
+    UserCacheService userCacheService = Provider.of<UserCacheService>(context, listen: false);
     AuthService authService = Provider.of<AuthService>(context, listen: false);
 
     //Delete the cache
-    userCacheService.clearUserCache();
+    await userCacheService.clearUserCache();
 
     //sign-out
-    authService.signOut();
+    await authService.signOut();
     if (mounted) {
       Navigator.of(context).pushReplacementNamed('/login');
     }
