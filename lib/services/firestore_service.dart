@@ -218,4 +218,12 @@ class FirestoreService {
       throw Exception("Unable to create user!");
     }
   }
+
+  Future<void> deleteAccount(String uid) async {
+    try {
+      await _firestore.collection('users').doc(uid).delete();
+    } catch (e) {
+      throw Exception("Error deleting account: $e");
+    }
+  }
 }
