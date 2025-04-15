@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:learnvironment/main_pages/game_data.dart';
+import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/games_templates/results_page.dart';
-import 'package:learnvironment/quiz.dart';
+import 'package:learnvironment/games_templates/quiz.dart';
 import 'package:mockito/mockito.dart';
 
 class MockGameData extends Mock implements GameData {
@@ -101,8 +101,7 @@ class MockGameData extends Mock implements GameData {
 }
 
 void main() {
-  group('Quiz App Tests', ()
-  {
+  group('Quiz App Tests', () {
     late MockGameData quizData;
     late Widget testWidget;
 
@@ -117,13 +116,8 @@ void main() {
     testWidgets('Renders start page correctly', (WidgetTester tester) async {
       await tester.pumpWidget(testWidget);
       expect(find.text('EcoMind Challenge'), findsNWidgets(2));
-      expect(find.byWidgetPredicate((widget) => widget is Image &&
-          widget.image is AssetImage &&
-          (widget.image as AssetImage).assetName == "assets/quizLogo.png"),
-          findsOneWidget);
-      expect(find.byWidgetPredicate((widget) => widget is Text &&
-          widget.data == 'EcoMind Challenge' && widget.style?.fontSize == 28 &&
-          widget.style?.fontWeight == FontWeight.bold), findsOneWidget);
+      expect(find.byWidgetPredicate((widget) => widget is Image && widget.image is AssetImage && (widget.image as AssetImage).assetName == "assets/quizLogo.png"), findsOneWidget);
+      expect(find.byWidgetPredicate((widget) => widget is Text && widget.data == 'EcoMind Challenge' && widget.style?.fontSize == 28 && widget.style?.fontWeight == FontWeight.bold), findsOneWidget);
       expect(find.text('Start Quiz'), findsOneWidget);
     });
 
@@ -145,8 +139,7 @@ void main() {
       // Simulate answering questions.
       int questionNumber = 1;
       while (questionNumber <= 10) {
-        expect(find.text('Question $questionNumber'),
-            findsOneWidget); // Validate question number.
+        expect(find.text('Question $questionNumber'), findsOneWidget); // Validate question number.
         final answerCards = find.byType(GestureDetector);
         expect(answerCards, findsWidgets); // Ensure answers exist
 

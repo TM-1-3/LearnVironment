@@ -1,23 +1,33 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:learnvironment/authentication/login_screen.dart';
+import 'package:learnvironment/authentication/auth_gate.dart';
+import 'package:learnvironment/authentication/fix_account.dart';
+import 'package:learnvironment/authentication/reset_password_screen.dart';
+import 'package:learnvironment/authentication/signup_screen.dart';
+import 'package:learnvironment/firebase_options.dart';
+import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/services/data_service.dart';
+import 'package:learnvironment/services/firestore_service.dart';
+import 'package:learnvironment/services/game_cache_service.dart';
+import 'package:learnvironment/services/user_cache_service.dart';
 import 'package:provider/provider.dart';
-import 'firebase_options.dart';
-import 'authentication/auth_gate.dart';
-import 'authentication/auth_service.dart'; // Import the AuthService
-import 'authentication/fix_account.dart';
-import '../authentication/login_screen.dart'; // Import the Login Screen
-import '../authentication/signup_screen.dart'; // Import the Sign-Up Screen
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
+  final authService = AuthService();
+  await authService.init();
+
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider<AuthService>(create: (_) => AuthService()),
+        ChangeNotifierProvider<AuthService>(create: (_) => authService),
+        Provider<FirestoreService>(create: (_) => FirestoreService()),
+        Provider<UserCacheService>(create: (_) => UserCacheService()),
+        Provider<GameCacheService>(create: (_) => GameCacheService()),
+        Provider<DataService>(create: (context) => DataService(context)),
       ],
       child: App(),
     ),
@@ -25,11 +35,7 @@ void main() async {
 }
 
 class App extends StatelessWidget {
-  final FirebaseFirestore firestore;
-  final FirebaseAuth fireauth;
-  App({super.key, FirebaseFirestore? firestore, FirebaseAuth? fireauth})
-    : firestore = firestore ?? FirebaseFirestore.instance,
-    fireauth = fireauth ?? FirebaseAuth.instance;
+  const App({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -43,12 +49,13 @@ class App extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
         useMaterial3: true,
       ),
-      home: AuthGate(firestore: firestore, fireauth: fireauth), // The AuthGate widget as the starting point
+      home: AuthGate(),
       routes: {
-        '/auth_gate': (context) => AuthGate(firestore: firestore, fireauth: fireauth), // Define the AuthGate route
-        '/fix_account': (context) => FixAccountPage(firestore: firestore, fireauth: fireauth), // Define FixAccountPage route
-        '/login': (context) => LoginScreen(auth: fireauth), // Define LoginScreen route
-        '/signup': (context) => const SignUpScreen(), // Define SignUpScreen route
+        '/auth_gate': (context) => AuthGate(),
+        '/fix_account': (context) => FixAccountPage(),
+        '/login': (context) => LoginScreen(),
+        '/signup': (context) => SignUpScreen(),
+        '/reset_password' : (context) => ResetPasswordScreen(),
       },
     );
   }

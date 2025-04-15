@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:learnvironment/main_pages/game_data.dart';
-
-import 'games_templates/results_page.dart';
-import 'main_pages/games_page.dart';
+import 'package:learnvironment/data/game_data.dart';
+import 'package:learnvironment/games_templates/results_page.dart';
+import 'package:learnvironment/main_pages/games_page.dart';
 
 class BinScreen extends StatefulWidget {
   final GameData binData;
@@ -129,12 +128,12 @@ class BinScreenState extends State<BinScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: Text(widget.binData.gameName,),
-            leading: IconButton(  // Override the leading property
+            leading: IconButton(
               icon: Icon(Icons.arrow_back),
               onPressed: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => GamesPage()), // Navigate to GamesPage
+                  MaterialPageRoute(builder: (context) => GamesPage()),
                 );
               },
             )),

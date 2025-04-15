@@ -1,22 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import '../main_pages/profile_screen.dart';
-import '../main_pages/main_page.dart';
-import '../main_pages/games_page.dart';
-import '../main_pages/statistics_page.dart';
+import 'package:learnvironment/main_pages/games_page.dart';
+import 'package:learnvironment/main_pages/main_page.dart';
+import 'package:learnvironment/main_pages/profile_screen.dart';
+import 'package:learnvironment/student/student_stats.dart';
 
 class StudentHomePage extends StatefulWidget {
-  final FirebaseFirestore firestore; // Declare the Firestore instance
-  final FirebaseAuth auth; // Declare the FirebaseAuth instance
-
-  // Constructor now takes firestore and auth as arguments, with defaults
-  StudentHomePage({
-    super.key,
-    FirebaseFirestore? firestore, // Make firestore nullable
-    FirebaseAuth? auth, // Make auth nullable
-  })  : firestore = firestore ?? FirebaseFirestore.instance,
-        auth = auth ?? FirebaseAuth.instance;
+  const StudentHomePage({super.key});
 
   @override
   State<StudentHomePage> createState() => _StudentHomePage();
@@ -25,7 +14,6 @@ class StudentHomePage extends StatefulWidget {
 enum TabItem { statistics, home, games }
 
 class _StudentHomePage extends State<StudentHomePage> {
-  // Default to the Home tab
   TabItem selectedTab = TabItem.home;
   String message = '';
 
@@ -35,10 +23,9 @@ class _StudentHomePage extends State<StudentHomePage> {
   void initState() {
     super.initState();
 
-    // Initialize the _pages map with the passed firestore and auth
-    _pages[TabItem.statistics] = StatisticsPage();
+    _pages[TabItem.statistics] = StudentStatsPage();
     _pages[TabItem.home] = MainPage();
-    _pages[TabItem.games] = GamesPage(firestore: widget.firestore);
+    _pages[TabItem.games] = GamesPage();
   }
 
 
