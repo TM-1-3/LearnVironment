@@ -120,6 +120,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       appBar: AppBar(
         title: const Text('Sign Up'),
         centerTitle: true,
+        automaticallyImplyLeading: false,
       ),
       body: SingleChildScrollView(
         child: Padding(
