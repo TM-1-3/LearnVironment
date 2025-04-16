@@ -69,6 +69,7 @@ class _FixAccountPageState extends State<FixAccountPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Account fixed successfully!')),
         );
+        Navigator.of(context).pushReplacementNamed('/auth_gate');
       }
 
       _emailController.clear();

@@ -38,6 +38,7 @@ class GameCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             GestureDetector(
+              key: Key('gameCard_$gameId'), // 👈 Key added here
               onTap: () async => await loadGame(gameId),
               child: ClipRRect(
                 borderRadius: BorderRadius.vertical(top: Radius.circular(10)),

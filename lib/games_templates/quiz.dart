@@ -1,11 +1,11 @@
+import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:math';
-import 'package:flutter/material.dart';
+import 'package:learnvironment/games_templates/results_page.dart';  // Import the ResultsPage
 import 'package:learnvironment/data/game_data.dart';
-import 'package:learnvironment/games_templates/results_page.dart';
 
 class Quiz extends StatefulWidget {
-  final GameData quizData;
+  final GameData quizData;  // The quizData passed to this widget
   const Quiz({super.key, required this.quizData});
 
   @override
@@ -13,8 +13,89 @@ class Quiz extends StatefulWidget {
 }
 
 class QuizState extends State<Quiz> {
-  late final Map<String, List<String>> questionsAndOptions;
-  late final Map<String, String> correctAnswers;
+  final Map<String, List<String>> questionsAndOptions = {
+    "What is recycling?": [
+      "Reusing materials",
+      "Throwing trash",
+      "Saving money",
+      "Buying new things"
+    ],
+    "Why should we save water?": [
+      "It helps the earth",
+      "Water is unlimited",
+      "For fun",
+      "It doesn't matter"
+    ],
+    "What do trees do for us?": [
+      "Give oxygen",
+      "Make noise",
+      "Take water",
+      "Eat food"
+    ],
+    "How can we reduce waste?": [
+      "Recycle",
+      "Burn trash",
+      "Throw in rivers",
+      "Ignore it"
+    ],
+    "What animals live in the ocean?": ["Sharks", "Lions", "Elephants", "Cows"],
+    "What happens if we pollute rivers?": [
+      "Fish die",
+      "More water appears",
+      "Trees grow faster",
+      "It smells better"
+    ],
+    "Why is the sun important?": [
+      "Gives us light",
+      "Cools the earth",
+      "Makes rain",
+      "Creates snow"
+    ],
+    "How can we help the planet?": [
+      "Pick up trash",
+      "Cut all trees",
+      "Pollute more",
+      "Use plastic"
+    ],
+    "What is composting?": [
+      "Turning food waste into soil",
+      "Burning paper",
+      "Throwing food in the trash",
+      "Using plastic"
+    ],
+    "Why should we turn off the lights?": [
+      "Save energy",
+      "Break the bulb",
+      "Change the color",
+      "Make it brighter"
+    ]
+  };
+
+  final Map<String, String> correctAnswers = {
+    "What is recycling?": "Reusing materials",
+    "Why should we save water?": "It helps the earth",
+    "What do trees do for us?": "Give oxygen",
+    "How can we reduce waste?": "Recycle",
+    "What animals live in the ocean?": "Sharks",
+    "What happens if we pollute rivers?": "Fish die",
+    "Why is the sun important?": "Gives us light",
+    "How can we help the planet?": "Pick up trash",
+    "What is composting?": "Turning food waste into soil",
+    "Why should we turn off the lights?": "Save energy"
+  };
+
+  final Map<String, String> questionTips = {
+    "What is recycling?": "Recycling means turning old things like paper, plastic, and cans into new things so we waste less.",
+    "Why should we save water?": "Saving water helps animals, plants, and people. We only have so much clean water!",
+    "What do trees do for us?": "Trees give us clean air, shade, homes for animals, and even fruits!",
+    "How can we reduce waste?": "Use reusable bags, recycle, and avoid throwing things away when they can be reused.",
+    "What animals live in the ocean?": "The ocean is home to fish, whales, dolphins, turtles, and many more amazing animals.",
+    "What happens if we pollute rivers?": "Polluted rivers can hurt animals, plants, and even make water unsafe for people.",
+    "Why is the sun important?": "The sun gives us light and warmth, helps plants grow, and keeps Earth just right for life.",
+    "How can we help the planet?": "We can help by recycling, saving energy, planting trees, and being kind to nature.",
+    "What is composting?": "Composting turns food scraps and leaves into healthy soil for plants.",
+    "Why should we turn off the lights?": "Turning off lights saves energy and helps the Earth stay healthy.",
+  };
 
   late List<String> availableQuestions;
   String currentQuestion = "";
@@ -27,22 +108,19 @@ class QuizState extends State<Quiz> {
   int wrongCount = 0;
   bool quizStarted = false;
   bool quizFinished = false;
+  List<String> tipsToAppear=[];
+  late DateTime startTime;
 
   @override
   void initState() {
     super.initState();
-    if (widget.quizData.questionsAndOptions == null || widget.quizData.correctAnswers == null) {
-      throw Exception("Missing quiz data in GameData object.");
-    }
-
-    questionsAndOptions = widget.quizData.questionsAndOptions!;
-    correctAnswers = widget.quizData.correctAnswers!;
     availableQuestions = List.from(questionsAndOptions.keys);
   }
 
   void startQuiz() {
     setState(() {
       quizStarted = true;
+      startTime=DateTime.now();
       updateQuestionAndOptions();
     });
   }
@@ -61,6 +139,8 @@ class QuizState extends State<Quiz> {
       } else {
         // No more questions, finish the quiz
         quizFinished = true;
+        final endTime = DateTime.now();
+        final duration = endTime.difference(startTime);
         // Go to results screen
         Navigator.push(
           context,
@@ -71,6 +151,9 @@ class QuizState extends State<Quiz> {
               questionsCount: 10,
               gameName: widget.quizData.gameName, // Access quizData here
               gameImage: widget.quizData.gameLogo, // Access quizData here
+              tipsToAppear: tipsToAppear,
+              duration: duration,
+                onReplay: () => Quiz(quizData: widget.quizData)
             ),
           ),
         );
@@ -86,6 +169,7 @@ class QuizState extends State<Quiz> {
         correctCount++;
       } else {
         wrongCount++;
+        tipsToAppear.add(questionTips[currentQuestion]!);
       }
     });
 
@@ -108,39 +192,30 @@ class QuizState extends State<Quiz> {
     );
   }
 
+  /// 📌 HOME SCREEN
   Widget _buildHomeScreen() {
     return SingleChildScrollView(
-      child: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center, // optional, for safety
-          children: [
-            const SizedBox(height: 80),
-            Image.asset(widget.quizData.gameLogo, width: 200, height: 200),
-            const SizedBox(height: 20),
-            Text(
-              widget.quizData.gameName,
-              style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Image.asset(widget.quizData.gameLogo, width: 200, height: 200), // Access gameLogo from quizData
+        const SizedBox(height: 20),
+        Text(widget.quizData.gameName, style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)), // Access gameName from quizData
+        const SizedBox(height: 40),
+        GestureDetector(
+          onTap: startQuiz,
+          child: Card(
+            elevation: 4,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            color: Colors.green,
+            child: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+              child: Text("Start Quiz", style: TextStyle(fontSize: 20, color: Colors.white)),
             ),
-            const SizedBox(height: 40),
-            GestureDetector(
-              onTap: startQuiz,
-              child: Card(
-                elevation: 4,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                color: Colors.green,
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-                  child: Text("Start Quiz", style: TextStyle(fontSize: 20, color: Colors.white)),
-                ),
-              ),
-            ),
-            const SizedBox(height: 40),
-          ],
+          ),
         ),
-      ),
-    );
+      ],
+    ));
   }
 
   /// 📌 QUIZ SCREEN

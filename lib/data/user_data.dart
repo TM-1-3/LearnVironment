@@ -63,4 +63,18 @@ class UserData {
       gamesPlayed: gamesPlayed ?? this.gamesPlayed,
     );
   }
+
+  factory UserData.fromMap(Map<String, dynamic> map, String documentId) {
+    return UserData(
+      id: documentId,
+      name: map['name'] ?? '',
+      username: map['username'] ?? '',
+      email: map['email'] ?? '',
+      role: map['role'] ?? '',
+      birthdate: map['birthDate'] != null
+          ? DateTime.tryParse(map['birthDate']) ?? DateTime(2000)
+          : DateTime(2000),
+      gamesPlayed: List<String>.from(map['gamesPlayed'] ?? []),
+    );
+  }
 }

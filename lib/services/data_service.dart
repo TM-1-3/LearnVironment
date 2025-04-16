@@ -5,6 +5,7 @@ import 'package:learnvironment/services/firestore_service.dart';
 import 'package:learnvironment/services/game_cache_service.dart';
 import 'package:learnvironment/services/user_cache_service.dart';
 import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DataService {
   late final FirestoreService _firestoreService;
@@ -77,19 +78,21 @@ class DataService {
 
   Future<UserData?> getUserData(String userId) async {
     try {
-      // Try loading user data from cache
-      final cachedUser = await _userCacheService.getCachedUserData();
+      // 👇 Always force a fresh fetch from Firestore (ignore cache)
+      final freshUser = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get(const GetOptions(source: Source.server));
 
-      if (cachedUser != null && cachedUser.id == userId) {
-        print('[DataService] Loaded user from cache');
-        return cachedUser;
-      }
+      final data = freshUser.data();
+      if (data == null) return null;
 
-      final freshUser = await _firestoreService.fetchUserData(userId);
-      await _userCacheService.cacheUserData(freshUser);
-      print('[DataService] Loaded user from Firestore and cached it');
+      final doc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+      final user = UserData.fromMap(doc.data()!, doc.id);
+      await _userCacheService.cacheUserData(user);
 
-      return freshUser;
+      print('[DataService] Loaded user from Firestore (fresh) and cached it');
+      return user;
     } catch (e) {
       print('[DataService] Error getting user data: $e');
       return null;

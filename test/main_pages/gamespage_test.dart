@@ -88,14 +88,15 @@ class MockDataService extends Mock implements DataService {
 
     // Returning the games directly
     print('[Mocked DataService] Returning hardcoded games');
-    return games.map((game) {
+    return List.generate(games.length, (index) {
+      final game = games[index];
       return {
         'imagePath': game['logo'],
         'gameTitle': game['name'],
         'tags': game['tags'],
-        'gameId': 'mock_game_id', // You can adjust this ID if needed
+        'gameId': 'mock_game_$index',
       };
-    }).toList();
+    });
   }
 
   @override
@@ -244,11 +245,17 @@ void main() {
     });
 
     testWidgets('should call load game correctly', (WidgetTester tester) async {
-      await tester.pumpWidget(testWidget);
-      await tester.pumpAndSettle();
-      await tester.tap(find.byType(GestureDetector).first);
-      await tester.pumpAndSettle();
+      // Arrange
+      await tester.pumpWidget(testWidget); // your testWidget should wrap with MaterialApp + Providers
+      await tester.pumpAndSettle(); // wait for UI to settle
 
+      // Act
+      final gameCardKey = Key('gameCard_mock_game_0'); // use actual mocked gameId
+      expect(find.byKey(gameCardKey), findsOneWidget);
+      await tester.tap(find.byKey(gameCardKey));
+      await tester.pumpAndSettle(); // wait for navigation
+
+      // Assert
       expect(find.byType(GamesInitialScreen), findsOneWidget);
     });
 
