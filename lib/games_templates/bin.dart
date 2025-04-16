@@ -27,6 +27,8 @@ class BinScreenState extends State<BinScreen> {
   Offset iconPosition = Offset(0, 0);
   int correctCount = 0;
   int wrongCount = 0;
+  List<String> tipsToAppear=[];
+  late DateTime startTime;
 
   // Trash items mapped to their correct bin
   Map<String, String> trashItems = {
@@ -48,6 +50,7 @@ class BinScreenState extends State<BinScreen> {
   @override
   void initState() {
     super.initState();
+
   }
 
   bool isGameOver() {
@@ -60,7 +63,10 @@ class BinScreenState extends State<BinScreen> {
       rightAnswer = trashItems[item] == bin;
       if (rightAnswer) {
         correctCount++;
-      } else { wrongCount++; }
+      } else {
+        wrongCount++;
+        tipsToAppear.add(widget.binData.tips[item]!);
+      }
       iconPosition = position;
       showIcon = true;
 
@@ -80,6 +86,8 @@ class BinScreenState extends State<BinScreen> {
       });
 
       if (isGameOver()) {
+        final endTime = DateTime.now();
+        final duration = endTime.difference(startTime);
         if (mounted) {
           Navigator.push(
             context,
@@ -90,8 +98,10 @@ class BinScreenState extends State<BinScreen> {
                     wrongCount: wrongCount,
                     questionsCount: 10,
                     gameName: widget.binData.gameName,
-                    // Access quizData here
-                    gameImage: widget.binData.gameLogo, // Access quizData here
+                    gameImage: widget.binData.gameLogo,
+                    tipsToAppear: tipsToAppear.toSet().toList(),
+                    duration: duration,
+                    onReplay: () => BinScreen(binData: widget.binData)
                   ),
             ),
           );

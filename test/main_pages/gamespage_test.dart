@@ -47,6 +47,11 @@ class MockDataService extends Mock implements DataService {
       "Why should we save water?": "It helps the earth",
     };
 
+    final Map<String, String> tips = {
+      "What is recycling?": "Tip",
+      "Why should we save water?": "Tip",
+    };
+
     final games = [
       {
         'logo': 'assets/placeholder.png',
@@ -55,6 +60,7 @@ class MockDataService extends Mock implements DataService {
         'description': 'description',
         'bibliography': 'Bibliography',
         'template': 'drag',
+        'tips' : tips,
       },
       {
         'logo': 'assets/placeholder.png',
@@ -65,6 +71,7 @@ class MockDataService extends Mock implements DataService {
         'template': 'quiz',
         'questionsAndOptions': questionsAndOptions,
         'correctAnswers': correctAnswers,
+        'tips' : tips,
       },
       {
         'logo': 'assets/placeholder.png',
@@ -75,6 +82,7 @@ class MockDataService extends Mock implements DataService {
         'template': 'quiz',
         'questionsAndOptions': questionsAndOptions,
         'correctAnswers': correctAnswers,
+        'tips' : tips,
       },
       {
         'logo': 'assets/placeholder.png',
@@ -83,6 +91,7 @@ class MockDataService extends Mock implements DataService {
         'description': 'description',
         'bibliography': 'Bibliography',
         'template': 'drag',
+        'tips' : tips,
       },
     ];
 
@@ -121,13 +130,18 @@ class MockDataService extends Mock implements DataService {
       "Why should we save water?": "It helps the earth",
     };
 
+    final Map<String, String> tips = {
+      "What is recycling?": "Tip",
+      "Why should we save water?": "Tip",
+    };
+
     final data = {
       'logo': 'assets/placeholder.png',
       'name': 'Test Game',
       'tags': ['Strategy'],
       'description': 'description',
       'bibliography': 'Bibliography',
-      'template': 'drag',
+      'template': 'quiz',
     };
 
 
@@ -138,9 +152,10 @@ class MockDataService extends Mock implements DataService {
       gameBibliography: data['bibliography'].toString(),
       tags: List<String>.from((data['tags'] as List).map((e) => e.toString())),
       gameTemplate: data['template'].toString(),
-      documentName: 'mock_game_0',
+      documentName: 'mock_game_1',
       questionsAndOptions: questionsAndOptions,
       correctAnswers: correctAnswers,
+      tips: tips
     );
 
     print('[Mocked DataService] Returning mocked game data for gameId: $gameId');
@@ -247,10 +262,10 @@ void main() {
       await tester.pumpWidget(testWidget);
       await tester.pumpAndSettle();
 
-      final gameCardKey = Key('gameCard_mock_game_0');
+      final gameCardKey = Key('gameCard_mock_game_1');
       expect(find.byKey(gameCardKey), findsOneWidget);
+      await tester.ensureVisible(find.byKey(gameCardKey));
       await tester.tap(find.byKey(gameCardKey));
-      await tester.pumpAndSettle();
 
       expect(find.byType(GamesInitialScreen), findsOneWidget);
     });

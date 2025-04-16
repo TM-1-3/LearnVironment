@@ -28,6 +28,7 @@ class QuizState extends State<Quiz> {
   bool quizStarted = false;
   bool quizFinished = false;
   late DateTime startTime;
+  List<String> tipsToAppear=[];
 
   @override
   void initState() {
@@ -70,11 +71,11 @@ class QuizState extends State<Quiz> {
           context,
           MaterialPageRoute(
             builder: (context) => ResultsPage(
-              correctCount: correctCount,
-              wrongCount: wrongCount,
-              questionsCount: 10,
-              gameName: widget.quizData.gameName,
-              gameImage: widget.quizData.gameLogo,
+                correctCount: correctCount,
+                wrongCount: wrongCount,
+                questionsCount: 10,
+                gameName: widget.quizData.gameName,
+                gameImage: widget.quizData.gameLogo,
                 tipsToAppear: tipsToAppear,
                 duration: duration,
                 onReplay: () => Quiz(quizData: widget.quizData)
@@ -93,6 +94,7 @@ class QuizState extends State<Quiz> {
         correctCount++;
       } else {
         wrongCount++;
+        tipsToAppear.add(widget.quizData.tips[currentQuestion]!);
       }
     });
 
@@ -120,7 +122,7 @@ class QuizState extends State<Quiz> {
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center, // optional, for safety
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 80),
             Image.asset(widget.quizData.gameLogo, width: 200, height: 200),

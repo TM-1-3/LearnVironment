@@ -65,6 +65,11 @@ void main() {
       "Why should we save water?": "It helps the earth",
     };
 
+    final Map<String, String> tips = {
+      "What is recycling?": "Tip1",
+      "Why should we save water?": "Tip2",
+    };
+
     await mockFirestore.collection('games').doc('game1').set({
       'logo': 'assets/widget.png',
       'name': 'Test Game',
@@ -74,6 +79,7 @@ void main() {
       'template': 'quiz',
       'questionsAndOptions': questionsAndOptions,
       'correctAnswers': correctAnswers,
+      'tips': tips
     });
 
     // Set up GameData instance
@@ -87,6 +93,7 @@ void main() {
       questionsAndOptions: questionsAndOptions,
       correctAnswers: correctAnswers,
       documentName: 'game1',
+      tips: tips,
     );
 
     // Set up the widget tree for testing
@@ -133,6 +140,7 @@ void main() {
       questionsAndOptions: {},
       correctAnswers: {},
       documentName: 'corrupted_game',
+      tips: {},
     );
 
     await tester.pumpWidget(

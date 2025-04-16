@@ -146,6 +146,11 @@ class MockDataService extends Mock implements DataService {
       'template': 'drag',
     };
 
+    final tips = {
+      "What is recycling?" : "This is a tip",
+      "Why should we save water?": "Another tip",
+    };
+
 
     final gameData = GameData(
       gameLogo: data['logo'].toString(),
@@ -158,6 +163,7 @@ class MockDataService extends Mock implements DataService {
       documentName: 'mock_game_0',
       questionsAndOptions: questionsAndOptions,
       correctAnswers: correctAnswers,
+      tips: tips,
     );
 
     print('[Mocked DataService] Returning mocked game data for gameId: $gameId');
