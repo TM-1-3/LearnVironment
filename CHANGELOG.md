@@ -30,6 +30,7 @@
 - As a teacher I want to be able to play a game before I assign them to my students so that I can ensure the games are appropriate and accurate. [#24](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/24)
 - As a student I want to be able to view the games I have played so that I can keep track of my progress [#11](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/11)
 - As a user I want to be able to customize my profile so that I can be identified by everyone. [#14](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/14)
+- As a user I want to have a bibliography associated with each game so that I can easily verify the accuracy and sources of the information. [#18](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/18)
 
 ### Detailed description
 - Fixed bug in results screen [#52](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/52)
@@ -41,6 +42,7 @@
 - Students can now view the games they have previously played [#66](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/66)
 - Fixed bug deleting account [#58](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/58)
 - Fixed bug in login screen after sign-out [#61](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/61)
+- Games provide feedback now [#69](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/69)
 
 ### Test User
 - email: 
