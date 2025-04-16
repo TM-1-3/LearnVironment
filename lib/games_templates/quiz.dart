@@ -1,11 +1,11 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:math';
-import 'package:learnvironment/games_templates/results_page.dart';  // Import the ResultsPage
+import 'package:flutter/material.dart';
 import 'package:learnvironment/data/game_data.dart';
+import 'package:learnvironment/games_templates/results_page.dart';
 
 class Quiz extends StatefulWidget {
-  final GameData quizData;  // The quizData passed to this widget
+  final GameData quizData;
   const Quiz({super.key, required this.quizData});
 
   @override
@@ -13,89 +13,8 @@ class Quiz extends StatefulWidget {
 }
 
 class QuizState extends State<Quiz> {
-  final Map<String, List<String>> questionsAndOptions = {
-    "What is recycling?": [
-      "Reusing materials",
-      "Throwing trash",
-      "Saving money",
-      "Buying new things"
-    ],
-    "Why should we save water?": [
-      "It helps the earth",
-      "Water is unlimited",
-      "For fun",
-      "It doesn't matter"
-    ],
-    "What do trees do for us?": [
-      "Give oxygen",
-      "Make noise",
-      "Take water",
-      "Eat food"
-    ],
-    "How can we reduce waste?": [
-      "Recycle",
-      "Burn trash",
-      "Throw in rivers",
-      "Ignore it"
-    ],
-    "What animals live in the ocean?": ["Sharks", "Lions", "Elephants", "Cows"],
-    "What happens if we pollute rivers?": [
-      "Fish die",
-      "More water appears",
-      "Trees grow faster",
-      "It smells better"
-    ],
-    "Why is the sun important?": [
-      "Gives us light",
-      "Cools the earth",
-      "Makes rain",
-      "Creates snow"
-    ],
-    "How can we help the planet?": [
-      "Pick up trash",
-      "Cut all trees",
-      "Pollute more",
-      "Use plastic"
-    ],
-    "What is composting?": [
-      "Turning food waste into soil",
-      "Burning paper",
-      "Throwing food in the trash",
-      "Using plastic"
-    ],
-    "Why should we turn off the lights?": [
-      "Save energy",
-      "Break the bulb",
-      "Change the color",
-      "Make it brighter"
-    ]
-  };
-
-  final Map<String, String> correctAnswers = {
-    "What is recycling?": "Reusing materials",
-    "Why should we save water?": "It helps the earth",
-    "What do trees do for us?": "Give oxygen",
-    "How can we reduce waste?": "Recycle",
-    "What animals live in the ocean?": "Sharks",
-    "What happens if we pollute rivers?": "Fish die",
-    "Why is the sun important?": "Gives us light",
-    "How can we help the planet?": "Pick up trash",
-    "What is composting?": "Turning food waste into soil",
-    "Why should we turn off the lights?": "Save energy"
-  };
-
-  final Map<String, String> questionTips = {
-    "What is recycling?": "Recycling means turning old things like paper, plastic, and cans into new things so we waste less.",
-    "Why should we save water?": "Saving water helps animals, plants, and people. We only have so much clean water!",
-    "What do trees do for us?": "Trees give us clean air, shade, homes for animals, and even fruits!",
-    "How can we reduce waste?": "Use reusable bags, recycle, and avoid throwing things away when they can be reused.",
-    "What animals live in the ocean?": "The ocean is home to fish, whales, dolphins, turtles, and many more amazing animals.",
-    "What happens if we pollute rivers?": "Polluted rivers can hurt animals, plants, and even make water unsafe for people.",
-    "Why is the sun important?": "The sun gives us light and warmth, helps plants grow, and keeps Earth just right for life.",
-    "How can we help the planet?": "We can help by recycling, saving energy, planting trees, and being kind to nature.",
-    "What is composting?": "Composting turns food scraps and leaves into healthy soil for plants.",
-    "Why should we turn off the lights?": "Turning off lights saves energy and helps the Earth stay healthy.",
-  };
+  late final Map<String, List<String>> questionsAndOptions;
+  late final Map<String, String> correctAnswers;
 
   late List<String> availableQuestions;
   String currentQuestion = "";
@@ -108,12 +27,17 @@ class QuizState extends State<Quiz> {
   int wrongCount = 0;
   bool quizStarted = false;
   bool quizFinished = false;
-  List<String> tipsToAppear=[];
   late DateTime startTime;
 
   @override
   void initState() {
     super.initState();
+    if (widget.quizData.questionsAndOptions == null || widget.quizData.correctAnswers == null) {
+      throw Exception("Missing quiz data in GameData object.");
+    }
+
+    questionsAndOptions = widget.quizData.questionsAndOptions!;
+    correctAnswers = widget.quizData.correctAnswers!;
     availableQuestions = List.from(questionsAndOptions.keys);
   }
 
@@ -149,10 +73,10 @@ class QuizState extends State<Quiz> {
               correctCount: correctCount,
               wrongCount: wrongCount,
               questionsCount: 10,
-              gameName: widget.quizData.gameName, // Access quizData here
-              gameImage: widget.quizData.gameLogo, // Access quizData here
-              tipsToAppear: tipsToAppear,
-              duration: duration,
+              gameName: widget.quizData.gameName,
+              gameImage: widget.quizData.gameLogo,
+                tipsToAppear: tipsToAppear,
+                duration: duration,
                 onReplay: () => Quiz(quizData: widget.quizData)
             ),
           ),
@@ -169,93 +93,101 @@ class QuizState extends State<Quiz> {
         correctCount++;
       } else {
         wrongCount++;
-        tipsToAppear.add(questionTips[currentQuestion]!);
       }
     });
 
     Timer(const Duration(seconds: 2), () {
-      updateQuestionAndOptions(); // Move to next question after 2 seconds
+      updateQuestionAndOptions(); //Move to next question
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.quizData.gameName)), // Access gameName from quizData
+      appBar: AppBar(title: Text(widget.quizData.gameName)),
       body: Center(
         child: quizStarted
             ? quizFinished
-            ? const SizedBox() // Empty widget since it's handled in the ResultsPage
+            ? const SizedBox()
             : _buildQuizScreen()
             : _buildHomeScreen(),
       ),
     );
   }
 
-  /// 📌 HOME SCREEN
   Widget _buildHomeScreen() {
     return SingleChildScrollView(
+      child: Center(
         child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Image.asset(widget.quizData.gameLogo, width: 200, height: 200), // Access gameLogo from quizData
-        const SizedBox(height: 20),
-        Text(widget.quizData.gameName, style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)), // Access gameName from quizData
-        const SizedBox(height: 40),
-        GestureDetector(
-          onTap: startQuiz,
-          child: Card(
-            elevation: 4,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            color: Colors.green,
-            child: const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-              child: Text("Start Quiz", style: TextStyle(fontSize: 20, color: Colors.white)),
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center, // optional, for safety
+          children: [
+            const SizedBox(height: 80),
+            Image.asset(widget.quizData.gameLogo, width: 200, height: 200),
+            const SizedBox(height: 20),
+            Text(
+              widget.quizData.gameName,
+              style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
             ),
-          ),
+            const SizedBox(height: 40),
+            GestureDetector(
+              onTap: startQuiz,
+              child: Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                color: Colors.green,
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+                  child: Text("Start Quiz", style: TextStyle(fontSize: 20, color: Colors.white)),
+                ),
+              ),
+            ),
+            const SizedBox(height: 40),
+          ],
         ),
-      ],
-    ));
+      ),
+    );
   }
 
   /// 📌 QUIZ SCREEN
   Widget _buildQuizScreen() {
     return SingleChildScrollView(
         child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Image.asset(widget.quizData.gameLogo, width: 200, height: 200), // Access gameLogo from quizData
-        const SizedBox(height: 20),
-        Text("Question $questionNumber", style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 30),
-        Card(
-          elevation: 4,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Text(currentQuestion, style: const TextStyle(fontSize: 18), textAlign: TextAlign.center),
-          ),
-        ),
-        const SizedBox(height: 30),
-        Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _buildClickableCard(currentOptions[0]),
-            const SizedBox(width: 20),
-            _buildClickableCard(currentOptions[1]),
+            Image.asset(widget.quizData.gameLogo, width: 200, height: 200), // Access gameLogo from quizData
+            const SizedBox(height: 20),
+            Text("Question $questionNumber", style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 30),
+            Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Text(currentQuestion, style: const TextStyle(fontSize: 18), textAlign: TextAlign.center),
+              ),
+            ),
+            const SizedBox(height: 30),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildClickableCard(currentOptions[0]),
+                const SizedBox(width: 20),
+                _buildClickableCard(currentOptions[1]),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildClickableCard(currentOptions[2]),
+                const SizedBox(width: 20),
+                _buildClickableCard(currentOptions[3]),
+              ],
+            ),
           ],
-        ),
-        const SizedBox(height: 20),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _buildClickableCard(currentOptions[2]),
-            const SizedBox(width: 20),
-            _buildClickableCard(currentOptions[3]),
-          ],
-        ),
-      ],
-    ));
+        ));
   }
 
   Widget _buildClickableCard(String text) {

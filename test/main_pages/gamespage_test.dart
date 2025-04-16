@@ -136,8 +136,7 @@ class MockDataService extends Mock implements DataService {
       gameName: data['name'].toString(),
       gameDescription: data['description'].toString(),
       gameBibliography: data['bibliography'].toString(),
-      tags: List<String>.from(
-          (data['tags'] as List).map((e) => e.toString())),
+      tags: List<String>.from((data['tags'] as List).map((e) => e.toString())),
       gameTemplate: data['template'].toString(),
       documentName: 'mock_game_0',
       questionsAndOptions: questionsAndOptions,
@@ -216,11 +215,11 @@ void main() {
 
       await tester.tap(find.byKey(Key('ageDropdown')));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('All Ages').last); // Reset to All Ages
+      await tester.tap(find.text('All Ages').last);
       await tester.pumpAndSettle();
 
       expect(
-          find.byType(GameCard), findsNWidgets(2)); // All games should appear
+          find.byType(GameCard), findsNWidgets(2));
     });
 
     testWidgets('should reset tag filter when "All Tags" is selected', (
@@ -245,17 +244,14 @@ void main() {
     });
 
     testWidgets('should call load game correctly', (WidgetTester tester) async {
-      // Arrange
-      await tester.pumpWidget(testWidget); // your testWidget should wrap with MaterialApp + Providers
-      await tester.pumpAndSettle(); // wait for UI to settle
+      await tester.pumpWidget(testWidget);
+      await tester.pumpAndSettle();
 
-      // Act
-      final gameCardKey = Key('gameCard_mock_game_0'); // use actual mocked gameId
+      final gameCardKey = Key('gameCard_mock_game_0');
       expect(find.byKey(gameCardKey), findsOneWidget);
       await tester.tap(find.byKey(gameCardKey));
-      await tester.pumpAndSettle(); // wait for navigation
+      await tester.pumpAndSettle();
 
-      // Assert
       expect(find.byType(GamesInitialScreen), findsOneWidget);
     });
 

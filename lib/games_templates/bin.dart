@@ -27,7 +27,6 @@ class BinScreenState extends State<BinScreen> {
   Offset iconPosition = Offset(0, 0);
   int correctCount = 0;
   int wrongCount = 0;
-  List<String> tipsToAppear=[];
 
   // Trash items mapped to their correct bin
   Map<String, String> trashItems = {
@@ -46,24 +45,8 @@ class BinScreenState extends State<BinScreen> {
     "trash10": "brown",
   };
 
-  Map<String,String> tipItems = {
-    "trash1": "Organic trash goes to the brown can",
-    "trash2": "Batteries go to the red can",
-    "trash3": "Plastic and metal go to the yellow can",
-    "trash4": "Paper and cardboard go to the blue can",
-    "trash5": "Glass goes to the green can",
-    "trash6": "Paper and cardboard go to the blue can",
-    "trash7": "Batteries go to the red can",
-    "trash8": "Glass goes to the green can",
-    "trash9": "Plastic and metal go to the yellow can",
-    "trash10": "Organic trash goes to the brown can",
-  };
-
-  late DateTime startTime;
-
   @override
   void initState() {
-    startTime = DateTime.now();
     super.initState();
   }
 
@@ -77,9 +60,7 @@ class BinScreenState extends State<BinScreen> {
       rightAnswer = trashItems[item] == bin;
       if (rightAnswer) {
         correctCount++;
-      } else { wrongCount++;
-        tipsToAppear.add(tipItems[item]!);
-      }
+      } else { wrongCount++; }
       iconPosition = position;
       showIcon = true;
 
@@ -99,8 +80,6 @@ class BinScreenState extends State<BinScreen> {
       });
 
       if (isGameOver()) {
-        final endTime = DateTime.now();
-        final duration = endTime.difference(startTime);
         if (mounted) {
           Navigator.push(
             context,
@@ -113,9 +92,6 @@ class BinScreenState extends State<BinScreen> {
                     gameName: widget.binData.gameName,
                     // Access quizData here
                     gameImage: widget.binData.gameLogo, // Access quizData here
-                    tipsToAppear: tipsToAppear.toSet().toList(),
-                    duration: duration,
-                      onReplay: () => BinScreen(binData: widget.binData)
                   ),
             ),
           );
@@ -127,96 +103,96 @@ class BinScreenState extends State<BinScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text(widget.binData.gameName,),
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => GamesPage()),
-                );
-              },
-            )),
-    body: LayoutBuilder(
-    builder: (context, constraints) {
-    // Calculate positions based on layout constraints
-    Offset greenPosition = Offset(constraints.maxWidth * 0.2 + 35, constraints.maxHeight * 0.2);
-    Offset bluePosition = Offset(constraints.maxWidth * 0.6 + 65, constraints.maxHeight * 0.2);
-    Offset yellowPosition = Offset(constraints.maxWidth * 0.4 + 50, constraints.maxHeight * 0.4 + 50);
-    Offset brownPosition = Offset(constraints.maxWidth * 0.2 + 35, constraints.maxHeight * 0.6 + 100);
-    Offset redPosition = Offset(constraints.maxWidth * 0.6 + 65, constraints.maxHeight * 0.6 + 100);
+      appBar: AppBar(title: Text(widget.binData.gameName,),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => GamesPage()),
+              );
+            },
+          )),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          // Calculate positions based on layout constraints
+          Offset greenPosition = Offset(constraints.maxWidth * 0.2 + 35, constraints.maxHeight * 0.2);
+          Offset bluePosition = Offset(constraints.maxWidth * 0.6 + 65, constraints.maxHeight * 0.2);
+          Offset yellowPosition = Offset(constraints.maxWidth * 0.4 + 50, constraints.maxHeight * 0.4 + 50);
+          Offset brownPosition = Offset(constraints.maxWidth * 0.2 + 35, constraints.maxHeight * 0.6 + 100);
+          Offset redPosition = Offset(constraints.maxWidth * 0.6 + 65, constraints.maxHeight * 0.6 + 100);
 
-            return SafeArea(
-              child: Stack(
-                children: [
-                  SingleChildScrollView(
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        minHeight: constraints.maxHeight,
-                      ),
-                      child: Column(
-                        children: [
-                          // First Row: 2 Bins
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              binWidget('green', greenPosition),
-                              binWidget('blue', bluePosition),
-                            ],
-                          ),
-                          // Second Row: 1 Bin
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              binWidget('yellow', yellowPosition),
-                            ],
-                          ),
-                          // Third Row: 2 Bins
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              binWidget('brown', brownPosition),
-                              binWidget('red', redPosition),
-                            ],
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 60),
-                            child: Wrap(
-                              spacing: 20,
-                              runSpacing: 20,
-                              alignment: WrapAlignment.center,
-                              children: trashItems.keys.map((item) {
-                                return Draggable<String>(
-                                  data: item,
-                                  feedback: Image.asset('assets/$item.png', width: 80, height: 80),
-                                  childWhenDragging: Opacity(
-                                    opacity: 0.5,
-                                    child: Image.asset('assets/$item.png', width: 80, height: 80),
-                                  ),
+          return SafeArea(
+            child: Stack(
+              children: [
+                SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
+                    ),
+                    child: Column(
+                      children: [
+                        // First Row: 2 Bins
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            binWidget('green', greenPosition),
+                            binWidget('blue', bluePosition),
+                          ],
+                        ),
+                        // Second Row: 1 Bin
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            binWidget('yellow', yellowPosition),
+                          ],
+                        ),
+                        // Third Row: 2 Bins
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            binWidget('brown', brownPosition),
+                            binWidget('red', redPosition),
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 60),
+                          child: Wrap(
+                            spacing: 20,
+                            runSpacing: 20,
+                            alignment: WrapAlignment.center,
+                            children: trashItems.keys.map((item) {
+                              return Draggable<String>(
+                                data: item,
+                                feedback: Image.asset('assets/$item.png', width: 80, height: 80),
+                                childWhenDragging: Opacity(
+                                  opacity: 0.5,
                                   child: Image.asset('assets/$item.png', width: 80, height: 80),
-                                );
-                              }).toList(),
-                            ),
+                                ),
+                                child: Image.asset('assets/$item.png', width: 80, height: 80),
+                              );
+                            }).toList(),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                  if (showIcon)
-                    Positioned(
-                      left: iconPosition.dx,
-                      top: iconPosition.dy,
-                      child: Image.asset(
-                        rightAnswer ? 'assets/right.png' : 'assets/wrong.png',
-                        width: 50,
-                        height: 50,
-                      ),
+                ),
+                if (showIcon)
+                  Positioned(
+                    left: iconPosition.dx,
+                    top: iconPosition.dy,
+                    child: Image.asset(
+                      rightAnswer ? 'assets/right.png' : 'assets/wrong.png',
+                      width: 50,
+                      height: 50,
                     ),
-                ],
-              ),
-            );
-          },
-        ),
+                  ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 
