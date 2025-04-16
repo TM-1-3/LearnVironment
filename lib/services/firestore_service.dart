@@ -108,6 +108,7 @@ class FirestoreService {
       var data = snapshot.data() as Map<String, dynamic>;
 
       String template = data['template'] ?? '';
+      Map<String, String> tips = {};
       Map<String, List<String>>? questionsAndOptions;
       Map<String, String>? correctAnswers;
 
@@ -129,6 +130,15 @@ class FirestoreService {
         }
       }
 
+      try {
+        var rawTips = Map<String, dynamic>.from(data['tips'] ?? {});
+        tips = rawTips.map(
+              (key, value) => MapEntry(key, value.toString()),
+        );
+      } catch (e) {
+        print("Error getting tips");
+      }
+
       // Return GameData object populated with Firestore data
       return GameData(
         gameLogo: data['logo'] ?? 'default_logo.png',
@@ -140,6 +150,7 @@ class FirestoreService {
         documentName: snapshot.id,
         questionsAndOptions: questionsAndOptions,
         correctAnswers: correctAnswers,
+        tips: tips,
       );
     } catch (e, stackTrace) {
       debugPrint("Error loading GameData: $e\n$stackTrace");

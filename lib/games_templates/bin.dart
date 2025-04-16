@@ -90,8 +90,7 @@ class BinScreenState extends State<BinScreen> {
                     wrongCount: wrongCount,
                     questionsCount: 10,
                     gameName: widget.binData.gameName,
-                    // Access quizData here
-                    gameImage: widget.binData.gameLogo, // Access quizData here
+                    gameImage: widget.binData.gameLogo,
                   ),
             ),
           );

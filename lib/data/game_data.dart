@@ -8,6 +8,7 @@ class GameData {
   final List<String> tags;
   final String gameTemplate;
   final String documentName;
+  final Map<String, String> tips;
 
   // These fields will only exist for quizzes
   final Map<String, List<String>>? questionsAndOptions;
@@ -23,6 +24,7 @@ class GameData {
     required this.documentName,
     this.questionsAndOptions,
     this.correctAnswers,
+    required this.tips,
   });
 
   // Convert to cache format: Only serialize quiz fields if applicable
@@ -35,6 +37,7 @@ class GameData {
       'tags': jsonEncode(tags),
       'gameTemplate': gameTemplate,
       'documentName': documentName,
+      'tips' : jsonEncode(tips),
     };
 
     // Add quiz-specific fields only if it's a quiz game
@@ -52,6 +55,13 @@ class GameData {
   // Deserialize from cache
   factory GameData.fromCache(Map<String, String> data) {
     String gameTemplate = data['gameTemplate'] ?? '';
+    Map<String, String> tips = {};
+
+    try {
+      tips = Map<String, String>.from(jsonDecode(data['tips']!));
+    }catch (e) {
+      print("Error Getting Tips.");
+    }
 
     // Declare quiz-specific fields
     Map<String, List<String>>? questionsAndOptions;
@@ -85,6 +95,7 @@ class GameData {
         documentName: data['documentName'] ?? '',
         questionsAndOptions: questionsAndOptions,
         correctAnswers: correctAnswers,
+        tips: tips,
       );
     } else {
       return GameData(
@@ -95,6 +106,7 @@ class GameData {
         tags: List<String>.from(jsonDecode(data['tags'] ?? '[]')),
         gameTemplate: gameTemplate,
         documentName: data['documentName'] ?? '',
+        tips: tips,
       );
     }
   }

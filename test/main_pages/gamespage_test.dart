@@ -47,6 +47,11 @@ class MockDataService extends Mock implements DataService {
       "Why should we save water?": "It helps the earth",
     };
 
+    final Map<String, String> tips = {
+      "What is recycling?": "Tip",
+      "Why should we save water?": "Tip",
+    };
+
     final games = [
       {
         'logo': 'assets/placeholder.png',
@@ -55,6 +60,7 @@ class MockDataService extends Mock implements DataService {
         'description': 'description',
         'bibliography': 'Bibliography',
         'template': 'drag',
+        'tips' : '{}',
       },
       {
         'logo': 'assets/placeholder.png',
@@ -65,6 +71,7 @@ class MockDataService extends Mock implements DataService {
         'template': 'quiz',
         'questionsAndOptions': questionsAndOptions,
         'correctAnswers': correctAnswers,
+        'tips' : tips,
       },
       {
         'logo': 'assets/placeholder.png',
@@ -75,6 +82,7 @@ class MockDataService extends Mock implements DataService {
         'template': 'quiz',
         'questionsAndOptions': questionsAndOptions,
         'correctAnswers': correctAnswers,
+        'tips' : tips,
       },
       {
         'logo': 'assets/placeholder.png',
@@ -83,6 +91,7 @@ class MockDataService extends Mock implements DataService {
         'description': 'description',
         'bibliography': 'Bibliography',
         'template': 'drag',
+        'tips' : '{}',
       },
     ];
 
@@ -121,6 +130,11 @@ class MockDataService extends Mock implements DataService {
       "Why should we save water?": "It helps the earth",
     };
 
+    final Map<String, String> tips = {
+      "What is recycling?": "Tip",
+      "Why should we save water?": "Tip",
+    };
+
     final data = {
       'logo': 'assets/placeholder.png',
       'name': 'Test Game',
@@ -141,6 +155,7 @@ class MockDataService extends Mock implements DataService {
       documentName: 'mock_game_0',
       questionsAndOptions: questionsAndOptions,
       correctAnswers: correctAnswers,
+      tips: tips
     );
 
     print('[Mocked DataService] Returning mocked game data for gameId: $gameId');
