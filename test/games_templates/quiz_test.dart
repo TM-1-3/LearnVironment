@@ -24,6 +24,20 @@ class MockGameData extends Mock implements GameData {
   @override
   String get gameTemplate => 'quiz';
 
+  @override
+  Map<String, String> get tips => {
+    "What is recycling?": "Tip",
+    "Why should we save water?": "Tip",
+    "What do trees do for us?": "Tip",
+    "How can we reduce waste?": "Tip",
+    "What animals live in the ocean?": "Tip",
+    "What happens if we pollute rivers?": "Tip",
+    "Why is the sun important?": "Tip",
+    "How can we help the planet?": "Tip",
+    "What is composting?": "Tip",
+    "Why should we turn off the lights?": "Tip",
+  };
+
   // Mocking questionsAndOptions
   @override
   Map<String, List<String>> get questionsAndOptions => {

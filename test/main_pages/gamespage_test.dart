@@ -60,7 +60,7 @@ class MockDataService extends Mock implements DataService {
         'description': 'description',
         'bibliography': 'Bibliography',
         'template': 'drag',
-        'tips' : '{}',
+        'tips' : tips,
       },
       {
         'logo': 'assets/placeholder.png',
@@ -91,7 +91,7 @@ class MockDataService extends Mock implements DataService {
         'description': 'description',
         'bibliography': 'Bibliography',
         'template': 'drag',
-        'tips' : '{}',
+        'tips' : tips,
       },
     ];
 
@@ -141,7 +141,7 @@ class MockDataService extends Mock implements DataService {
       'tags': ['Strategy'],
       'description': 'description',
       'bibliography': 'Bibliography',
-      'template': 'drag',
+      'template': 'quiz',
     };
 
 
@@ -152,7 +152,7 @@ class MockDataService extends Mock implements DataService {
       gameBibliography: data['bibliography'].toString(),
       tags: List<String>.from((data['tags'] as List).map((e) => e.toString())),
       gameTemplate: data['template'].toString(),
-      documentName: 'mock_game_0',
+      documentName: 'mock_game_1',
       questionsAndOptions: questionsAndOptions,
       correctAnswers: correctAnswers,
       tips: tips
@@ -262,10 +262,10 @@ void main() {
       await tester.pumpWidget(testWidget);
       await tester.pumpAndSettle();
 
-      final gameCardKey = Key('gameCard_mock_game_0');
+      final gameCardKey = Key('gameCard_mock_game_1');
       expect(find.byKey(gameCardKey), findsOneWidget);
+      await tester.ensureVisible(find.byKey(gameCardKey));
       await tester.tap(find.byKey(gameCardKey));
-      await tester.pumpAndSettle();
 
       expect(find.byType(GamesInitialScreen), findsOneWidget);
     });

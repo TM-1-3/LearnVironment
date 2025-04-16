@@ -20,6 +20,20 @@ class MockGameData extends Mock implements GameData {
 
   @override
   List<String> get tags => ['8+'];
+
+  @override
+  Map<String,String> get tips => {
+    "trash1": "Organic trash goes to the brown can",
+    "trash2": "Batteries go to the red can",
+    "trash3": "Plastic and metal go to the yellow can",
+    "trash4": "Paper and cardboard go to the blue can",
+    "trash5": "Glass goes to the green can",
+    "trash6": "Paper and cardboard go to the blue can",
+    "trash7": "Batteries go to the red can",
+    "trash8": "Glass goes to the green can",
+    "trash9": "Plastic and metal go to the yellow can",
+    "trash10": "Organic trash goes to the brown can",
+  };
 }
 
 void main() {
