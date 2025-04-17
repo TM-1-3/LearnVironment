@@ -50,7 +50,7 @@ class BinScreenState extends State<BinScreen> {
   @override
   void initState() {
     super.initState();
-
+    startTime=DateTime.now();
   }
 
   bool isGameOver() {
