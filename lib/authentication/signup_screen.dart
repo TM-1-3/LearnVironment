@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:learnvironment/services/auth_service.dart';
-import 'package:learnvironment/services/firestore_service.dart';
+import 'package:learnvironment/services/data_service.dart';
 import 'package:provider/provider.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -73,20 +73,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
       }
 
       if (mounted) {
-        final firestoreService = Provider.of<FirestoreService>(context, listen: false);
-        await firestoreService.registerUser(
+        final dataService = Provider.of<DataService>(context, listen: false);
+        await dataService.updateUserProfile(
           uid: uid,
           name: name,
           username: username,
           email: email,
-          selectedAccountType: _selectedAccountType ?? '',
+          role: _selectedAccountType!,
           birthDate: _birthDate!.toIso8601String(),
         );
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text(
-                'Account created successfully! Please verify your email.')),
+            const SnackBar(content: Text('Account created successfully! Please verify your email.')),
           );
         }
 
@@ -112,6 +111,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
         _isButtonEnabled = true;
       });
     }
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    _usernameController.dispose();
+    _nameController.dispose();
+    super.dispose();
   }
 
   @override

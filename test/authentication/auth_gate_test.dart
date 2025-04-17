@@ -42,7 +42,7 @@ class MockAuthService extends AuthService {
 
 class MockDataService extends Mock implements DataService {
   @override
-  Future<UserData?> getUserData(String userId) {
+  Future<UserData?> getUserData({required String userId}) {
     if (userId == 'testDeveloper') {
       return Future.value(UserData(role: 'developer', id: 'testDeveloper', username: 'Test User', email: 'test@example.com', name: 'Dev', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: []));
     } else if (userId == 'testStudent') {

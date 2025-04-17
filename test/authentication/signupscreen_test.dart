@@ -14,7 +14,7 @@ class MockFirestoreService extends FirestoreService {
   MockFirestoreService({FakeFirebaseFirestore? firestore}) : super(firestore: firestore);
 
   @override
-  Future<void> registerUser({
+  Future<void> setUserInfo({
     required String uid,
     required String name,
     required String username,

@@ -17,16 +17,15 @@ class DataService {
     _gameCacheService = Provider.of<GameCacheService>(context, listen: false);
   }
 
-  Future<List<Map<String, dynamic>>> getPlayedGames(String userId) async {
+  Future<List<Map<String, dynamic>>> getPlayedGames({required String userId}) async {
     try {
-      // Try from cache first
       final cachedGames = await _userCacheService.getCachedGamesPlayed();
 
       if (cachedGames.isNotEmpty) {
         print('[DataService] Loaded gamesPlayed from cache: $cachedGames');
 
         final games = await Future.wait(cachedGames.map((id) async {
-          final game = await getGameData(id); // Uses cache or Firestore internally
+          final game = await getGameData(gameId: id);
           if (game != null) {
             return {
               'imagePath': game.gameLogo,
@@ -37,13 +36,10 @@ class DataService {
           }
           return null;
         }));
-
         return games.whereType<Map<String, dynamic>>().toList();
       }
 
-      // Fallback to Firestore if cache is empty
       print('[DataService] Cache empty — falling back to Firestore');
-
       return await _firestoreService.getPlayedGames(userId);
     } catch (e, stack) {
       print('[DataService] Error in getPlayedGames: $e\n$stack');
@@ -52,7 +48,7 @@ class DataService {
   }
 
   // Function to update the 'gamesPlayed' array in both Firestore and the cache
-  Future<void> updateUserGamesPlayed(String userId, String gameId) async {
+  Future<void> updateUserGamesPlayed({required String userId, required String gameId}) async {
     try {
       print('[DataService] Updating gamesPlayed for userId: $userId, gameId: $gameId');
 
@@ -75,9 +71,8 @@ class DataService {
     }
   }
 
-  Future<UserData?> getUserData(String userId) async {
+  Future<UserData?> getUserData({required String userId}) async {
     try {
-      // Try loading user data from cache
       final cachedUser = await _userCacheService.getCachedUserData();
 
       if (cachedUser != null && cachedUser.id == userId) {
@@ -97,7 +92,7 @@ class DataService {
   }
 
 
-  Future<GameData?> getGameData(String gameId) async {
+  Future<GameData?> getGameData({required String gameId}) async {
     try {
       final cachedGame = await _gameCacheService.getCachedGameData(gameId);
       if (cachedGame != null) {
@@ -157,7 +152,7 @@ class DataService {
     }
   }
 
-  Future<void> deleteAccount(String uid) async {
+  Future<void> deleteAccount({required String uid}) async {
     try {
       await _firestoreService.deleteAccount(uid);
       await _userCacheService.clearUserCache();
@@ -165,6 +160,24 @@ class DataService {
     } catch(e) {
       print("[DataService] Error deleting account");
       rethrow;
+    }
+  }
+
+  Future<void> updateUserProfile({
+    required String uid,
+    required String name,
+    required String username,
+    required String email,
+    required String birthDate,
+    required String role
+  }) async {
+    try {
+      await _firestoreService.setUserInfo(uid: uid, name: name, email: email, username: username, birthDate: birthDate, selectedAccountType: role);
+      final List<String> gamesPlayed = await _userCacheService.getCachedGamesPlayed();
+      await _userCacheService.clearUserCache();
+      await _userCacheService.cacheUserData(UserData(id: uid, username: username, email: email, name: name, role: role, birthdate: DateTime.parse(birthDate), gamesPlayed: gamesPlayed));
+    } catch (e) {
+      print("Error updating profile");
     }
   }
 }

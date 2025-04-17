@@ -28,12 +28,12 @@ class MockAuthService extends AuthService {
 
 class MockDataService extends Mock implements DataService {
   @override
-  Future<void> updateUserGamesPlayed(String userId, String gameId) async {
+  Future<void> updateUserGamesPlayed({required String userId, required String gameId}) async {
     //do nothing
   }
 
   @override
-  Future<List<Map<String, dynamic>>> getPlayedGames(String userId) async {
+  Future<List<Map<String, dynamic>>> getPlayedGames({required String userId}) async {
     if (userId == "user123") {
       try {
         final Map<String, List<String>> questionsAndOptions = {
@@ -116,7 +116,7 @@ class MockDataService extends Mock implements DataService {
   }
 
   @override
-  Future<GameData?> getGameData(String gameId) async {
+  Future<GameData?> getGameData({required String gameId}) async {
     final Map<String, List<String>> questionsAndOptions = {
       "What is recycling?": [
         "Reusing materials",

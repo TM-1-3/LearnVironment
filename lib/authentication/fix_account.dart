@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:learnvironment/services/auth_service.dart';
-import 'package:learnvironment/services/firestore_service.dart';
+import 'package:learnvironment/services/data_service.dart';
 import 'package:provider/provider.dart';
 
 class FixAccountPage extends StatefulWidget {
@@ -53,15 +53,15 @@ class _FixAccountPageState extends State<FixAccountPage> {
       }
 
       final authService = Provider.of<AuthService>(context, listen: false);
-      final firestoreService = Provider.of<FirestoreService>(context, listen: false);
+      final dataService = Provider.of<DataService>(context, listen: false);
       String? uid = await authService.getUid();
 
-      await firestoreService.registerUser(
+      await dataService.updateUserProfile(
         uid: uid,
         name: name,
         username: username,
         email: email,
-        selectedAccountType: _selectedAccountType ?? '',
+        role: _selectedAccountType!,
         birthDate: _birthDate!.toIso8601String(),
       );
 

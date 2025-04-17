@@ -205,7 +205,7 @@ class FirestoreService {
     }
   }
 
-  Future<void> registerUser({
+  Future<void> setUserInfo({
     required String uid,
     required String name,
     required String username,
@@ -225,10 +225,10 @@ class FirestoreService {
         'birthdate': birthDate,
         'gamesPlayed': [],
       });
-      print("[FirestoreService] User created successfully!");
+      print("[FirestoreService] User Info set!");
     } catch (e) {
-      print("[FirestoreService] Unable to create user!");
-      throw Exception("Unable to create user!");
+      print("[FirestoreService] Unable to set user info!");
+      throw Exception("Unable to set user info!");
     }
   }
 

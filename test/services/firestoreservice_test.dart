@@ -340,7 +340,7 @@ void main() {
 
   group('registerUser() Tests', () {
     test('registerUser successfully creates a user', () async {
-      await firestoreService.registerUser(
+      await firestoreService.setUserInfo(
         uid: 'user1',
         name: 'User One',
         username: 'user1',
@@ -363,7 +363,7 @@ void main() {
 
     test('registerUser throws exception if no selectedAccountType', () async {
       try {
-        await firestoreService.registerUser(
+        await firestoreService.setUserInfo(
           uid: 'user1',
           name: 'User One',
           username: 'user1',

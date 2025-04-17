@@ -109,7 +109,7 @@ class MockDataService extends Mock implements DataService {
   }
 
   @override
-  Future<GameData?> getGameData(String gameId) async {
+  Future<GameData?> getGameData({required String gameId}) async {
     final Map<String, List<String>> questionsAndOptions = {
       "What is recycling?": [
         "Reusing materials",

@@ -14,9 +14,9 @@ class GamesInitialScreen extends StatelessWidget {
     required this.gameData,
   });
 
-  Future<void> _updateUserGamesPlayed(String userId, String gameId, DataService dataService) async {
+  Future<void> _updateUserGamesPlayed({required String userId, required String gameId, required DataService dataService}) async {
     try {
-      await dataService.updateUserGamesPlayed(userId, gameId);
+      await dataService.updateUserGamesPlayed(userId: userId, gameId: gameId);
       print('[GamesInitialScreen] Updated gamesPlayed for the user');
     } catch (e) {
       print('[GamesInitialScreen] Error updating gamesPlayed: $e');
@@ -45,7 +45,7 @@ class GamesInitialScreen extends StatelessWidget {
                   onTap: () async {
                     final dataService = Provider.of<DataService>(context, listen: false);
                     try {
-                      await _updateUserGamesPlayed(await authService.getUid(), gameData.documentName, dataService);
+                      await _updateUserGamesPlayed(userId: await authService.getUid(), gameId: gameData.documentName, dataService: dataService);
                     } catch (e) {
                       print("[GamesInitialScreen] Exception caught: $e");
                       if (context.mounted) {

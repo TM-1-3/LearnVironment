@@ -19,18 +19,30 @@ class ProfileScreen extends StatefulWidget {
 class ProfileScreenState extends State<ProfileScreen> {
   File? _imageFile;
   final ImagePicker _picker = ImagePicker();
-  String? _imagePath;
   bool _isEditing = false;
   late TextEditingController usernameController;
   late TextEditingController emailController;
+  late TextEditingController nameController;
+  late DateTime _birthDate;
+  late String _selectedAccountType;
+  final List<String> _accountTypes = ['developer', 'student', 'teacher'];
 
   @override
   void initState() {
     super.initState();
+    nameController = TextEditingController();
     usernameController = TextEditingController();
     emailController = TextEditingController();
     _loadImagePath();
     _loadUserProfile();
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    usernameController.dispose();
+    emailController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadImagePath() async {
@@ -40,7 +52,6 @@ class ProfileScreenState extends State<ProfileScreen> {
 
     if (imageFile.existsSync()) {
       setState(() {
-        _imagePath = imagePath;
         _imageFile = imageFile;
       });
     }
@@ -50,48 +61,74 @@ class ProfileScreenState extends State<ProfileScreen> {
   Future<void> _loadUserProfile() async {
     DataService dataService = Provider.of<DataService>(context, listen: false);
     AuthService authService = Provider.of<AuthService>(context, listen: false);
-    UserData? userData = await dataService.getUserData(
-        await authService.getUid());
+    UserData? userData = await dataService.getUserData(userId: await authService.getUid());
+
     if (userData != null) {
       setState(() {
+        nameController.text = userData.name;
         usernameController.text = userData.username;
         emailController.text = userData.email;
+        _birthDate = userData.birthdate;
+        _selectedAccountType = userData.role;
       });
     } else {
       _showErrorDialog("Error getting user", "Error");
     }
+    print("[PROFILE] User data loaded with success.");
   }
 
   // Update profile (both email and display name)
-  Future<void> _updateProfile(String newUsername, String newEmail) async {
+  Future<void> _updateProfile(String name, String username, String email, DateTime? birthDate, String? accountType) async {
     try {
-      DataService dataService = Provider.of<DataService>(
-          context, listen: false);
-      AuthService authService = Provider.of<AuthService>(
-          context, listen: false);
-      UserData? userData = await dataService.getUserData(
-          await authService.getUid());
+      DataService dataService = Provider.of<DataService>(context, listen: false);
+      AuthService authService = Provider.of<AuthService>(context, listen: false);
+      String uid = await authService.getUid();
+      UserData? userData = await dataService.getUserData(userId: uid);
 
       if (userData == null) {
         _showErrorDialog("No user is logged in.", "Error");
         return;
       }
 
-      // Only update the email if it has changed
-      if (newEmail != userData.email) {
-        await _updateEmail(newEmail); // Update the email in Firebase
+      if (email != userData.email) {
+        try {
+          String password = await _promptForPassword();
+          if (password.isEmpty) throw Exception("Empty Password.");
+
+          if (mounted) {
+            authService.updateEmail(email, password);
+          }
+        } catch (e) {
+          print("Error updating email: $e");
+          _showErrorDialog("Error updating email. Please check the email and try again.", "Error");
+        }
+        _showErrorDialog("A verification email has been sent to $email. Please verify it.", "Warning");
       }
 
-      // Update the username (display name) only if it has changed
-      if (newUsername != userData.username) {
-        await _updateUsername(newUsername);
+      if (username != userData.username) {
+        try {
+          if (mounted) {
+            authService.updateUsername(username);
+          }
+        } catch (e) {
+          print("Error updating email: $e");
+          _showErrorDialog("Error updating username.", "Error");
+        }
       }
 
-      userData = await dataService.getUserData(await authService.getUid());
+      await dataService.updateUserProfile(
+        uid: uid,
+        name: name,
+        username: username,
+        email: email,
+        birthDate: birthDate!.toIso8601String(),
+        role: accountType!,
+      );
+
+      _loadUserProfile(); // Refresh UI with updated values
+
       setState(() {
-        usernameController.text = userData?.username ?? ''; // Update username
-        emailController.text = userData?.email ?? ''; // Update email in the UI
-        _isEditing = false; // Exit edit mode
+        _isEditing = false;
       });
 
       if (mounted) {
@@ -99,56 +136,14 @@ class ProfileScreenState extends State<ProfileScreen> {
           const SnackBar(content: Text('Successfully saved.')),
         );
       }
+
+      nameController.clear();
+      usernameController.clear();
+      emailController.clear();
     } catch (e) {
       print("Error updating profile: $e");
       _showErrorDialog("Error updating profile. Please try again.", "Error");
     }
-  }
-
-  // Update username
-  Future<void> _updateUsername(newUsername) async {
-    try {
-      if (mounted) {
-        DataService dataService = Provider.of<DataService>(context, listen: false);
-        AuthService authService = Provider.of<AuthService>(context, listen: false);
-
-        //Change data in dataService
-
-        //Change data in authService
-        authService.updateUsername(newUsername);
-      }
-    } catch (e) {
-      print("Error updating email: $e");
-      _showErrorDialog("Error updating username.", "Error");
-    }
-  }
-
-  // Update email address
-  Future<void> _updateEmail(String newEmail) async {
-    try {
-      String password = await _promptForPassword();
-      if (password.isEmpty) return;
-
-      if (mounted) {
-        DataService dataService = Provider.of<DataService>(
-            context, listen: false);
-        AuthService authService = Provider.of<AuthService>(
-            context, listen: false);
-
-        //Change data in dataService
-
-        //Change data in authService
-        authService.updateEmail(newEmail, password);
-      }
-    } catch (e) {
-      print("Error updating email: $e");
-      _showErrorDialog(
-          "Error updating email. Please check the email and try again.",
-          "Error");
-    }
-    _showErrorDialog(
-        "A verification email has been sent to $newEmail. Please verify it.",
-        "Warning");
   }
 
   // Prompt for password to confirm email change
@@ -196,7 +191,7 @@ class ProfileScreenState extends State<ProfileScreen> {
       //Delete account in authService
       await authService.deleteAccount();
       //Delete account from Firestore and cache using dataService
-      await dataService.deleteAccount(uid);
+      await dataService.deleteAccount(uid: uid);
 
       if (mounted) {
         Navigator.of(context).pushReplacementNamed('/signup');
@@ -276,14 +271,6 @@ class ProfileScreenState extends State<ProfileScreen> {
     return true; // Allow leaving if not editing
   }
 
-  // Dispose controllers to avoid memory leaks
-  @override
-  void dispose() {
-    usernameController.dispose();
-    emailController.dispose();
-    super.dispose();
-  }
-
   // Show error dialogs
   void _showErrorDialog(String message, String ctx) {
     showDialog(
@@ -327,7 +314,6 @@ class ProfileScreenState extends State<ProfileScreen> {
       await localImage.writeAsBytes(await image.readAsBytes());
 
       setState(() {
-        _imagePath = imagePath;
         _imageFile = localImage;
       });
     } catch (e) {
@@ -341,7 +327,7 @@ class ProfileScreenState extends State<ProfileScreen> {
     AuthService authService = Provider.of<AuthService>(context, listen: false);
 
     return FutureBuilder<UserData?>(
-      future: authService.getUid().then((uid) => dataService.getUserData(uid)),
+      future: authService.getUid().then((uid) => dataService.getUserData(userId: uid)),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -351,75 +337,129 @@ class ProfileScreenState extends State<ProfileScreen> {
 
         final userData = snapshot.data;
 
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('User Profile'),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.edit),
+        return PopScope(
+            canPop: !_isEditing,
+            onPopInvokedWithResult: (didPop, result) async {
+          if (_isEditing && !didPop) {
+            final shouldLeave = await _onWillPop();
+            if (shouldLeave! && context.mounted) {
+              Navigator.of(context).pop(result);
+            }
+          }
+        },
+          child: Scaffold(
+            appBar: AppBar(
+              title: const Text('User Profile'),
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back),
                 onPressed: () {
-                  setState(() {
-                    _isEditing = true;
-                  });
+                  Navigator.of(context).pushReplacementNamed('/auth_gate');
                 },
               ),
-            ],
-          ),
-          body: Center(
-            child: ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                Center(
-                  child: !_isEditing
-                      ? GestureDetector(
-                    onTap: _pickImage,
-                    child: CircleAvatar(
-                      radius: 100,
-                      backgroundImage: _imageFile != null
-                          ? FileImage(_imageFile!)
-                          : const AssetImage('assets/placeholder.png'),
-                    ),
-                  )
-                      : const SizedBox.shrink(),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.edit),
+                  onPressed: () {
+                    setState(() {
+                      _isEditing = true;
+                    });
+                  },
                 ),
-                const SizedBox(height: 20),
-                if (_isEditing)
-                  EditProfileWidget(
-                    usernameController: usernameController,
-                    emailController: emailController,
-                    onSave: (newUsername, newEmail) {
-                      _updateProfile(newUsername, newEmail);
-                    },
-                    pickImage: _pickImage,
-                    imageFile: _imageFile,
-                  ),
-                if (!_isEditing) ...[
-                  Text(
-                    userData?.username ?? 'Username',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                        fontSize: 22, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    userData?.email ?? 'Email',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  const SizedBox(height: 30),
-                  ElevatedButton.icon(
-                    onPressed: _signOut,
-                    icon: const Icon(Icons.exit_to_app),
-                    label: const Text('Sign Out'),
+              ],
+            ),
+            body: Center(
+              child: ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  Center(
+                    child: !_isEditing
+                        ? GestureDetector(
+                      onTap: _pickImage,
+                      child: CircleAvatar(
+                        radius: 100,
+                        backgroundImage: _imageFile != null
+                            ? FileImage(_imageFile!)
+                            : const AssetImage('assets/placeholder.png'),
+                      ),
+                    )
+                        : const SizedBox.shrink(),
                   ),
                   const SizedBox(height: 20),
-                  ElevatedButton.icon(
-                    onPressed: _showDeleteAccountDialog,
-                    icon: const Icon(Icons.delete_forever),
-                    label: const Text('Delete Account'),
-                  ),
+                  if (_isEditing)
+                    EditProfileWidget(
+                      nameController: nameController,
+                      usernameController: usernameController,
+                      emailController: emailController,
+                      birthDate: _birthDate,
+                      accountTypes: _accountTypes,
+                      selectedAccountType: _selectedAccountType,
+                      onSave: (newName, newUsername, newEmail, newBirthDate, newAccountType) {
+                        _updateProfile(newName, newUsername, newEmail, newBirthDate, newAccountType);
+                      },
+                      pickImage: _pickImage,
+                      imageFile: _imageFile,
+                      pickBirthDate: () async {
+                        final picked = await showDatePicker(
+                          context: context,
+                          initialDate: _birthDate,
+                          firstDate: DateTime(1900),
+                          lastDate: DateTime.now(),
+                        );
+                        if (picked != null) {
+                          setState(() {
+                            _birthDate = picked;
+                          });
+                        }
+                      },
+                      onAccountTypeChanged: (value) {
+                        setState(() {
+                          _selectedAccountType = value!;
+                        });
+                      },
+                    ),
+                  if (!_isEditing) ...[
+                    Text(
+                      userData!.name,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      userData.username,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      userData.email,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Birthdate: ${userData.birthdate}',
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Account Type: ${userData.role}',
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 30),
+                    ElevatedButton.icon(
+                      onPressed: _signOut,
+                      icon: const Icon(Icons.exit_to_app),
+                      label: const Text('Sign Out'),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton.icon(
+                      onPressed: _showDeleteAccountDialog,
+                      icon: const Icon(Icons.delete_forever),
+                      label: const Text('Delete Account'),
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         );
