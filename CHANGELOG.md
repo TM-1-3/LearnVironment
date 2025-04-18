@@ -43,7 +43,7 @@
 - Fixed bug deleting account [#58](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/58)
 - Fixed bug in login screen after sign-out [#61](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/61)
 - Games provide feedback now [#70](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/70)
-- Users can now Edit their profile [#71](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/71)
+- Users can now Edit their profile [#72](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/72)
 
 ### Test User
 - email: 
