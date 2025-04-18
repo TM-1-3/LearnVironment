@@ -373,7 +373,7 @@ void main() {
         );
         fail("No exception thrown");
       } catch (e) {
-        expect(e.toString(), contains("Unable to create user!"));
+        expect(e.toString(), contains("Unable to set user info!"));
       }
     });
   });
