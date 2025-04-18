@@ -409,7 +409,7 @@ void main() {
     });
 
     test('updateUsername should successfully update the username', () async {
-      await authService.updateUsername('New Username');
+      await authService.updateUsername(newUsername: 'New Username');
       expect(mockUser.displayName, 'New Username');
     });
 
@@ -417,7 +417,7 @@ void main() {
       mockFirebaseAuth = MockFirebaseAuthWithErrors(shouldThrow: true);
       authService = AuthService(firebaseAuth: mockFirebaseAuth);
       try {
-        await authService.updateUsername('Throw');
+        await authService.updateUsername(newUsername: 'Throw');
         fail('Exception not thrown');
       } catch (e) {
         expect(e.toString(), contains('Error updating username:'));
@@ -437,7 +437,7 @@ void main() {
     });
 
     test('updateEmail should successfully update the email', () async {
-      await authService.updateEmail('newemail@example.com', 'password');
+      await authService.updateEmail(newEmail: 'newemail@example.com', password: 'password');
       expect(mockUser.email, 'newemail@example.com');
     });
 
@@ -445,7 +445,7 @@ void main() {
       mockFirebaseAuth = MockFirebaseAuthWithErrors(shouldThrow: true);
       authService = AuthService(firebaseAuth: mockFirebaseAuth);
       try {
-        await authService.updateEmail('throw', 'wrongpassword');
+        await authService.updateEmail(newEmail: 'throw', password: 'wrongpassword');
         fail('Exception not thrown');
       } catch (e) {
         expect(e.toString(), contains('Error updating email:'));

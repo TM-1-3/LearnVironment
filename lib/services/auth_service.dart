@@ -28,7 +28,7 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  Future<void> updateUsername(String newUsername) async {
+  Future<void> updateUsername({required String newUsername}) async {
     try {
       User? user = _firebaseAuth.currentUser;
       await user?.updateDisplayName(newUsername);
@@ -38,7 +38,7 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  Future<void> updateEmail(String newEmail, String password) async {
+  Future<void> updateEmail({required String newEmail, required String password}) async {
     try {
       User? user = _firebaseAuth.currentUser;
       final AuthCredential credential = EmailAuthProvider.credential(
@@ -94,7 +94,7 @@ class AuthService extends ChangeNotifier {
       loggedIn = true;
       notifyListeners();
     } on FirebaseAuthException catch (e) {
-      throw Exception(_getErrorMessage(e.code));
+      throw Exception(_getErrorMessage(code: e.code));
     } catch (e) {
       throw Exception("An unexpected error occurred.");
     }
@@ -123,14 +123,14 @@ class AuthService extends ChangeNotifier {
       notifyListeners();
       return userCredential.user?.uid;
     } on FirebaseAuthException catch (e) {
-      throw Exception(_getErrorMessage(e.code));
+      throw Exception(_getErrorMessage(code: e.code));
     } catch (e) {
       throw Exception("An unexpected error occurred.");
     }
   }
 
   // Helper method to handle FirebaseAuth exceptions
-  String _getErrorMessage(String code) {
+  String _getErrorMessage({required String code}) {
     switch (code) {
       case "ERROR_EMAIL_ALREADY_IN_USE":
       case "account-exists-with-different-credential":

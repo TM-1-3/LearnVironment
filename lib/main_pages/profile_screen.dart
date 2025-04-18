@@ -48,12 +48,11 @@ class ProfileScreenState extends State<ProfileScreen> {
     try {
       DataService dataService = Provider.of<DataService>(context, listen: false);
       AuthService authService = Provider.of<AuthService>(context, listen: false);
-      String uid = await authService.getUid();
 
       //Delete account in authService
       await authService.deleteAccount();
       //Delete account from Firestore and cache using dataService
-      await dataService.deleteAccount(uid: uid);
+      await dataService.deleteAccount(uid: userData.id);
 
       if (mounted) {
         Navigator.of(context).pushReplacementNamed('/signup');
@@ -154,7 +153,8 @@ class ProfileScreenState extends State<ProfileScreen> {
               child: SingleChildScrollView(
             child: Padding(
             padding: const EdgeInsets.all(16),
-          child: Column(
+          child: Center(
+              child: Column(
                 children: [
                   userData.img != "assets/placeholder.png"
                       ? CircleAvatar(
@@ -206,7 +206,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                       label: const Text('Delete Account'),
                     ),
                   ],
-              ),
+              )),
             )
         )
         )

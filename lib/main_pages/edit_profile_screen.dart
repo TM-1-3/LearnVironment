@@ -103,11 +103,11 @@ class EditProfilePageState extends State<EditProfilePage> {
   required String email,
   required DateTime birthDate,
   required String accountType,
-  required String img}) async {
+  required String img,
+  required String uid}) async {
     try {
       DataService dataService = Provider.of<DataService>(context, listen: false);
       AuthService authService = Provider.of<AuthService>(context, listen: false);
-      String uid = await authService.getUid();
       UserData? userData = await dataService.getUserData(userId: uid);
 
       if (userData == null) {
@@ -121,7 +121,7 @@ class EditProfilePageState extends State<EditProfilePage> {
           if (password.isEmpty) throw Exception("Empty Password.");
 
           if (mounted) {
-            authService.updateEmail(email, password);
+            authService.updateEmail(newEmail: email, password: password);
           }
         } catch (e) {
           print("Error updating email: $e");
@@ -133,7 +133,7 @@ class EditProfilePageState extends State<EditProfilePage> {
       if (username != userData.username) {
         try {
           if (mounted) {
-            authService.updateUsername(username);
+            authService.updateUsername(newUsername: username);
           }
         } catch (e) {
           print("Error updating email: $e");
@@ -168,6 +168,7 @@ class EditProfilePageState extends State<EditProfilePage> {
       nameController.clear();
       usernameController.clear();
       emailController.clear();
+      imgController.clear();
       if (mounted) {
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ProfileScreen()));
       }
@@ -309,6 +310,7 @@ class EditProfilePageState extends State<EditProfilePage> {
         ),
         const SizedBox(height: 10),
         GestureDetector(
+          key: Key("birthDate"),
           onTap: _pickBirthDate,
           child: AbsorbPointer(
             child: TextField(
@@ -350,7 +352,8 @@ class EditProfilePageState extends State<EditProfilePage> {
               email: emailController.text.trim(),
               birthDate: _birthDate,
               accountType: _selectedAccountType,
-              img: imgController.text.trim()
+              img: imgController.text.trim(),
+              uid: widget.userData.id
             );
           },
           child: const Text('Save Changes'),
