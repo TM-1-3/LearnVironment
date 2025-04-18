@@ -157,6 +157,15 @@ class ProfileScreenState extends State<ProfileScreen> {
               child: ListView(
                 padding: const EdgeInsets.all(16),
                 children: [
+                  userData.img != "assets/placeholder.png"
+                      ? CircleAvatar(
+                    backgroundImage: NetworkImage(userData.img),
+                    radius: 200,
+                  )
+                      : CircleAvatar(
+                    backgroundImage: AssetImage(userData.img),
+                   radius: 200,
+                  ),
                   const SizedBox(height: 20),
                     Text(
                       userData.name,

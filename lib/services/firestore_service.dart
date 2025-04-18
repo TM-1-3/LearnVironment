@@ -183,7 +183,7 @@ class FirestoreService {
         email: data['email'] ?? 'Unknown Email',
         name: data['name'] ?? 'Unknown Name',
         role: data['role'] ?? 'Unknown Role',
-        img: data['img'] ?? 'assets/placeholder',
+        img: data['img'] ?? 'assets/placeholder.png',
         birthdate: birthdateValue,
         gamesPlayed: List<String>.from(data['gamesPlayed'] ?? []),
       );
