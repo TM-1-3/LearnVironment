@@ -46,7 +46,6 @@ class MockDataService extends Mock implements DataService {
       "What is recycling?": "Reusing materials",
       "Why should we save water?": "It helps the earth",
     };
-
     final Map<String, String> tips = {
       "What is recycling?": "Tip",
       "Why should we save water?": "Tip",
@@ -131,8 +130,8 @@ class MockDataService extends Mock implements DataService {
     };
 
     final Map<String, String> tips = {
-      "What is recycling?": "Tip",
-      "Why should we save water?": "Tip",
+      "What is recycling?": "Reusing materials",
+      "Why should we save water?": "It helps the earth",
     };
 
     final data = {
@@ -141,7 +140,7 @@ class MockDataService extends Mock implements DataService {
       'tags': ['Strategy'],
       'description': 'description',
       'bibliography': 'Bibliography',
-      'template': 'quiz',
+      'template': 'drag',
     };
 
 
@@ -150,9 +149,10 @@ class MockDataService extends Mock implements DataService {
       gameName: data['name'].toString(),
       gameDescription: data['description'].toString(),
       gameBibliography: data['bibliography'].toString(),
-      tags: List<String>.from((data['tags'] as List).map((e) => e.toString())),
+      tags: List<String>.from(
+          (data['tags'] as List).map((e) => e.toString())),
       gameTemplate: data['template'].toString(),
-      documentName: 'mock_game_1',
+      documentName: 'mock_game_0',
       questionsAndOptions: questionsAndOptions,
       correctAnswers: correctAnswers,
       tips: tips
@@ -262,10 +262,10 @@ void main() {
       await tester.pumpWidget(testWidget);
       await tester.pumpAndSettle();
 
-      final gameCardKey = Key('gameCard_mock_game_1');
+      final gameCardKey = Key('gameCard_mock_game_0');
       expect(find.byKey(gameCardKey), findsOneWidget);
-      await tester.ensureVisible(find.byKey(gameCardKey));
       await tester.tap(find.byKey(gameCardKey));
+      await tester.pumpAndSettle();
 
       expect(find.byType(GamesInitialScreen), findsOneWidget);
     });
