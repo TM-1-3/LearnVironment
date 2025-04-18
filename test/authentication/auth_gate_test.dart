@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:learnvironment/data/user_data.dart';
 
-class MockAuthService extends AuthService {
+class MockAuthService extends Mock implements AuthService {
   late bool _loggedIn;
   late String uid;
 
@@ -25,8 +25,7 @@ class MockAuthService extends AuthService {
     _loggedIn = value;
   }
 
-  MockAuthService({MockFirebaseAuth? firebaseAuth})
-      : super(firebaseAuth: firebaseAuth) {
+  MockAuthService({MockFirebaseAuth? firebaseAuth}) {
     loggedIn = firebaseAuth?.currentUser != null;
     uid = firebaseAuth?.currentUser?.uid ?? '';
   }
@@ -42,17 +41,17 @@ class MockAuthService extends AuthService {
 
 class MockDataService extends Mock implements DataService {
   @override
-  Future<UserData?> getUserData(String userId) {
+  Future<UserData?> getUserData({required String userId}) {
     if (userId == 'testDeveloper') {
-      return Future.value(UserData(role: 'developer', id: 'testDeveloper', username: 'Test User', email: 'test@example.com', name: 'Dev', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: []));
+      return Future.value(UserData(role: 'developer', id: 'testDeveloper', username: 'Test User', email: 'test@example.com', name: 'Dev', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: [], img: ''));
     } else if (userId == 'testStudent') {
-      return Future.value(UserData(role: 'student', id: '', username: '', email: '', name: '', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: []));
+      return Future.value(UserData(role: 'student', id: '', username: '', email: '', name: '', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: [], img: ''));
     } else if (userId == 'testTeacher') {
-      return Future.value(UserData(role: 'teacher', id: '', username: '', email: '', name: '', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: []));
+      return Future.value(UserData(role: 'teacher', id: '', username: '', email: '', name: '', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: [], img: ''));
     } else if (userId == 'error') {
       throw Exception('Error loading user data');
     } else {
-      return Future.value(UserData(role: '', id: '', username: '', email: '', name: '', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: []));
+      return Future.value(UserData(role: '', id: '', username: '', email: '', name: '', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: [], img: ''));
     }
   }
 }

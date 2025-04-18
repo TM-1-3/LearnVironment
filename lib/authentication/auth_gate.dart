@@ -13,7 +13,7 @@ class AuthGate extends StatelessWidget {
   Future<UserData?> _loadUserData(BuildContext context) async {
     final authService = Provider.of<AuthService>(context, listen: false);
     final dataService = Provider.of<DataService>(context, listen: false);
-    return await dataService.getUserData(await authService.getUid());
+    return await dataService.getUserData(userId: await authService.getUid());
   }
 
   Widget _navigateToHomePage(String role) {

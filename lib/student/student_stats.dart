@@ -28,7 +28,7 @@ class StudentStatsPageState extends State<StudentStatsPage> {
       final authService = Provider.of<AuthService>(context, listen: false);
 
       final uid = await authService.getUid();
-      final fetchedGames = await dataService.getPlayedGames(uid);
+      final fetchedGames = await dataService.getPlayedGames(userId: uid);
 
       if (fetchedGames.isNotEmpty) {
         setState(() {
@@ -52,7 +52,7 @@ class StudentStatsPageState extends State<StudentStatsPage> {
       final dataService = Provider.of<DataService>(context, listen: false);
 
       // Ensure you check for null or handle this properly
-      GameData? gameData = await dataService.getGameData(gameId);
+      GameData? gameData = await dataService.getGameData(gameId: gameId);
 
       if (gameData != null && mounted) {
         Navigator.push(

@@ -1,4 +1,3 @@
-import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -7,21 +6,23 @@ import 'package:learnvironment/authentication/auth_gate.dart';
 import 'package:learnvironment/authentication/signup_screen.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:learnvironment/services/auth_service.dart';
-import 'package:learnvironment/services/firestore_service.dart';
+import 'package:learnvironment/services/data_service.dart';
+import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
 
-class MockFirestoreService extends FirestoreService {
-  MockFirestoreService({FakeFirebaseFirestore? firestore}) : super(firestore: firestore);
+class MockDataService extends Mock implements DataService {
+  MockDataService();
 
   @override
-  Future<void> registerUser({
+  Future<void> updateUserProfile({
     required String uid,
     required String name,
     required String username,
-    required String selectedAccountType,
     required String email,
+    required String role,
     required String birthDate,
-  }) async {
+    required String img}) async {
+
   }
 }
 
@@ -77,7 +78,6 @@ class MockAuthGate extends AuthGate {
 void main() {
   late MockUser mockUser;
   late MockFirebaseAuth mockAuth;
-  late FakeFirebaseFirestore mockFirestore;
   late Widget testWidget;
   late MockAuthService authService;
 
@@ -89,13 +89,12 @@ void main() {
       isEmailVerified: false,
     );
     mockAuth = MockFirebaseAuth(mockUser: mockUser);
-    mockFirestore = FakeFirebaseFirestore();
     authService = MockAuthService(firebaseAuth: mockAuth);
 
     testWidget = MultiProvider(
         providers: [
           ChangeNotifierProvider<AuthService>(create: (_) => authService),
-          Provider<FirestoreService>(create: (_) => MockFirestoreService(firestore: mockFirestore)),
+          Provider<DataService>(create: (_) => MockDataService())
         ],
         child: MaterialApp(
           routes: {

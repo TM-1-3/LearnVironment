@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:learnvironment/services/auth_service.dart';
-import 'package:learnvironment/services/firestore_service.dart';
+import 'package:learnvironment/services/data_service.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 
 class FixAccountPage extends StatefulWidget {
   const FixAccountPage({super.key});
@@ -14,11 +15,28 @@ class _FixAccountPageState extends State<FixAccountPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _imgController = TextEditingController();
   DateTime? _birthDate;
 
   String? _selectedAccountType;
   final List<String> _accountTypes = ['developer', 'student', 'teacher'];
   bool _isButtonEnabled = true;
+
+  Future<bool> _validateImage(String imageUrl) async {
+    http.Response res;
+    try {
+      res = await http.get(Uri.parse(imageUrl));
+    } catch (e) {
+      return false;
+    }
+    if (res.statusCode != 200) return false;
+    Map<String, dynamic> data = res.headers;
+    if (data['content-type'] == 'image/jpeg' || data['content-type'] == 'image/png' || data['content-type'] == 'image/gif') {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   Future<void> _pickBirthDate() async {
     final DateTime? picked = await showDatePicker(
@@ -44,6 +62,7 @@ class _FixAccountPageState extends State<FixAccountPage> {
       String email = _emailController.text.trim();
       String username = _usernameController.text.trim();
       String name = _nameController.text.trim();
+      String img = _imgController.text.trim();
 
       if (email.isEmpty || username.isEmpty || name.isEmpty || _birthDate == null || _selectedAccountType == null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -53,16 +72,21 @@ class _FixAccountPageState extends State<FixAccountPage> {
       }
 
       final authService = Provider.of<AuthService>(context, listen: false);
-      final firestoreService = Provider.of<FirestoreService>(context, listen: false);
+      final dataService = Provider.of<DataService>(context, listen: false);
       String? uid = await authService.getUid();
 
-      await firestoreService.registerUser(
+      if (!await _validateImage(img)) {
+        img = "assets/placeholder.png";
+      }
+
+      await dataService.updateUserProfile(
         uid: uid,
         name: name,
         username: username,
         email: email,
-        selectedAccountType: _selectedAccountType ?? '',
+        role: _selectedAccountType!,
         birthDate: _birthDate!.toIso8601String(),
+        img: img
       );
 
       if (mounted) {
@@ -74,6 +98,7 @@ class _FixAccountPageState extends State<FixAccountPage> {
       _emailController.clear();
       _usernameController.clear();
       _nameController.clear();
+      _imgController.clear();
 
       if (mounted) {
         Navigator.of(context).pushReplacementNamed('/auth_gate');
@@ -116,6 +141,14 @@ class _FixAccountPageState extends State<FixAccountPage> {
                 decoration: const InputDecoration(
                   labelText: 'Name',
                   hintText: 'Enter your full name',
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _imgController,
+                decoration: const InputDecoration(
+                  labelText: 'Profile Image',
+                  hintText: 'Enter image url or leave empty',
                 ),
               ),
               const SizedBox(height: 16),

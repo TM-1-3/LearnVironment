@@ -15,6 +15,7 @@ void main() {
       role: 'admin',
       birthdate: DateTime(1990, 5, 15),
       gamesPlayed: ['game1', 'game2'],
+      img: 'assets/placeholder'
     );
 
     // Get cache data from toCache method
@@ -41,6 +42,7 @@ void main() {
         role: '',
         birthdate: DateTime(2000, 1, 1),  // Default date value
         gamesPlayed: [],
+        img: ''
       );
 
       final cacheData = userDataWithEmptyFields.toCache();

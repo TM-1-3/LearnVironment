@@ -62,7 +62,7 @@ class GamesPageState extends State<GamesPage> {
       final dataService = Provider.of<DataService>(context, listen: false);
       final authService = Provider.of<AuthService>(context, listen: false);
 
-      final gameData = await dataService.getGameData(gameId);
+      final gameData = await dataService.getGameData(gameId: gameId);
       final userId = await authService.getUid();
 
       if (gameData != null && userId.isNotEmpty && mounted) {
