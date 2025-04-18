@@ -27,7 +27,7 @@ class FirestoreService {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getPlayedGames(String uid) async {
+  Future<List<Map<String, dynamic>>> getPlayedGames({required String uid}) async {
     try {
       final userDoc = await _firestore.collection('users').doc(uid).get();
 
@@ -72,7 +72,7 @@ class FirestoreService {
     }
   }
 
-  Future<void> updateUserGamesPlayed(String uid, String gameId) async {
+  Future<void> updateUserGamesPlayed({required String uid, required String gameId}) async {
     final userDoc = _firestore.collection('users').doc(uid);
     final userSnapshot = await userDoc.get();
 
@@ -96,9 +96,8 @@ class FirestoreService {
     }
   }
 
-  Future<GameData> fetchGameData(String gameId) async {
+  Future<GameData> fetchGameData({required String gameId}) async {
     try {
-      // Fetch game data from Firestore
       DocumentSnapshot snapshot = await _firestore.collection('games').doc(gameId).get();
 
       if (!snapshot.exists) {
@@ -139,7 +138,6 @@ class FirestoreService {
         print("Error getting tips");
       }
 
-      // Return GameData object populated with Firestore data
       return GameData(
         gameLogo: data['logo'] ?? 'default_logo.png',
         gameName: data['name'] ?? 'Unnamed Game',
@@ -158,7 +156,7 @@ class FirestoreService {
     }
   }
 
-  Future<UserData> fetchUserData(String userId) async {
+  Future<UserData> fetchUserData({required String userId}) async {
     try {
       DocumentSnapshot snapshot = await _firestore.collection('users').doc(userId).get();
 
@@ -185,6 +183,7 @@ class FirestoreService {
         email: data['email'] ?? 'Unknown Email',
         name: data['name'] ?? 'Unknown Name',
         role: data['role'] ?? 'Unknown Role',
+        img: data['img'] ?? 'assets/placeholder',
         birthdate: birthdateValue,
         gamesPlayed: List<String>.from(data['gamesPlayed'] ?? []),
       );
@@ -194,7 +193,7 @@ class FirestoreService {
     }
   }
 
-  Future<String?> fetchUserType(String uid) async {
+  Future<String?> fetchUserType({required String uid}) async {
     try {
       final userDoc = await _firestore.collection('users').doc(uid).get();
       final data = userDoc.data();
@@ -212,6 +211,7 @@ class FirestoreService {
     required String selectedAccountType,
     required String email,
     required String birthDate,
+    required String img
   }) async {
     try {
       if (selectedAccountType == '') {
@@ -224,6 +224,7 @@ class FirestoreService {
         'email': email,
         'birthdate': birthDate,
         'gamesPlayed': [],
+        'img' : img
       });
       print("[FirestoreService] User Info set!");
     } catch (e) {
@@ -232,7 +233,7 @@ class FirestoreService {
     }
   }
 
-  Future<void> deleteAccount(String uid) async {
+  Future<void> deleteAccount({required String uid}) async {
     try {
       await _firestore.collection('users').doc(uid).delete();
       print("[FirestoreService] Account Deleted");

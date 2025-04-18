@@ -20,7 +20,8 @@ class MockDataService extends Mock implements DataService {
     required String username,
     required String email,
     required String role,
-    required String birthDate}) async {
+    required String birthDate,
+    required String img}) async {
 
   }
 }

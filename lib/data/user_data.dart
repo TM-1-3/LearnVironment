@@ -6,6 +6,7 @@ class UserData {
   final String role;
   final DateTime birthdate;
   final List<String> gamesPlayed;
+  final String img;
 
   UserData({
     required this.id,
@@ -15,6 +16,7 @@ class UserData {
     required this.role,
     required this.birthdate,
     required this.gamesPlayed,
+    required this.img
   });
 
   // Convert UserData to a Map for cache storage
@@ -27,6 +29,7 @@ class UserData {
       'role': role,
       'birthdate': birthdate.toIso8601String(),
       'gamesPlayed': gamesPlayed.join(','),
+      'img': img
     };
   }
 
@@ -40,6 +43,7 @@ class UserData {
       role: data['role'] ?? 'Unknown Role',
       birthdate: DateTime.tryParse(data['birthdate'] ?? '') ?? DateTime(2000),
       gamesPlayed: (data['gamesPlayed']?.split(',') ?? []),
+      img: data['img'] ?? 'assets/placeholder.png'
     );
   }
 
@@ -52,6 +56,7 @@ class UserData {
     String? role,
     DateTime? birthdate,
     List<String>? gamesPlayed,
+    String? img
   }) {
     return UserData(
       id: id ?? this.id,
@@ -61,6 +66,7 @@ class UserData {
       role: role ?? this.role,
       birthdate: birthdate ?? this.birthdate,
       gamesPlayed: gamesPlayed ?? this.gamesPlayed,
+      img: img ?? this.img
     );
   }
 }

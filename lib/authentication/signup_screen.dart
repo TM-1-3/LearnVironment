@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:learnvironment/services/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -16,6 +17,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _confirmPasswordController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _imgController = TextEditingController();
   DateTime? _birthDate;
 
   String? _selectedAccountType;
@@ -37,6 +39,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
   }
 
+  Future<bool> _validateImage(String imageUrl) async {
+    http.Response res;
+    try {
+      res = await http.get(Uri.parse(imageUrl));
+    } catch (e) {
+      return false;
+    }
+    if (res.statusCode != 200) return false;
+    Map<String, dynamic> data = res.headers;
+    if (data['content-type'] == 'image/jpeg' || data['content-type'] == 'image/png' || data['content-type'] == 'image/gif') {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   Future<void> _registerUser() async {
     setState(() {
       _isButtonEnabled = false;
@@ -48,6 +66,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       String confirmPassword = _confirmPasswordController.text.trim();
       String username = _usernameController.text.trim();
       String name = _nameController.text.trim();
+      String img = _imgController.text.trim();
 
       if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty ||
           username.isEmpty || name.isEmpty || _birthDate == null || _selectedAccountType == null) {
@@ -67,6 +86,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
       final authService = Provider.of<AuthService>(context, listen: false);
       String? uid = await authService.registerUser(username: username, email: email, password: password);
 
+      if (!await _validateImage(img)) {
+        img = "assets/placeholder.png";
+      }
 
       if (uid == null) {
         throw Exception("Error registering user");
@@ -81,6 +103,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           email: email,
           role: _selectedAccountType!,
           birthDate: _birthDate!.toIso8601String(),
+          img: img
         );
 
         if (mounted) {

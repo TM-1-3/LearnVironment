@@ -4,6 +4,7 @@ import 'package:learnvironment/main_pages/profile_screen.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:learnvironment/services/auth_service.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 
 class EditProfilePage extends StatefulWidget {
   final UserData userData;
@@ -22,6 +23,7 @@ class EditProfilePageState extends State<EditProfilePage> {
   late TextEditingController usernameController;
   late TextEditingController emailController;
   late TextEditingController nameController;
+  late TextEditingController imgController;
   late DateTime _birthDate;
   late String _selectedAccountType;
   final List<String> _accountTypes = ['developer', 'student', 'teacher'];
@@ -32,12 +34,18 @@ class EditProfilePageState extends State<EditProfilePage> {
     nameController = TextEditingController(text: widget.userData.name);
     usernameController = TextEditingController(text: widget.userData.username);
     emailController = TextEditingController(text: widget.userData.email);
+    String temp = widget.userData.img;
+    if (temp == "assets/placeholder.png") {
+      temp = "";
+    }
+    imgController = TextEditingController(text: temp);
     _birthDate = widget.userData.birthdate;
     _selectedAccountType = widget.userData.role;
 
     nameController.addListener(_onTextChanged);
     usernameController.addListener(_onTextChanged);
     emailController.addListener(_onTextChanged);
+    imgController.addListener(_onTextChanged);
   }
 
   void _onTextChanged() {
@@ -53,7 +61,24 @@ class EditProfilePageState extends State<EditProfilePage> {
     nameController.dispose();
     usernameController.dispose();
     emailController.dispose();
+    imgController.dispose();
     super.dispose();
+  }
+
+  Future<bool> _validateImage(String imageUrl) async {
+    http.Response res;
+    try {
+      res = await http.get(Uri.parse(imageUrl));
+    } catch (e) {
+      return false;
+    }
+    if (res.statusCode != 200) return false;
+    Map<String, dynamic> data = res.headers;
+    if (data['content-type'] == 'image/jpeg' || data['content-type'] == 'image/png' || data['content-type'] == 'image/gif') {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   Future<void> _pickBirthDate() async {
@@ -72,7 +97,13 @@ class EditProfilePageState extends State<EditProfilePage> {
     }
   }
 
-  Future<void> _updateProfile(String name, String username, String email, DateTime? birthDate, String? accountType) async {
+  Future<void> _updateProfile({
+  required String name,
+  required String username,
+  required String email,
+  required DateTime birthDate,
+  required String accountType,
+  required String img}) async {
     try {
       DataService dataService = Provider.of<DataService>(context, listen: false);
       AuthService authService = Provider.of<AuthService>(context, listen: false);
@@ -110,13 +141,18 @@ class EditProfilePageState extends State<EditProfilePage> {
         }
       }
 
+      if (!await _validateImage(img)) {
+        img = "assets/placeholder.png";
+      }
+
       await dataService.updateUserProfile(
         uid: uid,
         name: name,
         username: username,
         email: email,
-        birthDate: birthDate!.toIso8601String(),
-        role: accountType!,
+        birthDate: birthDate.toIso8601String(),
+        role: accountType,
+        img: img
       );
 
       setState(() {
@@ -251,6 +287,10 @@ class EditProfilePageState extends State<EditProfilePage> {
               const SizedBox(height: 20),
     Column(
       children: [
+        TextField(
+          controller: imgController,
+          decoration: const InputDecoration(labelText: 'Profile Image URL')
+        ),
         const SizedBox(height: 20),
         TextField(
           controller: nameController,
@@ -305,11 +345,12 @@ class EditProfilePageState extends State<EditProfilePage> {
         ElevatedButton(
           onPressed: () {
             _updateProfile(
-              nameController.text.trim(),
-              usernameController.text.trim(),
-              emailController.text.trim(),
-              _birthDate,
-              _selectedAccountType,
+              name: nameController.text.trim(),
+              username: usernameController.text.trim(),
+              email: emailController.text.trim(),
+              birthDate: _birthDate,
+              accountType: _selectedAccountType,
+              img: imgController.text.trim()
             );
           },
           child: const Text('Save Changes'),

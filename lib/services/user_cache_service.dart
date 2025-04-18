@@ -8,8 +8,6 @@ class UserCacheService {
       final prefs = await SharedPreferences.getInstance();
       final data = user.toCache();
 
-      print('[CACHE] Saving user data: $data');
-
       for (final entry in data.entries) {
         final success = await prefs.setString(entry.key, entry.value);
         if (!success) {
@@ -21,7 +19,7 @@ class UserCacheService {
       print('[CACHE] User data saved to cache successfully.');
     } catch (e) {
       print('[CACHE ERROR] Error caching user data: $e');
-      rethrow;  // Re-throw the error to handle it higher up the call stack
+      rethrow;
     }
   }
 
@@ -39,7 +37,7 @@ class UserCacheService {
         final value = prefs.getString(key);
         if (value == null) {
           print('[CACHE] Cache miss for key: $key');
-          return null; // Fail early if anything is missing
+          return null;
         }
 
         cachedData[key] = value;
@@ -55,6 +53,7 @@ class UserCacheService {
         name: cachedData['name']!,
         role: cachedData['role']!,
         birthdate: DateTime.tryParse(cachedData['birthdate']!) ?? DateTime(2000),
+        img: cachedData['img']!,
         gamesPlayed: cachedData['gamesPlayed']!.isEmpty
             ? []
             : cachedData['gamesPlayed']!.split(','),
@@ -70,7 +69,7 @@ class UserCacheService {
   Future<void> clearUserCache() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final keys = ['id', 'username', 'email', 'name', 'role', 'birthdate'];
+      final keys = ['id', 'username', 'email', 'name', 'role', 'birthdate', 'img', 'gamesPlayed'];
 
       print('[CACHE] Clearing user cache...');
 
@@ -92,21 +91,16 @@ class UserCacheService {
 
   Future<void> updateCachedGamesPlayed(String gameId) async {
     try {
-      // Fetch cached user data
       UserData? cachedUser = await getCachedUserData();
 
       if (cachedUser != null) {
-        // Update the gamesPlayed list in the cached data
         List<String> gamesPlayed = List.from(cachedUser.gamesPlayed);
 
-        // Remove the gameId if it already exists, and add it at the start
         gamesPlayed.remove(gameId);
         gamesPlayed.insert(0, gameId);
 
-        // Create a new UserData with updated gamesPlayed
         UserData updatedUser = cachedUser.copyWith(gamesPlayed: gamesPlayed);
 
-        // Cache the updated user data
         await cacheUserData(updatedUser);
         print('[UserCacheService] Updated cached gamesPlayed');
       }

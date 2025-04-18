@@ -131,7 +131,7 @@ void main() {
   group('fetchGameData Tests', () {
     test('fetchGameData should throw exception if error occurs', () async {
       try {
-        await firestoreService.fetchGameData('non_existing_game');
+        await firestoreService.fetchGameData(gameId: 'non_existing_game');
         fail('Expected an exception to be thrown');
       } catch (e) {
         expect(e.toString(), contains('Game not found'));
@@ -148,7 +148,7 @@ void main() {
         'template': 'drag',
       });
 
-      final gameData = await firestoreService.fetchGameData(docRef.id);
+      final gameData = await firestoreService.fetchGameData(gameId: docRef.id);
 
       expect(gameData.gameLogo, 'game_logo.png');
       expect(gameData.gameName, 'Game 2');
@@ -163,7 +163,7 @@ void main() {
   group('fetchUserData Tests', () {
     test('fetchUserData should throw exception if error occurs', () async {
       try {
-        await firestoreService.fetchUserData('non_existing_user');
+        await firestoreService.fetchUserData(userId: 'non_existing_user');
         fail('Expected an exception to be thrown');
       } catch (e) {
         expect(e.toString(), contains('User not found'));
@@ -177,15 +177,17 @@ void main() {
         'name': 'L',
         'role': 'developer',
         'birthdate': Timestamp.fromDate(DateTime(2000, 1, 1)),
+        'img' : 'assets/placeholder.png'
       });
 
-      final userDataFetched = await firestoreService.fetchUserData(docRef.id);
+      final userDataFetched = await firestoreService.fetchUserData(userId: docRef.id);
 
       expect(userDataFetched.username, 'Lebi');
       expect(userDataFetched.email, 'up202307719@g.uporto.pt');
       expect(userDataFetched.name, 'L');
       expect(userDataFetched.role, 'developer');
       expect(userDataFetched.birthdate, DateTime(2000, 1, 1));
+      expect(userDataFetched.img, 'assets/placeholder.png');
     });
   });
 
@@ -196,7 +198,7 @@ void main() {
         'role': 'developer',
       });
 
-      final userRole = await firestoreService.fetchUserType(uid);
+      final userRole = await firestoreService.fetchUserType(uid: uid);
 
       expect(userRole, 'developer');
     });
@@ -207,7 +209,7 @@ void main() {
         'role': 'student',
       });
 
-      final userRole = await firestoreService.fetchUserType(uid);
+      final userRole = await firestoreService.fetchUserType(uid: uid);
 
       expect(userRole, 'student');
     });
@@ -215,7 +217,7 @@ void main() {
     test('fetchUserType returns null if user not found', () async {
       final uid = 'non_existing_uid';
 
-      final userRole = await firestoreService.fetchUserType(uid);
+      final userRole = await firestoreService.fetchUserType(uid: uid);
 
       expect(userRole, null);
     });
@@ -226,7 +228,7 @@ void main() {
         'role': null,
       });
 
-      final userRole = await firestoreService.fetchUserType(uid);
+      final userRole = await firestoreService.fetchUserType(uid: uid);
 
       expect(userRole, null);
     });
@@ -234,7 +236,7 @@ void main() {
     test('fetchUserType handles unexpected errors', () async {
       final uid = 'invalid_user';
       await firestore.collection('users').doc(uid).set({});
-      final userRole = await firestoreService.fetchUserType(uid);
+      final userRole = await firestoreService.fetchUserType(uid: uid);
 
       expect(userRole, null);
     });
@@ -246,7 +248,7 @@ void main() {
       await firestore.collection('users').doc(uid).set({
         'gamesPlayed': [],
       });
-      final games = await firestoreService.getPlayedGames(uid);
+      final games = await firestoreService.getPlayedGames(uid: uid);
       expect(games, isEmpty);
     });
 
@@ -263,7 +265,7 @@ void main() {
         'gamesPlayed': ['game1'],
       });
 
-      final games = await firestoreService.getPlayedGames(uid);
+      final games = await firestoreService.getPlayedGames(uid: uid);
 
       expect(games.length, 1);
       expect(games[0]['imagePath'], 'assets/logo.png');
@@ -274,7 +276,7 @@ void main() {
     test('getPlayedGames should return empty list if gamesPlayed field is missing', () async {
       final uid = 'userWithoutGamesField';
       await firestore.collection('users').doc(uid).set({});
-      final games = await firestoreService.getPlayedGames(uid);
+      final games = await firestoreService.getPlayedGames(uid: uid);
 
       expect(games, isEmpty);
     });
@@ -287,7 +289,7 @@ void main() {
         'tags': ['educational', 'math'],
       });
       await firestore.collection('users').doc(uid).set({'gamesPlayed': [12345],});
-      final games = await firestoreService.getPlayedGames(uid);
+      final games = await firestoreService.getPlayedGames(uid: uid);
 
       expect(games, isEmpty);
     });
@@ -297,7 +299,7 @@ void main() {
       await firestore.collection('users').doc(uid).set({
         'gamesPlayed': ['non_existing_game_id'],
       });
-      final games = await firestoreService.getPlayedGames(uid);
+      final games = await firestoreService.getPlayedGames(uid: uid);
 
       expect(games, isEmpty);
     });
@@ -314,7 +316,7 @@ void main() {
       });
       String uid = docRef.id;
       String gameId = "myGame";
-      await firestoreService.updateUserGamesPlayed(uid, gameId);
+      await firestoreService.updateUserGamesPlayed(uid: uid, gameId: gameId);
       final docSnapshot = await firestore.collection('users').doc(uid).get();
       if (docSnapshot.exists) {
         final data = docSnapshot.data();
@@ -330,7 +332,7 @@ void main() {
       try {
         String uid = "user";
         String gameId = "myGame";
-        await firestoreService.updateUserGamesPlayed(uid, gameId);
+        await firestoreService.updateUserGamesPlayed(uid: uid, gameId: gameId);
         fail("Did not trow error");
       } catch(e) {
         expect(e, isA<FirebaseException>());
@@ -347,6 +349,7 @@ void main() {
         selectedAccountType: 'developer',
         email: 'user1@example.com',
         birthDate: '2000-01-01',
+        img: 'assets/placeholder.png'
       );
       final docSnapshot = await firestore.collection('users').doc('user1').get();
       if (docSnapshot.exists) {
@@ -356,6 +359,7 @@ void main() {
         expect(data?['role'], 'developer');
         expect(data?['email'], 'user1@example.com');
         expect(data?['birthdate'], '2000-01-01');
+        expect(data?['img'], 'assets/placeholder.png');
       } else {
         fail("No user data");
       }
@@ -370,6 +374,7 @@ void main() {
           selectedAccountType: '',
           email: 'user1@example.com',
           birthDate: '2000-01-01',
+          img: 'assets/placeholder.png'
         );
         fail("No exception thrown");
       } catch (e) {
