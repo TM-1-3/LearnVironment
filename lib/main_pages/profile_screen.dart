@@ -14,6 +14,9 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class ProfileScreenState extends State<ProfileScreen> {
+  late UserData userData;
+  bool isLoading = true;
+
   @override
   void initState() {
     super.initState();
@@ -28,8 +31,16 @@ class ProfileScreenState extends State<ProfileScreen> {
 
     if (userData == null) {
       _showErrorDialog("Error getting user", "Error");
+      if (mounted) {
+        Navigator.of(context).pushReplacementNamed('/login');
+      }
+    } else {
+      setState(() {
+        this.userData = userData;
+        isLoading = false;
+      });
+      print("[PROFILE] User data loaded with success.");
     }
-    print("[PROFILE] User data loaded with success.");
   }
 
   // Delete account function
@@ -118,23 +129,9 @@ class ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    DataService dataService = Provider.of<DataService>(context, listen: false);
-    AuthService authService = Provider.of<AuthService>(context, listen: false);
-
-    return FutureBuilder<UserData?>(
-      future: authService.getUid().then((uid) => dataService.getUserData(userId: uid)),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return const Center(child: Text("Error loading user data."));
-        }
-
-        final userData = snapshot.data;
-        if (userData == null) {
-          throw Exception("No user loged in");
-        }
-
+    if (isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
         return Scaffold(
             appBar: AppBar(
               title: const Text('User Profile'),
@@ -153,9 +150,11 @@ class ProfileScreenState extends State<ProfileScreen> {
                 ),
               ],
             ),
-            body: Center(
-              child: ListView(
-                padding: const EdgeInsets.all(16),
+            body: SafeArea(
+              child: SingleChildScrollView(
+            child: Padding(
+            padding: const EdgeInsets.all(16),
+          child: Column(
                 children: [
                   userData.img != "assets/placeholder.png"
                       ? CircleAvatar(
@@ -208,9 +207,9 @@ class ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ],
               ),
-            ),
+            )
+        )
+        )
         );
-      },
-    );
   }
 }
