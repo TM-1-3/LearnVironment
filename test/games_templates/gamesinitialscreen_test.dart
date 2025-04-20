@@ -114,9 +114,15 @@ void main() {
   testWidgets('Renders game data correctly', (WidgetTester tester) async {
     await tester.pumpWidget(testWidget);
     await tester.pumpAndSettle();
-
     expect(find.text('Test Game'), findsExactly(2));
+    await tester.tap(find.text('Description'));
+    await tester.pumpAndSettle();
     expect(find.text('Test Description'), findsOneWidget);
+    await tester.ensureVisible(find.text('Bibliography'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Bibliography'));
+    await tester.pumpAndSettle();
+    expect(find.text('Test Bibliography'), findsOneWidget);
     expect(find.text('Play'), findsOneWidget);
   });
 

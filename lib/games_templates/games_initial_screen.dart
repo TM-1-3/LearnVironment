@@ -29,8 +29,11 @@ class GamesInitialScreen extends StatelessWidget {
     final authService = Provider.of<AuthService>(context, listen: false);
 
     return Scaffold(
-      appBar: AppBar(title: Text(gameData.gameName)),
-      body: Center(
+        appBar: AppBar(title: Text(gameData.gameName)),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 30.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -45,7 +48,11 @@ class GamesInitialScreen extends StatelessWidget {
                   onTap: () async {
                     final dataService = Provider.of<DataService>(context, listen: false);
                     try {
-                      await _updateUserGamesPlayed(userId: await authService.getUid(), gameId: gameData.documentName, dataService: dataService);
+                      await _updateUserGamesPlayed(
+                        userId: await authService.getUid(),
+                        gameId: gameData.documentName,
+                        dataService: dataService,
+                      );
                     } catch (e) {
                       print("[GamesInitialScreen] Exception caught: $e");
                       if (context.mounted) {
@@ -54,20 +61,16 @@ class GamesInitialScreen extends StatelessWidget {
                         );
                       }
                     } finally {
-                      // Action when the card is clicked based on game template
                       if (gameData.gameTemplate == "drag") {
                         if (context.mounted) {
-                          print("[GamesInitialScreen] Navigating to Bin screen");
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  BinScreen(binData: gameData),
+                              builder: (context) => BinScreen(binData: gameData),
                             ),
                           );
                         }
                       } else if (gameData.gameTemplate == "quiz") {
-                        print("[GamesInitialScreen] Navigating to Quiz screen");
                         if (context.mounted) {
                           Navigator.push(
                             context,
@@ -78,7 +81,6 @@ class GamesInitialScreen extends StatelessWidget {
                         }
                       } else {
                         if (context.mounted) {
-                          print("[GamesInitialScreen] Corrupted Game");
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text('Error Game Data Corrupted.')),
                           );
@@ -95,45 +97,65 @@ class GamesInitialScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(height: 30),
+                SizedBox(height: 40),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        "Description:",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                      ExpansionTile(
+                        title: Row(
+                          children: [
+                            const Icon(Icons.info, color: Colors.blue),
+                            const SizedBox(width: 8),
+                            const Text(
+                              "Description",
+                              style:
+                              TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                          ],
                         ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        gameData.gameDescription,
-                        style: TextStyle(fontSize: 18, color: Colors.black54),
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                            child: Text(
+                              gameData.gameDescription,
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ),
+                        ],
                       ),
                       SizedBox(height: 20),
-                      Text(
-                        "Bibliography:",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                      ExpansionTile(
+                        title: Row(
+                          children: [
+                            const Icon(Icons.book, color: Colors.blue),
+                            const SizedBox(width: 8),
+                            const Text(
+                              "Bibliography",
+                              style:
+                              TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                          ],
                         ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        gameData.gameBibliography,
-                        style: TextStyle(fontSize: 18, color: Colors.black54),
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                            child: Text(
+                              gameData.gameBibliography,
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-          )
-      );
+          ),
+        ),
+      ),
+    );
   }
 }
