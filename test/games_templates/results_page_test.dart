@@ -67,7 +67,8 @@ void main() {
       expect(find.text('Tip3'), findsOneWidget);
     });
 
-    testWidgets('play again button navigates to new game', (WidgetTester tester) async {
+    testWidgets(
+        'play again button navigates to new game', (WidgetTester tester) async {
       await tester.pumpWidget(testWidget);
 
       final playAgainBtn = find.widgetWithText(GestureDetector, 'Play Again');
