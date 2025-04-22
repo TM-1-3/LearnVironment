@@ -72,23 +72,6 @@ class FirestoreService {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getAllSubjects() async {
-    try {
-      final querySnapshot = await _firestore.collection('subjects').get();
-      return querySnapshot.docs.map((doc) {
-        final data = doc.data();
-        return {
-          'imagePath': data['logo'] ?? 'assets/placeholder.png',
-          'subjectName': data['name'] ?? 'Default Game Title',
-          'subjectId': doc.id,
-        };
-      }).toList();
-    } catch (e, stackTrace) {
-      debugPrint('Error getting subjects: $e\n$stackTrace');
-      rethrow;
-    }
-  }
-
   Future<void> updateUserGamesPlayed({required String uid, required String gameId}) async {
     final userDoc = _firestore.collection('users').doc(uid);
     final userSnapshot = await userDoc.get();
