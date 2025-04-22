@@ -30,7 +30,10 @@ class GamesInitialScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text(gameData.gameName)),
-      body: Center(
+      body: SingleChildScrollView(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 30.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -54,15 +57,13 @@ class GamesInitialScreen extends StatelessWidget {
                         );
                       }
                     } finally {
-                      // Action when the card is clicked based on game template
                       if (gameData.gameTemplate == "drag") {
                         if (context.mounted) {
                           print("[GamesInitialScreen] Navigating to Bin screen");
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  BinScreen(binData: gameData),
+                              builder: (context) => BinScreen(binData: gameData),
                             ),
                           );
                         }
@@ -95,7 +96,7 @@ class GamesInitialScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(height: 30),
+                SizedBox(height: 40),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24.0),
                   child: Column(
@@ -134,6 +135,7 @@ class GamesInitialScreen extends StatelessWidget {
               ],
             ),
           )
-      );
+      )
+    ));
   }
 }
