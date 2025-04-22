@@ -47,6 +47,7 @@
 - Users can now Edit their profile [#72](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/72)
 - Users can see the bibliography before playing a game [#59](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/59)
 - Added Color blind friendly images to bin game [#53](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/53)
+- Fixed bug in quiz template [#77](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/77)
 
 ### Test User
 - email: 
