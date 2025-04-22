@@ -31,6 +31,7 @@
 - As a student I want to be able to view the games I have played so that I can keep track of my progress [#11](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/11)
 - As a user I want to be able to customize my profile so that I can be identified by everyone. [#14](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/14)
 - As a user I want to have a bibliography associated with each game so that I can easily verify the accuracy and sources of the information. [#18](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/18)
+- As a student I want to receive notifications if a game I was assigned to play has a close deadline so that I don't miss my assignments due date. [#22](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/22)
 
 ### Detailed description
 - Fixed bug in results screen [#52](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/52)
@@ -44,8 +45,8 @@
 - Fixed bug in login screen after sign-out [#61](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/61)
 - Games provide feedback now [#70](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/70)
 - Users can now Edit their profile [#72](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/72)
-- Users can see the bibliography before playing a game [#73](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/73)
-- Added Color blind friendly images to bin game [#74](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/74)
+- Users can see the bibliography before playing a game [#59](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/59)
+- Added Color blind friendly images to bin game [#53](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/53)
 
 ### Test User
 - email: 
