@@ -44,6 +44,7 @@
 - Fixed bug in login screen after sign-out [#61](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/61)
 - Games provide feedback now [#70](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/70)
 - Users can now Edit their profile [#72](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/72)
+- Users can see the bibliography before playing a game [#73](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/73)
 
 ### Test User
 - email: 
