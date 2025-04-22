@@ -57,6 +57,13 @@ class QuizState extends State<Quiz> {
         currentQuestion = availableQuestions.removeAt(randomIndex);
         currentOptions = List.from(questionsAndOptions[currentQuestion]!);
         currentOptions.shuffle();
+
+        if (currentOptions.length < 4) {
+          print("Warning: Less than 4 options for question: $currentQuestion");
+          updateQuestionAndOptions(); // Try next question
+          return;
+        }
+
         questionNumber++;
         correctAnswer = correctAnswers[currentQuestion]!;
         selectedAnswer = null;
@@ -73,7 +80,7 @@ class QuizState extends State<Quiz> {
             builder: (context) => ResultsPage(
                 correctCount: correctCount,
                 wrongCount: wrongCount,
-                questionsCount: 10,
+                questionsCount: questionNumber,
                 gameName: widget.quizData.gameName,
                 gameImage: widget.quizData.gameLogo,
                 tipsToAppear: tipsToAppear,
@@ -202,22 +209,19 @@ class QuizState extends State<Quiz> {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          SizedBox(
-            width: 170,
-            height: 100,
+          ConstrainedBox(
+            constraints: BoxConstraints(minWidth: 170, maxWidth: 200),
             child: Card(
               elevation: 4,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Text(
-                    text,
-                    style: const TextStyle(fontSize: 18),
-                    textAlign: TextAlign.center,
-                  ),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Text(
+                  text,
+                  style: const TextStyle(fontSize: 18),
+                  textAlign: TextAlign.center,
                 ),
               ),
             ),
