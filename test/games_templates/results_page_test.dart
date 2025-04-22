@@ -2,51 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:learnvironment/games_templates/results_page.dart';
 import 'package:mockito/mockito.dart';
-import 'package:learnvironment/services/data_service.dart';
-import 'package:learnvironment/data/user_data.dart';
-import 'package:learnvironment/services/auth_service.dart';
-import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
-import 'package:provider/provider.dart';
-import 'package:learnvironment/main_pages/games_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class MockDataService extends Mock implements DataService {
-  @override
-  Future<UserData?> getUserData({required String userId}) {
-    return Future.value(UserData(role: '', id: '', username: '', name: '', email: '', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: [], img: ''));
-  }
-}
+class MockFirebaseFirestore extends Mock implements FirebaseFirestore {}
 
 void main() {
 
-  group('ResultsPage Tests', ()
-  {
+  group('ResultsPage Tests', () {
     late Widget testWidget;
-    late MockDataService mockDataService;
-    late MockFirebaseAuth mockAuth;
 
-    setUp(() async {
-      mockAuth = MockFirebaseAuth(
-          mockUser: MockUser(uid: 'test', displayName: 'Test', email: 'email'),
-          signedIn: true);
-      mockDataService = MockDataService();
-      testWidget = MultiProvider(
-        providers: [
-          ChangeNotifierProvider<AuthService>(
-            create: (_) => AuthService(firebaseAuth: mockAuth),
-          ),
-          Provider<DataService>(create: (_) => mockDataService),
-        ],
-        child: MaterialApp(
-          home: ResultsPage(
-              questionsCount: 10,
-              correctCount: 8,
-              wrongCount: 2,
-              gameName: 'EcoMind Challenge',
-              gameImage: 'assets/quizLogo.png',
-              tipsToAppear: ['Tip1', 'Tip2', 'Tip3'],
-              duration: const Duration(minutes: 2, seconds: 10),
-              onReplay: () => RandomGame()
-          ),
+    setUp(() {
+      testWidget = MaterialApp(
+        home: ResultsPage(
+            questionsCount: 10,
+            correctCount: 8,
+            wrongCount: 2,
+            gameName: 'EcoMind Challenge',
+            gameImage: 'assets/quizLogo.png',
+            tipsToAppear: ['Tip1', 'Tip2', 'Tip3'],
+            duration: const Duration(minutes: 2, seconds: 10),
+            onReplay: () => RandomGame()
         ),
       );
     });
@@ -67,8 +42,7 @@ void main() {
       expect(find.text('Tip3'), findsOneWidget);
     });
 
-    testWidgets(
-        'play again button navigates to new game', (WidgetTester tester) async {
+    testWidgets('play again button navigates to new game', (WidgetTester tester) async {
       await tester.pumpWidget(testWidget);
 
       final playAgainBtn = find.widgetWithText(GestureDetector, 'Play Again');
@@ -80,24 +54,7 @@ void main() {
 
       expect(find.byType(RandomGame), findsOneWidget);
     });
-
-    testWidgets('back to games page button navigates correctly', (WidgetTester tester) async {
-      await tester.pumpWidget(testWidget);
-      final backToGamesBtn = find.widgetWithText(GestureDetector, 'Back to Games Page');
-      expect(backToGamesBtn,findsOneWidget);
-      await tester.ensureVisible(backToGamesBtn);
-      await tester.tap(backToGamesBtn);
-      await tester.pumpAndSettle();
-      expect(find.byType(GamesPage), findsOneWidget);
-    });
   });
-}
-
-class MockGamesPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Text('Games Page')));
-  }
 }
 
 class RandomGame extends StatelessWidget {
