@@ -5,14 +5,14 @@ class SubjectCard extends StatelessWidget {
   final String imagePath;
   final String subjectName;
   final String subjectId;
-  final Future<void> Function(String gameId) loadSubject;
+  //final Future<void> Function(String gameId) loadSubject;
 
   const SubjectCard({
     super.key,
     required this.imagePath,
     required this.subjectName,
     required this.subjectId,
-    required this.loadSubject,
+    //required this.loadSubject,
   });
 
   @override
@@ -37,7 +37,7 @@ class SubjectCard extends StatelessWidget {
           children: [
             GestureDetector(
               key: Key('gameCard_$subjectId'),
-              onTap: () async => await loadSubject(subjectId),
+              //onTap: () async => await loadSubject(subjectId),
               child: ClipRRect(
                 borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
                 child: Image.asset(
