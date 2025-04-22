@@ -12,14 +12,25 @@ import 'package:learnvironment/services/firestore_service.dart';
 import 'package:learnvironment/services/game_cache_service.dart';
 import 'package:learnvironment/services/user_cache_service.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:learnvironment/services/firebase_messaging_service.dart';
+
+@pragma('vm:entry-point')
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  showNotification(message);
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  await initNotifications();      // from your notifications file
+  setupFCMListeners();
   final authService = AuthService();
   await authService.init();
-
+  await FirebaseMessaging.instance.subscribeToTopic("sample");
   runApp(
     MultiProvider(
       providers: [
