@@ -92,8 +92,8 @@ class ResultsPage extends StatelessWidget {
                     ),
                   ] else
                     const Text(
-                    "Great Job!! Keep up the Good Work!!",
-                    style: TextStyle(fontSize: 16),
+                      "Great Job!! Keep up the Good Work!!",
+                      style: TextStyle(fontSize: 16),
                     ),
                 ],
               ),
