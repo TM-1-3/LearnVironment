@@ -34,6 +34,7 @@ class _CreateSubjectPageState extends State<CreateSubjectPage> {
         subjectLogo: _logoController.text.trim(),
         subjectName: _nameController.text.trim(),
         students: [],
+        teacher: '',
       );
 
       // Save to Firestore

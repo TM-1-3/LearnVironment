@@ -4,12 +4,14 @@ class SubjectData {
   final String subjectId;
   final String subjectLogo;
   final String subjectName;
+  final String teacher;
   final List<String> students;
 
   SubjectData({
     required this.subjectId,
     required this.subjectLogo,
     required this.subjectName,
+    required this.teacher,
     required this.students
   });
 
@@ -19,6 +21,7 @@ class SubjectData {
       'subjectId': subjectId,
       'subjectName': subjectName,
       'subjectLogo': subjectLogo,
+      'teacher': teacher,
       'students': jsonEncode(students),
     };
 
@@ -31,6 +34,7 @@ class SubjectData {
       subjectId: data['subjectId'] ?? '',
       subjectLogo: data['subjectLogo'] ?? '',
       subjectName: data['subjectName'] ?? '',
+      teacher: data['teacher'] ?? '',
       students: data['students'] != null
           ? List<String>.from(jsonDecode(data['students']!))
           : [],

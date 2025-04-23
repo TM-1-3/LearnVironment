@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/data/subject_data.dart';
@@ -226,6 +227,7 @@ class FirestoreService {
         subjectLogo: data['logo'] ?? 'assets/placeholder.png',
         subjectName: data['name'] ?? 'Unknown Name',
         students: List<String>.from(data['students'] ?? []),
+        teacher: data['teacher'],
       );
     } catch (e, stackTrace) {
       debugPrint("Error loading SubjectData: $e\n$stackTrace");
@@ -284,13 +286,20 @@ class FirestoreService {
   }
 
   Future<void> addSubjectData(SubjectData subject) async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      throw Exception('No authenticated user found');
+    }
+
     await FirebaseFirestore.instance
         .collection('subjects')
         .doc(subject.subjectId)
         .set({
       'subjectId': subject.subjectId,
-      'subjectName': subject.subjectName,
-      'subjectLogo': subject.subjectLogo,
+      'name': subject.subjectName,
+      'logo': subject.subjectLogo,
+      'teacher': user.uid,
     });
   }
 }
