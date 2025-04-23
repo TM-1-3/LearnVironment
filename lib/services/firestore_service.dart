@@ -74,9 +74,13 @@ class FirestoreService {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getAllSubjects() async {
+  Future<List<Map<String, dynamic>>> getAllSubjects({required String teacherId}) async {
     try {
-      final querySnapshot = await _firestore.collection('subjects').get();
+      final querySnapshot = await _firestore
+          .collection('subjects')
+          .where('teacher', isEqualTo: teacherId)
+          .get();
+
       return querySnapshot.docs.map((doc) {
         final data = doc.data();
         return {
@@ -86,10 +90,11 @@ class FirestoreService {
         };
       }).toList();
     } catch (e, stackTrace) {
-      debugPrint('Error getting subjects: $e\n$stackTrace');
+      debugPrint('[FirestoreService] Error getting subjects: $e\n$stackTrace');
       rethrow;
     }
   }
+
 
   Future<void> updateUserGamesPlayed({required String uid, required String gameId}) async {
     final userDoc = _firestore.collection('users').doc(uid);

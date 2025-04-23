@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/data/user_data.dart';
@@ -160,14 +161,22 @@ class DataService {
 
   Future<List<Map<String, dynamic>>> getAllSubjects() async {
     try {
-      // First, try to load cached game IDs
+      // Get the current user's UID
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        throw Exception('No authenticated user');
+      }
+
+      final teacherId = user.uid;
+
+      // First, try to load cached subject IDs
       final cachedIds = await _subjectCacheService.getCachedSubjectIds();
       List<Map<String, dynamic>> loadedSubjects = [];
 
-      // Try to load each cached game
+      // Try to load each cached subject
       for (final id in cachedIds) {
         final cachedSubject = await _subjectCacheService.getCachedSubjectData(id);
-        if (cachedSubject != null) {
+        if (cachedSubject != null && cachedSubject.teacher == teacherId) {
           loadedSubjects.add({
             'imagePath': cachedSubject.subjectLogo,
             'subjectName': cachedSubject.subjectName,
@@ -176,14 +185,14 @@ class DataService {
         }
       }
 
-      // If no cached subjects, return an empty list
       if (loadedSubjects.isNotEmpty) {
-        print('[DataService] Loaded games from cache');
+        print('[DataService] Loaded subjects from cache');
         return loadedSubjects;
       }
 
-      // If no cached subject, fetch subjects from Firestore
-      final fetchedSubjects = await _firestoreService.getAllSubjects();
+      // If no relevant cache, fetch from Firestore filtered by teacher
+      final fetchedSubjects = await _firestoreService.getAllSubjects(teacherId: teacherId);
+
       for (final subject in fetchedSubjects) {
         final subjectId = subject['subjectId'];
         final subjectData = await _firestoreService.fetchSubjectData(subjectId: subjectId);
