@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:learnvironment/data/game_data.dart';
+import 'package:learnvironment/data/subject_data.dart';
 import 'package:learnvironment/data/user_data.dart';
 
 class FirestoreService {
@@ -189,6 +190,28 @@ class FirestoreService {
       );
     } catch (e, stackTrace) {
       debugPrint("Error loading UserData: $e\n$stackTrace");
+      rethrow;
+    }
+  }
+
+  Future<SubjectData> fetchSubjectData({required String subjectId}) async {
+    try {
+      DocumentSnapshot snapshot = await _firestore.collection('subjects').doc(subjectId).get();
+
+      if (!snapshot.exists) {
+        throw Exception("Subject not found in Firestore for ID: $subjectId");
+      }
+
+      var data = snapshot.data() as Map<String, dynamic>;
+
+      return SubjectData(
+        subjectId: snapshot.id,
+        subjectLogo: data['logo'] ?? 'assets/placeholder.png',
+        subjectName: data['name'] ?? 'Unknown Name',
+        students: data['students'] ?? [],
+      );
+    } catch (e, stackTrace) {
+      debugPrint("Error loading SubjectData: $e\n$stackTrace");
       rethrow;
     }
   }

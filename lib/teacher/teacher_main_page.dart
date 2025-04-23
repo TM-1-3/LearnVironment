@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 
 import '../services/auth_service.dart';
 import '../services/data_service.dart';
-import '../services/firestore_service.dart';
 import 'create_subject_page.dart';
 import 'widgets/subject_card.dart';
 
@@ -26,12 +25,11 @@ class TeacherMainPageState extends State<TeacherMainPage> {
 
   Future<void> _fetchSubjects() async {
     try {
-      final firestoreService = Provider.of<FirestoreService>(context, listen: false);
+      final dataService = Provider.of<DataService>(context, listen: false);
 
-      final fetchedSubjects = await firestoreService.getAllSubjects();
+      final fetchedSubjects = await dataService.getAllSubjects();
       print('[TeacherMainPage] Fetched Subjects');
-      setState(() {
-        subjects = fetchedSubjects;
+      setState(() {        subjects = fetchedSubjects;
       });
     } catch (e) {
       print('[TeacherMainPage] Error fetching subjects: $e');
@@ -48,8 +46,8 @@ class TeacherMainPageState extends State<TeacherMainPage> {
   }
 
   /**
-  Future<void> loadSubject(String subjectId) async {
-    try {
+      Future<void> loadSubject(String subjectId) async {
+      try {
       print('[Subject Page] Loading Subject Page');
       final dataService = Provider.of<DataService>(context, listen: false);
       final authService = Provider.of<AuthService>(context, listen: false);
@@ -58,22 +56,22 @@ class TeacherMainPageState extends State<TeacherMainPage> {
       final userId = await authService.getUid();
 
       if (subjectData != null && userId.isNotEmpty && mounted) {
-        Navigator.push(context,
-          MaterialPageRoute(
-            builder: (context) => SubjectScreen(subjectData: subjectData),
-          ),
-        );
+      Navigator.push(context,
+      MaterialPageRoute(
+      builder: (context) => SubjectScreen(subjectData: subjectData),
+      ),
+      );
       }
-    } catch (e) {
+      } catch (e) {
       print(e);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading subject page: $e')),
-        );
+      ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error loading subject page: $e')),
+      );
       }
-    }
-  }
-**/
+      }
+      }
+   **/
 
   @override
   Widget build(BuildContext context) {
@@ -160,5 +158,3 @@ class TeacherMainPageState extends State<TeacherMainPage> {
     );
   }
 }
-
-
