@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:learnvironment/main_pages/games_page.dart';
-import 'package:learnvironment/main_pages/teacher_main_page.dart';
+import 'package:learnvironment/teacher/teacher_main_page.dart';
 import 'package:learnvironment/main_pages/profile_screen.dart';
 import 'package:learnvironment/main_pages/statistics_page.dart';
 

@@ -4,8 +4,8 @@ import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
 import '../services/data_service.dart';
 import '../services/firestore_service.dart';
-import '../teacher/create_subject_page.dart';
-import '../teacher/widgets/subject_card.dart';
+import 'create_subject_page.dart';
+import 'widgets/subject_card.dart';
 
 class TeacherMainPage extends StatefulWidget {
   const TeacherMainPage({super.key});
@@ -141,10 +141,6 @@ class TeacherMainPageState extends State<TeacherMainPage> {
               },
             ),
           ),
-
-
-
-
         ],
       ),
       floatingActionButton: FloatingActionButton(
