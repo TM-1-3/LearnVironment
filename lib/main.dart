@@ -10,6 +10,7 @@ import 'package:learnvironment/services/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:learnvironment/services/firestore_service.dart';
 import 'package:learnvironment/services/game_cache_service.dart';
+import 'package:learnvironment/services/subject_cache_service.dart';
 import 'package:learnvironment/services/user_cache_service.dart';
 import 'package:provider/provider.dart';
 
@@ -27,6 +28,7 @@ void main() async {
         Provider<FirestoreService>(create: (_) => FirestoreService()),
         Provider<UserCacheService>(create: (_) => UserCacheService()),
         Provider<GameCacheService>(create: (_) => GameCacheService()),
+        Provider<SubjectCacheService>(create: (_) => SubjectCacheService()),
         Provider<DataService>(create: (context) => DataService(context)),
       ],
       child: App(),
