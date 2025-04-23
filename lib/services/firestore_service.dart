@@ -282,4 +282,15 @@ class FirestoreService {
       rethrow;
     }
   }
+
+  Future<void> addSubjectData(SubjectData subject) async {
+    await FirebaseFirestore.instance
+        .collection('subjects')
+        .doc(subject.subjectId)
+        .set({
+      'subjectId': subject.subjectId,
+      'subjectName': subject.subjectName,
+      'subjectLogo': subject.subjectLogo,
+    });
+  }
 }

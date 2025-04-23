@@ -29,8 +29,7 @@ class TeacherMainPageState extends State<TeacherMainPage> {
 
       final fetchedSubjects = await dataService.getAllSubjects();
       print('[TeacherMainPage] Fetched Subjects');
-      setState(() {        subjects = fetchedSubjects;
-      });
+      setState((){subjects = fetchedSubjects;});
     } catch (e) {
       print('[TeacherMainPage] Error fetching subjects: $e');
     }

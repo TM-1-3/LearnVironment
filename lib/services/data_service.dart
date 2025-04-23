@@ -20,6 +20,9 @@ class DataService {
     _subjectCacheService = Provider.of<SubjectCacheService>(context, listen: false);
   }
 
+  FirestoreService get firestoreService => _firestoreService;
+  SubjectCacheService get subjectCacheService => _subjectCacheService;
+
   Future<List<Map<String, dynamic>>> getPlayedGames({required String userId}) async {
     try {
       final cachedGames = await _userCacheService.getCachedGamesPlayed();

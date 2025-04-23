@@ -9,6 +9,7 @@ import 'package:learnvironment/main_pages/profile_screen.dart';
 import 'package:learnvironment/services/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:learnvironment/teacher/teacher_home.dart';
+import 'package:learnvironment/teacher/teacher_main_page.dart';
 import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
 
@@ -41,11 +42,11 @@ void main() {
   });
 
   group('TeacherHomePage Widget Tests', () {
-    testWidgets('Displays default Home page content', (tester) async {
+    testWidgets('Displays Teacher Home page content', (tester) async {
       await tester.pumpWidget(testWidget);
 
       expect(find.text('LearnVironment'), findsOneWidget);
-      expect(find.byType(MainPage), findsOneWidget);
+      expect(find.byType(TeacherMainPage), findsOneWidget);
     });
 
     testWidgets('Navigates to Statistics page', (tester) async {
