@@ -1,17 +1,23 @@
-const functions = require('firebase-functions');
-const admin = require('firebase-admin');
-admin.initializeApp();
+const { onDocumentCreated } = require('firebase-functions/v2/firestore');
+const { initializeApp } = require('firebase-admin/app');
+const { getMessaging } = require('firebase-admin/messaging');
 
-exports.notifyOnEvent = functions.firestore
-  .document('events/{eventId}')
-  .onCreate(async (snap, context) => {
-    const eventData = snap.data();
-    const payload = {
-      notification: {
-        title: 'New Event!',
-        body: `Event "${eventData.name}" is live.`,
-      },
-      topic: 'your_event_topic',
-    };
-    await admin.messaging().send(payload);
-  });
+initializeApp();
+
+exports.notifyOnEvent = onDocumentCreated('events/{eventId}', async (event) => {
+  const eventData = event.data?.data();
+
+  if (!eventData) return;
+
+  const payload = {
+    notification: {
+      title: 'New Event!',
+      body: `Event "${eventData.name}" is live.`,
+    },
+    topic: 'your_event_topic',
+  };
+
+  await getMessaging().send(payload);
+    .then((response) => console.log('Successfully sent message:', response))
+    .catch((error) => console.error('Error sending message:', error));
+});
