@@ -106,15 +106,15 @@ class TeacherMainPageState extends State<TeacherMainPage> {
           Expanded(
             child: LayoutBuilder(
               builder: (context, constraints) {
-                double mainAxisExtent = 600.0;
+                double mainAxisExtent = 500.0;
                 if (constraints.maxWidth <= 600) {
-                  mainAxisExtent = constraints.maxWidth;
+                  mainAxisExtent = constraints.maxWidth-150;
                 } else if (constraints.maxWidth <= 1000) {
-                  mainAxisExtent = 650;
+                  mainAxisExtent = 550;
                 } else if (constraints.maxWidth <= 2000) {
-                  mainAxisExtent = 1050;
+                  mainAxisExtent = 950;
                 } else {
-                  mainAxisExtent = 1500;
+                  mainAxisExtent = 1400;
                 }
 
                 return subjects.isNotEmpty
