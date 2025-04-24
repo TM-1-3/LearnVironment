@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 import 'package:learnvironment/data/game_data.dart';
+import 'package:learnvironment/data/subject_data.dart';
 import 'package:learnvironment/data/user_data.dart';
 import 'package:learnvironment/services/firestore_service.dart';
 import 'package:learnvironment/services/game_cache_service.dart';
@@ -159,24 +160,17 @@ class DataService {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getAllSubjects() async {
+  Future<List<Map<String, dynamic>>> getAllSubjects({required String uid}) async {
     try {
-      // Get the current user's UID
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) {
-        throw Exception('No authenticated user');
-      }
-
-      final teacherId = user.uid;
-
       // First, try to load cached subject IDs
       final cachedIds = await _subjectCacheService.getCachedSubjectIds();
       List<Map<String, dynamic>> loadedSubjects = [];
 
       // Try to load each cached subject
       for (final id in cachedIds) {
+        print(id);
         final cachedSubject = await _subjectCacheService.getCachedSubjectData(id);
-        if (cachedSubject != null && cachedSubject.teacher == teacherId) {
+        if (cachedSubject != null && cachedSubject.teacher == uid) {
           loadedSubjects.add({
             'imagePath': cachedSubject.subjectLogo,
             'subjectName': cachedSubject.subjectName,
@@ -191,7 +185,7 @@ class DataService {
       }
 
       // If no relevant cache, fetch from Firestore filtered by teacher
-      final fetchedSubjects = await _firestoreService.getAllSubjects(teacherId: teacherId);
+      final fetchedSubjects = await _firestoreService.getAllSubjects(teacherId: uid);
 
       for (final subject in fetchedSubjects) {
         final subjectId = subject['subjectId'];
@@ -234,6 +228,21 @@ class DataService {
       await _userCacheService.cacheUserData(UserData(id: uid, username: username, email: email, name: name, role: role, birthdate: DateTime.parse(birthDate),gamesPlayed: gamesPlayed, img: img));
     } catch (e) {
       print("Error updating profile");
+    }
+  }
+
+  Future<void> addSubject({required SubjectData subject}) async {
+    try {
+      // Update Firestore
+      await _firestoreService.addSubjectData(subject);
+      print('[DataService] Firestore updated successfully');
+
+      // Update Cache
+      await _subjectCacheService.cacheSubjectData(subject);
+
+    } catch (e) {
+      print('[DataService] Error updating subjects: $e');
+      throw Exception("Error updating subjects");
     }
   }
 }

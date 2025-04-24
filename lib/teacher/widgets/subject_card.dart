@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:learnvironment/main_pages/widgets/tag.dart';
 
 class SubjectCard extends StatelessWidget {
   final String imagePath;

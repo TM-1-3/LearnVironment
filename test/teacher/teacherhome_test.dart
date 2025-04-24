@@ -2,7 +2,6 @@ import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:learnvironment/data/user_data.dart';
-import 'package:learnvironment/main_pages/main_page.dart';
 import 'package:learnvironment/main_pages/games_page.dart';
 import 'package:learnvironment/main_pages/statistics_page.dart';
 import 'package:learnvironment/main_pages/profile_screen.dart';

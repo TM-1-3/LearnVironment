@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:learnvironment/services/auth_service.dart';
 import 'package:provider/provider.dart';
 
-import '../services/auth_service.dart';
 import '../services/data_service.dart';
 import 'create_subject_page.dart';
 import 'widgets/subject_card.dart';
@@ -26,10 +26,14 @@ class TeacherMainPageState extends State<TeacherMainPage> {
   Future<void> _fetchSubjects() async {
     try {
       final dataService = Provider.of<DataService>(context, listen: false);
+      final authService = Provider.of<AuthService>(context, listen: false);
 
-      final fetchedSubjects = await dataService.getAllSubjects();
+      final fetchedSubjects = await dataService.getAllSubjects(uid: await authService.getUid());
       print('[TeacherMainPage] Fetched Subjects');
-      setState((){subjects = fetchedSubjects;});
+      setState((){
+        print(fetchedSubjects);
+        subjects = fetchedSubjects;
+      });
     } catch (e) {
       print('[TeacherMainPage] Error fetching subjects: $e');
     }
@@ -150,8 +154,8 @@ class TeacherMainPageState extends State<TeacherMainPage> {
             _fetchSubjects();
           });
         },
-        child: Image.asset('assets/trash1.png', width: 50, height: 50),
         backgroundColor: Colors.grey,
+        child: Icon(Icons.add),
       ),
 
     );

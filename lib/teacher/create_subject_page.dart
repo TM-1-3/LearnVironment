@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:learnvironment/teacher/teacher_home.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
@@ -18,6 +20,22 @@ class _CreateSubjectPageState extends State<CreateSubjectPage> {
   final _logoController = TextEditingController();
   bool _isLoading = false;
 
+  Future<bool> _validateImage(String imageUrl) async {
+    http.Response res;
+    try {
+      res = await http.get(Uri.parse(imageUrl));
+    } catch (e) {
+      return false;
+    }
+    if (res.statusCode != 200) return false;
+    Map<String, dynamic> data = res.headers;
+    if (data['content-type'] == 'image/jpeg' || data['content-type'] == 'image/png' || data['content-type'] == 'image/gif') {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   Future<void> _createSubject() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -29,25 +47,33 @@ class _CreateSubjectPageState extends State<CreateSubjectPage> {
       final dataService = Provider.of<DataService>(context, listen: false);
       final subjectId = const Uuid().v4();
 
+      String value = _logoController.text.trim();
+
+      if (!await _validateImage(value)) {
+        value = "assets/placeholder.png";
+      }
+
       final newSubject = SubjectData(
         subjectId: subjectId,
-        subjectLogo: _logoController.text.trim(),
+        subjectLogo: value,
         subjectName: _nameController.text.trim(),
         students: [],
         teacher: '',
       );
 
       // Save to Firestore
-      await dataService.firestoreService.addSubjectData(newSubject);
-
-      // Cache it
-      await dataService.subjectCacheService.cacheSubjectData(newSubject);
+      await dataService.addSubject(subject: newSubject);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Subject created successfully!')),
         );
-        Navigator.pop(context);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Subject created successful')),
+          );
+        }
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => TeacherHomePage()));
       }
     } catch (e) {
       print('[CreateSubjectPage] Error: $e');
@@ -95,8 +121,8 @@ class _CreateSubjectPageState extends State<CreateSubjectPage> {
                 controller: _logoController,
                 decoration: const InputDecoration(labelText: 'Logo URL'),
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a logo URL';
+                  if (value!.isEmpty) {
+                    value = "assets/placeholder.pnp";
                   }
                   return null;
                 },
