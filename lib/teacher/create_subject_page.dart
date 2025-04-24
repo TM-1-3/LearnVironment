@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:learnvironment/teacher/teacher_home.dart';
+import 'package:learnvironment/services/auth_service.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
@@ -45,6 +45,7 @@ class _CreateSubjectPageState extends State<CreateSubjectPage> {
 
     try {
       final dataService = Provider.of<DataService>(context, listen: false);
+      final authService = Provider.of<AuthService>(context, listen: false);
       final subjectId = const Uuid().v4();
 
       String value = _logoController.text.trim();
@@ -58,7 +59,7 @@ class _CreateSubjectPageState extends State<CreateSubjectPage> {
         subjectLogo: value,
         subjectName: _nameController.text.trim(),
         students: [],
-        teacher: '',
+        teacher: await authService.getUid(),
       );
 
       // Save to Firestore
@@ -73,7 +74,7 @@ class _CreateSubjectPageState extends State<CreateSubjectPage> {
             SnackBar(content: Text('Subject created successful')),
           );
         }
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => TeacherHomePage()));
+        Navigator.of(context).pushReplacementNamed('/auth_gate');
       }
     } catch (e) {
       print('[CreateSubjectPage] Error: $e');

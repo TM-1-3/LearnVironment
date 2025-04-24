@@ -48,7 +48,7 @@ class TeacherMainPageState extends State<TeacherMainPage> {
     }).toList();
   }
 
-  /**
+  /*
       Future<void> loadSubject(String subjectId) async {
       try {
       print('[Subject Page] Loading Subject Page');
@@ -74,7 +74,7 @@ class TeacherMainPageState extends State<TeacherMainPage> {
       }
       }
       }
-   **/
+   */
 
   @override
   Widget build(BuildContext context) {
@@ -126,7 +126,7 @@ class TeacherMainPageState extends State<TeacherMainPage> {
                     mainAxisSpacing: 10.0,
                     mainAxisExtent: mainAxisExtent,
                   ),
-                  itemCount: subjects.length,
+                  itemCount: filteredSubjects.length,
                   itemBuilder: (context, index) {
                     final subject = filteredSubjects[index];
                     return SubjectCard(
@@ -157,7 +157,6 @@ class TeacherMainPageState extends State<TeacherMainPage> {
         backgroundColor: Colors.grey,
         child: Icon(Icons.add),
       ),
-
     );
   }
 }

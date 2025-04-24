@@ -35,9 +35,7 @@ class SubjectData {
       subjectLogo: data['subjectLogo'] ?? '',
       subjectName: data['subjectName'] ?? '',
       teacher: data['teacher'] ?? '',
-      students: data['students'] != null
-          ? List<String>.from(jsonDecode(data['students']!))
-          : [],
+      students: List<String>.from(jsonDecode(data['students'] ?? '[]')),
     );
   }
 }
