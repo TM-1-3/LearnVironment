@@ -383,6 +383,16 @@ void main() {
       }
     });
 
+    test('Error Password too short', () async {
+      try {
+        await authService.registerUser(
+            email: 'error@example.com', username: 'user', password: 'pass');
+        fail('Exception not thrown');
+      } catch (e) {
+        expect(e.toString(), contains('Password must have at least 6 characters.'));
+      }
+    });
+
     test('Error Too many requests', () async {
       mockFirebaseAuth = MockFirebaseAuthWithErrors(shouldThrowRegistrationOperationNotAllowedError: true);
       authService = AuthService(firebaseAuth: mockFirebaseAuth);

@@ -118,6 +118,10 @@ class AuthService extends ChangeNotifier {
   // Register User
   Future<String?> registerUser({required String email, required String username, required String password}) async {
     try {
+      if (password.length < 6) {
+        throw Exception("Password must have at least 6 characters.");
+      }
+
       UserCredential userCredential = await _firebaseAuth
           .createUserWithEmailAndPassword(
         email: email,
@@ -132,7 +136,7 @@ class AuthService extends ChangeNotifier {
     } on FirebaseAuthException catch (e) {
       throw Exception(_getErrorMessage(code: e.code));
     } catch (e) {
-      throw Exception("An unexpected error occurred.");
+      rethrow;
     }
   }
 
