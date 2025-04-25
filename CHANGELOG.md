@@ -49,6 +49,7 @@
 - Added Color blind friendly images to bin game [#53](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/53)
 - Fixed bug in quiz template [#77](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/77)
 - Fixed bug with game cards [#78](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/78)
+- Fixed error messages on sign up screen [#80](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/80)
 
 ### Test User
 - email: 
