@@ -70,9 +70,16 @@ class AuthService extends ChangeNotifier {
   }
 
   // Delete account method
-  Future<void> deleteAccount() async {
+  Future<void> deleteAccount({required String password}) async {
     try {
+
       User? user = _firebaseAuth.currentUser;
+      final AuthCredential credential = EmailAuthProvider.credential(
+        email: user?.email ?? '',
+        password: password,
+      );
+
+      await user?.reauthenticateWithCredential(credential);
       if (user != null) {
         await user.delete();
         loggedIn = false;

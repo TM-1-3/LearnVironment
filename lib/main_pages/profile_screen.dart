@@ -43,14 +43,55 @@ class ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  // Prompt for password to confirm email change
+  Future<String> _promptForPassword() async {
+    String password = '';
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        TextEditingController passwordController = TextEditingController();
+        return AlertDialog(
+          title: const Text('Re-authentication required'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Please enter your password to confirm:'),
+              TextField(
+                controller: passwordController,
+                obscureText: true,
+                decoration: const InputDecoration(hintText: 'Password'),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                password = passwordController.text.trim();
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+    return password;
+  }
+
   // Delete account function
   Future<void> _deleteAccount() async {
     try {
       DataService dataService = Provider.of<DataService>(context, listen: false);
       AuthService authService = Provider.of<AuthService>(context, listen: false);
 
+      print("Asking for password");
+      String password = await _promptForPassword();
+      if (password.isEmpty) throw Exception("Empty Password.");
+
+      print("Received password");
+
       //Delete account in authService
-      await authService.deleteAccount();
+      await authService.deleteAccount(password: password);
       //Delete account from Firestore and cache using dataService
       await dataService.deleteAccount(uid: userData.id);
 

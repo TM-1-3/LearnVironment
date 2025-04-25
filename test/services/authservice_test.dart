@@ -211,7 +211,7 @@ void main() {
       mockFirebaseAuth = MockFirebaseAuth();
       authService = AuthService(firebaseAuth: mockFirebaseAuth);
       try {
-        await authService.deleteAccount();
+        await authService.deleteAccount(password: 'password');
         fail('Exception not thrown');
       } catch (e) {
         expect(e, isA<Exception>());
