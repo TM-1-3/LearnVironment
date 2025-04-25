@@ -88,12 +88,10 @@ class ProfileScreenState extends State<ProfileScreen> {
       String password = await _promptForPassword();
       if (password.isEmpty) throw Exception("Empty Password.");
 
-      print("Received password");
-
-      //Delete account in authService
-      await authService.deleteAccount(password: password);
       //Delete account from Firestore and cache using dataService
       await dataService.deleteAccount(uid: userData.id);
+      //Delete account in authService
+      await authService.deleteAccount(password: password);
 
       if (mounted) {
         Navigator.of(context).pushReplacementNamed('/signup');
