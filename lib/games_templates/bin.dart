@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/games_templates/results_page.dart';
-import 'package:learnvironment/main_pages/games_page.dart';
 
 class BinScreen extends StatefulWidget {
   final GameData binData;
@@ -114,10 +113,7 @@ class BinScreenState extends State<BinScreen> {
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => GamesPage()),
-              );
+              Navigator.of(context).pushReplacementNamed('/auth_gate');
             },
           )),
       body: LayoutBuilder(

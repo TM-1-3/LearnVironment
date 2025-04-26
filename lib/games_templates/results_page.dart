@@ -32,10 +32,7 @@ class ResultsPage extends StatelessWidget {
         leading: IconButton(  // Override the leading property
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => GamesPage()), // Navigate to GamesPage
-            );
+            Navigator.of(context).pushReplacementNamed('/auth_gate');
           },
         ),
       ),
