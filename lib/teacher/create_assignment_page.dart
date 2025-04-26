@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:learnvironment/data/user_data.dart';
-import 'package:learnvironment/main_pages/profile_screen.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:learnvironment/services/auth_service.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
 
 class CreateAssignmentPage extends StatefulWidget {
   final String game_id;
@@ -23,14 +21,18 @@ class CreateAssignmentPageState extends State<CreateAssignmentPage> {
   late TextEditingController titleController;
   late DateTime _dueDate;
   late String _selectedClass;
-  late List<String> _classes;
+  late List<String> _classes = [];
 
   @override
   void initState() {
     super.initState();
+    titleController = TextEditingController();
+    _selectedClass = '';
     _dueDate = DateTime.now();
+    _loadClasses();
 
     titleController.addListener(_onTextChanged);
+
   }
 
   void _onTextChanged() {
@@ -72,6 +74,7 @@ class CreateAssignmentPageState extends State<CreateAssignmentPage> {
   required String gameid}) async {
     try {
       DataService dataService = Provider.of<DataService>(context, listen: false);
+      await dataService.createAssignment(title: title, dueDate: dueDate, turma: turma, game_id: gameid);
 
       setState(() {
         _isSaved = true;
@@ -89,7 +92,7 @@ class CreateAssignmentPageState extends State<CreateAssignmentPage> {
       }
     } catch (e) {
       print("Error creating assignment: $e");
-      _showErrorDialog("Error creating assignment. Please try again.", "Error");
+      _showErrorDialog("Error creating assignment.", "Error");
     }
   }
 
@@ -113,6 +116,23 @@ class CreateAssignmentPageState extends State<CreateAssignmentPage> {
     );
   }
 
+  Future<void> _loadClasses() async {
+    try {
+      DataService dataService = Provider.of<DataService>(context, listen: false);
+      AuthService authService = Provider.of<AuthService>(context, listen: false);
+      UserData? userData = await dataService.getUserData(userId: await authService.getUid());
+      if (userData == null) {
+        _showErrorDialog("No user is logged in.", "Error");
+        return;
+      }
+      setState(() {
+        _classes = userData.classes;
+      });
+    } catch (e) {
+      print("Failed to load Classes");
+      rethrow;
+    }
+  }
 
   Future<bool?> _onWillPop() async {
     if (!_isSaved) {
@@ -157,10 +177,14 @@ class CreateAssignmentPageState extends State<CreateAssignmentPage> {
           title: const Text('Create Assignment'),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.of(context).pushReplacementNamed('/auth_gate');
+            onPressed: () async {
+              final shouldLeave = await _onWillPop();
+              if (shouldLeave! && context.mounted) {
+                Navigator.of(context).pop();
+              }
             },
           ),
+
         ),
         body: Center(
           child: ListView(
@@ -192,7 +216,7 @@ class CreateAssignmentPageState extends State<CreateAssignmentPage> {
         ),
         const SizedBox(height: 10),
         DropdownButtonFormField<String>(
-          value: _selectedClass,
+          value: null,
           decoration: const InputDecoration(labelText: 'Class'),
           items: _classes.map((type) {
             return DropdownMenuItem<String>(
