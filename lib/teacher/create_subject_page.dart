@@ -133,7 +133,8 @@ class _CreateSubjectPageState extends State<CreateSubjectPage> {
                   ? const CircularProgressIndicator()
                   : ElevatedButton(
                 onPressed: _createSubject,
-                child: const Text('Create Subject'),
+                key: Key("button"),
+                child: const Text('Create Subject')
               ),
             ],
           ),

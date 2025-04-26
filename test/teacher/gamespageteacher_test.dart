@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/games_templates/games_initial_screen.dart';
-import 'package:learnvironment/teacher/widget/game_card_teacher.dart';
+import 'package:learnvironment/teacher/widgets/game_card_teacher.dart';
 import 'package:learnvironment/teacher/games_page_teacher.dart';
 import 'package:learnvironment/services/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';

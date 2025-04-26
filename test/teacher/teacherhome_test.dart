@@ -2,7 +2,6 @@ import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:learnvironment/data/user_data.dart';
-import 'package:learnvironment/main_pages/games_page.dart';
 import 'package:learnvironment/main_pages/statistics_page.dart';
 import 'package:learnvironment/main_pages/profile_screen.dart';
 import 'package:learnvironment/services/auth_service.dart';
@@ -12,7 +11,6 @@ import 'package:learnvironment/teacher/teacher_home.dart';
 import 'package:learnvironment/teacher/teacher_main_page.dart';
 import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
-import 'package:learnvironment/main_pages/main_page.dart';
 
 class MockDataService extends Mock implements DataService {
   @override
