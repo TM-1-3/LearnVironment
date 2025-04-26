@@ -50,6 +50,7 @@
 - Fixed bug in quiz template [#77](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/77)
 - Fixed bug with game cards [#78](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/78)
 - Fixed error messages on sign up screen [#80](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/80)
+- Fixed bug of when data in games is missing [#71](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/71)
 
 ### Test User
 - email: 
