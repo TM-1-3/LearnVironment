@@ -188,23 +188,38 @@ class QuizState extends State<Quiz> {
               ),
             ),
             const SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildClickableCard(currentOptions[0]),
-                const SizedBox(width: 20),
-                _buildClickableCard(currentOptions[1]),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildClickableCard(currentOptions[2]),
-                const SizedBox(width: 20),
-                _buildClickableCard(currentOptions[3]),
-              ],
-            ),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                double cardSpacing = 20;
+                double totalSpacing = cardSpacing;
+                double maxWidthPerCard = (constraints.maxWidth - totalSpacing) / 2;
+
+                return Column(
+                  children: [
+                    for (int i = 0; i < currentOptions.length; i += 2)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: maxWidthPerCard,
+                              child: _buildClickableCard(currentOptions[i]),
+                            ),
+                            if (i + 1 < currentOptions.length)
+                              SizedBox(width: cardSpacing),
+                            if (i + 1 < currentOptions.length)
+                              SizedBox(
+                                width: maxWidthPerCard,
+                                child: _buildClickableCard(currentOptions[i + 1]),
+                              ),
+                          ],
+                        ),
+                      ),
+                  ],
+                );
+              },
+            )
           ],
         ));
   }
