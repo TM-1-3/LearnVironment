@@ -5,59 +5,62 @@ import 'package:learnvironment/data/game_data.dart';
 class GameCacheService {
   // Cache Game Data
   Future<void> cacheGameData(GameData gameData) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final key = 'game_${gameData.documentName}';
-      final data = gameData.toCache();
+    final prefs = await SharedPreferences.getInstance();
+    final key = 'game_${gameData.documentName}';
 
-      print('[CACHE] Saving game ${gameData.documentName}');
+    final data = {
+      'game': gameData.toCache(),
+      'expiresAt': DateTime.now().add(Duration(days: 5)).millisecondsSinceEpoch
+    };
 
-      // Attempt to save the game data to cache
-      bool success = await prefs.setString(key, json.encode(data));
+    print('[CACHE] Saving game ${gameData.documentName}');
 
-      if (success) {
-        // Keep track of cached game IDs
-        List<String> cachedIds = prefs.getStringList('cached_game_ids') ?? [];
-        if (!cachedIds.contains(gameData.documentName)) {
-          cachedIds.add(gameData.documentName);
-          await prefs.setStringList('cached_game_ids', cachedIds);
-        }
-        print('[CACHE] Game ${gameData.documentName} cached successfully: $data');
-      } else {
-        print('[CACHE ERROR] Failed to save game ${gameData.documentName} to cache.');
+    bool success = await prefs.setString(key, json.encode(data));
+
+    if (success) {
+      List<String> cachedIds = prefs.getStringList('cached_game_ids') ?? [];
+      if (!cachedIds.contains(gameData.documentName)) {
+        cachedIds.add(gameData.documentName);
+        await prefs.setStringList('cached_game_ids', cachedIds);
       }
-    } catch (e) {
-      print('[CACHE ERROR] Failed to cache game ${gameData.documentName}: $e');
+      print('[CACHE] Game ${gameData.documentName} cached with expiration.');
+    } else {
+      print('[CACHE ERROR] Failed to cache game ${gameData.documentName}.');
     }
   }
 
   // Retrieving Game Data from Cache
   Future<GameData?> getCachedGameData(String gameId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final key = 'game_$gameId';
+    final rawData = prefs.getString(key);
+
+    if (rawData == null) {
+      print('[CACHE] No cache found for game $gameId');
+      return null;
+    }
+
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final key = 'game_$gameId';
-      final data = prefs.getString(key);
+      final decoded = json.decode(rawData);
+      final expiresAt = decoded['expiresAt'] as int?;
+      final now = DateTime.now().millisecondsSinceEpoch;
 
-      if (data == null) {
-        print('[CACHE] No cache found for game $gameId');
+      if (expiresAt != null && now > expiresAt) {
+        print('[CACHE] Game $gameId cache expired. Deleting...');
+        await prefs.remove(key);
+
+        // Also remove from cached_game_ids list
+        List<String> cachedIds = prefs.getStringList('cached_game_ids') ?? [];
+        cachedIds.remove(gameId);
+        await prefs.setStringList('cached_game_ids', cachedIds);
+
         return null;
       }
 
-      // Decode the cached data
-      try {
-        final decoded = json.decode(data) as Map<String, dynamic>;
-
-        // Convert the map to Map<String, String>
-        final stringMap = Map<String, String>.from(decoded);
-
-        print('[CACHE] Loaded game $gameId from cache.');
-        return GameData.fromCache(stringMap);
-      } catch (e) {
-        print('[CACHE ERROR] Failed to decode cached game $gameId: $e');
-        return null;
-      }
+      final gameDataMap = Map<String, String>.from(decoded['game']);
+      return GameData.fromCache(gameDataMap);
     } catch (e) {
-      print('[CACHE ERROR] Failed to retrieve game $gameId from cache: $e');
+      print('[CACHE ERROR] Failed to decode or process cached game $gameId: $e');
       return null;
     }
   }

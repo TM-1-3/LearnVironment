@@ -73,3 +73,7 @@ macos/.flutter-plugins-dependencies
 # Android build generated files
 # Ignoring any other build-related folder
 /android/.gradle/
+
+
+#Coverage report
+/coverage
