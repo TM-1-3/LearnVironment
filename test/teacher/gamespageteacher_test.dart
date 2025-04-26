@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/games_templates/games_initial_screen.dart';
+import 'package:learnvironment/teacher/widget/game_card_teacher.dart';
 import 'package:learnvironment/teacher/games_page_teacher.dart';
-import 'package:learnvironment/main_pages/widgets/game_card.dart';
 import 'package:learnvironment/services/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:mockito/mockito.dart';
@@ -165,7 +165,7 @@ class MockDataService extends Mock implements DataService {
 
 
 void main() {
-  group('GamesPage Tests', () {
+  group('TeacherGamesPage Tests', () {
     late MockFirebaseAuth auth;
     late Widget testWidget;
 
@@ -194,13 +194,13 @@ void main() {
       await tester.pumpWidget(testWidget);
       await tester.pumpAndSettle();
 
-      expect(find.byType(GameCard), findsNWidgets(2));
+      expect(find.byType(GameCardTeacher), findsNWidgets(2));
       await tester.enterText(find.byKey(Key('search')), 'Test');
       await tester.pumpAndSettle();
 
       expect(find.text('Test Game'), findsOneWidget);
       expect(find.text('Another Game'), findsNothing);
-      expect(find.byType(GameCard), findsOneWidget);
+      expect(find.byType(GameCardTeacher), findsOneWidget);
     });
 
     testWidgets('should filter games by age tag', (WidgetTester tester) async {
@@ -214,7 +214,7 @@ void main() {
 
       expect(find.text('Game 12+'), findsOneWidget);
       expect(find.text('Game 10+'), findsNothing);
-      expect(find.byType(GameCard), findsOneWidget);
+      expect(find.byType(GameCardTeacher), findsOneWidget);
     });
 
     testWidgets('should reset age filter when "All Ages" is selected', (WidgetTester tester) async {
@@ -226,7 +226,7 @@ void main() {
       await tester.tap(find.text('12+').last);
       await tester.pumpAndSettle();
 
-      expect(find.byType(GameCard), findsOneWidget);
+      expect(find.byType(GameCardTeacher), findsOneWidget);
 
       await tester.tap(find.byKey(Key('ageDropdown')));
       await tester.pumpAndSettle();
@@ -234,7 +234,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(
-          find.byType(GameCard), findsNWidgets(2));
+          find.byType(GameCardTeacher), findsNWidgets(2));
     });
 
     testWidgets('should reset tag filter when "All Tags" is selected', (
@@ -248,14 +248,14 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Test Game'), findsOneWidget);
-      expect(find.byType(GameCard), findsNWidgets(2));
+      expect(find.byType(GameCardTeacher), findsNWidgets(2));
 
       await tester.tap(find.byKey(Key('tagDropdown')));
       await tester.pumpAndSettle();
       await tester.tap(find.text('All Tags').last);
       await tester.pumpAndSettle();
 
-      expect(find.byType(GameCard), findsNWidgets(2));
+      expect(find.byType(GameCardTeacher), findsNWidgets(2));
     });
 
     testWidgets('should call load game correctly', (WidgetTester tester) async {

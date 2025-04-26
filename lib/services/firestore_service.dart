@@ -244,10 +244,9 @@ class FirestoreService {
     }
   }
 
-
   Future<void> createAssignment({
     required String title,
-    required String game_id,
+    required String gameId,
     required String turma,
     required String dueDate,
   }) async {
@@ -257,7 +256,7 @@ class FirestoreService {
       }
       await _firestore.collection('assignment').add({
         'title': title,
-        'game_id': game_id,
+        'game_id': gameId,
         'class': turma,
         'dueDate': dueDate,
       });

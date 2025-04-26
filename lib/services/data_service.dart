@@ -187,10 +187,10 @@ class DataService {
     required String title,
     required DateTime dueDate,
     required String turma,
-    required String game_id,
+    required String gameId,
   }) async {
     try {
-      await _firestoreService.createAssignment(title: title, dueDate: dueDate.toString(), turma: turma, game_id: game_id);
+      await _firestoreService.createAssignment(title: title, dueDate: dueDate.toString(), turma: turma, gameId: gameId);
       //await _userCacheService.addAssignment(title: title, dueDate: DateTime.parse(dueDate), turma: turma, gameid: game_id);
     } catch (e) {
       print("Error creating Assigment");

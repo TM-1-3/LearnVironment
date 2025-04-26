@@ -5,10 +5,10 @@ import 'package:learnvironment/services/auth_service.dart';
 import 'package:provider/provider.dart';
 
 class CreateAssignmentPage extends StatefulWidget {
-  final String game_id;
+  final String gameId;
 
   CreateAssignmentPage({
-    required this.game_id,
+    required this.gameId,
     super.key,
   });
 
@@ -74,7 +74,7 @@ class CreateAssignmentPageState extends State<CreateAssignmentPage> {
   required String gameid}) async {
     try {
       DataService dataService = Provider.of<DataService>(context, listen: false);
-      await dataService.createAssignment(title: title, dueDate: dueDate, turma: turma, game_id: gameid);
+      await dataService.createAssignment(title: title, dueDate: dueDate, turma: turma, gameId: gameid);
 
       setState(() {
         _isSaved = true;
@@ -236,7 +236,7 @@ class CreateAssignmentPageState extends State<CreateAssignmentPage> {
         const SizedBox(height: 20),
         ElevatedButton(
           onPressed: () {
-            _createAssignment(title: titleController.text.trim(), dueDate: _dueDate, turma: _selectedClass, gameid: widget.game_id);
+            _createAssignment(title: titleController.text.trim(), dueDate: _dueDate, turma: _selectedClass, gameid: widget.gameId);
           },
           child: const Text('Save Changes'),
         ),

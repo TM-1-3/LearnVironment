@@ -50,7 +50,7 @@ class MockDataService extends Mock implements DataService {
     required String title,
     required DateTime dueDate,
     required String turma,
-    required String game_id,
+    required String gameId,
   }) async {
     if (_throwErrorOnSave) {
       throw Exception('Failed to save assignment');
@@ -86,7 +86,7 @@ void main() {
         Provider<DataService>(create: (context) => MockDataService()),
       ],
       child: MaterialApp(
-        home: CreateAssignmentPage(game_id: 'game'),
+        home: CreateAssignmentPage(gameId: 'game'),
         routes: {
           '/auth_gate': (context) => MockAuthGate(),
         },
@@ -203,7 +203,7 @@ void main() {
         Provider<DataService>(create: (context) => mock),
       ],
       child: MaterialApp(
-        home: CreateAssignmentPage(game_id: 'game'),
+        home: CreateAssignmentPage(gameId: 'game'),
         routes: {
           '/auth_gate': (context) => AuthGate(),
         },

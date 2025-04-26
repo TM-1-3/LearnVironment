@@ -94,7 +94,7 @@ class GameCardTeacher extends StatelessWidget {
                         icon: Icon(Icons.add),
                         tooltip: 'Add',
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => CreateAssignmentPage(game_id: gameId,)));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => CreateAssignmentPage(gameId: gameId,)));
                         },
                       ),
                     ),
