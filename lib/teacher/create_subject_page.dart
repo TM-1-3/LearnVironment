@@ -123,7 +123,7 @@ class _CreateSubjectPageState extends State<CreateSubjectPage> {
                 decoration: const InputDecoration(labelText: 'Logo URL'),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    value = "assets/placeholder.pnp";
+                    value = "assets/placeholder.png";
                   }
                   return null;
                 },
