@@ -74,7 +74,7 @@ class CreateAssignmentPageState extends State<CreateAssignmentPage> {
   required String gameid}) async {
     try {
       DataService dataService = Provider.of<DataService>(context, listen: false);
-      dataService.createAssignment(title: title, dueDate: dueDate, turma: turma, game_id: gameid);
+      await dataService.createAssignment(title: title, dueDate: dueDate, turma: turma, game_id: gameid);
 
       setState(() {
         _isSaved = true;
@@ -92,7 +92,7 @@ class CreateAssignmentPageState extends State<CreateAssignmentPage> {
       }
     } catch (e) {
       print("Error creating assignment: $e");
-      _showErrorDialog("Error creating assignment. Please try again.", "Error");
+      _showErrorDialog("Error creating assignment.", "Error");
     }
   }
 
@@ -177,10 +177,14 @@ class CreateAssignmentPageState extends State<CreateAssignmentPage> {
           title: const Text('Create Assignment'),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.of(context).pushReplacementNamed('/auth_gate');
+            onPressed: () async {
+              final shouldLeave = await _onWillPop();
+              if (shouldLeave! && context.mounted) {
+                Navigator.of(context).pop();
+              }
             },
           ),
+
         ),
         body: Center(
           child: ListView(
