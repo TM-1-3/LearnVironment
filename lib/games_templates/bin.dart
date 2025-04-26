@@ -59,13 +59,10 @@ class BinScreenState extends State<BinScreen> {
 
   void removeTrashItem(String item, String bin, Offset position) {
     setState(() {
-      // Check if the item was placed in the correct bin
       rightAnswer = trashItems[item] == bin;
-      if (rightAnswer) {
-        correctCount++;
-      } else {
-        wrongCount++;
-        tipsToAppear.add(widget.binData.tips[item]!);
+      rightAnswer ? correctCount++ : wrongCount++;
+      if (!rightAnswer) {
+        tipsToAppear.add(widget.binData.tips[item] ?? "No tip available.");
       }
       iconPosition = position;
       showIcon = true;
