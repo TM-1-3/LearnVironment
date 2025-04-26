@@ -35,11 +35,11 @@ class SubjectScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<dynamic> studentIds = subjectData.students ?? [];
+    final List<dynamic> studentIds = subjectData.students;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(subjectData.subjectName ?? 'Subject'),
+        title: Text(subjectData.subjectName),
       ),
       body: SingleChildScrollView(
         child: Center(

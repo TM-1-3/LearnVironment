@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/data/subject_data.dart';
@@ -21,9 +20,6 @@ class DataService {
     _gameCacheService = Provider.of<GameCacheService>(context, listen: false);
     _subjectCacheService = Provider.of<SubjectCacheService>(context, listen: false);
   }
-
-  FirestoreService get firestoreService => _firestoreService;
-  SubjectCacheService get subjectCacheService => _subjectCacheService;
 
   Future<List<Map<String, dynamic>>> getPlayedGames({required String userId}) async {
     try {
@@ -242,10 +238,25 @@ class DataService {
     try {
       await _firestoreService.setUserInfo(uid: uid, name: name, email: email, username: username, birthDate: birthDate, selectedAccountType: role, img: img);
       final List<String> gamesPlayed = await _userCacheService.getCachedGamesPlayed();
+      final List<String> classes = await _userCacheService.getCachedClasses();
       await _userCacheService.clearUserCache();
-      await _userCacheService.cacheUserData(UserData(id: uid, username: username, email: email, name: name, role: role, birthdate: DateTime.parse(birthDate),gamesPlayed: gamesPlayed, img: img));
+      await _userCacheService.cacheUserData(UserData(id: uid, username: username, email: email, name: name, role: role, birthdate: DateTime.parse(birthDate), gamesPlayed: gamesPlayed, classes: classes, img: img));
     } catch (e) {
       print("Error updating profile");
+    }
+  }
+
+  Future<void> createAssignment({
+    required String title,
+    required DateTime dueDate,
+    required String turma,
+    required String gameId,
+  }) async {
+    try {
+      await _firestoreService.createAssignment(title: title, dueDate: dueDate.toString(), turma: turma, gameId: gameId);
+      //await _userCacheService.addAssignment(title: title, dueDate: DateTime.parse(dueDate), turma: turma, gameid: game_id);
+    } catch (e) {
+      print("Error creating Assigment");
     }
   }
 

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:learnvironment/main_pages/games_page.dart';
 
 class ResultsPage extends StatelessWidget {
   final int questionsCount;
@@ -32,10 +31,7 @@ class ResultsPage extends StatelessWidget {
         leading: IconButton(  // Override the leading property
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => GamesPage()), // Navigate to GamesPage
-            );
+            Navigator.of(context).pushReplacementNamed('/auth_gate');
           },
         ),
       ),
@@ -117,17 +113,14 @@ class ResultsPage extends StatelessWidget {
               const SizedBox(height: 40),
               GestureDetector(
                 onTap: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => GamesPage()), // Navigate to HomePage
-                  );
+                  Navigator.of(context).pushReplacementNamed('/auth_gate');
                 },
                 child: Card(
                   elevation: 4,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   child: const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-                    child: Text("Back to Games Page", style: TextStyle(fontSize: 20, color: Colors.grey)),
+                    child: Text("Exit", style: TextStyle(fontSize: 20, color: Colors.grey)),
                   ),
                 ),
               ),

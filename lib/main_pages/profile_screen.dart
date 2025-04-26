@@ -43,16 +43,55 @@ class ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  // Prompt for password to confirm email change
+  Future<String> _promptForPassword() async {
+    String password = '';
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        TextEditingController passwordController = TextEditingController();
+        return AlertDialog(
+          title: const Text('Re-authentication required'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Please enter your password to confirm:'),
+              TextField(
+                controller: passwordController,
+                obscureText: true,
+                decoration: const InputDecoration(hintText: 'Password'),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                password = passwordController.text.trim();
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+    return password;
+  }
+
   // Delete account function
   Future<void> _deleteAccount() async {
     try {
       DataService dataService = Provider.of<DataService>(context, listen: false);
       AuthService authService = Provider.of<AuthService>(context, listen: false);
 
-      //Delete account in authService
-      await authService.deleteAccount();
+      print("Asking for password");
+      String password = await _promptForPassword();
+      if (password.isEmpty) throw Exception("Empty Password.");
+
       //Delete account from Firestore and cache using dataService
       await dataService.deleteAccount(uid: userData.id);
+      //Delete account in authService
+      await authService.deleteAccount(password: password);
 
       if (mounted) {
         Navigator.of(context).pushReplacementNamed('/signup');
@@ -131,85 +170,86 @@ class ProfileScreenState extends State<ProfileScreen> {
     if (isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
-        return Scaffold(
-            appBar: AppBar(
-              title: const Text('User Profile'),
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.of(context).pushReplacementNamed('/auth_gate');
-                },
-              ),
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.edit),
-                  onPressed: () {
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => EditProfilePage(userData: userData)));
-                  },
-                ),
-              ],
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('User Profile'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.of(context).pushReplacementNamed('/auth_gate');
+            },
+          ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.edit),
+              onPressed: () {
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => EditProfilePage(userData: userData)));
+              },
             ),
-            body: SafeArea(
-              child: SingleChildScrollView(
+          ],
+        ),
+        body: SafeArea(
+          child: SingleChildScrollView(
             child: Padding(
-            padding: const EdgeInsets.all(16),
-          child: Center(
+              padding: const EdgeInsets.all(16),
+            child: Center(
               child: Column(
                 children: [
-                  userData.img != "assets/placeholder.png"
-                      ? CircleAvatar(
-                    backgroundImage: NetworkImage(userData.img),
-                    radius: 200,
-                  )
-                      : CircleAvatar(
-                    backgroundImage: AssetImage(userData.img),
-                   radius: 200,
+                userData.img != "assets/placeholder.png"
+                    ? CircleAvatar(
+                  backgroundImage: NetworkImage(userData.img),
+                  radius: 200,
+                )
+                    : CircleAvatar(
+                  backgroundImage: AssetImage(userData.img),
+                 radius: 200,
+                ),
+                const SizedBox(height: 20),
+                  Text(
+                    userData.name,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    userData.username,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    userData.email,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Birthdate: ${userData.birthdate.year}-${userData.birthdate.month.toString().padLeft(2, '0')}-${userData.birthdate.day.toString().padLeft(2, '0')}',
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Account Type: ${userData.role}',
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 30),
+                  ElevatedButton.icon(
+                    onPressed: _signOut,
+                    icon: const Icon(Icons.exit_to_app),
+                    label: const Text('Sign Out'),
                   ),
                   const SizedBox(height: 20),
-                    Text(
-                      userData.name,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      userData.username,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      userData.email,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Birthdate: ${userData.birthdate.year}-${userData.birthdate.month.toString().padLeft(2, '0')}-${userData.birthdate.day.toString().padLeft(2, '0')}',
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Account Type: ${userData.role}',
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 30),
-                    ElevatedButton.icon(
-                      onPressed: _signOut,
-                      icon: const Icon(Icons.exit_to_app),
-                      label: const Text('Sign Out'),
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton.icon(
-                      onPressed: _showDeleteAccountDialog,
-                      icon: const Icon(Icons.delete_forever),
-                      label: const Text('Delete Account'),
-                    ),
-                  ],
-              )),
-            )
+                  ElevatedButton.icon(
+                    onPressed: _showDeleteAccountDialog,
+                    icon: const Icon(Icons.delete_forever),
+                    label: const Text('Delete Account'),
+                  ),
+                ],
+              )
+            ),
+          )
         )
-        )
-        );
+      )
+    );
   }
 }

@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:learnvironment/main_pages/widgets/tag.dart';
+import 'package:learnvironment/teacher/create_assignment_page.dart';
 
-class GameCard extends StatelessWidget {
+class GameCardTeacher extends StatelessWidget {
   final String imagePath;
   final String gameTitle;
   final List<String> tags;
   final String gameId;
   final Future<void> Function(String gameId) loadGame;
 
-  const GameCard({
+  const GameCardTeacher({
     super.key,
     required this.imagePath,
     required this.gameTitle,
@@ -86,6 +87,16 @@ class GameCard extends StatelessWidget {
                           ),
                         );
                       },
+                    ),
+                    const SizedBox(height: 10),
+                    Center(
+                      child: IconButton(
+                        icon: Icon(Icons.add),
+                        tooltip: 'Add',
+                        onPressed: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => CreateAssignmentPage(gameId: gameId,)));
+                        },
+                      ),
                     ),
                   ],
                 ),

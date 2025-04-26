@@ -210,6 +210,7 @@ class FirestoreService {
         img: data['img'] ?? 'assets/placeholder.png',
         birthdate: birthdateValue,
         gamesPlayed: List<String>.from(data['gamesPlayed'] ?? []),
+        classes: List<String>.from(data['classes'] ?? []),
       );
     } catch (e, stackTrace) {
       debugPrint("Error loading UserData: $e\n$stackTrace");
@@ -287,6 +288,29 @@ class FirestoreService {
     } catch (e) {
       print("[FirestoreService] Error deleting account $uid");
       rethrow;
+    }
+  }
+
+  Future<void> createAssignment({
+    required String title,
+    required String gameId,
+    required String turma,
+    required String dueDate,
+  }) async {
+    try {
+      if (turma== '') {
+        throw Exception("No class selected");
+      }
+      await _firestore.collection('assignment').add({
+        'title': title,
+        'game_id': gameId,
+        'class': turma,
+        'dueDate': dueDate,
+      });
+      print("[FirestoreService] Created Assignment!");
+    } catch (e) {
+      print("[FirestoreService] Unable to create assignment!");
+      throw Exception("Unable to create assignment!");
     }
   }
 
