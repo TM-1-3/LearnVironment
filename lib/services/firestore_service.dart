@@ -258,7 +258,7 @@ class FirestoreService {
       await _firestore.collection('assignment').add({
         'title': title,
         'game_id': game_id,
-        'turma': turma,
+        'class': turma,
         'dueDate': dueDate,
       });
       print("[FirestoreService] Created Assignment!");

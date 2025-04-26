@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 class UserData {
   final String id;
@@ -33,8 +32,8 @@ class UserData {
       'role': role,
       'birthdate': birthdate.toIso8601String(),
       'gamesPlayed': gamesPlayed.join(','),
+      'classes': classes.join(','),
       'img': img,
-      'classes': jsonEncode(classes),
     };
   }
 
@@ -48,8 +47,8 @@ class UserData {
         role: data['role'] ?? 'Unknown Role',
         birthdate: DateTime.tryParse(data['birthdate'] ?? '') ?? DateTime(2000),
         gamesPlayed: (data['gamesPlayed']?.split(',') ?? []),
+        classes: (data['classes']?.split(',') ?? []),
         img: data['img'] ?? 'assets/placeholder.png',
-        classes: List<String>.from(jsonDecode(data['classes'] ?? '[]')),
     );
   }
 

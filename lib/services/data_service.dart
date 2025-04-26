@@ -183,12 +183,11 @@ class DataService {
     }
   }
 
-
   Future<void> createAssignment({
     required String title,
     required DateTime dueDate,
     required String turma,
-    required String game_id
+    required String game_id,
   }) async {
     try {
       await _firestoreService.createAssignment(title: title, dueDate: dueDate.toString(), turma: turma, game_id: game_id);

@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:learnvironment/data/user_data.dart';
-import 'package:learnvironment/main_pages/profile_screen.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:learnvironment/services/auth_service.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
 
 class CreateAssignmentPage extends StatefulWidget {
   final String game_id;
@@ -23,7 +21,7 @@ class CreateAssignmentPageState extends State<CreateAssignmentPage> {
   late TextEditingController titleController;
   late DateTime _dueDate;
   late String _selectedClass;
-  late List<String> _classes;
+  late List<String> _classes = [];
 
   @override
   void initState() {
@@ -31,6 +29,7 @@ class CreateAssignmentPageState extends State<CreateAssignmentPage> {
     titleController = TextEditingController();
     _selectedClass = '';
     _dueDate = DateTime.now();
+    _loadClasses();
 
     titleController.addListener(_onTextChanged);
 
@@ -126,8 +125,11 @@ class CreateAssignmentPageState extends State<CreateAssignmentPage> {
         _showErrorDialog("No user is logged in.", "Error");
         return;
       }
+      setState(() {
+        _classes = userData.classes;
+      });
     } catch (e) {
-      print("Meow");
+      print("Failed to load Classes");
       rethrow;
     }
   }
@@ -210,7 +212,7 @@ class CreateAssignmentPageState extends State<CreateAssignmentPage> {
         ),
         const SizedBox(height: 10),
         DropdownButtonFormField<String>(
-          value: _selectedClass,
+          value: null,
           decoration: const InputDecoration(labelText: 'Class'),
           items: _classes.map((type) {
             return DropdownMenuItem<String>(
