@@ -94,8 +94,7 @@ void main() async {
 
     testWidget = MultiProvider(
       providers: [
-        ChangeNotifierProvider<AuthService>(
-            create: (_) => authService),
+        ChangeNotifierProvider<AuthService>(create: (_) => authService),
         Provider<DataService>(create: (context) => dataService),
         Provider<UserCacheService>(create: (context) => userCache),
       ],

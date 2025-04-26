@@ -174,8 +174,7 @@ void main() {
 
       testWidget = MultiProvider(
           providers: [
-            ChangeNotifierProvider<AuthService>(
-                create: (_) => MockAuthService(firebaseAuth: auth)),
+            ChangeNotifierProvider<AuthService>(create: (_) => MockAuthService(firebaseAuth: auth)),
             Provider<DataService>(create: (context) => MockDataService()),
           ],
           child: MaterialApp(
