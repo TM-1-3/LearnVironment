@@ -123,7 +123,15 @@ class QuizState extends State<Quiz> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.quizData.gameName)),
+      appBar: AppBar(
+          title: Text(widget.quizData.gameName),
+          leading: IconButton(  // Override the leading property
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.of(context).pushReplacementNamed('/auth_gate');
+            },
+        ),
+      ),
       body: Center(
         child: quizStarted
             ? quizFinished

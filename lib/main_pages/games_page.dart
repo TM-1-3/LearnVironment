@@ -88,6 +88,12 @@ class GamesPageState extends State<GamesPage> {
 
     return Scaffold(
       appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.of(context).pushReplacementNamed('/auth_gate');
+            },
+          ),
         title: TextField(
           key: Key('search'),
           onChanged: (query) {
