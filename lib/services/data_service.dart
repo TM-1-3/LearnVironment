@@ -118,6 +118,24 @@ class DataService {
     }
   }
 
+  Future<SubjectData?> getSubjectData({required String subjectId}) async {
+    try {
+      final cachedSubject = await _subjectCacheService.getCachedSubjectData(subjectId);
+      if (cachedSubject != null) {
+        print('[DataService] Loaded subject from cache');
+        return cachedSubject;
+      }
+
+      final freshSubject = await _firestoreService.fetchSubjectData(subjectId: subjectId);
+      await _subjectCacheService.cacheSubjectData(freshSubject);
+      print('[DataService] Loaded subject from Firestore and cached it');
+      return freshSubject;
+    } catch (e) {
+      print('[DataService] Error getting subject data: $e');
+      return null;
+    }
+  }
+
   // Function to fetch all games, handling cache and Firestore
   Future<List<Map<String, dynamic>>> getAllGames() async {
     try {

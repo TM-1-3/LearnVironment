@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/teacher/subject_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../services/data_service.dart';
@@ -48,10 +49,9 @@ class TeacherMainPageState extends State<TeacherMainPage> {
     }).toList();
   }
 
-  /*
-      Future<void> loadSubject(String subjectId) async {
-      try {
-      print('[Subject Page] Loading Subject Page');
+  Future<void> loadSubject(String subjectId) async {
+    try {
+      print('[Teacher Main Page] Loading Game');
       final dataService = Provider.of<DataService>(context, listen: false);
       final authService = Provider.of<AuthService>(context, listen: false);
 
@@ -59,22 +59,21 @@ class TeacherMainPageState extends State<TeacherMainPage> {
       final userId = await authService.getUid();
 
       if (subjectData != null && userId.isNotEmpty && mounted) {
-      Navigator.push(context,
-      MaterialPageRoute(
-      builder: (context) => SubjectScreen(subjectData: subjectData),
-      ),
-      );
+        Navigator.push(context,
+          MaterialPageRoute(
+            builder: (context) => SubjectScreen(subjectData: subjectData),
+          ),
+        );
       }
-      } catch (e) {
+    } catch (e) {
       print(e);
       if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Error loading subject page: $e')),
-      );
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error loading game: $e')),
+        );
       }
-      }
-      }
-   */
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -133,6 +132,7 @@ class TeacherMainPageState extends State<TeacherMainPage> {
                       imagePath: subject['imagePath'],
                       subjectName: subject['subjectName'],
                       subjectId: subject['subjectId'],
+                      loadSubject: loadSubject,
                     );
                   },
                 )
