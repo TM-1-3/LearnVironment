@@ -153,13 +153,13 @@ class GamesPageTeacherState extends State<GamesPageTeacher> {
               builder: (context, constraints) {
                 double mainAxisExtent = 600.0;
                 if (constraints.maxWidth <= 600) {
-                  mainAxisExtent = constraints.maxWidth;
+                  mainAxisExtent = constraints.maxWidth+45;
                 } else if (constraints.maxWidth <= 1000) {
-                  mainAxisExtent = 650;
+                  mainAxisExtent = 695;
                 } else if (constraints.maxWidth <= 2000) {
-                  mainAxisExtent = 1050;
+                  mainAxisExtent = 1095;
                 } else {
-                  mainAxisExtent = 1500;
+                  mainAxisExtent = 1545;
                 }
 
                 return filteredGames.isNotEmpty

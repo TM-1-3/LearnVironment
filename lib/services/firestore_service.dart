@@ -186,6 +186,7 @@ class FirestoreService {
         img: data['img'] ?? 'assets/placeholder.png',
         birthdate: birthdateValue,
         gamesPlayed: List<String>.from(data['gamesPlayed'] ?? []),
+        classes: List<String>.from(data['classes'] ?? []),
       );
     } catch (e, stackTrace) {
       debugPrint("Error loading UserData: $e\n$stackTrace");
@@ -262,8 +263,8 @@ class FirestoreService {
       });
       print("[FirestoreService] Created Assignment!");
     } catch (e) {
-      print("[FirestoreService] Unable to create assigment!");
-      throw Exception("Unable to create assigment!");
+      print("[FirestoreService] Unable to create assignment!");
+      throw Exception("Unable to create assignment!");
     }
   }
 }

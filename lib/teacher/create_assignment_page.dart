@@ -28,9 +28,12 @@ class CreateAssignmentPageState extends State<CreateAssignmentPage> {
   @override
   void initState() {
     super.initState();
+    titleController = TextEditingController();
+    _selectedClass = '';
     _dueDate = DateTime.now();
 
     titleController.addListener(_onTextChanged);
+
   }
 
   void _onTextChanged() {
@@ -72,6 +75,7 @@ class CreateAssignmentPageState extends State<CreateAssignmentPage> {
   required String gameid}) async {
     try {
       DataService dataService = Provider.of<DataService>(context, listen: false);
+      dataService.createAssignment(title: title, dueDate: dueDate, turma: turma, game_id: gameid);
 
       setState(() {
         _isSaved = true;
@@ -113,6 +117,20 @@ class CreateAssignmentPageState extends State<CreateAssignmentPage> {
     );
   }
 
+  Future<void> _loadClasses() async {
+    try {
+      DataService dataService = Provider.of<DataService>(context, listen: false);
+      AuthService authService = Provider.of<AuthService>(context, listen: false);
+      UserData? userData = await dataService.getUserData(userId: await authService.getUid());
+      if (userData == null) {
+        _showErrorDialog("No user is logged in.", "Error");
+        return;
+      }
+    } catch (e) {
+      print("Meow");
+      rethrow;
+    }
+  }
 
   Future<bool?> _onWillPop() async {
     if (!_isSaved) {
