@@ -242,4 +242,28 @@ class FirestoreService {
       rethrow;
     }
   }
+
+
+  Future<void> createAssignment({
+    required String title,
+    required String game_id,
+    required String turma,
+    required String dueDate,
+  }) async {
+    try {
+      if (turma== '') {
+        throw Exception("No class selected");
+      }
+      await _firestore.collection('assignment').add({
+        'title': title,
+        'game_id': game_id,
+        'turma': turma,
+        'dueDate': dueDate,
+      });
+      print("[FirestoreService] Created Assignment!");
+    } catch (e) {
+      print("[FirestoreService] Unable to create assigment!");
+      throw Exception("Unable to create assigment!");
+    }
+  }
 }
