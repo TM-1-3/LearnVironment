@@ -32,7 +32,7 @@
 - As a user I want to be able to customize my profile so that I can be identified by everyone. [#14](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/14)
 - As a user I want to have a bibliography associated with each game so that I can easily verify the accuracy and sources of the information. [#18](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/18)
 - As a student I want to receive notifications if a game I was assigned to play has a close deadline so that I don't miss my assignments due date. [#22](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/22)
-- 
+- As a teacher I want to be able to assign games to a class so that students know what to play. [#8](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/8)
 
 ### Detailed description
 - Fixed bug in results screen [#52](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/52)
@@ -53,7 +53,9 @@
 - Fixed error messages on sign up screen [#80](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/80)
 - Fixed bug of when data in games is missing [#71](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/71)
 - Fixed bug in cache [#63](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/63)
-- Fixed bug in back buttons []()
+- Fixed bug in back buttons [#51](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/51)
+- Teachers can now create assignments [#86](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/86)
+- Fixed bug in back to games page button [#87](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/87)
 
 ### Test User
 - email: 
