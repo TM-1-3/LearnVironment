@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:learnvironment/notifications_page.dart';
+import 'package:learnvironment/main_pages/notifications_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MainPage extends StatelessWidget {

@@ -93,13 +93,6 @@ void main() {
   });
 }
 
-class MockGamesPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Text('Games Page')));
-  }
-}
-
 class RandomGame extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
