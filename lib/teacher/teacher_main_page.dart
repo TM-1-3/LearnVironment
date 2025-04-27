@@ -60,10 +60,10 @@ class TeacherMainPageState extends State<TeacherMainPage> {
 
       if (subjectData != null && userId.isNotEmpty && mounted) {
         Navigator.push(context,
-          MaterialPageRoute(
-            builder: (context) => TeacherSubjectScreen(subjectData: subjectData),
-          ),
-        );
+          MaterialPageRoute(builder: (context) => TeacherSubjectScreen(subjectData: subjectData)),
+        ).then((_) {
+          _fetchSubjects();
+        });
       }
     } catch (e) {
       print(e);
