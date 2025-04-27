@@ -191,7 +191,6 @@ void main() {
       // Answer all questions
       for (int i = 1; i <= 10; i++) {
         final answerCards = find.byType(GestureDetector);
-        debugDumpApp();
         expect(answerCards,findsNWidgets(5)); // Ensure 4 answer options are available
         await tester.tap(answerCards.first); // Simulate answering the first option
         await tester.pumpAndSettle(); // Wait for state update

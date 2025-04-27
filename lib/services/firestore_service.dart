@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:learnvironment/data/game_data.dart';
+import 'package:learnvironment/data/subject_data.dart';
 import 'package:learnvironment/data/user_data.dart';
 
 class FirestoreService {
@@ -71,6 +73,28 @@ class FirestoreService {
       return [];
     }
   }
+
+  Future<List<Map<String, dynamic>>> getAllSubjects({required String teacherId}) async {
+    try {
+      final querySnapshot = await _firestore
+          .collection('subjects')
+          .where('teacher', isEqualTo: teacherId)
+          .get();
+
+      return querySnapshot.docs.map((doc) {
+        final data = doc.data();
+        return {
+          'imagePath': data['logo'] ?? 'assets/placeholder.png',
+          'subjectName': data['name'] ?? 'Default Game Title',
+          'subjectId': doc.id,
+        };
+      }).toList();
+    } catch (e, stackTrace) {
+      debugPrint('[FirestoreService] Error getting subjects: $e\n$stackTrace');
+      rethrow;
+    }
+  }
+
 
   Future<void> updateUserGamesPlayed({required String uid, required String gameId}) async {
     final userDoc = _firestore.collection('users').doc(uid);
@@ -194,6 +218,29 @@ class FirestoreService {
     }
   }
 
+  Future<SubjectData> fetchSubjectData({required String subjectId}) async {
+    try {
+      DocumentSnapshot snapshot = await _firestore.collection('subjects').doc(subjectId).get();
+
+      if (!snapshot.exists) {
+        throw Exception("Subject not found in Firestore for ID: $subjectId");
+      }
+
+      var data = snapshot.data() as Map<String, dynamic>;
+
+      return SubjectData(
+        subjectId: snapshot.id,
+        subjectLogo: data['logo'] ?? 'assets/placeholder.png',
+        subjectName: data['name'] ?? 'Unknown Name',
+        students: List<String>.from(data['students'] ?? []),
+        teacher: data['teacher'],
+      );
+    } catch (e, stackTrace) {
+      debugPrint("Error loading SubjectData: $e\n$stackTrace");
+      rethrow;
+    }
+  }
+
   Future<String?> fetchUserType({required String uid}) async {
     try {
       final userDoc = await _firestore.collection('users').doc(uid).get();
@@ -265,5 +312,23 @@ class FirestoreService {
       print("[FirestoreService] Unable to create assignment!");
       throw Exception("Unable to create assignment!");
     }
+  }
+
+  Future<void> addSubjectData(SubjectData subject) async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      throw Exception('No authenticated user found');
+    }
+
+    await FirebaseFirestore.instance
+        .collection('subjects')
+        .doc(subject.subjectId)
+        .set({
+      'subjectId': subject.subjectId,
+      'name': subject.subjectName,
+      'logo': subject.subjectLogo,
+      'teacher': user.uid,
+    });
   }
 }

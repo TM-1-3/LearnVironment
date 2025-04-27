@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:learnvironment/games_templates/games_initial_screen.dart';
-import 'package:learnvironment/teacher/widget/game_card_teacher.dart';
+import 'package:learnvironment/teacher/widgets/game_card_teacher.dart';
 import 'package:learnvironment/services/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:provider/provider.dart';
