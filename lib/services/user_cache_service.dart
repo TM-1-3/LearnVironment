@@ -27,7 +27,7 @@ class UserCacheService {
   Future<UserData?> getCachedUserData() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final keys = ['id', 'username', 'email', 'name', 'role', 'birthdate', 'gamesPlayed'];
+      final keys = ['id', 'username', 'email', 'name', 'role', 'birthdate', 'gamesPlayed', 'classes'];
       final Map<String, String> cachedData = {};
 
       print('[CACHE] Loading user data from cache...');
@@ -57,6 +57,9 @@ class UserCacheService {
         gamesPlayed: cachedData['gamesPlayed']!.isEmpty
             ? []
             : cachedData['gamesPlayed']!.split(','),
+        classes: cachedData['classes']!.isEmpty
+            ? []
+            : cachedData['classes']!.split(','),
       );
     } catch (e) {
       print('[CACHE ERROR] Error retrieving cached user data: $e');
@@ -125,6 +128,25 @@ class UserCacheService {
       return games;
     } catch (e) {
       print('[CACHE ERROR] Failed to get cached gamesPlayed: $e');
+      return [];
+    }
+  }
+
+  Future<List<String>> getCachedClasses() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final rawClasses = prefs.getString('classes');
+
+      if (rawClasses == null || rawClasses.isEmpty) {
+        print('[CACHE] No cached Classes found.');
+        return [];
+      }
+
+      final classes = rawClasses.split(',').where((id) => id.isNotEmpty).toList();
+      print('[CACHE] Loaded Classes from cache: $classes');
+      return classes;
+    } catch (e) {
+      print('[CACHE ERROR] Failed to get cached Classes: $e');
       return [];
     }
   }

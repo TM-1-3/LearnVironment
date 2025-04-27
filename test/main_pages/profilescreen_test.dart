@@ -31,7 +31,7 @@ class MockAuthService extends Mock implements AuthService {
   }
 
   @override
-  Future<void> deleteAccount() async {}
+  Future<void> deleteAccount({required String password}) async {}
 
   @override
   Future<void> signOut() async {}
@@ -58,6 +58,7 @@ class MockDataService extends Mock implements DataService {
       role: "student",
       id: userId,
       gamesPlayed: [],
+      classes: [],
     );
   }
 }
@@ -125,6 +126,13 @@ void main() async {
     await tester.ensureVisible(find.text("Delete"));
     await tester.tap(find.text("Delete"));
     await tester.pumpAndSettle();
+
+    expect(find.text('Re-authentication required'), findsOneWidget);
+    await tester.enterText(find.byType(TextField), 'test_password');
+    await tester.pumpAndSettle();
+    await tester.tap(find.text("OK"));
+    await tester.pumpAndSettle();
+
     expect(find.byType(SignUpScreen), findsOneWidget);
   });
 

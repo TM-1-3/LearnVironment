@@ -53,6 +53,7 @@ class MockDataService extends Mock implements DataService {
       role: "student",
       id: userId,
       gamesPlayed: [],
+      classes: [],
     );
   }
 
@@ -90,12 +91,12 @@ void main() async {
       role: "student",
       id: "test",
       gamesPlayed: [],
+      classes: [],
     );
 
     testWidget = MultiProvider(
       providers: [
-        ChangeNotifierProvider<AuthService>(
-            create: (_) => authService),
+        ChangeNotifierProvider<AuthService>(create: (_) => authService),
         Provider<DataService>(create: (context) => dataService),
         Provider<UserCacheService>(create: (context) => userCache),
       ],

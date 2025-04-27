@@ -383,4 +383,37 @@ void main() {
     });
   });
 
+  group('createAssignment Tests', () {
+    test('createAssignment successfully creates an assignment document', () async {
+      await firestoreService.createAssignment(
+        title: 'Assignment 1',
+        gameId: 'game1',
+        turma: 'Class A',
+        dueDate: '2025-05-01',
+      );
+
+      final snapshot = await firestore.collection('assignment').get();
+      expect(snapshot.docs.length, 1);
+
+      final assignment = snapshot.docs.first.data();
+      expect(assignment['title'], 'Assignment 1');
+      expect(assignment['game_id'], 'game1');
+      expect(assignment['class'], 'Class A');
+      expect(assignment['dueDate'], '2025-05-01');
+    });
+
+    test('createAssignment throws exception if no class is selected', () async {
+      try {
+        await firestoreService.createAssignment(
+          title: 'Assignment 2',
+          gameId: 'game2',
+          turma: '',
+          dueDate: '2025-06-01',
+        );
+        fail('Expected exception was not thrown');
+      } catch (e) {
+        expect(e.toString(), contains('Unable to create assignment!'));
+      }
+    });
+  });
 }

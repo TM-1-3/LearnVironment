@@ -41,6 +41,7 @@ class GamesInitialScreen extends StatelessWidget {
                 SizedBox(height: 20),
                 Text(
                   gameData.gameName,
+                  textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 30),

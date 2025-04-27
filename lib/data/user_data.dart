@@ -7,6 +7,7 @@ class UserData {
   final DateTime birthdate;
   final List<String> gamesPlayed;
   final String img;
+  final List<String> classes;
 
   UserData({
     required this.id,
@@ -16,7 +17,8 @@ class UserData {
     required this.role,
     required this.birthdate,
     required this.gamesPlayed,
-    required this.img
+    required this.img,
+    required this.classes
   });
 
   // Convert UserData to a Map for cache storage
@@ -29,21 +31,23 @@ class UserData {
       'role': role,
       'birthdate': birthdate.toIso8601String(),
       'gamesPlayed': gamesPlayed.join(','),
-      'img': img
+      'classes': classes.join(','),
+      'img': img,
     };
   }
 
   // Convert Map back to UserData (factory method)
   factory UserData.fromCache(Map<String, String> data) {
     return UserData(
-      id: data['id'] ?? '',
-      username: data['username'] ?? 'Unknown User',
-      email: data['email'] ?? 'Unknown Email',
-      name: data['name'] ?? 'Unknown Name',
-      role: data['role'] ?? 'Unknown Role',
-      birthdate: DateTime.tryParse(data['birthdate'] ?? '') ?? DateTime(2000),
-      gamesPlayed: (data['gamesPlayed']?.split(',') ?? []),
-      img: data['img'] ?? 'assets/placeholder.png'
+        id: data['id'] ?? '',
+        username: data['username'] ?? 'Unknown User',
+        email: data['email'] ?? 'Unknown Email',
+        name: data['name'] ?? 'Unknown Name',
+        role: data['role'] ?? 'Unknown Role',
+        birthdate: DateTime.tryParse(data['birthdate'] ?? '') ?? DateTime(2000),
+        gamesPlayed: (data['gamesPlayed']?.split(',') ?? []),
+        classes: (data['classes']?.split(',') ?? []),
+        img: data['img'] ?? 'assets/placeholder.png',
     );
   }
 
@@ -56,17 +60,19 @@ class UserData {
     String? role,
     DateTime? birthdate,
     List<String>? gamesPlayed,
-    String? img
+    String? img,
+    List<String>? classes
   }) {
     return UserData(
-      id: id ?? this.id,
-      username: username ?? this.username,
-      email: email ?? this.email,
-      name: name ?? this.name,
-      role: role ?? this.role,
-      birthdate: birthdate ?? this.birthdate,
-      gamesPlayed: gamesPlayed ?? this.gamesPlayed,
-      img: img ?? this.img
+        id: id ?? this.id,
+        username: username ?? this.username,
+        email: email ?? this.email,
+        name: name ?? this.name,
+        role: role ?? this.role,
+        birthdate: birthdate ?? this.birthdate,
+        gamesPlayed: gamesPlayed ?? this.gamesPlayed,
+        img: img ?? this.img,
+        classes: classes ?? this.classes
     );
   }
 }

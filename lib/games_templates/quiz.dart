@@ -39,7 +39,25 @@ class QuizState extends State<Quiz> {
 
     questionsAndOptions = widget.quizData.questionsAndOptions!;
     correctAnswers = widget.quizData.correctAnswers!;
+    questionsAndOptions.removeWhere((key, value) => value.length < 4);
     availableQuestions = List.from(questionsAndOptions.keys);
+    if (availableQuestions.isEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: Text("No Questions Available"),
+            content: Text("There are no questions with 4 or more options."),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text("OK"),
+              )
+            ],
+          ),
+        );
+      });
+    }
   }
 
   void startQuiz() {
@@ -57,12 +75,6 @@ class QuizState extends State<Quiz> {
         currentQuestion = availableQuestions.removeAt(randomIndex);
         currentOptions = List.from(questionsAndOptions[currentQuestion]!);
         currentOptions.shuffle();
-
-        if (currentOptions.length < 4) {
-          print("Warning: Less than 4 options for question: $currentQuestion");
-          updateQuestionAndOptions(); // Try next question
-          return;
-        }
 
         questionNumber++;
         correctAnswer = correctAnswers[currentQuestion]!;
@@ -96,12 +108,10 @@ class QuizState extends State<Quiz> {
   void checkSelectedAnswer(String selected) {
     setState(() {
       selectedAnswer = selected;
-      rightAnswer = selected == correctAnswer;
-      if (rightAnswer!) {
-        correctCount++;
-      } else {
-        wrongCount++;
-        tipsToAppear.add(widget.quizData.tips[currentQuestion]!);
+      rightAnswer = selectedAnswer == correctAnswer;
+      rightAnswer! ? correctCount++ : wrongCount++;
+      if (!rightAnswer!) {
+        tipsToAppear.add(widget.quizData.tips[currentQuestion] ?? "No tip available.");
       }
     });
 
@@ -113,7 +123,15 @@ class QuizState extends State<Quiz> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.quizData.gameName)),
+      appBar: AppBar(
+          title: Text(widget.quizData.gameName),
+          leading: IconButton(  // Override the leading property
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.of(context).pushReplacementNamed('/auth_gate');
+            },
+        ),
+      ),
       body: Center(
         child: quizStarted
             ? quizFinished
@@ -178,23 +196,38 @@ class QuizState extends State<Quiz> {
               ),
             ),
             const SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildClickableCard(currentOptions[0]),
-                const SizedBox(width: 20),
-                _buildClickableCard(currentOptions[1]),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildClickableCard(currentOptions[2]),
-                const SizedBox(width: 20),
-                _buildClickableCard(currentOptions[3]),
-              ],
-            ),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                double cardSpacing = 20;
+                double totalSpacing = cardSpacing;
+                double maxWidthPerCard = (constraints.maxWidth - totalSpacing) / 2;
+
+                return Column(
+                  children: [
+                    for (int i = 0; i < currentOptions.length; i += 2)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: maxWidthPerCard,
+                              child: _buildClickableCard(currentOptions[i]),
+                            ),
+                            if (i + 1 < currentOptions.length)
+                              SizedBox(width: cardSpacing),
+                            if (i + 1 < currentOptions.length)
+                              SizedBox(
+                                width: maxWidthPerCard,
+                                child: _buildClickableCard(currentOptions[i + 1]),
+                              ),
+                          ],
+                        ),
+                      ),
+                  ],
+                );
+              },
+            )
           ],
         ));
   }
@@ -228,7 +261,7 @@ class QuizState extends State<Quiz> {
           ),
           if (showIcon)
             Positioned(
-              top: 30, // Adjust to center image over the card
+              top: 15,
               child: Image.asset(
                 rightAnswer! ? 'assets/right.png' : 'assets/wrong.png',
                 width: 50,

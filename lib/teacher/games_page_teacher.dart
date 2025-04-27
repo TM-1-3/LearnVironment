@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:learnvironment/games_templates/games_initial_screen.dart';
-import 'package:learnvironment/main_pages/widgets/game_card.dart';
+import 'package:learnvironment/teacher/widget/game_card_teacher.dart';
 import 'package:learnvironment/services/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:provider/provider.dart';
 
-class GamesPage extends StatefulWidget {
-  const GamesPage({super.key});
+class GamesPageTeacher extends StatefulWidget {
+  const GamesPageTeacher({super.key});
 
   @override
-  GamesPageState createState() => GamesPageState();
+  GamesPageTeacherState createState() => GamesPageTeacherState();
 }
 
-class GamesPageState extends State<GamesPage> {
+class GamesPageTeacherState extends State<GamesPageTeacher> {
   String _searchQuery = "";
   String? _selectedTag;
   String? _selectedAge;
@@ -153,13 +153,13 @@ class GamesPageState extends State<GamesPage> {
               builder: (context, constraints) {
                 double mainAxisExtent = 600.0;
                 if (constraints.maxWidth <= 600) {
-                  mainAxisExtent = constraints.maxWidth;
+                  mainAxisExtent = constraints.maxWidth+45;
                 } else if (constraints.maxWidth <= 1000) {
-                  mainAxisExtent = 650;
+                  mainAxisExtent = 695;
                 } else if (constraints.maxWidth <= 2000) {
-                  mainAxisExtent = 1050;
+                  mainAxisExtent = 1095;
                 } else {
-                  mainAxisExtent = 1500;
+                  mainAxisExtent = 1545;
                 }
 
                 return filteredGames.isNotEmpty
@@ -174,7 +174,7 @@ class GamesPageState extends State<GamesPage> {
                   itemCount: filteredGames.length,
                   itemBuilder: (context, index) {
                     final game = filteredGames[index];
-                    return GameCard(
+                    return GameCardTeacher(
                       imagePath: game['imagePath'],
                       gameTitle: game['gameTitle'],
                       tags: List<String>.from(game['tags']),
