@@ -3,6 +3,7 @@ import 'package:learnvironment/data/user_data.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:learnvironment/services/auth_service.dart';
 import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CreateAssignmentPage extends StatefulWidget {
   final String gameId;
@@ -161,7 +162,7 @@ class CreateAssignmentPageState extends State<CreateAssignmentPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context){
     return PopScope(
       canPop: _isSaved,
       onPopInvokedWithResult: (didPop, result) async {
@@ -235,8 +236,12 @@ class CreateAssignmentPageState extends State<CreateAssignmentPage> {
         ),
         const SizedBox(height: 20),
         ElevatedButton(
-          onPressed: () {
+          onPressed: () async {
             _createAssignment(title: titleController.text.trim(), dueDate: _dueDate, turma: _selectedClass, gameid: widget.gameId);
+            await FirebaseFirestore.instance.collection('events').add({
+              'name': 'New Assignment!',
+              'className': _selectedClass, // 👈 The topic / class name here
+            });
           },
           child: const Text('Save Changes'),
         ),

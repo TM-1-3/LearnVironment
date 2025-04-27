@@ -3,6 +3,22 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:learnvironment/student/student_home.dart';
 import 'package:learnvironment/main_pages/notifications_page.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
+import 'package:learnvironment/authentication/auth_gate.dart';
+
+class MockAuthGate extends AuthGate {
+  MockAuthGate({key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(
+        child: Text('Mock AuthGate Screen'),
+      ),
+    );
+  }
+}
 
 void main() {
 
@@ -29,6 +45,19 @@ void main() {
 
       expect(find.text('Test Title'), findsOneWidget);
       expect(find.text('Test Body'), findsOneWidget);
+    });
+
+    testWidgets('back button navigates to HomePage', (WidgetTester tester) async {
+      // Build the widget tree
+      await tester.pumpWidget(MaterialApp(
+        home: NotificationsPage(),
+        routes: {
+          '/auth_gate': (context) => MockAuthGate(),
+        },
+      ));
+      await tester.tap(find.byIcon(Icons.arrow_back));
+      await tester.pumpAndSettle();
+      expect(find.byType(MockAuthGate), findsOneWidget);
     });
 
     testWidgets('displays notification sent time', (WidgetTester tester) async {

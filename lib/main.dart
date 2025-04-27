@@ -16,6 +16,7 @@ import 'package:learnvironment/services/user_cache_service.dart';
 import 'package:provider/provider.dart';
 import 'package:learnvironment/services/firebase_messaging_service.dart';
 
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);

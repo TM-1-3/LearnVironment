@@ -9,12 +9,21 @@ exports.notifyOnEvent = onDocumentCreated('events/{eventId}', async (event) => {
 
   if (!eventData) return;
 
+  const className = eventData.className;
+
+  if (!className) {
+      console.error('No className found in event data.');
+      return;
+  }
+
+  const sanitizedClassName = className.replace(/[^a-zA-Z0-9-_.~%]/g, '_');
+
   const payload = {
     notification: {
       title: 'New Event!',
       body: `Event "${eventData.name}" is live.`,
     },
-    topic: 'your_event_topic',
+    topic: sanitizedClassName,
   };
 
   await getMessaging().send(payload);

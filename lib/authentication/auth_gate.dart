@@ -8,12 +8,21 @@ import 'package:learnvironment/student/student_home.dart';
 import 'package:learnvironment/teacher/teacher_home.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class AuthGate extends StatelessWidget {
   Future<UserData?> _loadUserData(BuildContext context) async {
     final authService = Provider.of<AuthService>(context, listen: false);
     final dataService = Provider.of<DataService>(context, listen: false);
     return await dataService.getUserData(userId: await authService.getUid());
+  }
+
+  Future<void> _subscribeUserToClasses(List<String> classes) async {
+    for (String className in classes) {
+      String sanitizedClassName = className.replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '_');
+      await FirebaseMessaging.instance.subscribeToTopic(sanitizedClassName);
+      print('Subscribed to $sanitizedClassName');
+    }
   }
 
   Widget _navigateToHomePage(String role) {
@@ -56,6 +65,9 @@ class AuthGate extends StatelessWidget {
 
         if (userData == null || userData.role.isEmpty) {
           return FixAccountPage();
+        }
+        if (userData.classes.isNotEmpty) {
+          _subscribeUserToClasses(userData.classes);
         }
         return _navigateToHomePage(userData.role);
       },
