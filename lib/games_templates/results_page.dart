@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:learnvironment/main_pages/games_page.dart';
 
 class ResultsPage extends StatelessWidget {
   final int questionsCount;
