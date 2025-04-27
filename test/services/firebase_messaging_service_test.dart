@@ -1,4 +1,3 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -6,8 +5,6 @@ import 'package:mockito/mockito.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:learnvironment/services/firebase_messaging_service.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 class MockFlutterLocalNotificationsPlugin extends Mock
    with MockPlatformInterfaceMixin
@@ -23,16 +20,16 @@ void main(){
   setUp(() {
     mockFlutterLocalNotificationsPlugin = MockFlutterLocalNotificationsPlugin();
     TestWidgetsFlutterBinding.ensureInitialized();
-    channel.setMockMethodCallHandler((MethodCall methodCall) async {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(channel, ((MethodCall methodCall) async {
       if (methodCall.method == 'initialize') {
         return true; // Mock a successful initialization
       }
       return null;
-    });
+    }));
   });
 
   tearDown(() {
-    channel.setMockMethodCallHandler(null);
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(channel, null);
   });
 
   group('initNotifications Tests', () {

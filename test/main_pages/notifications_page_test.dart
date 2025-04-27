@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:learnvironment/services/firebase_messaging_service.dart';
 import 'package:learnvironment/student/student_home.dart';
 import 'package:learnvironment/main_pages/notifications_page.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
