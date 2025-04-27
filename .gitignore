@@ -77,3 +77,6 @@ macos/.flutter-plugins-dependencies
 
 #Coverage report
 /coverage
+
+#Random weird file
+();
