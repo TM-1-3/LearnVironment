@@ -3,10 +3,10 @@ import 'package:learnvironment/data/subject_data.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:provider/provider.dart';
 
-class SubjectScreen extends StatelessWidget {
+class TeacherSubjectScreen extends StatelessWidget {
   final SubjectData subjectData;
 
-  const SubjectScreen({
+  const TeacherSubjectScreen({
     super.key,
     required this.subjectData,
   });
