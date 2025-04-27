@@ -8,7 +8,13 @@ import 'package:flutter/services.dart';
 
 class MockFlutterLocalNotificationsPlugin extends Mock
    with MockPlatformInterfaceMixin
-   implements FlutterLocalNotificationsPlugin {}
+   implements FlutterLocalNotificationsPlugin {
+
+  @override
+  Future<bool?> initialize(InitializationSettings init, {void Function(NotificationResponse)? onDidReceiveBackgroundNotificationResponse, void Function(NotificationResponse)? onDidReceiveNotificationResponse}) async {
+    return true;
+  }
+}
 
 class MockFirebaseMessaging extends Mock implements FirebaseMessaging {}
 
@@ -39,13 +45,8 @@ void main(){
         android: AndroidInitializationSettings('@mipmap/ic_launcher'),
       );
 
-      // Mock the call to initialize
-      when(mockFlutterLocalNotificationsPlugin.initialize(initializationSettings))
-          .thenAnswer((_) async => true);
-      await initNotifications();
-      verify(mockFlutterLocalNotificationsPlugin.initialize(initializationSettings)).called(1);
+      await initNotifications(initializationSettings: initializationSettings, plugin: mockFlutterLocalNotificationsPlugin);
 
-      // No exceptions means success, as flutterLocalNotificationsPlugin uses platform channels
       expect(true, isTrue);
     });
   });

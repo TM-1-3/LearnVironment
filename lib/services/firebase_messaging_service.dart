@@ -12,26 +12,29 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   showNotification(message);
 }
 
-Future<void> initNotifications() async {
-  const AndroidInitializationSettings initializationSettingsAndroid =
-  AndroidInitializationSettings('@mipmap/ic_launcher');
+Future<void> initNotifications({
+  InitializationSettings? initializationSettings,
+  AndroidNotificationChannel? channel,
+  FlutterLocalNotificationsPlugin? plugin
+}) async {
+  initializationSettings ??= const InitializationSettings(
+    android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+  );
 
-  const InitializationSettings initializationSettings =
-  InitializationSettings(android: initializationSettingsAndroid);
-
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
-
-  const AndroidNotificationChannel channel = AndroidNotificationChannel(
+  channel ??= const AndroidNotificationChannel(
     'default_channel',
     'Default Notifications',
     description: 'This channel is used for FCM notifications.',
     importance: Importance.high,
   );
 
-  await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-      AndroidFlutterLocalNotificationsPlugin>()
-      ?.createNotificationChannel(channel);
+  plugin ??= flutterLocalNotificationsPlugin;
+
+  // Initialize notifications
+  await plugin.initialize(initializationSettings);
+
+  // Create the notification channel
+  await plugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(channel);
 }
 
 void showNotification(RemoteMessage message) {
