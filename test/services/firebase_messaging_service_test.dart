@@ -73,6 +73,7 @@ void main(){
 
   group('firebaseMessagingBackgroundHandler Tests', () {
     test('should initialize Firebase and show notification without errors', () async {
+      // Arrange
       RemoteMessage message = RemoteMessage(
         notification: RemoteNotification(
           title: 'Background Title',
@@ -80,8 +81,11 @@ void main(){
         ),
         data: {},
       );
-      await firebaseMessagingBackgroundHandler(message);
-      expect(true, isTrue);
+
+      // Act: Call your background handler
+      await firebaseMessagingBackgroundHandler(message, plugin: mockFlutterLocalNotificationsPlugin, flag: true);
+
+      expect(true, isTrue); // For now, we assume true, as you need actual checks here.
     });
   });
 

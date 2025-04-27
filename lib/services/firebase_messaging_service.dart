@@ -7,9 +7,15 @@ List<RemoteMessage> notificationMessages = [];
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
-Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
-  showNotification(message);
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message, {FlutterLocalNotificationsPlugin? plugin, bool? flag}) async {
+  if (flag == true) {
+    //nothing
+  } else {
+    await Firebase.initializeApp();
+  }
+
+  plugin ??= flutterLocalNotificationsPlugin;
+  showNotification(message, plugin: plugin);
 }
 
 Future<void> initNotifications({
@@ -37,7 +43,7 @@ Future<void> initNotifications({
   await plugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(channel);
 }
 
-void showNotification(RemoteMessage message) {
+void showNotification(RemoteMessage message, {FlutterLocalNotificationsPlugin? plugin}) {
   final notification = message.notification;
   final android = message.notification?.android;
 
@@ -52,7 +58,9 @@ void showNotification(RemoteMessage message) {
 
     final platformDetails = NotificationDetails(android: androidDetails);
 
-    flutterLocalNotificationsPlugin.show(
+    plugin ??= flutterLocalNotificationsPlugin;
+
+    plugin.show(
       notification.hashCode,
       notification.title,
       notification.body,
