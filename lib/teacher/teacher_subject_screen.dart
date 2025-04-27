@@ -3,10 +3,10 @@ import 'package:learnvironment/data/subject_data.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:provider/provider.dart';
 
-class SubjectScreen extends StatelessWidget {
+class TeacherSubjectScreen extends StatelessWidget {
   final SubjectData subjectData;
 
-  const SubjectScreen({
+  const TeacherSubjectScreen({
     super.key,
     required this.subjectData,
   });
@@ -31,6 +31,49 @@ class SubjectScreen extends StatelessWidget {
       print('[getStudentData] Error fetching student data: $e');
       return null;
     }
+  }
+
+  Future<void> deleteSubject(BuildContext context) async {
+    try {
+      final dataService = Provider.of<DataService>(context, listen: false);
+      await dataService.deleteSubject(subjectId: subjectData.subjectId);
+      if (context.mounted) {
+        Navigator.of(context).pop(); // Go back after deletion
+      }
+    } catch (e) {
+      print('[deleteSubject] Error deleting subject: $e');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to delete subject.')),
+        );
+      }
+    }
+  }
+
+  void confirmDelete(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Subject'),
+        content: const Text('Are you sure you want to delete this subject? This action cannot be undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(), // Cancel
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.of(context).pop(); // Close the dialog
+              await deleteSubject(context);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+            ),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -118,6 +161,19 @@ class SubjectScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 40),
+                ElevatedButton.icon(
+                  onPressed: () => confirmDelete(context),
+                  icon: const Icon(Icons.delete),
+                  key: Key("delete"),
+                  label: const Text('Delete Subject'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                    textStyle: const TextStyle(fontSize: 16),
+                  ),
+                ),
+                const SizedBox(height: 20),
               ],
             ),
           ),

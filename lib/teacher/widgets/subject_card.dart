@@ -39,10 +39,13 @@ class SubjectCard extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
-                child: Image.asset(
-                  imagePath,
+                child: SizedBox(
+                  height: 150, // Fixed height for the image
                   width: double.infinity,
-                  fit: BoxFit.cover,
+                  child: Image.asset(
+                    imagePath,
+                    fit: BoxFit.cover, // Cover the container but keep aspect ratio
+                  ),
                 ),
               ),
               Padding(

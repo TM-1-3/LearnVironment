@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:learnvironment/services/auth_service.dart';
-import 'package:learnvironment/teacher/subject_screen.dart';
+import 'package:learnvironment/teacher/teacher_subject_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../services/data_service.dart';
@@ -60,10 +60,10 @@ class TeacherMainPageState extends State<TeacherMainPage> {
 
       if (subjectData != null && userId.isNotEmpty && mounted) {
         Navigator.push(context,
-          MaterialPageRoute(
-            builder: (context) => SubjectScreen(subjectData: subjectData),
-          ),
-        );
+          MaterialPageRoute(builder: (context) => TeacherSubjectScreen(subjectData: subjectData)),
+        ).then((_) {
+          _fetchSubjects();
+        });
       }
     } catch (e) {
       print(e);

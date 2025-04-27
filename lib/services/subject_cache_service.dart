@@ -72,4 +72,29 @@ class SubjectCacheService {
       return [];
     }
   }
+
+  Future<void> deleteSubject({required String subjectId}) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final key = 'subject_$subjectId';
+
+      // Remove the cached subject data
+      bool success = await prefs.remove(key);
+
+      if (success) {
+        print('[CACHE] Subject $subjectId removed from cache.');
+
+        // Also update the cached_subject_ids list
+        List<String> cachedIds = prefs.getStringList('cached_subject_ids') ?? [];
+        cachedIds.remove(subjectId);
+        await prefs.setStringList('cached_subject_ids', cachedIds);
+
+        print('[CACHE] Updated cached_subject_ids list.');
+      } else {
+        print('[CACHE ERROR] Failed to remove subject $subjectId from cache.');
+      }
+    } catch (e) {
+      print('[CACHE ERROR] Exception while deleting subject $subjectId: $e');
+    }
+  }
 }

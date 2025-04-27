@@ -274,4 +274,15 @@ class DataService {
       throw Exception("Error updating subjects");
     }
   }
+
+  Future<void> deleteSubject({required String subjectId}) async {
+    try {
+      await _firestoreService.deleteSubject(subjectId: subjectId);
+      await _subjectCacheService.deleteSubject(subjectId: subjectId);
+      print("[DataService] Subject deleted");
+    } catch(e) {
+      print("[DataService] Error deleting subject");
+      rethrow;
+    }
+  }
 }

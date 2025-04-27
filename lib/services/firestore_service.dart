@@ -331,4 +331,14 @@ class FirestoreService {
       'teacher': user.uid,
     });
   }
+
+  Future<void> deleteSubject({required String subjectId}) async {
+    try {
+      await _firestore.collection('subjects').doc(subjectId).delete();
+      print("[FirestoreService] Account Deleted");
+    } catch (e) {
+      print("[FirestoreService] Error deleting account $subjectId");
+      rethrow;
+    }
+  }
 }
