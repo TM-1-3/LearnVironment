@@ -259,7 +259,9 @@ class FirestoreService {
     required String selectedAccountType,
     required String email,
     required String birthDate,
-    required String img
+    required String img,
+    List<String>? classes,
+    List<String>? gamesPlayed
   }) async {
     try {
       if (selectedAccountType == '') {
@@ -271,7 +273,8 @@ class FirestoreService {
         'role': selectedAccountType,
         'email': email,
         'birthdate': birthDate,
-        'gamesPlayed': [],
+        'gamesPlayed': gamesPlayed,
+        'classes': classes,
         'img' : img
       });
       print("[FirestoreService] User Info set!");

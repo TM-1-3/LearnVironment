@@ -233,12 +233,12 @@ class DataService {
     required String email,
     required String birthDate,
     required String role,
-    required String img
+    required String img,
   }) async {
     try {
-      await _firestoreService.setUserInfo(uid: uid, name: name, email: email, username: username, birthDate: birthDate, selectedAccountType: role, img: img);
       final List<String> gamesPlayed = await _userCacheService.getCachedGamesPlayed();
       final List<String> classes = await _userCacheService.getCachedClasses();
+      await _firestoreService.setUserInfo(uid: uid, name: name, email: email, username: username, birthDate: birthDate, selectedAccountType: role, img: img, classes: classes, gamesPlayed: gamesPlayed);
       await _userCacheService.clearUserCache();
       await _userCacheService.cacheUserData(UserData(id: uid, username: username, email: email, name: name, role: role, birthdate: DateTime.parse(birthDate), gamesPlayed: gamesPlayed, classes: classes, img: img));
     } catch (e) {
