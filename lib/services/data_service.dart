@@ -176,8 +176,6 @@ class DataService {
 
   Future<List<Map<String, dynamic>>> getAllSubjects({required String uid}) async {
     try {
-      // First, try to load cached subject IDs
-      final cachedIds = await _subjectCacheService.getCachedSubjectIds();
       List<Map<String, dynamic>> loadedSubjects = [];
 
       // Try to load each cached subject
