@@ -37,12 +37,16 @@ class TeacherSubjectScreen extends StatelessWidget {
     try {
       final dataService = Provider.of<DataService>(context, listen: false);
       await dataService.deleteSubject(subjectId: subjectData.subjectId);
-      Navigator.of(context).pop(); // Go back after deletion
+      if (context.mounted) {
+        Navigator.of(context).pop(); // Go back after deletion
+      }
     } catch (e) {
       print('[deleteSubject] Error deleting subject: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to delete subject.')),
-      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to delete subject.')),
+        );
+      }
     }
   }
 
@@ -160,6 +164,7 @@ class TeacherSubjectScreen extends StatelessWidget {
                 ElevatedButton.icon(
                   onPressed: () => confirmDelete(context),
                   icon: const Icon(Icons.delete),
+                  key: Key("delete"),
                   label: const Text('Delete Subject'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
