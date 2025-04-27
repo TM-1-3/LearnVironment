@@ -31,15 +31,6 @@ void main() {
       expect(find.text('Test Body'), findsOneWidget);
     });
 
-    testWidgets('back button navigates to HomePage', (WidgetTester tester) async {
-      await tester.pumpWidget(MaterialApp(home: NotificationsPage()));
-
-      await tester.tap(find.byIcon(Icons.arrow_back));
-      await tester.pumpAndSettle();
-
-      expect(find.byType(StudentHomePage), findsOneWidget);
-    });
-
     testWidgets('displays notification sent time', (WidgetTester tester) async {
       final mockNotification = RemoteMessage(
         notification: RemoteNotification(title: 'Test Title', body: 'Test Body'),

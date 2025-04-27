@@ -38,10 +38,7 @@ class NotificationsPageState extends State<NotificationsPage> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => StudentHomePage()),
-            );
+            Navigator.of(context).pushReplacementNamed('/auth_gate');
           },
         ),
       ),
