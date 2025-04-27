@@ -5,7 +5,7 @@ import 'package:learnvironment/data/user_data.dart';
 import 'package:learnvironment/services/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:learnvironment/student/student_home.dart';
-import 'package:learnvironment/main_pages/main_page.dart';
+import 'package:learnvironment/student/student_main_page.dart';
 import 'package:learnvironment/main_pages/games_page.dart';
 import 'package:learnvironment/main_pages/profile_screen.dart';
 import 'package:learnvironment/student/student_stats.dart';
@@ -45,7 +45,7 @@ void main() {
       await tester.pumpWidget(testWidget);
 
       expect(find.text('LearnVironment'), findsOneWidget);
-      expect(find.byType(MainPage), findsOneWidget);
+      expect(find.byType(StudentMainPage), findsOneWidget);
     });
 
     testWidgets('Navigates to StudentStatsPage page', (tester) async {

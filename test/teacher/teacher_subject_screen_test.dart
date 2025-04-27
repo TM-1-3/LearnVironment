@@ -16,7 +16,7 @@ class MockDataService extends Mock implements DataService {
   }
 
   @override
-  Future<void> deleteSubject({required String subjectId}) async {
+  Future<void> deleteSubject({required String subjectId, required String uid}) async {
     if (throwErrorOnDelete) {
       throw Exception('Failed to delete subject');
     }

@@ -4,10 +4,10 @@ import 'package:learnvironment/services/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:provider/provider.dart';
 
-class TeacherSubjectScreen extends StatelessWidget {
+class StudentSubjectScreen extends StatelessWidget {
   final SubjectData subjectData;
 
-  const TeacherSubjectScreen({
+  const StudentSubjectScreen({
     super.key,
     required this.subjectData,
   });
@@ -32,50 +32,6 @@ class TeacherSubjectScreen extends StatelessWidget {
       print('[getStudentData] Error fetching student data: $e');
       return null;
     }
-  }
-
-  Future<void> deleteSubject(BuildContext context) async {
-    try {
-      final dataService = Provider.of<DataService>(context, listen: false);
-      final authService = Provider.of<AuthService>(context, listen: false);
-      await dataService.deleteSubject(subjectId: subjectData.subjectId, uid: await authService.getUid());
-      if (context.mounted) {
-        Navigator.of(context).pop(); // Go back after deletion
-      }
-    } catch (e) {
-      print('[deleteSubject] Error deleting subject: $e');
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to delete subject.')),
-        );
-      }
-    }
-  }
-
-  void confirmDelete(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Subject'),
-        content: const Text('Are you sure you want to delete this subject? This action cannot be undone.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(), // Cancel
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              Navigator.of(context).pop(); // Close the dialog
-              await deleteSubject(context);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-            ),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
-    );
   }
 
   @override
@@ -160,19 +116,6 @@ class TeacherSubjectScreen extends StatelessWidget {
                   child: Text(
                     'No students enrolled yet.',
                     style: TextStyle(fontSize: 16),
-                  ),
-                ),
-                const SizedBox(height: 40),
-                ElevatedButton.icon(
-                  onPressed: () => confirmDelete(context),
-                  icon: const Icon(Icons.delete),
-                  key: Key("delete"),
-                  label: const Text('Delete Subject'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                    textStyle: const TextStyle(fontSize: 16),
                   ),
                 ),
                 const SizedBox(height: 20),

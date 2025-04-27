@@ -56,7 +56,7 @@ class MockDataService extends Mock implements DataService {
     _throwErrorOnSave = value;
   }
   @override
-  Future<void> addSubject({required SubjectData subject}) async {
+  Future<void> addSubject({required SubjectData subject, required String uid}) async {
     if (_throwErrorOnSave) {
       throw Exception('Failed to create Subject');
     }

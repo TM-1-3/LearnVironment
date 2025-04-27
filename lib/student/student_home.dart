@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:learnvironment/main_pages/games_page.dart';
-import 'package:learnvironment/main_pages/main_page.dart';
+import 'package:learnvironment/student/student_main_page.dart';
 import 'package:learnvironment/main_pages/profile_screen.dart';
 import 'package:learnvironment/student/student_stats.dart';
 
@@ -24,7 +24,7 @@ class _StudentHomePage extends State<StudentHomePage> {
     super.initState();
 
     _pages[TabItem.statistics] = StudentStatsPage();
-    _pages[TabItem.home] = MainPage();
+    _pages[TabItem.home] = StudentMainPage();
     _pages[TabItem.games] = GamesPage();
   }
 
