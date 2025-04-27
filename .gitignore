@@ -74,6 +74,4 @@ macos/.flutter-plugins-dependencies
 # Ignoring any other build-related folder
 /android/.gradle/
 
-
-#Coverage report
 /coverage
