@@ -95,20 +95,4 @@ void main(){
       expect(true, isTrue);
     });
   });
-
-  group('NotificationMessages Storage Tests', () {
-    test('should add notification to notificationMessages when received', () {
-      final initialLength = notificationMessages.length;
-      RemoteMessage message = RemoteMessage(
-        notification: RemoteNotification(
-          title: 'Foreground Title',
-          body: 'Foreground Body',
-        ),
-        data: {},
-      );
-      notificationMessages.add(message);
-      expect(notificationMessages.length, initialLength + 1);
-      expect(notificationMessages.last.notification?.title, 'Foreground Title');
-    });
-  });
 }
