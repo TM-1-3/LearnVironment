@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:learnvironment/authentication/auth_gate.dart';
 import 'package:learnvironment/games_templates/results_page.dart';
 import 'package:mockito/mockito.dart';
 import 'package:learnvironment/services/data_service.dart';
@@ -7,7 +8,19 @@ import 'package:learnvironment/data/user_data.dart';
 import 'package:learnvironment/services/auth_service.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:provider/provider.dart';
-import 'package:learnvironment/main_pages/games_page.dart';
+
+class MockAuthGate extends AuthGate {
+  MockAuthGate({key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(
+        child: Text('Mock AuthGate Screen'),
+      ),
+    );
+  }
+}
 
 class MockDataService extends Mock implements DataService {
   @override
@@ -47,6 +60,9 @@ void main() {
               duration: const Duration(minutes: 2, seconds: 10),
               onReplay: () => RandomGame()
           ),
+            routes: {
+              '/auth_gate': (context) => MockAuthGate(),
+            }
         ),
       );
     });
@@ -83,22 +99,16 @@ void main() {
 
     testWidgets('back to games page button navigates correctly', (WidgetTester tester) async {
       await tester.pumpWidget(testWidget);
-      final backToGamesBtn = find.widgetWithText(GestureDetector, 'Back to Games Page');
+      final backToGamesBtn = find.widgetWithText(GestureDetector, 'Exit');
       expect(backToGamesBtn,findsOneWidget);
       await tester.ensureVisible(backToGamesBtn);
       await tester.tap(backToGamesBtn);
       await tester.pumpAndSettle();
-      expect(find.byType(GamesPage), findsOneWidget);
+      expect(find.byType(MockAuthGate), findsOneWidget);
     });
   });
 }
 
-class MockGamesPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Text('Games Page')));
-  }
-}
 
 class RandomGame extends StatelessWidget {
   @override
