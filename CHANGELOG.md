@@ -33,6 +33,8 @@
 - As a user I want to have a bibliography associated with each game so that I can easily verify the accuracy and sources of the information. [#18](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/18)
 - As a student I want to receive notifications if a game I was assigned to play has a close deadline so that I don't miss my assignments due date. [#22](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/22)
 - As a teacher I want to be able to assign games to a class so that students know what to play. [#8](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/8)
+- As a teacher I want to be able to delete a class from my account so that when I don't need it anymore it is removed. [#26](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/26)
+- As a teacher I want to be able to assign students to classes so that I can divide my students between subjects and age groups. [#7](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/7)
 
 ### Detailed description
 - Fixed bug in results screen [#52](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/52)
@@ -56,6 +58,8 @@
 - Fixed bug in back buttons [#51](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/51)
 - Teachers can now create assignments [#86](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/86)
 - Fixed bug in back to games page button [#87](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/87)
+- Teachers can now create a class [#89](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/89)
+- Teachers can now delete a class [#90](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/90)
 
 ### Test User
 - email: 
