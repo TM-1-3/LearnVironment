@@ -259,7 +259,9 @@ class FirestoreService {
     required String selectedAccountType,
     required String email,
     required String birthDate,
-    required String img
+    required String img,
+    List<String>? classes,
+    List<String>? gamesPlayed
   }) async {
     try {
       if (selectedAccountType == '') {
@@ -271,7 +273,8 @@ class FirestoreService {
         'role': selectedAccountType,
         'email': email,
         'birthdate': birthDate,
-        'gamesPlayed': [],
+        'gamesPlayed': gamesPlayed,
+        'classes': classes,
         'img' : img
       });
       print("[FirestoreService] User Info set!");
@@ -314,30 +317,59 @@ class FirestoreService {
     }
   }
 
-  Future<void> addSubjectData(SubjectData subject) async {
-    final user = FirebaseAuth.instance.currentUser;
-
-    if (user == null) {
-      throw Exception('No authenticated user found');
-    }
-
-    await FirebaseFirestore.instance
+  Future<void> addSubjectData({required SubjectData subject, required String uid}) async {
+    await _firestore
         .collection('subjects')
         .doc(subject.subjectId)
         .set({
       'subjectId': subject.subjectId,
       'name': subject.subjectName,
       'logo': subject.subjectLogo,
-      'teacher': user.uid,
+      'teacher': uid,
     });
+
+    final userDoc = _firestore.collection('users').doc(uid);
+    final userSnapshot = await userDoc.get();
+
+    List<String> classes = [];
+
+    if (userSnapshot.exists && userSnapshot.data() != null) {
+      final data = userSnapshot.data()!;
+      classes = List<String>.from(data['classes'] ?? []);
+    }
+
+    classes.remove(subject.subjectId);
+    classes.insert(0, subject.subjectId);
+
+    try {
+      await userDoc.update({'classes': classes});
+      print('[FirestoreService] Updated classes for user $uid');
+
+    } catch (e, stackTrace) {
+      print('[FirestoreService] Error updating classes in Firestore: $e\n$stackTrace');
+      rethrow;
+    }
   }
 
-  Future<void> deleteSubject({required String subjectId}) async {
+  Future<void> deleteSubject({required String subjectId, required String uid}) async {
     try {
       await _firestore.collection('subjects').doc(subjectId).delete();
-      print("[FirestoreService] Account Deleted");
+      final userDoc = _firestore.collection('users').doc(uid);
+      final userSnapshot = await userDoc.get();
+
+      List<String> classes = [];
+
+      if (userSnapshot.exists && userSnapshot.data() != null) {
+        final data = userSnapshot.data()!;
+        classes = List<String>.from(data['classes'] ?? []);
+      }
+
+      classes.remove(subjectId);
+
+      await userDoc.update({'classes': classes});
+      print("[FirestoreService] Class Deleted");
     } catch (e) {
-      print("[FirestoreService] Error deleting account $subjectId");
+      print("[FirestoreService] Error deleting class $subjectId");
       rethrow;
     }
   }
