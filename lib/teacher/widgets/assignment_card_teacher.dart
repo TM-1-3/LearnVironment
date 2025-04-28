@@ -3,14 +3,12 @@ import 'package:learnvironment/main_pages/widgets/tag.dart';
 import 'package:learnvironment/teacher/create_assignment_page.dart';
 
 class AssignmentCardTeacher extends StatelessWidget {
-  final String imagePath;
   final String assignmentTitle;
   final String assignmentId;
   final Future<void> Function(String assignmentId) loadAssignment;
 
   const AssignmentCardTeacher({
     super.key,
-    required this.imagePath,
     required this.assignmentTitle,
     required this.assignmentId,
     required this.loadAssignment,
@@ -41,14 +39,6 @@ class AssignmentCardTeacher extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
-                child: Image.asset(
-                  imagePath,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
-              ),
               Padding(
                 padding: const EdgeInsets.all(10),
                 child: Column(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:learnvironment/teacher/assignment_page_teacher.dart';
 import 'package:learnvironment/teacher/widgets/assignment_card_teacher.dart';
 import 'package:learnvironment/services/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
@@ -98,46 +99,6 @@ class AssignmentsPageTeacherState extends State<AssignmentsPageTeacher> {
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                DropdownButton<String>(
-                  key: Key('ageDropdown'),
-                  value: _selectedAge,
-                  hint: const Text('Filter by Age'),
-                  items: [null, '12+', '10+', '8+', '6+']
-                      .map((age) => DropdownMenuItem<String>(
-                    value: age,
-                    child: Text(age ?? 'All Ages'),
-                  ))
-                      .toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedAge = value;
-                    });
-                  },
-                ),
-                DropdownButton<String>(
-                  key: Key('tagDropdown'),
-                  value: _selectedTag,
-                  hint: const Text('Filter by Tag'),
-                  items: [null, 'Recycling', 'Strategy', 'Citizenship']
-                      .map((tag) => DropdownMenuItem<String>(
-                    value: tag,
-                    child: Text(tag ?? 'All Tags'),
-                  ))
-                      .toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedTag = value;
-                    });
-                  },
-                ),
-              ],
-            ),
-          ),
           Expanded(
             child: LayoutBuilder(
               builder: (context, constraints) {
@@ -165,9 +126,7 @@ class AssignmentsPageTeacherState extends State<AssignmentsPageTeacher> {
                   itemBuilder: (context, index) {
                     final assignment = filteredAssignments[index];
                     return AssignmentCardTeacher(
-                      imagePath: assignment['imagePath'],
                       assignmentTitle: assignment['assignmentTitle'],
-                      tags: List<String>.from(assignment['tags']),
                       assignmentId: assignment['assignmentId'],
                       loadAssignment: loadAssignment,
                     );
