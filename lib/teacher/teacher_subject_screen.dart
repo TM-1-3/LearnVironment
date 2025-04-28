@@ -3,13 +3,16 @@ import 'package:learnvironment/data/subject_data.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:provider/provider.dart';
 
-class TeacherSubjectScreen extends StatelessWidget {
+class TeacherSubjectScreen extends StatefulWidget {
   final SubjectData subjectData;
 
-  const TeacherSubjectScreen({
-    super.key,
-    required this.subjectData,
-  });
+  const TeacherSubjectScreen({super.key, required this.subjectData});
+
+  @override
+  State<TeacherSubjectScreen> createState() => _TeacherSubjectScreenState();
+}
+
+class _TeacherSubjectScreenState extends State<TeacherSubjectScreen> {
 
   Future<Map<String, dynamic>?> getStudentData({
     required String studentId,
@@ -36,7 +39,7 @@ class TeacherSubjectScreen extends StatelessWidget {
   Future<void> deleteSubject(BuildContext context) async {
     try {
       final dataService = Provider.of<DataService>(context, listen: false);
-      await dataService.deleteSubject(subjectId: subjectData.subjectId);
+      await dataService.deleteSubject(subjectId: widget.subjectData.subjectId);
       if (context.mounted) {
         Navigator.of(context).pop(); // Go back after deletion
       }
@@ -53,48 +56,51 @@ class TeacherSubjectScreen extends StatelessWidget {
   void confirmDelete(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Subject'),
-        content: const Text('Are you sure you want to delete this subject? This action cannot be undone.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(), // Cancel
-            child: const Text('Cancel'),
+      builder: (context) =>
+          AlertDialog(
+            title: const Text('Delete Subject'),
+            content: const Text(
+                'Are you sure you want to delete this subject? This action cannot be undone.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(), // Cancel
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  Navigator.of(context).pop(); // Close the dialog
+                  await deleteSubject(context);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                ),
+                child: const Text('Delete'),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () async {
-              Navigator.of(context).pop(); // Close the dialog
-              await deleteSubject(context);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-            ),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final List<dynamic> studentIds = subjectData.students;
+    final List<String> studentIds = widget.subjectData.students;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(subjectData.subjectName),
+        title: Text(widget.subjectData.subjectName),
       ),
       body: SingleChildScrollView(
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 30.0, horizontal: 20.0),
+            padding: const EdgeInsets.symmetric(
+                vertical: 30.0, horizontal: 20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: Image.asset(
-                    subjectData.subjectLogo,
+                    widget.subjectData.subjectLogo,
                     width: 200,
                     height: 200,
                     fit: BoxFit.cover,
@@ -102,8 +108,9 @@ class TeacherSubjectScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  subjectData.subjectName,
-                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  widget.subjectData.subjectName,
+                  style: const TextStyle(
+                      fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 30),
                 const Text(
@@ -118,11 +125,12 @@ class TeacherSubjectScreen extends StatelessWidget {
                   itemCount: studentIds.length,
                   itemBuilder: (context, index) {
                     final studentId = studentIds[index];
-
                     return FutureBuilder<Map<String, dynamic>?>(
-                      future: getStudentData(studentId: studentId, context: context),
+                      future: getStudentData(
+                          studentId: studentId, context: context),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
+                        if (snapshot.connectionState == ConnectionState
+                            .waiting) {
                           return const ListTile(
                             leading: Icon(Icons.person),
                             title: Text('Loading...'),
@@ -160,16 +168,96 @@ class TeacherSubjectScreen extends StatelessWidget {
                     style: TextStyle(fontSize: 16),
                   ),
                 ),
-                const SizedBox(height: 40),
+
+                const SizedBox(height: 10),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        final TextEditingController _studentIdDialogController = TextEditingController();
+                        return AlertDialog(
+                          title: const Text('Add Student'),
+                          content: TextField(
+                            controller: _studentIdDialogController,
+                            decoration: const InputDecoration(
+                              labelText: 'Enter Student ID',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text('Cancel'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () async {
+                                final newStudentId = _studentIdDialogController.text.trim();
+                                if (newStudentId.isNotEmpty) {
+                                  final dataService = Provider.of<DataService>(context, listen: false);
+
+                                  try {
+                                    await dataService.addStudentToSubject(
+                                      subjectId: widget.subjectData.subjectId,
+                                      studentId: newStudentId,
+                                    );
+
+                                    setState(() {
+                                      widget.subjectData.students.add(newStudentId);
+                                    });
+
+                                    if (context.mounted) {
+                                      Navigator.of(context).pop();
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text('Student added successfully')),
+                                      );
+                                    }
+                                  } catch (e) {
+                                    print('Error adding student: $e');
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text('Failed to add student')),
+                                      );
+                                    }
+                                  }
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green,
+                              ),
+                              child: const Text('Add'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  icon: const Icon(Icons.person_add),
+                  label: const Text('Add Student'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 15),
+                    textStyle: const TextStyle(fontSize: 16),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                // EXISTING - Delete Subject Button
                 ElevatedButton.icon(
                   onPressed: () => confirmDelete(context),
                   icon: const Icon(Icons.delete),
-                  key: Key("delete"),
+                  key: const Key("delete"),
                   label: const Text('Delete Subject'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 15),
                     textStyle: const TextStyle(fontSize: 16),
                   ),
                 ),

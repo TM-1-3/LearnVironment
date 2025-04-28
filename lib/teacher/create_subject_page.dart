@@ -74,7 +74,7 @@ class _CreateSubjectPageState extends State<CreateSubjectPage> {
             SnackBar(content: Text('Subject created successful')),
           );
         }
-        Navigator.of(context).pushReplacementNamed('/auth_gate');
+        Navigator.of(context).pop();
       }
     } catch (e) {
       print('[CreateSubjectPage] Error: $e');
