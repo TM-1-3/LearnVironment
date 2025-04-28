@@ -65,16 +65,6 @@ class AssignmentCardTeacher extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    const SizedBox(height: 10),
-                    Center(
-                      child: IconButton(
-                        icon: Icon(Icons.delete),
-                        tooltip: 'Delete',
-                        onPressed: () {
-                          _deleteAssignment(assignmentId: assignmentId);
-                        },
-                      ),
-                    ),
                   ],
                 ),
               ),
