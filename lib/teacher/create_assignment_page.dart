@@ -3,7 +3,6 @@ import 'package:learnvironment/data/user_data.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:learnvironment/services/auth_service.dart';
 import 'package:provider/provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CreateAssignmentPage extends StatefulWidget {
   final String gameId;

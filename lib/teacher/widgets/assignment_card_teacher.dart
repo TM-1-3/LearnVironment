@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:learnvironment/main_pages/widgets/tag.dart';
-import 'package:learnvironment/teacher/create_assignment_page.dart';
 
 class AssignmentCardTeacher extends StatelessWidget {
   final String assignmentTitle;

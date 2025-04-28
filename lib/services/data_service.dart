@@ -260,6 +260,9 @@ class DataService {
       subjectData ??= await _firestoreService.fetchSubjectData(subjectId: turma);
       _subjectCacheService.deleteSubject(subjectId: turma);
 
+      subjectData.assignments.add(assId);
+      _subjectCacheService.cacheSubjectData(subjectData);
+
     } catch (e) {
       print("Error creating Assignment");
     }

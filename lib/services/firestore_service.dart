@@ -296,7 +296,7 @@ class FirestoreService {
     }
   }
 
-  Future<void> createAssignment({
+  Future<String> createAssignment({
     required String title,
     required String gameId,
     required String turma,
@@ -310,13 +310,30 @@ class FirestoreService {
         'name': 'New Assignment!',
         'className': turma,
       });
-      await _firestore.collection('assignment').add({
+
+      DocumentReference docRef = await _firestore.collection('assignment').add({
         'title': title,
         'game_id': gameId,
         'class': turma,
         'dueDate': dueDate,
       });
+
+      final assignmentDoc = _firestore.collection('subject').doc(turma);
+      final assignmentSnapshot = await assignmentDoc.get();
+
+      List<String> assignments = [];
+
+      if (assignmentSnapshot.exists && assignmentSnapshot.data() != null) {
+        final data = assignmentSnapshot.data()!;
+        assignments = List<String>.from(data['assignments'] ?? []);
+      }
+
+      assignments.remove(docRef.id);
+      assignments.insert(0, docRef.id);
+
+      await assignmentDoc.update({'assignments': assignments});
       print("[FirestoreService] Created Assignment!");
+      return docRef.id;
     } catch (e) {
       print("[FirestoreService] Unable to create assignment!");
       throw Exception("Unable to create assignment!");
