@@ -1,0 +1,186 @@
+import 'package:flutter/material.dart';
+import 'package:learnvironment/teacher/widgets/assignment_card_teacher.dart';
+import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/services/data_service.dart';
+import 'package:provider/provider.dart';
+
+class AssignmentsPageTeacher extends StatefulWidget {
+  const AssignmentsPageTeacher({super.key});
+
+  @override
+  AssignmentsPageTeacherState createState() => AssignmentsPageTeacherState();
+}
+
+class AssignmentsPageTeacherState extends State<AssignmentsPageTeacher> {
+  String _searchQuery = "";
+  List<Map<String, dynamic>> assignments = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchAssignments();
+  }
+
+  Future<void> _fetchAssignments() async {
+    try {
+      final dataService = Provider.of<DataService>(context, listen: false);
+
+      final fetchedAssignments = await dataService.getAllAssignments();
+      print('[AssignmentsPage] Fetched Assignments');
+      setState(() {
+        assignments = fetchedAssignments;
+      });
+    } catch (e) {
+      print('[AssignmentsPage] Error fetching assignments: $e');
+    }
+  }
+
+  List<Map<String, dynamic>> getFilteredAssignments() {
+    return assignments.where((assignment) {
+      final assignmentTitle = assignment['assignmentTitle'].toLowerCase();
+
+      final matchesQuery =
+          _searchQuery.isEmpty || assignmentTitle.contains(_searchQuery.toLowerCase());
+
+      return matchesQuery;
+    }).toList();
+  }
+
+  Future<void> loadAssignment(String assignmentId) async {
+    try {
+      print('[Assignments Page] Loading Assignment');
+      final dataService = Provider.of<DataService>(context, listen: false);
+      final authService = Provider.of<AuthService>(context, listen: false);
+
+      final assignmentData = await dataService.getAssignmentData(assignmentId: assignmentId);
+      final userId = await authService.getUid();
+
+      if (assignmentData != null && userId.isNotEmpty && mounted) {
+        Navigator.push(context,
+          MaterialPageRoute(
+            builder: (context) => AssignmentPageTeacher(assignmentData: assignmentData),
+          ),
+        );
+      }
+    } catch (e) {
+      print(e);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error loading assignment: $e')),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final filteredAssignments = getFilteredAssignments();
+
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pushReplacementNamed('/auth_gate');
+          },
+        ),
+        title: TextField(
+          key: Key('search'),
+          onChanged: (query) {
+            setState(() {
+              _searchQuery = query.toLowerCase();
+            });
+          },
+          decoration: const InputDecoration(
+            hintText: 'Search assignments...',
+          ),
+        ),
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                DropdownButton<String>(
+                  key: Key('ageDropdown'),
+                  value: _selectedAge,
+                  hint: const Text('Filter by Age'),
+                  items: [null, '12+', '10+', '8+', '6+']
+                      .map((age) => DropdownMenuItem<String>(
+                    value: age,
+                    child: Text(age ?? 'All Ages'),
+                  ))
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedAge = value;
+                    });
+                  },
+                ),
+                DropdownButton<String>(
+                  key: Key('tagDropdown'),
+                  value: _selectedTag,
+                  hint: const Text('Filter by Tag'),
+                  items: [null, 'Recycling', 'Strategy', 'Citizenship']
+                      .map((tag) => DropdownMenuItem<String>(
+                    value: tag,
+                    child: Text(tag ?? 'All Tags'),
+                  ))
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedTag = value;
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                double mainAxisExtent = 600.0;
+                if (constraints.maxWidth <= 600) {
+                  mainAxisExtent = constraints.maxWidth+45;
+                } else if (constraints.maxWidth <= 1000) {
+                  mainAxisExtent = 695;
+                } else if (constraints.maxWidth <= 2000) {
+                  mainAxisExtent = 1095;
+                } else {
+                  mainAxisExtent = 1545;
+                }
+
+                return filteredAssignments.isNotEmpty
+                    ? GridView.builder(
+                  padding: const EdgeInsets.all(8),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 10.0,
+                    mainAxisSpacing: 10.0,
+                    mainAxisExtent: mainAxisExtent,
+                  ),
+                  itemCount: filteredAssignments.length,
+                  itemBuilder: (context, index) {
+                    final assignment = filteredAssignments[index];
+                    return AssignmentCardTeacher(
+                      imagePath: assignment['imagePath'],
+                      assignmentTitle: assignment['assignmentTitle'],
+                      tags: List<String>.from(assignment['tags']),
+                      assignmentId: assignment['assignmentId'],
+                      loadAssignment: loadAssignment,
+                    );
+                  },
+                )
+                    : const Center(
+                  child: Text('No results found'),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

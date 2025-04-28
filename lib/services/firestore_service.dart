@@ -4,6 +4,8 @@ import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/data/subject_data.dart';
 import 'package:learnvironment/data/user_data.dart';
 
+import '../data/assignment_data.dart';
+
 class FirestoreService {
   final FirebaseFirestore _firestore;
 
@@ -375,6 +377,52 @@ class FirestoreService {
       print("[FirestoreService] Class Deleted");
     } catch (e) {
       print("[FirestoreService] Error deleting class $subjectId");
+      rethrow;
+    }
+  }
+
+            // ASSIGNMENTS //
+  Future<AssignmentData> fetchAssignmentData({required String assignmentId}) async {
+    try {
+      DocumentSnapshot snapshot = await _firestore.collection('assignments').doc(assignmentId).get();
+
+      if (!snapshot.exists) {
+        throw Exception("Assignment not found in Firestore for ID: $assignmentId");
+      }
+
+      var data = snapshot.data() as Map<String, dynamic>;
+
+      return AssignmentData(
+        assignmentId: snapshot.id,
+        subjectId: snapshot.id,
+        assignmentLogo: data['logo'] ?? 'assets/placeholder.png',
+        assignmentName: data['name'] ?? 'Unknown Name',
+      );
+    } catch (e, stackTrace) {
+      debugPrint("Error loading AssignmentData: $e\n$stackTrace");
+      rethrow;
+    }
+  }
+
+  Future<void> deleteAssignment({required String assignmentId, required String uid}) async {
+    try {
+      await _firestore.collection('assignments').doc(assignmentId).delete();
+      final classDoc = _firestore.collection('classes').doc(uid);
+      final classSnapshot = await classDoc.get();
+
+      List<String> assignments = [];
+
+      if (classSnapshot.exists && classSnapshot.data() != null) {
+        final data = classSnapshot.data()!;
+        assignments = List<String>.from(data['assignments'] ?? []);
+      }
+
+      assignments.remove(assignmentId);
+
+      await classDoc.update({'classes': assignments});
+      print("[FirestoreService] Assignment Deleted");
+    } catch (e) {
+      print("[FirestoreService] Error deleting assignment $assignmentId");
       rethrow;
     }
   }
