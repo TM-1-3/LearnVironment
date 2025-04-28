@@ -238,10 +238,6 @@ class CreateAssignmentPageState extends State<CreateAssignmentPage> {
         ElevatedButton(
           onPressed: () async {
             _createAssignment(title: titleController.text.trim(), dueDate: _dueDate, turma: _selectedClass, gameid: widget.gameId);
-            await FirebaseFirestore.instance.collection('events').add({
-              'name': 'New Assignment!',
-              'className': _selectedClass, // 👈 The topic / class name here
-            });
           },
           child: const Text('Save Changes'),
         ),
