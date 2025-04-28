@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:learnvironment/authentication/login_screen.dart';
 import 'package:learnvironment/authentication/auth_gate.dart';
@@ -13,10 +14,26 @@ import 'package:learnvironment/services/game_cache_service.dart';
 import 'package:learnvironment/services/subject_cache_service.dart';
 import 'package:learnvironment/services/user_cache_service.dart';
 import 'package:provider/provider.dart';
+import 'package:learnvironment/services/firebase_messaging_service.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  await initNotifications();
+  setupFCMListeners();
+  FirebaseMessaging.instance.subscribeToTopic('your_event_topic');
+  NotificationSettings settings = await FirebaseMessaging.instance.requestPermission(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
+
+  print('User granted permission: ${settings.authorizationStatus}');
+  String? token = await FirebaseMessaging.instance.getToken();
+  print("FCM Token: $token");
 
   final authService = AuthService();
   await authService.init();

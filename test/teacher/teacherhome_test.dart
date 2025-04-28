@@ -9,6 +9,7 @@ import 'package:learnvironment/services/data_service.dart';
 import 'package:learnvironment/teacher/games_page_teacher.dart';
 import 'package:learnvironment/teacher/teacher_home.dart';
 import 'package:learnvironment/teacher/teacher_main_page.dart';
+import 'package:learnvironment/main_pages/notifications_page.dart';
 import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
 
@@ -70,6 +71,14 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(ProfileScreen), findsOneWidget);
+    });
+
+    testWidgets('Navigates to Notifications page', (tester) async {
+      await tester.pumpWidget(testWidget);
+      await tester.tap(find.byIcon(Icons.notifications));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(NotificationsPage), findsOneWidget);
     });
   });
 }

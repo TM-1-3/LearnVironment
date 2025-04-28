@@ -9,6 +9,9 @@ import 'package:learnvironment/services/data_service.dart';
 import 'package:learnvironment/services/auth_service.dart';
 import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+import 'package:learnvironment/services/firestore_service.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 class MockAuthGate extends AuthGate {
   MockAuthGate({key});
@@ -77,7 +80,11 @@ class MockAuthService extends Mock implements AuthService {
 void main() {
   late Widget testWidget;
   late MockFirebaseAuth testauth;
+  late FakeFirebaseFirestore firestore;
+  late FirestoreService firestoreService;
   setUp(() async {
+    firestore = FakeFirebaseFirestore();
+    firestoreService = FirestoreService(firestore: firestore);
     testauth = MockFirebaseAuth(mockUser: MockUser(uid: 'test', email: 'john@example.com'), signedIn: true);
     testWidget = MultiProvider(
       providers: [
@@ -226,3 +233,5 @@ void main() {
     expect(find.text('Error creating assignment.'), findsOneWidget);
   });
 }
+
+//Just for the pull request

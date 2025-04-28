@@ -3,6 +3,7 @@ import 'package:learnvironment/teacher/teacher_main_page.dart';
 import 'package:learnvironment/main_pages/profile_screen.dart';
 import 'package:learnvironment/main_pages/statistics_page.dart';
 import 'package:learnvironment/teacher/games_page_teacher.dart';
+import 'package:learnvironment/main_pages/notifications_page.dart';
 
 class TeacherHomePage extends StatefulWidget {
   const TeacherHomePage({super.key});
@@ -43,6 +44,15 @@ class _TeacherHomePage extends State<TeacherHomePage> {
       appBar: AppBar(
         title: const Text('LearnVironment'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications),
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => NotificationsPage()), // Navigate to HomePage
+              );
+            },
+          ),
           // Profile button in AppBar
           IconButton(
             icon: const Icon(Icons.person),

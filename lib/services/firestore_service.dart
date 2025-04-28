@@ -306,7 +306,15 @@ class FirestoreService {
       if (turma== '') {
         throw Exception("No class selected");
       }
+ messaging
+      await _firestore.collection('events').add({
+        'name': 'New Assignment!',
+        'className': turma,
+      });
+      await _firestore.collection('assignment').add({
+
       DocumentReference docRef = await _firestore.collection('assignment').add({
+ main
         'title': title,
         'game_id': gameId,
         'class': turma,

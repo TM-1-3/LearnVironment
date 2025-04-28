@@ -3,6 +3,7 @@ import 'package:learnvironment/main_pages/games_page.dart';
 import 'package:learnvironment/student/student_main_page.dart';
 import 'package:learnvironment/main_pages/profile_screen.dart';
 import 'package:learnvironment/student/student_stats.dart';
+import 'package:learnvironment/main_pages/notifications_page.dart';
 
 class StudentHomePage extends StatefulWidget {
   const StudentHomePage({super.key});
@@ -42,6 +43,15 @@ class _StudentHomePage extends State<StudentHomePage> {
       appBar: AppBar(
         title: const Text('LearnVironment'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications),
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => NotificationsPage()), // Navigate to HomePage
+              );
+            },
+          ),
           // Profile button in AppBar
           IconButton(
             icon: const Icon(Icons.person),

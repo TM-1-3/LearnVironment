@@ -2,6 +2,7 @@ import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:learnvironment/data/user_data.dart';
+import 'package:learnvironment/main_pages/notifications_page.dart';
 import 'package:learnvironment/services/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:learnvironment/student/student_home.dart';
@@ -70,6 +71,14 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(ProfileScreen), findsOneWidget);
+    });
+
+    testWidgets('Navigates to Notifications page', (tester) async {
+      await tester.pumpWidget(testWidget);
+      await tester.tap(find.byIcon(Icons.notifications));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(NotificationsPage), findsOneWidget);
     });
   });
 }
