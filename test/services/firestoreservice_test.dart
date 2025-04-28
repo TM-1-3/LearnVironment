@@ -417,6 +417,14 @@ void main() {
       final event = eventSnapshot.docs.first.data();
       expect(event['name'], 'New Assignment!');
       expect(event['className'], 'ClassA');
+
+
+      //subject
+      final subjectSnapshot = await firestore.collection('subjects').get();
+      expect(subjectSnapshot.docs.length, 1);
+
+      final subject = subjectSnapshot.docs.first.data();
+      expect(subject['assignments'], [assId]);
     });
 
     test('createAssignment throws exception if no class is selected', () async {

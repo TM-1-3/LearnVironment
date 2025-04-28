@@ -311,40 +311,40 @@ class DataService {
   Future<List<Map<String, dynamic>>> getAllAssignments() async {
     try {
       // First, try to load cached game IDs
-      final cachedIds = await _gameCacheService.getCachedGameIds();
-      List<Map<String, dynamic>> loadedGames = [];
+      final cachedIds = await _assignmentCacheService.getCachedAssignmentIds();
+      List<Map<String, dynamic>> loadedAssignments = [];
 
       // Try to load each cached game
       for (final id in cachedIds) {
-        final cachedGame = await _gameCacheService.getCachedGameData(id);
-        if (cachedGame != null) {
-          loadedGames.add({
-            'imagePath': cachedGame.gameLogo,
-            'gameTitle': cachedGame.gameName,
-            'tags': cachedGame.tags,
-            'gameId': cachedGame.documentName,
+        final cachedAssignment = await _assignmentCacheService.getCachedAssignmentData(id);
+        if (cachedAssignment != null) {
+          loadedAssignments.add({
+            'assignmentId': cachedAssignment.assignmentId,
+            'subjectId': cachedAssignment.subjectId,
+            'assignmentName': cachedAssignment.assignmentName,
+            'assignmentLogo': cachedAssignment.assignmentLogo,
           });
         }
       }
 
       // If no cached games, return an empty list
-      if (loadedGames.isNotEmpty) {
+      if (loadedAssignments.isNotEmpty) {
         print('[DataService] Loaded games from cache');
-        return loadedGames;
+        return loadedAssignments;
       }
 
       // If no cached games, fetch games from Firestore
-      final fetchedGames = await _firestoreService.getAllGames();
-      for (final game in fetchedGames) {
-        final gameId = game['gameId'];
-        final gameData = await _firestoreService.fetchGameData(gameId: gameId);
-        await _gameCacheService.cacheGameData(gameData);
+      final fetchedAssignments = await _firestoreService.getAllAssignments();
+      for (final ass in fetchedAssignments) {
+        final assId = ass['assignmentId'];
+        final assData = await _firestoreService.fetchAssignmentData(assignmentId: assId);
+        await _assignmentCacheService.cacheAssignmentData(assData);
       }
 
-      print('[DataService] Loaded games from Firestore and cached them');
-      return fetchedGames;
+      print('[DataService] Loaded assignments from Firestore and cached them');
+      return fetchedAssignments;
     } catch (e) {
-      print('[DataService] Error fetching games: $e');
+      print('[DataService] Error fetching assignments: $e');
       return [];
     }
   }
