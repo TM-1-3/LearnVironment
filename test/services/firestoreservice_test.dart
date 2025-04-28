@@ -385,10 +385,19 @@ void main() {
 
   group('createAssignment Tests', () {
     test('createAssignment successfully creates an assignment document', () async {
-      await firestoreService.createAssignment(
+      await firestore.collection('subject').doc('ClassA').set({
+        'logo': 'game_logo.png',
+        'name': 'Sub Name',
+        'teacher': 'Me',
+        'subjectId': 'ClassA',
+      });
+
+      firestoreService = FirestoreService(firestore: firestore);
+
+      String assId = await firestoreService.createAssignment(
         title: 'Assignment 1',
         gameId: 'game1',
-        turma: 'Class A',
+        turma: 'ClassA',
         dueDate: '2025-05-01',
       );
 
@@ -398,8 +407,16 @@ void main() {
       final assignment = snapshot.docs.first.data();
       expect(assignment['title'], 'Assignment 1');
       expect(assignment['game_id'], 'game1');
-      expect(assignment['class'], 'Class A');
+      expect(assignment['class'], 'ClassA');
       expect(assignment['dueDate'], '2025-05-01');
+
+      //event
+      final eventSnapshot = await firestore.collection('events').get();
+      expect(eventSnapshot.docs.length, 1);
+
+      final event = eventSnapshot.docs.first.data();
+      expect(event['name'], 'New Assignment!');
+      expect(event['className'], 'ClassA');
     });
 
     test('createAssignment throws exception if no class is selected', () async {
