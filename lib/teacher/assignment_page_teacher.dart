@@ -13,7 +13,7 @@ class AssignmentPageTeacher extends StatelessWidget {
     required this.assignmentData,
   });
 
-  Future<void> _deleteAssigment(BuildContext context) async {
+  Future<void> _deleteAssignment(BuildContext context) async {
     try {
       final dataService = Provider.of<DataService>(context, listen: false);
       final authService = Provider.of<AuthService>(context, listen: false);
@@ -45,7 +45,7 @@ class AssignmentPageTeacher extends StatelessWidget {
           ElevatedButton(
             onPressed: () async {
               Navigator.of(context).pop(); // Close the dialog
-              await _deleteAssigment(context);
+              await _deleteAssignment(context);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,

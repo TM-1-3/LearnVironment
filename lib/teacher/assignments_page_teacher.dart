@@ -38,7 +38,7 @@ class AssignmentsPageTeacherState extends State<AssignmentsPageTeacher> {
 
   List<Map<String, dynamic>> getFilteredAssignments() {
     return assignments.where((assignment) {
-      final assignmentTitle = assignment['assignmentTitle'].toLowerCase();
+      final assignmentTitle = assignment['title'].toLowerCase();
 
       final matchesQuery =
           _searchQuery.isEmpty || assignmentTitle.contains(_searchQuery.toLowerCase());
@@ -47,7 +47,7 @@ class AssignmentsPageTeacherState extends State<AssignmentsPageTeacher> {
     }).toList();
   }
 
-  Future<void> loadAssignment(String assignmentId) async {
+  Future<void> _loadAssignment(String assignmentId) async {
     try {
       print('[Assignments Page] Loading Assignment');
       final dataService = Provider.of<DataService>(context, listen: false);
@@ -128,7 +128,7 @@ class AssignmentsPageTeacherState extends State<AssignmentsPageTeacher> {
                     return AssignmentCardTeacher(
                       assignmentTitle: assignment['assignmentTitle'],
                       assignmentId: assignment['assignmentId'],
-                      loadAssignment: loadAssignment,
+                      loadAssignment: _loadAssignment,
                     );
                   },
                 )
