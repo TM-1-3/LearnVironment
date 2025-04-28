@@ -444,4 +444,23 @@ class FirestoreService {
       rethrow;
     }
   }
+
+  Future<List<Map<String, dynamic>>> getAllAssignments() async {
+    try {
+      final querySnapshot = await _firestore
+          .collection('assignments')
+          .get();
+
+      return querySnapshot.docs.map((doc) {
+        final data = doc.data();
+        return {
+          'assignmentTitle': data['title'] ?? 'Default Assignment Title',
+          'assignmentId': doc.id,
+        };
+      }).toList();
+    } catch (e, stackTrace) {
+      debugPrint('[FirestoreService] Error getting assignments: $e\n$stackTrace');
+      rethrow;
+    }
+  }
 }
