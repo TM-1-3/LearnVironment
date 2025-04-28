@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/data/subject_data.dart';
@@ -233,6 +232,7 @@ class FirestoreService {
         subjectLogo: data['logo'] ?? 'assets/placeholder.png',
         subjectName: data['name'] ?? 'Unknown Name',
         students: List<String>.from(data['students'] ?? []),
+        assignments: List<String>.from(data['assignments'] ?? []),
         teacher: data['teacher'],
       );
     } catch (e, stackTrace) {
@@ -291,7 +291,7 @@ class FirestoreService {
     }
   }
 
-  Future<void> createAssignment({
+  Future<String> createAssignment({
     required String title,
     required String gameId,
     required String turma,
@@ -301,13 +301,16 @@ class FirestoreService {
       if (turma== '') {
         throw Exception("No class selected");
       }
-      await _firestore.collection('assignment').add({
+      DocumentReference docRef = await _firestore.collection('assignment').add({
         'title': title,
         'game_id': gameId,
         'class': turma,
         'dueDate': dueDate,
       });
+
+      String id = docRef.id;
       print("[FirestoreService] Created Assignment!");
+      return id;
     } catch (e) {
       print("[FirestoreService] Unable to create assignment!");
       throw Exception("Unable to create assignment!");
@@ -323,6 +326,8 @@ class FirestoreService {
       'name': subject.subjectName,
       'logo': subject.subjectLogo,
       'teacher': uid,
+      'students': subject.students,
+      'assignments': subject.assignments,
     });
 
     final userDoc = _firestore.collection('users').doc(uid);

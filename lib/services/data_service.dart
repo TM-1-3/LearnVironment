@@ -253,8 +253,11 @@ class DataService {
     required String gameId,
   }) async {
     try {
-      await _firestoreService.createAssignment(title: title, dueDate: dueDate.toString(), turma: turma, gameId: gameId);
-      //await _userCacheService.addAssignment(title: title, dueDate: DateTime.parse(dueDate), turma: turma, gameid: game_id);
+      String assId = await _firestoreService.createAssignment(title: title, dueDate: dueDate.toString(), turma: turma, gameId: gameId);
+      SubjectData? subjectData = await _subjectCacheService.getCachedSubjectData(turma);
+      subjectData ??= await _firestoreService.fetchSubjectData(subjectId: turma);
+      _subjectCacheService.deleteSubject(subjectId: turma);
+
     } catch (e) {
       print("Error creating Assignment");
     }
