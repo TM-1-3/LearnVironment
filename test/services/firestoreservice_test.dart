@@ -385,7 +385,7 @@ void main() {
 
   group('createAssignment Tests', () {
     test('createAssignment successfully creates an assignment document', () async {
-      await firestore.collection('subject').doc('ClassA').set({
+      await firestore.collection('subjects').doc('ClassA').set({
         'logo': 'game_logo.png',
         'name': 'Sub Name',
         'teacher': 'Me',

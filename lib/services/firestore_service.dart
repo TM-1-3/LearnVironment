@@ -318,7 +318,7 @@ class FirestoreService {
         'dueDate': dueDate,
       });
 
-      final assignmentDoc = _firestore.collection('subject').doc(turma);
+      final assignmentDoc = _firestore.collection('subjects').doc(turma);
       final assignmentSnapshot = await assignmentDoc.get();
 
       List<String> assignments = [];
