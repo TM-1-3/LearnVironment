@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:learnvironment/student/student_home.dart';
 import 'package:learnvironment/main_pages/notifications_page.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:learnvironment/authentication/auth_gate.dart';
 
 class MockAuthGate extends AuthGate {

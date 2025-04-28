@@ -1,7 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:learnvironment/data/notification_storage.dart';
-import 'package:learnvironment/student/student_home.dart';
 
 class NotificationsPage extends StatefulWidget {
   final List<RemoteMessage> notifications;
