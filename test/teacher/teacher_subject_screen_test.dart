@@ -60,6 +60,7 @@ void main() {
       subjectName: 'Physics',
       subjectLogo: 'assets/placeholder.png',
       students: ['student1', 'student2'],
+      assignments: ['assignment1', 'assignment2'],
       teacher: 'teacher',
     );
 
@@ -97,6 +98,7 @@ void main() {
         subjectName: 'Empty Class',
         subjectLogo: 'assets/placeholder.png',
         students: [],
+        assignments: [],
         teacher: 'teacher',
       );
 

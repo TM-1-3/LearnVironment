@@ -8,11 +8,15 @@ import 'package:learnvironment/services/subject_cache_service.dart';
 import 'package:learnvironment/services/user_cache_service.dart';
 import 'package:provider/provider.dart';
 
+import '../data/assignment_data.dart';
+import 'assignment_cache_service.dart';
+
 class DataService {
   late final FirestoreService _firestoreService;
   late final UserCacheService _userCacheService;
   late final GameCacheService _gameCacheService;
   late final SubjectCacheService _subjectCacheService;
+  late final AssignmentCacheService _assignmentCacheService;
 
   DataService(BuildContext context) {
     _firestoreService = Provider.of<FirestoreService>(context, listen: false);
@@ -176,8 +180,6 @@ class DataService {
 
   Future<List<Map<String, dynamic>>> getAllSubjects({required String uid}) async {
     try {
-      // First, try to load cached subject IDs
-      final cachedIds = await _subjectCacheService.getCachedSubjectIds();
       List<Map<String, dynamic>> loadedSubjects = [];
 
       // Try to load each cached subject
@@ -253,8 +255,11 @@ class DataService {
     required String gameId,
   }) async {
     try {
-      await _firestoreService.createAssignment(title: title, dueDate: dueDate.toString(), turma: turma, gameId: gameId);
-      //await _userCacheService.addAssignment(title: title, dueDate: DateTime.parse(dueDate), turma: turma, gameid: game_id);
+      String assId = await _firestoreService.createAssignment(title: title, dueDate: dueDate.toString(), turma: turma, gameId: gameId);
+      SubjectData? subjectData = await _subjectCacheService.getCachedSubjectData(turma);
+      subjectData ??= await _firestoreService.fetchSubjectData(subjectId: turma);
+      _subjectCacheService.deleteSubject(subjectId: turma);
+
     } catch (e) {
       print("Error creating Assignment");
     }
@@ -296,6 +301,66 @@ class DataService {
     } catch(e) {
       print("[DataService] Error deleting subject");
       rethrow;
+    }
+  }
+
+                            // ASSIGNMENTS //
+  Future<List<Map<String, dynamic>>> getAllAssignments() async {
+    try {
+      // First, try to load cached game IDs
+      final cachedIds = await _gameCacheService.getCachedGameIds();
+      List<Map<String, dynamic>> loadedGames = [];
+
+      // Try to load each cached game
+      for (final id in cachedIds) {
+        final cachedGame = await _gameCacheService.getCachedGameData(id);
+        if (cachedGame != null) {
+          loadedGames.add({
+            'imagePath': cachedGame.gameLogo,
+            'gameTitle': cachedGame.gameName,
+            'tags': cachedGame.tags,
+            'gameId': cachedGame.documentName,
+          });
+        }
+      }
+
+      // If no cached games, return an empty list
+      if (loadedGames.isNotEmpty) {
+        print('[DataService] Loaded games from cache');
+        return loadedGames;
+      }
+
+      // If no cached games, fetch games from Firestore
+      final fetchedGames = await _firestoreService.getAllGames();
+      for (final game in fetchedGames) {
+        final gameId = game['gameId'];
+        final gameData = await _firestoreService.fetchGameData(gameId: gameId);
+        await _gameCacheService.cacheGameData(gameData);
+      }
+
+      print('[DataService] Loaded games from Firestore and cached them');
+      return fetchedGames;
+    } catch (e) {
+      print('[DataService] Error fetching games: $e');
+      return [];
+    }
+  }
+
+  Future<AssignmentData?> getAssignmentData({required String assignmentId}) async {
+    try {
+      final cachedAssignment = await _assignmentCacheService.getCachedAssignmentData(assignmentId);
+      if (cachedAssignment != null) {
+        print('[DataService] Loaded game from cache');
+        return cachedAssignment;
+      }
+                //MIGHT NEED TO CHANGE
+      final freshAssignment = await _firestoreService.fetchAssignmentData(assignmentId: assignmentId);
+      await _assignmentCacheService.cacheAssignmentData(freshAssignment);
+      print('[DataService] Loaded game from Firestore and cached it');
+      return freshAssignment;
+    } catch (e) {
+      print('[DataService] Error getting game data: $e');
+      return null;
     }
   }
 }

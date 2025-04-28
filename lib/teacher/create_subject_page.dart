@@ -60,6 +60,7 @@ class _CreateSubjectPageState extends State<CreateSubjectPage> {
         subjectLogo: value,
         subjectName: _nameController.text.trim(),
         students: [],
+        assignments: [],
         teacher: uid,
       );
 
