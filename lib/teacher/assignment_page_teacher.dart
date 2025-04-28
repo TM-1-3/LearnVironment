@@ -17,7 +17,7 @@ class AssignmentPageTeacher extends StatelessWidget {
     try {
       final dataService = Provider.of<DataService>(context, listen: false);
       final authService = Provider.of<AuthService>(context, listen: false);
-      await dataService.deleteAssignment(assignmentId: assignmentId, uid: uid);
+      await dataService.deleteAssignment(assignmentId: assignmentData.assignmentId, uid: await authService.getUid());
       if (context.mounted) {
         Navigator.of(context).pop(); // Go back after deletion
       }

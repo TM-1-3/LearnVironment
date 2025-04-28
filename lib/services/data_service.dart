@@ -258,10 +258,10 @@ class DataService {
       String assId = await _firestoreService.createAssignment(title: title, dueDate: dueDate.toString(), turma: turma, gameId: gameId);
       SubjectData? subjectData = await _subjectCacheService.getCachedSubjectData(turma);
       subjectData ??= await _firestoreService.fetchSubjectData(subjectId: turma);
-      _subjectCacheService.deleteSubject(subjectId: turma);
+      await _subjectCacheService.deleteSubject(subjectId: turma);
 
       subjectData.assignments.add(assId);
-      _subjectCacheService.cacheSubjectData(subjectData);
+      await _subjectCacheService.cacheSubjectData(subjectData);
 
     } catch (e) {
       print("Error creating Assignment");
@@ -356,7 +356,7 @@ class DataService {
         print('[DataService] Loaded game from cache');
         return cachedAssignment;
       }
-                //MIGHT NEED TO CHANGE
+
       final freshAssignment = await _firestoreService.fetchAssignmentData(assignmentId: assignmentId);
       await _assignmentCacheService.cacheAssignmentData(freshAssignment);
       print('[DataService] Loaded game from Firestore and cached it');
@@ -371,7 +371,17 @@ class DataService {
     try {
       AssignmentData? assignmentData = await _assignmentCacheService.getCachedAssignmentData(assignmentId);
       assignmentData ??= await _firestoreService.fetchAssignmentData(assignmentId: assignmentId);
-      _assignmentCacheService.deleteAssignment(assignmentId: assignmentId);
+      await _assignmentCacheService.deleteAssignment(assignmentId: assignmentId);
+
+      await _firestoreService.deleteAssignment(assignmentId: assignmentId, uid: uid);
+
+      SubjectData? subjectData = await _subjectCacheService.getCachedSubjectData(assignmentData.subjectId);
+      subjectData ??= await _firestoreService.fetchSubjectData(subjectId: assignmentData.subjectId);
+      await _subjectCacheService.deleteSubject(subjectId: assignmentData.subjectId);
+
+      subjectData.assignments.remove(assignmentId);
+
+      await _subjectCacheService.cacheSubjectData(subjectData);
 
     } catch (e) {
       print("Error creating Assignment");

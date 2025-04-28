@@ -425,7 +425,7 @@ class FirestoreService {
   Future<void> deleteAssignment({required String assignmentId, required String uid}) async {
     try {
       await _firestore.collection('assignments').doc(assignmentId).delete();
-      final classDoc = _firestore.collection('classes').doc(uid);
+      final classDoc = _firestore.collection('subjects').doc(uid);
       final classSnapshot = await classDoc.get();
 
       List<String> assignments = [];
