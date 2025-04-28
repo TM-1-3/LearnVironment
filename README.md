@@ -329,6 +329,8 @@ You can find below information and references related with the project managemen
   
 - How to implement Google Firebase Services on our app.
 
+
+
 **Board at the Beginning Of Sprint 0**
 
 ![beginSprint0](https://github.com/user-attachments/assets/7e5e1a7d-4c41-4195-9d4a-79c9228e0348)
@@ -355,6 +357,7 @@ You can find below information and references related with the project managemen
 **Do Differently:**
 
 - **Revise Other Members Work Earlier:** Toward the end of the sprint, some members noticed issues in certain tasks that could have been identified and resolved earlier. Catching these problems sooner would have allowed for a calmer and higher-quality resolution.
+  
 
 **Challenges:**
 
@@ -374,12 +377,26 @@ You can find below information and references related with the project managemen
 **Sprint Retrospective:**
 
 **Did Well:**
-  
 
+- **Availability and Team Support:** Each member was always available to help others with their tasks, enabling faster implementation of features and a smoother workflow;
+
+- **Implementation of the Most Difficult Features:** The team considers this sprint to have been its most ambitious one, not only because of the number of features it aimed to successfully implement, but also due to the complexity of some of them. Despite this, the team managed to successfully implement the majority of them.
+  
+  
 **Do Differently:**
 
+- **Do More Sooner:** Make as much progress as possible earlier in the sprint, in order to not have its conclusion compromised by external factors.
+  
 
 **Challenges:**
+
+- The implementation of notifications using Firebase Cloud Messaging;
+
+- The blackout that happened the day before the sprint deadline prevented us from making progress on our work.
+
+**Happiness Meter:**
+
+![sprint2HappinessMeter](docs/sprint2HappinessMeter.png)
 
 
 **Board at the Beginning of Sprint 2**
