@@ -363,4 +363,15 @@ class DataService {
       return null;
     }
   }
+
+  Future<void> deleteAssignment({required String assignmentId, required String uid,}) async {
+    try {
+      AssignmentData? assignmentData = await _assignmentCacheService.getCachedAssignmentData(assignmentId);
+      assignmentData ??= await _firestoreService.fetchAssignmentData(assignmentId: assignmentId);
+      _assignmentCacheService.deleteAssignment(assignmentId: assignmentId);
+
+    } catch (e) {
+      print("Error creating Assignment");
+    }
+  }
 }
