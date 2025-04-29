@@ -412,7 +412,7 @@ You can find below information and references related with the project managemen
 
 ### Sprint 3
 
-**Goal:** Create a way for teachers to have their classes; implement a way for teachers to add students to a class and create an assigment; allow users to register and edit their profile; fix bugs in app relative to back buttons, the game results page and add accessibility to the Bin game; allow students to receive notifications of their assignments. 
+**Goal:** Create an interface for game developers to build, test, edit and publish games on the app; Allow students, as well as their respective teachers, to see their statitics relative to ther performance and the games they played; Fix various bugs; Enhance features and visuals.
 
 **Sprint Retrospective:**
 
