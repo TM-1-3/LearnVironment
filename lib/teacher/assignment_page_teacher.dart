@@ -76,25 +76,6 @@ class AssignmentPageTeacher extends StatelessWidget {
                   style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 40),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => AssignmentsPageTeacher(id: assignmentData.assId))) ;
-                  },
-                  child: Card(
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-                      child: Text("View Assignments", style: TextStyle(fontSize: 20)),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 30),
-                const Text(
-                  'Enrolled Students',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 40),
                 ElevatedButton.icon(
                   onPressed: () => confirmDelete(context),
                   icon: const Icon(Icons.delete),

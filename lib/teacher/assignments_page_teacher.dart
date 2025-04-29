@@ -125,7 +125,7 @@ class AssignmentsPageTeacherState extends State<AssignmentsPageTeacher> {
                   itemBuilder: (context, index) {
                     final assignment = filteredAssignments[index];
                     return AssignmentCardTeacher(
-                      assignmentTitle: assignment['assignmentTitle'],
+                      assignmentTitle: assignment['title'],
                       assignmentId: assignment['assignmentId'],
                       loadAssignment: _loadAssignment,
                     );

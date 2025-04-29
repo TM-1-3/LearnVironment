@@ -313,7 +313,7 @@ class FirestoreService {
 
       DocumentReference docRef = await _firestore.collection('assignment').add({
         'title': title,
-        'game_id': gameId,
+        'gameId': gameId,
         'class': turma,
         'dueDate': dueDate,
       });
@@ -402,7 +402,7 @@ class FirestoreService {
             // ASSIGNMENTS //
   Future<AssignmentData> fetchAssignmentData({required String assignmentId}) async {
     try {
-      DocumentSnapshot snapshot = await _firestore.collection('assignments').doc(assignmentId).get();
+      DocumentSnapshot snapshot = await _firestore.collection('assignment').doc(assignmentId).get();
 
       if (!snapshot.exists) {
         throw Exception("Assignment not found in Firestore for ID: $assignmentId");
@@ -425,7 +425,7 @@ class FirestoreService {
 
   Future<void> deleteAssignment({required String assignmentId, required String uid}) async {
     try {
-      await _firestore.collection('assignments').doc(assignmentId).delete();
+      await _firestore.collection('assignment').doc(assignmentId).delete();
       final classDoc = _firestore.collection('subjects').doc(uid);
       final classSnapshot = await classDoc.get();
 
@@ -449,7 +449,7 @@ class FirestoreService {
   Future<List<Map<String, dynamic>>> getAllAssignments() async {
     try {
       final querySnapshot = await _firestore
-          .collection('assignments')
+          .collection('assignment')
           .get();
 
       return querySnapshot.docs.map((doc) {
