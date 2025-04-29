@@ -174,6 +174,57 @@ class _TeacherSubjectScreenState extends State<TeacherSubjectScreen> {
                               leading: const Icon(Icons.person),
                               title: Text(studentData['name'] ?? 'Unknown'),
                               subtitle: Text(studentData['email'] ?? ''),
+                              trailing: IconButton(
+                                icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
+                                tooltip: 'Remove Student',
+                                onPressed: () async {
+                                  final confirm = await showDialog<bool>(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: const Text('Remove Student'),
+                                      content: const Text('Are you sure you want to remove this student from the class?'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () => Navigator.of(context).pop(false),
+                                          child: const Text('Cancel'),
+                                        ),
+                                        ElevatedButton(
+                                          onPressed: () => Navigator.of(context).pop(true),
+                                          style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                                          child: const Text('Remove'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+
+                                  if (confirm == true) {
+                                    final dataService = Provider.of<DataService>(context, listen: false);
+                                    try {
+                                      await dataService.removeStudentFromSubject(
+                                        subjectId: widget.subjectData.subjectId,
+                                        studentId: studentId,
+                                      );
+
+                                      setState(() {
+                                        widget.subjectData.students.remove(studentId);
+                                      });
+
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(content: Text('Student removed successfully')),
+                                        );
+                                      }
+                                    } catch (e) {
+                                      print('Error removing student: $e');
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(content: Text('Failed to remove student')),
+                                        );
+                                      }
+                                    }
+                                  }
+                                },
+                              ),
                             ),
                           );
                         }
@@ -262,6 +313,7 @@ class _TeacherSubjectScreenState extends State<TeacherSubjectScreen> {
                         horizontal: 20, vertical: 15),
                     textStyle: const TextStyle(fontSize: 16),
                   ),
+                  key: Key("addStudent")
                 ),
 
                 const SizedBox(height: 20),

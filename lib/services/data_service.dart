@@ -412,4 +412,26 @@ class DataService {
       throw Exception("Error adding student to subject");
     }
   }
+
+  Future<void> removeStudentFromSubject({required String subjectId, required String studentId}) async {
+    try {
+      // Step 1: Remove student from subject in Firestore
+      await _firestoreService.removeStudentFromSubject(subjectId: subjectId, studentId: studentId);
+      print('[DataService] Student removed from subject in Firestore');
+
+      // Step 2: Delete old cached subject data
+      await _subjectCacheService.deleteSubject(subjectId: subjectId);
+      print('[DataService] Removed old subject data from cache');
+
+      // Step 3: Fetch updated subject data
+      final updatedSubject = await _firestoreService.fetchSubjectData(subjectId: subjectId);
+
+      // Step 4: Cache the updated subject
+      await _subjectCacheService.cacheSubjectData(updatedSubject);
+      print('[DataService] Cached updated subject data after removing student');
+    } catch (e) {
+      print('[DataService] Error removing student from subject: $e');
+      throw Exception("Error removing student from subject");
+    }
+  }
 }
