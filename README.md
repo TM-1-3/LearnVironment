@@ -444,7 +444,7 @@ You can find below information and references related with the project managemen
 
 **Board at the Beginning of Sprint 3**
 
-![beginSprint3](doc3/beginSprint3.png)
+![beginSprint3](docs/beginSprint3.png)
 
 **Board at the End of Sprint 3**
 <img width="1346" alt="image" src="https://github.com/user-attachments/assets/420fb54f-ec58-417f-be73-c5e8cbd671cb" />
