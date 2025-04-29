@@ -78,7 +78,7 @@ class AssignmentPageTeacher extends StatelessWidget {
                 const SizedBox(height: 40),
                 GestureDetector(
                   onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => AssignmentsPageTeacher())) ;
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => AssignmentsPageTeacher(id: assignmentData.assId))) ;
                   },
                   child: Card(
                     elevation: 4,

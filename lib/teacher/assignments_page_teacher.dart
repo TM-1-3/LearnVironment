@@ -6,7 +6,8 @@ import 'package:learnvironment/services/data_service.dart';
 import 'package:provider/provider.dart';
 
 class AssignmentsPageTeacher extends StatefulWidget {
-  const AssignmentsPageTeacher({super.key});
+  final String id;
+  const AssignmentsPageTeacher({super.key, required this.id});
 
   @override
   AssignmentsPageTeacherState createState() => AssignmentsPageTeacherState();
@@ -26,7 +27,7 @@ class AssignmentsPageTeacherState extends State<AssignmentsPageTeacher> {
     try {
       final dataService = Provider.of<DataService>(context, listen: false);
 
-      final fetchedAssignments = await dataService.getAllAssignments();
+      final fetchedAssignments = await dataService.getAllAssignments(subjectId: widget.id);
       print('[AssignmentsPage] Fetched Assignments');
       setState(() {
         assignments = fetchedAssignments;

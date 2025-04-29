@@ -309,43 +309,45 @@ class DataService {
   }
 
                             // ASSIGNMENTS //
-  Future<List<Map<String, dynamic>>> getAllAssignments() async {
+  Future<List<Map<String, dynamic>>> getAllAssignments({required String subjectId}) async {
     try {
-      // First, try to load cached game IDs
-      final cachedIds = await _assignmentCacheService.getCachedAssignmentIds();
       List<Map<String, dynamic>> loadedAssignments = [];
 
-      // Try to load each cached game
-      for (final id in cachedIds) {
+      // Try to load each cached subject
+      SubjectData? subjectData = await getSubjectData(subjectId: subjectId);
+      if (subjectData == null) {
+        throw Exception("Assignments is null");
+      }
+      List<String> myAssignments = subjectData.assignments;
+
+      for (final id in myAssignments) {
+        print(id);
         final cachedAssignment = await _assignmentCacheService.getCachedAssignmentData(id);
         if (cachedAssignment != null) {
           loadedAssignments.add({
+            'assignmentId': cachedAssignment.assId,
             'title': cachedAssignment.title,
             'subjectId': cachedAssignment.subjectId,
             'dueDate': cachedAssignment.dueDate,
             'gameId': cachedAssignment.gameId,
           });
+        } else {
+          AssignmentData assignmentData = await _firestoreService.fetchAssignmentData(assignmentId: id);
+          await _assignmentCacheService.cacheAssignmentData(assignmentData);
+          loadedAssignments.add({
+            'assignmentId': assignmentData.assId,
+            'title': assignmentData.title,
+            'subjectId': assignmentData.subjectId,
+            'dueDate': assignmentData.dueDate,
+            'gameId': assignmentData.gameId,
+          });
         }
       }
+      print("[DataService] Loaded Assignments Successfully");
+      return loadedAssignments;
 
-      // If no cached games, return an empty list
-      if (loadedAssignments.isNotEmpty) {
-        print('[DataService] Loaded games from cache');
-        return loadedAssignments;
-      }
-
-      // If no cached games, fetch games from Firestore
-      final fetchedAssignments = await _firestoreService.getAllAssignments();
-      for (final ass in fetchedAssignments) {
-        final assId = ass['assignmentId'];
-        final assData = await _firestoreService.fetchAssignmentData(assignmentId: assId);
-        await _assignmentCacheService.cacheAssignmentData(assData);
-      }
-
-      print('[DataService] Loaded assignments from Firestore and cached them');
-      return fetchedAssignments;
     } catch (e) {
-      print('[DataService] Error fetching assignments: $e');
+      print("[DataService] Error fetching Assignments: $e");
       return [];
     }
   }
@@ -354,16 +356,16 @@ class DataService {
     try {
       final cachedAssignment = await _assignmentCacheService.getCachedAssignmentData(assignmentId);
       if (cachedAssignment != null) {
-        print('[DataService] Loaded game from cache');
+        print('[DataService] Loaded assignment from cache');
         return cachedAssignment;
       }
 
       final freshAssignment = await _firestoreService.fetchAssignmentData(assignmentId: assignmentId);
       await _assignmentCacheService.cacheAssignmentData(freshAssignment);
-      print('[DataService] Loaded game from Firestore and cached it');
+      print('[DataService] Loaded assignment from Firestore and cached it');
       return freshAssignment;
     } catch (e) {
-      print('[DataService] Error getting game data: $e');
+      print('[DataService] Error getting assignment data: $e');
       return null;
     }
   }
