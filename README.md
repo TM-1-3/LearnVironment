@@ -329,6 +329,8 @@ You can find below information and references related with the project managemen
   
 - How to implement Google Firebase Services on our app.
 
+
+
 **Board at the Beginning Of Sprint 0**
 
 ![beginSprint0](https://github.com/user-attachments/assets/7e5e1a7d-4c41-4195-9d4a-79c9228e0348)
@@ -391,6 +393,10 @@ You can find below information and references related with the project managemen
 - The implementation of notifications using Firebase Cloud Messaging;
 
 - The blackout that happened the day before the sprint deadline prevented us from making progress on our work.
+
+**Happiness Meter:**
+
+![sprint2HappinessMeter](docs/sprint2HappinessMeter.png)
 
 
 **Board at the Beginning of Sprint 2**

@@ -312,11 +312,8 @@ class FirestoreService {
       });
 
       DocumentReference docRef = await _firestore.collection('assignment').add({
-        'title': title,
-        'gameId': gameId,
-        'class': turma,
-        'dueDate': dueDate,
-      });
+  
+      await _firestore.collection('assignment').add({
 
       final assignmentDoc = _firestore.collection('subjects').doc(turma);
       final assignmentSnapshot = await assignmentDoc.get();
@@ -334,6 +331,7 @@ class FirestoreService {
       await assignmentDoc.update({'assignments': assignments});
       print("[FirestoreService] Created Assignment!");
       return docRef.id;
+      print("[FirestoreService] Created Assignment!");
     } catch (e) {
       print("[FirestoreService] Unable to create assignment!");
       throw Exception("Unable to create assignment!");
