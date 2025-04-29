@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 class MockDataService extends Mock implements DataService {
   bool throwErrorOnDelete = false;
   bool throwErrorOnAddStudent = false;
+  bool throwErrorOnRemoveStudent = false;
 
   void setThrowErrorOnDelete(bool value) {
     throwErrorOnDelete = value;
@@ -20,8 +21,13 @@ class MockDataService extends Mock implements DataService {
     throwErrorOnAddStudent = value;
   }
 
+  void setThrowErrorOnRemoveStudent(bool value) {
+    throwErrorOnRemoveStudent = value;
+  }
+
   @override
-  Future<void> deleteSubject({required String subjectId, required String uid}) async {
+  Future<void> deleteSubject(
+      {required String subjectId, required String uid}) async {
     if (throwErrorOnDelete) {
       throw Exception('Failed to delete subject');
     }
@@ -44,9 +50,18 @@ class MockDataService extends Mock implements DataService {
   }
 
   @override
-  Future<void> addStudentToSubject({required String subjectId, required String studentId}) async{
-    if(throwErrorOnAddStudent){
+  Future<void> addStudentToSubject(
+      {required String subjectId, required String studentId}) async {
+    if (throwErrorOnAddStudent) {
       throw Exception('Failed to add student');
+    }
+  }
+
+  @override
+  Future<void> removeStudentFromSubject(
+      {required String subjectId, required String studentId}) async {
+    if (throwErrorOnRemoveStudent) {
+      throw Exception('Failed to remove student');
     }
   }
 }
@@ -166,7 +181,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Enter student ID
-      await tester.enterText(find.byType(TextField), 'hkN1iJLlW5fHprKXnSkQT1cFGqq2');
+      await tester.enterText(find.byType(TextField), 'student 3');
       await tester.tap(find.widgetWithText(ElevatedButton, 'Add'));
       await tester.pump(); // Begin async call
       await tester.pump(const Duration(milliseconds: 500));
@@ -192,6 +207,54 @@ void main() {
       await tester.pump(const Duration(seconds: 1)); // Wait for async work
 
       expect(find.text('Failed to add student'), findsOneWidget);
+    });
+
+    testWidgets('removes a student successfully', (tester) async {
+      await tester.pumpWidget(testWidget);
+      await tester.pumpAndSettle(); // Allow FutureBuilders to complete
+
+      // Find and tap the remove icon for the first student
+      final removeButton = find.widgetWithIcon(IconButton, Icons.remove_circle_outline).first;
+      await tester.tap(removeButton);
+      await tester.pumpAndSettle();
+
+      // Confirm the dialog appears
+      expect(find.text('Remove Student'), findsOneWidget);
+      expect(find.text('Are you sure you want to remove this student from the class?'), findsOneWidget);
+
+      // Tap 'Remove' button in dialog
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Remove'));
+      await tester.pump(); // Begin async
+      await tester.pump(const Duration(seconds: 1)); // Complete async
+
+      // Success snackbar shown
+      expect(find.text('Student removed successfully'), findsOneWidget);
+
+      // Student should no longer be in the widget tree
+      expect(find.text('Student student1'), findsNothing);
+    });
+
+    testWidgets('shows snackbar on student remove failure', (tester) async {
+      mockDataService.setThrowErrorOnRemoveStudent(true);
+
+      await tester.pumpWidget(testWidget);
+      await tester.pumpAndSettle(); // Wait for student list
+
+      // Find and tap remove icon
+      final removeButton = find.widgetWithIcon(IconButton, Icons.remove_circle_outline).first;
+      await tester.tap(removeButton);
+      await tester.pumpAndSettle();
+
+      // Confirm dialog appears and tap remove
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Remove'));
+      await tester.pump(); // Begin async
+      await tester.pump(const Duration(seconds: 1)); // Finish async
+
+      // Error snackbar shown
+      expect(find.text('Failed to remove student'), findsOneWidget);
+
+      // Student should still be present
+      expect(find.text('Student student1'), findsOneWidget);
     });
   });
 }
