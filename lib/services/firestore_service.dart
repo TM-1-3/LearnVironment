@@ -310,12 +310,27 @@ class FirestoreService {
         'name': 'New Assignment!',
         'className': turma,
       });
+
+      DocumentReference docRef = await _firestore.collection('assignment').add({
+  
       await _firestore.collection('assignment').add({
-        'title': title,
-        'game_id': gameId,
-        'class': turma,
-        'dueDate': dueDate,
-      });
+
+      final assignmentDoc = _firestore.collection('subjects').doc(turma);
+      final assignmentSnapshot = await assignmentDoc.get();
+
+      List<String> assignments = [];
+
+      if (assignmentSnapshot.exists && assignmentSnapshot.data() != null) {
+        final data = assignmentSnapshot.data()!;
+        assignments = List<String>.from(data['assignments'] ?? []);
+      }
+
+      assignments.remove(docRef.id);
+      assignments.insert(0, docRef.id);
+
+      await assignmentDoc.update({'assignments': assignments});
+      print("[FirestoreService] Created Assignment!");
+      return docRef.id;
       print("[FirestoreService] Created Assignment!");
     } catch (e) {
       print("[FirestoreService] Unable to create assignment!");
@@ -385,7 +400,7 @@ class FirestoreService {
             // ASSIGNMENTS //
   Future<AssignmentData> fetchAssignmentData({required String assignmentId}) async {
     try {
-      DocumentSnapshot snapshot = await _firestore.collection('assignments').doc(assignmentId).get();
+      DocumentSnapshot snapshot = await _firestore.collection('assignment').doc(assignmentId).get();
 
       if (!snapshot.exists) {
         throw Exception("Assignment not found in Firestore for ID: $assignmentId");
@@ -394,10 +409,11 @@ class FirestoreService {
       var data = snapshot.data() as Map<String, dynamic>;
 
       return AssignmentData(
-        assignmentId: snapshot.id,
-        subjectId: snapshot.id,
-        assignmentLogo: data['logo'] ?? 'assets/placeholder.png',
-        assignmentName: data['name'] ?? 'Unknown Name',
+        assId: assignmentId,
+        subjectId: data['subjectId'] ?? 'unknown',
+        gameId: data['gameId'] ?? 'Unknown',
+        title: data['title'] ?? 'Unknown Name',
+        dueDate: data['dueDate'] ?? ' '
       );
     } catch (e, stackTrace) {
       debugPrint("Error loading AssignmentData: $e\n$stackTrace");
@@ -407,8 +423,8 @@ class FirestoreService {
 
   Future<void> deleteAssignment({required String assignmentId, required String uid}) async {
     try {
-      await _firestore.collection('assignments').doc(assignmentId).delete();
-      final classDoc = _firestore.collection('classes').doc(uid);
+      await _firestore.collection('assignment').doc(assignmentId).delete();
+      final classDoc = _firestore.collection('subjects').doc(uid);
       final classSnapshot = await classDoc.get();
 
       List<String> assignments = [];
@@ -420,10 +436,32 @@ class FirestoreService {
 
       assignments.remove(assignmentId);
 
-      await classDoc.update({'classes': assignments});
+      await classDoc.update({'assignments': assignments});
       print("[FirestoreService] Assignment Deleted");
     } catch (e) {
       print("[FirestoreService] Error deleting assignment $assignmentId");
+      rethrow;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getAllAssignments() async {
+    try {
+      final querySnapshot = await _firestore
+          .collection('assignment')
+          .get();
+
+      return querySnapshot.docs.map((doc) {
+        final data = doc.data();
+        return {
+          'title': data['title'] ?? 'Default Assignment Title',
+          'assignmentId': doc.id,
+          'subjectId': data['subjectId'] ?? 'Default Subject',
+          'gameId': data['gameId'] ?? 'Unknown',
+          'dueDate': data['dueDate'] ?? ' '
+        };
+      }).toList();
+    } catch (e, stackTrace) {
+      debugPrint('[FirestoreService] Error getting assignments: $e\n$stackTrace');
       rethrow;
     }
   }

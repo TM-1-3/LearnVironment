@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:learnvironment/teacher/assignment_page_teacher.dart';
 import 'package:learnvironment/teacher/widgets/assignment_card_teacher.dart';
 import 'package:learnvironment/services/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:provider/provider.dart';
 
 class AssignmentsPageTeacher extends StatefulWidget {
-  const AssignmentsPageTeacher({super.key});
+  final String id;
+  const AssignmentsPageTeacher({super.key, required this.id});
 
   @override
   AssignmentsPageTeacherState createState() => AssignmentsPageTeacherState();
@@ -25,7 +27,7 @@ class AssignmentsPageTeacherState extends State<AssignmentsPageTeacher> {
     try {
       final dataService = Provider.of<DataService>(context, listen: false);
 
-      final fetchedAssignments = await dataService.getAllAssignments();
+      final fetchedAssignments = await dataService.getAllAssignments(subjectId: widget.id);
       print('[AssignmentsPage] Fetched Assignments');
       setState(() {
         assignments = fetchedAssignments;
@@ -37,16 +39,15 @@ class AssignmentsPageTeacherState extends State<AssignmentsPageTeacher> {
 
   List<Map<String, dynamic>> getFilteredAssignments() {
     return assignments.where((assignment) {
-      final assignmentTitle = assignment['assignmentTitle'].toLowerCase();
+      final assignmentTitle = assignment['title'].toLowerCase();
 
-      final matchesQuery =
-          _searchQuery.isEmpty || assignmentTitle.contains(_searchQuery.toLowerCase());
+      final matchesQuery = _searchQuery.isEmpty || assignmentTitle.contains(_searchQuery.toLowerCase());
 
       return matchesQuery;
     }).toList();
   }
 
-  Future<void> loadAssignment(String assignmentId) async {
+  Future<void> _loadAssignment(String assignmentId) async {
     try {
       print('[Assignments Page] Loading Assignment');
       final dataService = Provider.of<DataService>(context, listen: false);
@@ -98,46 +99,6 @@ class AssignmentsPageTeacherState extends State<AssignmentsPageTeacher> {
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                DropdownButton<String>(
-                  key: Key('ageDropdown'),
-                  value: _selectedAge,
-                  hint: const Text('Filter by Age'),
-                  items: [null, '12+', '10+', '8+', '6+']
-                      .map((age) => DropdownMenuItem<String>(
-                    value: age,
-                    child: Text(age ?? 'All Ages'),
-                  ))
-                      .toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedAge = value;
-                    });
-                  },
-                ),
-                DropdownButton<String>(
-                  key: Key('tagDropdown'),
-                  value: _selectedTag,
-                  hint: const Text('Filter by Tag'),
-                  items: [null, 'Recycling', 'Strategy', 'Citizenship']
-                      .map((tag) => DropdownMenuItem<String>(
-                    value: tag,
-                    child: Text(tag ?? 'All Tags'),
-                  ))
-                      .toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedTag = value;
-                    });
-                  },
-                ),
-              ],
-            ),
-          ),
           Expanded(
             child: LayoutBuilder(
               builder: (context, constraints) {
@@ -151,7 +112,6 @@ class AssignmentsPageTeacherState extends State<AssignmentsPageTeacher> {
                 } else {
                   mainAxisExtent = 1545;
                 }
-
                 return filteredAssignments.isNotEmpty
                     ? GridView.builder(
                   padding: const EdgeInsets.all(8),
@@ -165,11 +125,9 @@ class AssignmentsPageTeacherState extends State<AssignmentsPageTeacher> {
                   itemBuilder: (context, index) {
                     final assignment = filteredAssignments[index];
                     return AssignmentCardTeacher(
-                      imagePath: assignment['imagePath'],
-                      assignmentTitle: assignment['assignmentTitle'],
-                      tags: List<String>.from(assignment['tags']),
+                      assignmentTitle: assignment['title'],
                       assignmentId: assignment['assignmentId'],
-                      loadAssignment: loadAssignment,
+                      loadAssignment: _loadAssignment,
                     );
                   },
                 )

@@ -13,7 +13,7 @@ class TeacherSubjectScreen extends StatelessWidget {
     required this.subjectData,
   });
 
-  Future<Map<String, dynamic>?> getStudentData({
+  Future<Map<String, dynamic>?> _getStudentData({
     required String studentId,
     required BuildContext context,
   }) async {
@@ -35,7 +35,7 @@ class TeacherSubjectScreen extends StatelessWidget {
     }
   }
 
-  Future<void> deleteSubject(BuildContext context) async {
+  Future<void> _deleteSubject(BuildContext context) async {
     try {
       final dataService = Provider.of<DataService>(context, listen: false);
       final authService = Provider.of<AuthService>(context, listen: false);
@@ -67,7 +67,7 @@ class TeacherSubjectScreen extends StatelessWidget {
           ElevatedButton(
             onPressed: () async {
               Navigator.of(context).pop(); // Close the dialog
-              await deleteSubject(context);
+              await _deleteSubject(context);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
@@ -111,7 +111,7 @@ class TeacherSubjectScreen extends StatelessWidget {
                 const SizedBox(height: 40),
                 GestureDetector(
                   onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => AssignmentsPageTeacher())) ;
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => AssignmentsPageTeacher(id: subjectData.subjectId))) ;
                   },
                   child: Card(
                     elevation: 4,
@@ -137,7 +137,7 @@ class TeacherSubjectScreen extends StatelessWidget {
                     final studentId = studentIds[index];
 
                     return FutureBuilder<Map<String, dynamic>?>(
-                      future: getStudentData(studentId: studentId, context: context),
+                      future: _getStudentData(studentId: studentId, context: context),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {
                           return const ListTile(
