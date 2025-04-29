@@ -411,6 +411,43 @@ You can find below information and references related with the project managemen
 
 ### Sprint 3
 
+**Goal:** Create a way for teachers to have their classes; implement a way for teachers to add students to a class and create an assigment; allow users to register and edit their profile; fix bugs in app relative to back buttons, the game results page and add accessibility to the Bin game; allow students to receive notifications of their assignments. 
+
+**Sprint Retrospective:**
+
+**Did Well:**
+
+- **Availability and Team Support:** Each member was always available to help others with their tasks, enabling faster implementation of features and a smoother workflow;
+
+- **Implementation of the Most Difficult Features:** The team considers this sprint to have been its most ambitious one, not only because of the number of features it aimed to successfully implement, but also due to the complexity of some of them. Despite this, the team managed to successfully implement the majority of them.
+  
+  
+**Do Differently:**
+
+- **Do More Sooner:** Make as much progress as possible earlier in the sprint, in order to not have its conclusion compromised by external factors.
+  
+
+**Challenges:**
+
+- The implementation of notifications using Firebase Cloud Messaging;
+
+- The blackout that happened the day before the sprint deadline prevented us from making progress on our work.
+
+**Happiness Meter:**  
+- Tomás Morais: 😀  
+- Henrique Vilarinho: 😀  
+- Maria Sousa: 🙂  
+- Miguel Roque: 🙂  
+- Leonor Bidarra: 😀  
+
+
+**Board at the Beginning of Sprint 3**
+
+<img width="1341" alt="image" src="https://github.com/user-attachments/assets/7d56763c-336e-4a8e-ac2e-3e9ffb03c2c9" />
+
+**Board at the End of Sprint 3**
+<img width="1346" alt="image" src="https://github.com/user-attachments/assets/420fb54f-ec58-417f-be73-c5e8cbd671cb" />
+
 ### Sprint 4
 
 ### Final Release
