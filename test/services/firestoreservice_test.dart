@@ -406,7 +406,7 @@ void main() {
 
       final assignment = snapshot.docs.first.data();
       expect(assignment['title'], 'Assignment 1');
-      expect(assignment['game_id'], 'game1');
+      expect(assignment['gameId'], 'game1');
       expect(assignment['class'], 'ClassA');
       expect(assignment['dueDate'], '2025-05-01');
 

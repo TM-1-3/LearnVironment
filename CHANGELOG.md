@@ -60,8 +60,10 @@
 - Fixed bug in back to games page button [#87](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/87)
 - Teachers can now create a class [#89](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/89)
 - Teachers can now delete a class [#90](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/90)
+- Users can receive notifications [#91](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/91)
+- Teachers can now delete an assignment [#92](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/92)
 
 ### Test User
-- email: 
-- password: 
+- email: up202307719@g.uporto.pt
+- password: 123456
 - role: teacher
