@@ -312,8 +312,11 @@ class FirestoreService {
       });
 
       DocumentReference docRef = await _firestore.collection('assignment').add({
-  
-      await _firestore.collection('assignment').add({
+        'title': title,
+        'gameId': gameId,
+        'class': turma,
+        'dueDate': dueDate,
+      });
 
       final assignmentDoc = _firestore.collection('subjects').doc(turma);
       final assignmentSnapshot = await assignmentDoc.get();
@@ -331,7 +334,6 @@ class FirestoreService {
       await assignmentDoc.update({'assignments': assignments});
       print("[FirestoreService] Created Assignment!");
       return docRef.id;
-      print("[FirestoreService] Created Assignment!");
     } catch (e) {
       print("[FirestoreService] Unable to create assignment!");
       throw Exception("Unable to create assignment!");
@@ -397,7 +399,7 @@ class FirestoreService {
     }
   }
 
-            // ASSIGNMENTS //
+  // ASSIGNMENTS //
   Future<AssignmentData> fetchAssignmentData({required String assignmentId}) async {
     try {
       DocumentSnapshot snapshot = await _firestore.collection('assignment').doc(assignmentId).get();
@@ -409,11 +411,11 @@ class FirestoreService {
       var data = snapshot.data() as Map<String, dynamic>;
 
       return AssignmentData(
-        assId: assignmentId,
-        subjectId: data['subjectId'] ?? 'unknown',
-        gameId: data['gameId'] ?? 'Unknown',
-        title: data['title'] ?? 'Unknown Name',
-        dueDate: data['dueDate'] ?? ' '
+          assId: assignmentId,
+          subjectId: data['subjectId'] ?? 'unknown',
+          gameId: data['gameId'] ?? 'Unknown',
+          title: data['title'] ?? 'Unknown Name',
+          dueDate: data['dueDate'] ?? ' '
       );
     } catch (e, stackTrace) {
       debugPrint("Error loading AssignmentData: $e\n$stackTrace");
