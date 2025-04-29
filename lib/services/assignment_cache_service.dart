@@ -6,26 +6,26 @@ class AssignmentCacheService {
   // Cache Assignment Data
   Future<void> cacheAssignmentData(AssignmentData assignmentData) async {
     final prefs = await SharedPreferences.getInstance();
-    final key = 'assignment_${assignmentData.assignmentName}';
+    final key = 'assignment_${assignmentData.title}';
 
     final data = {
       'assignment': assignmentData.toCache(),
       'expiresAt': DateTime.now().add(Duration(days: 5)).millisecondsSinceEpoch
     };
 
-    print('[CACHE] Saving assignment ${assignmentData.assignmentName}');
+    print('[CACHE] Saving assignment ${assignmentData.title}');
 
     bool success = await prefs.setString(key, json.encode(data));
 
     if (success) {
       List<String> cachedIds = prefs.getStringList('cached_assignment_ids') ?? [];
-      if (!cachedIds.contains(assignmentData.assignmentName)) {
-        cachedIds.add(assignmentData.assignmentName);
+      if (!cachedIds.contains(assignmentData.title)) {
+        cachedIds.add(assignmentData.title);
         await prefs.setStringList('cached_assignment_ids', cachedIds);
       }
-      print('[CACHE] Assignment ${assignmentData.assignmentName} cached with expiration.');
+      print('[CACHE] Assignment ${assignmentData.title} cached with expiration.');
     } else {
-      print('[CACHE ERROR] Failed to cache assignment ${assignmentData.assignmentName}.');
+      print('[CACHE ERROR] Failed to cache assignment ${assignmentData.title}.');
     }
   }
 

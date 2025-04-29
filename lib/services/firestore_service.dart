@@ -411,10 +411,11 @@ class FirestoreService {
       var data = snapshot.data() as Map<String, dynamic>;
 
       return AssignmentData(
-        assignmentId: snapshot.id,
-        subjectId: snapshot.id,
-        assignmentLogo: data['logo'] ?? 'assets/placeholder.png',
-        assignmentName: data['name'] ?? 'Unknown Name',
+        assId: assignmentId,
+        subjectId: data['subjectId'] ?? 'unknown',
+        gameId: data['gameId'] ?? 'Unknown',
+        title: data['title'] ?? 'Unknown Name',
+        dueDate: data['dueDate'] ?? ' '
       );
     } catch (e, stackTrace) {
       debugPrint("Error loading AssignmentData: $e\n$stackTrace");
@@ -437,7 +438,7 @@ class FirestoreService {
 
       assignments.remove(assignmentId);
 
-      await classDoc.update({'classes': assignments});
+      await classDoc.update({'assignments': assignments});
       print("[FirestoreService] Assignment Deleted");
     } catch (e) {
       print("[FirestoreService] Error deleting assignment $assignmentId");
@@ -454,8 +455,11 @@ class FirestoreService {
       return querySnapshot.docs.map((doc) {
         final data = doc.data();
         return {
-          'assignmentTitle': data['title'] ?? 'Default Assignment Title',
+          'title': data['title'] ?? 'Default Assignment Title',
           'assignmentId': doc.id,
+          'subjectId': data['subjectId'] ?? 'Default Subject',
+          'gameId': data['gameId'] ?? 'Unknown',
+          'dueDate': data['dueDate'] ?? ' '
         };
       }).toList();
     } catch (e, stackTrace) {

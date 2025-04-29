@@ -40,8 +40,7 @@ class AssignmentsPageTeacherState extends State<AssignmentsPageTeacher> {
     return assignments.where((assignment) {
       final assignmentTitle = assignment['title'].toLowerCase();
 
-      final matchesQuery =
-          _searchQuery.isEmpty || assignmentTitle.contains(_searchQuery.toLowerCase());
+      final matchesQuery = _searchQuery.isEmpty || assignmentTitle.contains(_searchQuery.toLowerCase());
 
       return matchesQuery;
     }).toList();
@@ -112,7 +111,6 @@ class AssignmentsPageTeacherState extends State<AssignmentsPageTeacher> {
                 } else {
                   mainAxisExtent = 1545;
                 }
-
                 return filteredAssignments.isNotEmpty
                     ? GridView.builder(
                   padding: const EdgeInsets.all(8),

@@ -23,6 +23,7 @@ class DataService {
     _userCacheService = Provider.of<UserCacheService>(context, listen: false);
     _gameCacheService = Provider.of<GameCacheService>(context, listen: false);
     _subjectCacheService = Provider.of<SubjectCacheService>(context, listen: false);
+    _assignmentCacheService = Provider.of<AssignmentCacheService>(context, listen: false);
   }
 
   Future<List<Map<String, dynamic>>> getPlayedGames({required String userId}) async {
@@ -319,10 +320,10 @@ class DataService {
         final cachedAssignment = await _assignmentCacheService.getCachedAssignmentData(id);
         if (cachedAssignment != null) {
           loadedAssignments.add({
-            'assignmentId': cachedAssignment.assignmentId,
+            'title': cachedAssignment.title,
             'subjectId': cachedAssignment.subjectId,
-            'assignmentName': cachedAssignment.assignmentName,
-            'assignmentLogo': cachedAssignment.assignmentLogo,
+            'dueDate': cachedAssignment.dueDate,
+            'gameId': cachedAssignment.gameId,
           });
         }
       }

@@ -1,24 +1,27 @@
 
 class AssignmentData {
-  final String assignmentId;
-  final String assignmentLogo;
-  final String assignmentName;
+  final String dueDate;
+  final String title;
+  final String gameId;
   final String subjectId;
+  final String assId;
 
   AssignmentData({
-    required this.assignmentId,
-    required this.assignmentLogo,
-    required this.assignmentName,
+    required this.dueDate,
+    required this.title,
+    required this.gameId,
     required this.subjectId,
+    required this.assId,
   });
 
   // Convert to cache format: Only serialize quiz fields if applicable
   Map<String, String> toCache() {
     final Map<String, String> cacheData = {
-      'assignmentId': assignmentId,
+      'dueDate': dueDate,
       'subjectId': subjectId,
-      'assignmentName': assignmentName,
-      'assignmentLogo': assignmentLogo,
+      'title': title,
+      'gameId': gameId,
+      'assignmentId': assId
     };
 
     return cacheData;
@@ -27,10 +30,11 @@ class AssignmentData {
   // Deserialize from cache
   factory AssignmentData.fromCache(Map<String, String> data) {
     return AssignmentData(
-      assignmentId: data['assignmentId'] ?? '',
+      title: data['title'] ?? '',
       subjectId: data['subjectId'] ?? '',
-      assignmentLogo: data['subjectLogo'] ?? '',
-      assignmentName: data['subjectName'] ?? '',
+      gameId: data['gameId'] ?? '',
+      dueDate: data['dueDate'] ?? '',
+      assId: data['assignmentId'] ?? '',
     );
   }
 }

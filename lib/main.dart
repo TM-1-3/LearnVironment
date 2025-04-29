@@ -7,6 +7,7 @@ import 'package:learnvironment/authentication/fix_account.dart';
 import 'package:learnvironment/authentication/reset_password_screen.dart';
 import 'package:learnvironment/authentication/signup_screen.dart';
 import 'package:learnvironment/firebase_options.dart';
+import 'package:learnvironment/services/assignment_cache_service.dart';
 import 'package:learnvironment/services/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:learnvironment/services/firestore_service.dart';
@@ -46,6 +47,7 @@ void main() async {
         Provider<UserCacheService>(create: (_) => UserCacheService()),
         Provider<GameCacheService>(create: (_) => GameCacheService()),
         Provider<SubjectCacheService>(create: (_) => SubjectCacheService()),
+        Provider<AssignmentCacheService>(create: (_) => AssignmentCacheService()),
         Provider<DataService>(create: (context) => DataService(context)),
       ],
       child: App(),

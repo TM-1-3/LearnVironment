@@ -17,7 +17,7 @@ class AssignmentPageTeacher extends StatelessWidget {
     try {
       final dataService = Provider.of<DataService>(context, listen: false);
       final authService = Provider.of<AuthService>(context, listen: false);
-      await dataService.deleteAssignment(assignmentId: assignmentData.assignmentId, uid: await authService.getUid());
+      await dataService.deleteAssignment(assignmentId: assignmentData.assId, uid: await authService.getUid());
       if (context.mounted) {
         Navigator.of(context).pop(); // Go back after deletion
       }
@@ -62,7 +62,7 @@ class AssignmentPageTeacher extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(assignmentData.assignmentName),
+        title: Text(assignmentData.title),
       ),
       body: SingleChildScrollView(
         child: Center(
@@ -72,7 +72,7 @@ class AssignmentPageTeacher extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  assignmentData.assignmentName,
+                  assignmentData.title,
                   style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 40),
