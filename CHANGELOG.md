@@ -76,3 +76,8 @@
 
 ### Detailed description
 - Teachers can now remove students from their classes [#107](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/107)
+
+### Test User
+- email: up202307719@up.pt
+- password: 123456
+- role: developer
