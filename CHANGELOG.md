@@ -68,3 +68,11 @@
 - email: up202307719@g.uporto.pt
 - password: 123456
 - role: teacher
+
+
+# Sprint 3
+### We implemented the following user stories:
+- As a teacher I want to be able to remove students from classes so that I can regulate drop-outs [#9](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/9)
+
+### Detailed description
+- Teachers can now remove students from their classes [#107](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/107)
