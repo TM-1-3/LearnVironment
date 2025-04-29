@@ -394,9 +394,12 @@ You can find below information and references related with the project managemen
 
 - The blackout that happened the day before the sprint deadline prevented us from making progress on our work.
 
-**Happiness Meter:**
-
-![sprint2HappinessMeter](docs/sprint2HappinessMeter.png)
+**Happiness Meter:**  
+- Tomás Morais: 😀  
+- Henrique Vilarinho: 😀  
+- Maria Sousa: 🙂  
+- Miguel Roque: 🙂  
+- Leonor Bidarra: 😀  
 
 
 **Board at the Beginning of Sprint 2**
@@ -404,7 +407,7 @@ You can find below information and references related with the project managemen
 <img width="1341" alt="image" src="https://github.com/user-attachments/assets/7d56763c-336e-4a8e-ac2e-3e9ffb03c2c9" />
 
 **Board at the End of Sprint 2**
-
+<img width="1346" alt="image" src="https://github.com/user-attachments/assets/420fb54f-ec58-417f-be73-c5e8cbd671cb" />
 
 ### Sprint 3
 
