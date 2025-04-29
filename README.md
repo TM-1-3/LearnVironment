@@ -407,9 +407,37 @@ You can find below information and references related with the project managemen
 <img width="1341" alt="image" src="https://github.com/user-attachments/assets/7d56763c-336e-4a8e-ac2e-3e9ffb03c2c9" />
 
 **Board at the End of Sprint 2**
+
 <img width="1346" alt="image" src="https://github.com/user-attachments/assets/420fb54f-ec58-417f-be73-c5e8cbd671cb" />
 
 ### Sprint 3
+
+**Goal:** Create a way for teachers to have their classes; implement a way for teachers to add students to a class and create an assigment; allow users to register and edit their profile; fix bugs in app relative to back buttons, the game results page and add accessibility to the Bin game; allow students to receive notifications of their assignments. 
+
+**Sprint Retrospective:**
+
+**Did Well:**
+  
+  
+**Do Differently:**
+  
+
+**Challenges:**
+
+
+**Happiness Meter:**  
+- Tomás Morais:
+- Henrique Vilarinho:  
+- Maria Sousa:  
+- Miguel Roque: 
+- Leonor Bidarra: 
+
+
+**Board at the Beginning of Sprint 3**
+
+![beginSprint3](docs/beginSprint3.png)
+
+**Board at the End of Sprint 3**
 
 ### Sprint 4
 
