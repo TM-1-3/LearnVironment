@@ -161,7 +161,7 @@ class CreateAssignmentPageState extends State<CreateAssignmentPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context){
     return PopScope(
       canPop: _isSaved,
       onPopInvokedWithResult: (didPop, result) async {
@@ -235,7 +235,7 @@ class CreateAssignmentPageState extends State<CreateAssignmentPage> {
         ),
         const SizedBox(height: 20),
         ElevatedButton(
-          onPressed: () {
+          onPressed: () async {
             _createAssignment(title: titleController.text.trim(), dueDate: _dueDate, turma: _selectedClass, gameid: widget.gameId);
           },
           child: const Text('Save Changes'),

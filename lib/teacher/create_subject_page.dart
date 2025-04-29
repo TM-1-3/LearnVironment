@@ -53,17 +53,19 @@ class _CreateSubjectPageState extends State<CreateSubjectPage> {
       if (!await _validateImage(value)) {
         value = "assets/placeholder.png";
       }
+      String uid = await authService.getUid();
 
       final newSubject = SubjectData(
         subjectId: subjectId,
         subjectLogo: value,
         subjectName: _nameController.text.trim(),
         students: [],
-        teacher: await authService.getUid(),
+        assignments: [],
+        teacher: uid,
       );
 
       // Save to Firestore
-      await dataService.addSubject(subject: newSubject);
+      await dataService.addSubject(subject: newSubject, uid: uid);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

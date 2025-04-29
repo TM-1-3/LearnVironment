@@ -7,7 +7,7 @@ class UserData {
   final DateTime birthdate;
   final List<String> gamesPlayed;
   final String img;
-  final List<String> classes;
+  late List<String> classes;
 
   UserData({
     required this.id,

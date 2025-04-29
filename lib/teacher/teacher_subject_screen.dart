@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:learnvironment/data/subject_data.dart';
+import 'package:learnvironment/services/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
+import 'package:learnvironment/teacher/assignments_page_teacher.dart';
 import 'package:provider/provider.dart';
+
+import 'assignments_page_teacher.dart';
 
 class TeacherSubjectScreen extends StatefulWidget {
   final SubjectData subjectData;
@@ -14,7 +18,7 @@ class TeacherSubjectScreen extends StatefulWidget {
 
 class _TeacherSubjectScreenState extends State<TeacherSubjectScreen> {
 
-  Future<Map<String, dynamic>?> getStudentData({
+  Future<Map<String, dynamic>?> _getStudentData({
     required String studentId,
     required BuildContext context,
   }) async {
@@ -36,10 +40,11 @@ class _TeacherSubjectScreenState extends State<TeacherSubjectScreen> {
     }
   }
 
-  Future<void> deleteSubject(BuildContext context) async {
+  Future<void> _deleteSubject(BuildContext context) async {
     try {
       final dataService = Provider.of<DataService>(context, listen: false);
-      await dataService.deleteSubject(subjectId: widget.subjectData.subjectId);
+      final authService = Provider.of<AuthService>(context, listen: false);
+      await dataService.deleteSubject(subjectId: widget.subjectData.subjectId, uid: await authService.getUid());
       if (context.mounted) {
         Navigator.of(context).pop(); // Go back after deletion
       }
@@ -69,7 +74,7 @@ class _TeacherSubjectScreenState extends State<TeacherSubjectScreen> {
               ElevatedButton(
                 onPressed: () async {
                   Navigator.of(context).pop(); // Close the dialog
-                  await deleteSubject(context);
+                  await _deleteSubject(context);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
@@ -112,6 +117,20 @@ class _TeacherSubjectScreenState extends State<TeacherSubjectScreen> {
                   style: const TextStyle(
                       fontSize: 24, fontWeight: FontWeight.bold),
                 ),
+                const SizedBox(height: 40),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => AssignmentsPageTeacher(id: widget.subjectData.subjectId))) ;
+                  },
+                  child: Card(
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+                      child: Text("View Assignments", style: TextStyle(fontSize: 20)),
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 30),
                 const Text(
                   'Enrolled Students',
@@ -125,8 +144,9 @@ class _TeacherSubjectScreenState extends State<TeacherSubjectScreen> {
                   itemCount: studentIds.length,
                   itemBuilder: (context, index) {
                     final studentId = studentIds[index];
+
                     return FutureBuilder<Map<String, dynamic>?>(
-                      future: getStudentData(
+                      future: _getStudentData(
                           studentId: studentId, context: context),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState
@@ -168,7 +188,6 @@ class _TeacherSubjectScreenState extends State<TeacherSubjectScreen> {
                     style: TextStyle(fontSize: 16),
                   ),
                 ),
-
                 const SizedBox(height: 10),
                 ElevatedButton.icon(
                   onPressed: () {
@@ -251,7 +270,7 @@ class _TeacherSubjectScreenState extends State<TeacherSubjectScreen> {
                 ElevatedButton.icon(
                   onPressed: () => confirmDelete(context),
                   icon: const Icon(Icons.delete),
-                  key: const Key("delete"),
+                  key: Key("delete"),
                   label: const Text('Delete Subject'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,

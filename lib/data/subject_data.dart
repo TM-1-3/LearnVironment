@@ -6,13 +6,15 @@ class SubjectData {
   final String subjectName;
   final String teacher;
   final List<String> students;
+  late List<String> assignments;
 
   SubjectData({
     required this.subjectId,
     required this.subjectLogo,
     required this.subjectName,
     required this.teacher,
-    required this.students
+    required this.students,
+    required this.assignments,
   });
 
   // Convert to cache format: Only serialize quiz fields if applicable
@@ -23,6 +25,7 @@ class SubjectData {
       'subjectLogo': subjectLogo,
       'teacher': teacher,
       'students': jsonEncode(students),
+      'assignments': jsonEncode(assignments)
     };
 
     return cacheData;
@@ -36,6 +39,7 @@ class SubjectData {
       subjectName: data['subjectName'] ?? '',
       teacher: data['teacher'] ?? '',
       students: List<String>.from(jsonDecode(data['students'] ?? '[]')),
+      assignments: List<String>.from(jsonDecode(data['assignments'] ?? '[]')),
     );
   }
 }
