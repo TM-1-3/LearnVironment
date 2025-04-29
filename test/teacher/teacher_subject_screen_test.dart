@@ -10,9 +10,14 @@ import 'package:provider/provider.dart';
 // Mock class
 class MockDataService extends Mock implements DataService {
   bool throwErrorOnDelete = false;
+  bool throwErrorOnAddStudent = false;
 
   void setThrowErrorOnDelete(bool value) {
     throwErrorOnDelete = value;
+  }
+
+  void setThrowErrorOnAddStudent(bool value) {
+    throwErrorOnAddStudent = value;
   }
 
   @override
@@ -36,6 +41,13 @@ class MockDataService extends Mock implements DataService {
       classes: [],
       // add any other fields if needed, depending on your UserData constructor
     );
+  }
+
+  @override
+  Future<void> addStudentToSubject({required String subjectId, required String studentId}) async{
+    if(throwErrorOnAddStudent){
+      throw Exception('Failed to add student');
+    }
   }
 }
 
@@ -142,6 +154,44 @@ void main() {
       await tester.pump(const Duration(seconds: 1)); // Finish async
 
       expect(find.textContaining('Failed to delete subject'), findsOneWidget);
+    });
+
+    testWidgets('shows Add Student dialog and adds a student successfully', (tester) async {
+      await tester.pumpWidget(testWidget);
+      await tester.pumpAndSettle();
+
+      // Tap the "Add Student" button
+      await tester.ensureVisible(find.byKey(Key("addStudent")));
+      await tester.tap(find.byKey(Key("addStudent")));
+      await tester.pumpAndSettle();
+
+      // Enter student ID
+      await tester.enterText(find.byType(TextField), 'hkN1iJLlW5fHprKXnSkQT1cFGqq2');
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Add'));
+      await tester.pump(); // Begin async call
+      await tester.pump(const Duration(milliseconds: 500));
+
+      // Check snackbar shows success message
+      expect(find.textContaining('Student added successfully'), findsOneWidget);
+    });
+
+    testWidgets('shows snackbar on student add failure', (tester) async {
+      mockDataService.setThrowErrorOnAddStudent(true);
+      await tester.pumpWidget(testWidget);
+      await tester.pumpAndSettle();
+
+      // Tap the "Add Student" button
+      await tester.ensureVisible(find.byKey(Key("addStudent")));
+      await tester.tap(find.byKey(Key("addStudent")));
+      await tester.pumpAndSettle();
+
+      // Enter invalid student ID
+      await tester.enterText(find.byType(TextField), 'errorStudentId');
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Add'));
+      await tester.pump(); // Begin async call
+      await tester.pump(const Duration(seconds: 1)); // Wait for async work
+
+      expect(find.text('Failed to add student'), findsOneWidget);
     });
   });
 }

@@ -262,6 +262,7 @@ class _TeacherSubjectScreenState extends State<TeacherSubjectScreen> {
                         horizontal: 20, vertical: 15),
                     textStyle: const TextStyle(fontSize: 16),
                   ),
+                  key: Key("addStudent")
                 ),
 
                 const SizedBox(height: 20),
