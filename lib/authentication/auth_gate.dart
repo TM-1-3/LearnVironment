@@ -1,75 +1,83 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:learnvironment/authentication/fix_account.dart';
 import 'package:learnvironment/authentication/login_screen.dart';
+import 'package:learnvironment/data/notification_storage.dart';
 import 'package:learnvironment/data/user_data.dart';
 import 'package:learnvironment/developer/developer_home.dart';
 import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/services/data_service.dart';
+import 'package:learnvironment/services/firestore_service.dart';
 import 'package:learnvironment/student/student_home.dart';
 import 'package:learnvironment/teacher/teacher_home.dart';
-import 'package:learnvironment/services/data_service.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 
 class AuthGate extends StatelessWidget {
-  Future<UserData?> _loadUserData(BuildContext context) async {
+  const AuthGate({super.key});
+
+  Future<Map<String, dynamic>> _initialize(BuildContext context) async {
     final authService = Provider.of<AuthService>(context, listen: false);
     final dataService = Provider.of<DataService>(context, listen: false);
-    return await dataService.getUserData(userId: await authService.getUid());
-  }
+    final firestoreService = Provider.of<FirestoreService>(context, listen: false);
+    final firebaseMessaging = Provider.of<FirebaseMessaging>(context, listen: false);
 
-  Future<void> _subscribeUserToClasses(List<String> classes) async {
-    for (String className in classes) {
-      String sanitizedClassName = className.replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '_');
-      await FirebaseMessaging.instance.subscribeToTopic(sanitizedClassName);
-      print('Subscribed to $sanitizedClassName');
-    }
-  }
+    final uid = await authService.getUid();
 
-  Widget _navigateToHomePage(String role) {
-    switch (role) {
-      case 'developer':
-        return DeveloperHomePage();
-      case 'student':
-        return StudentHomePage();
-      case 'teacher':
-        return TeacherHomePage();
-      default:
-        return FixAccountPage();
+    if (!authService.fetchedNotifications) {
+      //NotificationStorage.notificationMessages = await firestoreService.fetchNotifications(uid: uid);
+      authService.fetchedNotifications = true;
     }
+
+    final userData = await dataService.getUserData(userId: uid);
+
+    if (userData != null && userData.classes.isNotEmpty) {
+      for (var className in userData.classes) {
+        String sanitizedClassName = className.replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '_');
+        await firebaseMessaging.subscribeToTopic(sanitizedClassName);
+        print('Subscribed to $sanitizedClassName');
+      }
+    }
+
+    return {'userData': userData};
   }
 
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context, listen: false);
+
     if (!authService.loggedIn) {
       return LoginScreen();
     }
 
-    return FutureBuilder<UserData?>(
-      future: _loadUserData(context),
-      builder: (context, userDataSnapshot) {
-        if (userDataSnapshot.connectionState == ConnectionState.waiting) {
+    return FutureBuilder<Map<String, dynamic>>(
+      future: _initialize(context),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        if (userDataSnapshot.hasError) {
-          print('Error: ${userDataSnapshot.error}');
+        if (snapshot.hasError) {
           return Center(
-            child: Text('Error: ${userDataSnapshot.error}',
-              style: const TextStyle(color: Colors.red),
-            ),
+            child: Text('Error: ${snapshot.error}', style: TextStyle(color: Colors.red)),
           );
         }
 
-        final userData = userDataSnapshot.data;
+        final userData = snapshot.data?['userData'] as UserData?;
 
-        if (userData == null || userData.role.isEmpty) {
+        if (userData == null) {
           return FixAccountPage();
         }
-        if (userData.classes.isNotEmpty) {
-          _subscribeUserToClasses(userData.classes);
+
+        switch (userData.role) {
+          case 'developer':
+            return DeveloperHomePage();
+          case 'student':
+            return StudentHomePage();
+          case 'teacher':
+            return TeacherHomePage();
+          default:
+            return FixAccountPage();
         }
-        return _navigateToHomePage(userData.role);
       },
     );
   }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class AuthService extends ChangeNotifier {
   final FirebaseAuth _firebaseAuth;
   late bool loggedIn = false;
+  late bool fetchedNotifications = false;
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
 
   AuthService({FirebaseAuth? firebaseAuth})

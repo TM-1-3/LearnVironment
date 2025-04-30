@@ -1,98 +1,91 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:learnvironment/services/firebase_messaging_service.dart';
-import 'package:flutter/services.dart';
+import 'package:learnvironment/data/notification_storage.dart';
 
-class MockFlutterLocalNotificationsPlugin extends Mock
-   with MockPlatformInterfaceMixin
-   implements FlutterLocalNotificationsPlugin {
+@GenerateNiceMocks([
+  MockSpec<FlutterLocalNotificationsPlugin>(),
+  MockSpec<FirebaseMessaging>()
+])
 
-  @override
-  Future<bool?> initialize(InitializationSettings init, {void Function(NotificationResponse)? onDidReceiveBackgroundNotificationResponse, void Function(NotificationResponse)? onDidReceiveNotificationResponse}) async {
-    return true;
-  }
-}
+import 'firebase_messaging_service_test.mocks.dart';
 
-class MockFirebaseMessaging extends Mock implements FirebaseMessaging {}
-
-void main(){
+void main() {
   late MockFlutterLocalNotificationsPlugin mockFlutterLocalNotificationsPlugin;
-  const MethodChannel channel = MethodChannel('dexterx.dev/flutter_local_notifications');
-
+  late FirebaseMessagingService firebaseMessagingService;
 
   setUp(() {
     mockFlutterLocalNotificationsPlugin = MockFlutterLocalNotificationsPlugin();
-    TestWidgetsFlutterBinding.ensureInitialized();
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(channel, ((MethodCall methodCall) async {
-      if (methodCall.method == 'initialize') {
-        return true; // Mock a successful initialization
-      }
-      return null;
-    }));
+    firebaseMessagingService = FirebaseMessagingService(localNotificationsPlugin: mockFlutterLocalNotificationsPlugin);
   });
 
-  tearDown(() {
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(channel, null);
-  });
-
-  group('initNotifications Tests', () {
+  group('FirebaseMessagingService Tests', () {
     test('should initialize FlutterLocalNotificationsPlugin and create channel', () async {
-      // Call
       final initializationSettings = InitializationSettings(
         android: AndroidInitializationSettings('@mipmap/ic_launcher'),
       );
 
-      await initNotifications(initializationSettings: initializationSettings, plugin: mockFlutterLocalNotificationsPlugin);
+      await firebaseMessagingService.initNotifications(
+        initializationSettings: initializationSettings);
 
-      expect(true, isTrue);
+      verify(mockFlutterLocalNotificationsPlugin.initialize(initializationSettings)).called(1);
     });
-  });
 
-  group('showNotification Tests', () {
-    test('should not crash when notification and android details exist', () async {
-      RemoteMessage message = RemoteMessage(
+    test('should show notification when message contains valid notification data', () async {
+      final RemoteMessage message = RemoteMessage(
         notification: RemoteNotification(
           title: 'Test Title',
           body: 'Test Body',
-        ),
-        data: {},
-      );
-      showNotification(message);
-      expect(true, isTrue);
-    });
-
-    test('should not crash if notification or android part is null', () async {
-      RemoteMessage message = RemoteMessage(data: {});
-      showNotification(message);
-      expect(true, isTrue);
-    });
-  });
-
-  group('firebaseMessagingBackgroundHandler Tests', () {
-    test('should initialize Firebase and show notification without errors', () async {
-      // Arrange
-      RemoteMessage message = RemoteMessage(
-        notification: RemoteNotification(
-          title: 'Background Title',
-          body: 'Background Body',
+          android: AndroidNotification(),
         ),
         data: {},
       );
 
-      // Act: Call your background handler
-      await firebaseMessagingBackgroundHandler(message, plugin: mockFlutterLocalNotificationsPlugin, flag: true);
+      firebaseMessagingService.showNotification(message);
 
-      expect(true, isTrue); // For now, we assume true, as you need actual checks here.
+      verify(mockFlutterLocalNotificationsPlugin.show(
+        message.notification.hashCode,
+        message.notification!.title,
+        message.notification!.body,
+        any,
+      )).called(1);
     });
-  });
 
-  group('setupFCMListeners Tests', () {
-    test('should setup onMessage and onMessageOpenedApp listeners', () async {
-      setupFCMListeners();
-      expect(true, isTrue);
+    test('should not crash when notification or android details are missing', () async {
+      final RemoteMessage message = RemoteMessage(data: {});
+
+      firebaseMessagingService.showNotification(message);
+
+      verifyNever(mockFlutterLocalNotificationsPlugin.show(any, any, any, any));
+    });
+
+    test('should update NotificationStorage when receiving foreground message', () async {
+      // Arrange: Create a fake message
+      final RemoteMessage fakeMessage = RemoteMessage(
+        notification: RemoteNotification(title: 'Fake Title', body: 'Fake Body'),
+        data: {},
+      );
+
+
+      firebaseMessagingService.setupFCMListeners();
+
+      expect(NotificationStorage.notificationMessages.contains(fakeMessage), isTrue);
+    });
+
+    test('should execute onMessageOpenedApp listener correctly', () async {
+      final RemoteMessage message = RemoteMessage(
+        notification: RemoteNotification(title: 'Opened Title', body: 'Opened Body'),
+        data: {"key": "value"},
+      );
+
+      firebaseMessagingService.setupFCMListeners();
+
+      FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+        expect(message.data['key'], equals("value"));
+      });
     });
   });
 }

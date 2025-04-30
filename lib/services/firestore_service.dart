@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/data/subject_data.dart';
@@ -12,12 +13,12 @@ class FirestoreService {
   FirestoreService({FirebaseFirestore? firestore})
       : _firestore = firestore ?? FirebaseFirestore.instance;
 
-  // 1. Users & Accounts
+  // 1. User
   // 2. Games
   // 3. Subjects (Aka Classes)
-  // 4. Assignments ("Assigments")
+  // 4. Assignments
 
-                                                                      // USERS & ACCOUNTS //
+  //============================== USER =================================================//
   Future<void> updateUserGamesPlayed({required String uid, required String gameId}) async {
     final userDoc = _firestore.collection('users').doc(uid);
     final userSnapshot = await userDoc.get();
@@ -133,7 +134,7 @@ class FirestoreService {
     }
   }
 
-                                                                          // GAMES //
+  //========================= GAMES =========================//
   Future<List<Map<String, dynamic>>> getAllGames() async {
     try {
       final querySnapshot = await _firestore.collection('games').get();
@@ -256,7 +257,7 @@ class FirestoreService {
     }
   }
 
-                                                                  // SUBJECTS (Aka CLASSES) //
+  // =========================== SUBJECTS (Aka CLASSES) ==============================//
   Future<List<Map<String, dynamic>>> getAllSubjects({required String teacherId}) async {
     try {
       final querySnapshot = await _firestore
@@ -394,8 +395,7 @@ class FirestoreService {
     }
   }
 
-                                                                        // ASSIGNMENTS//
-
+  //================================ ASSIGNMENTS ====================================//
   Future<String> createAssignment({
     required String title,
     required String gameId,
@@ -506,5 +506,10 @@ class FirestoreService {
       debugPrint('[FirestoreService] Error getting assignments: $e\n$stackTrace');
       rethrow;
     }
+  }
+
+//================================ EVENTS ====================================//
+  Future<List<RemoteMessage>> fetchNotifications({required String uid}) async {
+    return [];
   }
 }
