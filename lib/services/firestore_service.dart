@@ -406,6 +406,7 @@ class FirestoreService {
       if (turma== '') {
         throw Exception("No class selected");
       }
+
       await _firestore.collection('events').add({
         'name': 'New Assignment!',
         'className': turma,
@@ -510,6 +511,29 @@ class FirestoreService {
 
 //================================ EVENTS ====================================//
   Future<List<RemoteMessage>> fetchNotifications({required String uid}) async {
-    return [];
+    UserData userData = await fetchUserData(userId: uid);
+
+    List<RemoteMessage> notifications = [];
+
+    for (String my_class in userData.classes) {
+      SubjectData subjectData = await fetchSubjectData(subjectId: my_class);
+
+      for (String ass in subjectData.assignments) {
+        AssignmentData assignmentData = await fetchAssignmentData(assignmentId: ass);
+        RemoteMessage message = RemoteMessage(
+          notification: RemoteNotification(
+            title: "Assignment: ${assignmentData.title}",
+            body: "Due Date: ${assignmentData.dueDate}",
+          ),
+          data: {
+            'gameId': assignmentData.gameId,
+            'subjectId': assignmentData.subjectId,
+            'assId': assignmentData.assId,
+          },
+        );
+        notifications.add(message);
+      }
+    }
+    return notifications;
   }
 }
