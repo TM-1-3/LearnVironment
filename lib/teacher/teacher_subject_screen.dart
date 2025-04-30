@@ -5,8 +5,6 @@ import 'package:learnvironment/services/data_service.dart';
 import 'package:learnvironment/teacher/assignments_page_teacher.dart';
 import 'package:provider/provider.dart';
 
-import 'assignments_page_teacher.dart';
-
 class TeacherSubjectScreen extends StatefulWidget {
   final SubjectData subjectData;
 
@@ -198,28 +196,40 @@ class _TeacherSubjectScreenState extends State<TeacherSubjectScreen> {
                                   );
 
                                   if (confirm == true) {
-                                    final dataService = Provider.of<DataService>(context, listen: false);
-                                    try {
-                                      await dataService.removeStudentFromSubject(
-                                        subjectId: widget.subjectData.subjectId,
-                                        studentId: studentId,
-                                      );
-
-                                      setState(() {
-                                        widget.subjectData.students.remove(studentId);
-                                      });
-
-                                      if (context.mounted) {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(content: Text('Student removed successfully')),
+                                    if (context.mounted) {
+                                      final dataService = Provider.of<
+                                          DataService>(context, listen: false);
+                                      try {
+                                        await dataService
+                                            .removeStudentFromSubject(
+                                          subjectId: widget.subjectData
+                                              .subjectId,
+                                          studentId: studentId,
                                         );
-                                      }
-                                    } catch (e) {
-                                      print('Error removing student: $e');
-                                      if (context.mounted) {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(content: Text('Failed to remove student')),
-                                        );
+
+                                        setState(() {
+                                          widget.subjectData.students.remove(
+                                              studentId);
+                                        });
+
+                                        if (context.mounted) {
+                                          ScaffoldMessenger
+                                              .of(context)
+                                              .showSnackBar(
+                                            const SnackBar(content: Text(
+                                                'Student removed successfully')),
+                                          );
+                                        }
+                                      } catch (e) {
+                                        print('Error removing student: $e');
+                                        if (context.mounted) {
+                                          ScaffoldMessenger
+                                              .of(context)
+                                              .showSnackBar(
+                                            const SnackBar(content: Text(
+                                                'Failed to remove student')),
+                                          );
+                                        }
                                       }
                                     }
                                   }
@@ -245,11 +255,11 @@ class _TeacherSubjectScreenState extends State<TeacherSubjectScreen> {
                     showDialog(
                       context: context,
                       builder: (context) {
-                        final TextEditingController _studentIdDialogController = TextEditingController();
+                        final TextEditingController studentIdDialogController = TextEditingController();
                         return AlertDialog(
                           title: const Text('Add Student'),
                           content: TextField(
-                            controller: _studentIdDialogController,
+                            controller: studentIdDialogController,
                             decoration: const InputDecoration(
                               labelText: 'Enter Student ID',
                               border: OutlineInputBorder(),
@@ -264,7 +274,7 @@ class _TeacherSubjectScreenState extends State<TeacherSubjectScreen> {
                             ),
                             ElevatedButton(
                               onPressed: () async {
-                                final newStudentId = _studentIdDialogController.text.trim();
+                                final newStudentId = studentIdDialogController.text.trim();
                                 if (newStudentId.isNotEmpty) {
                                   final dataService = Provider.of<DataService>(context, listen: false);
 

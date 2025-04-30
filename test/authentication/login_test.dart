@@ -28,6 +28,19 @@ class MockDataService extends Mock implements DataService {
   }
 }
 
+class MockAuthGate extends AuthGate {
+  MockAuthGate({key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(
+        child: Text('Mock AuthGate Screen'),
+      ),
+    );
+  }
+}
+
 class MockAuthService extends AuthService {
   MockAuthService({MockFirebaseAuth? firebaseAuth})
       : super(firebaseAuth: firebaseAuth);
@@ -71,7 +84,7 @@ void main() {
         child: MaterialApp(
           home: LoginScreen(),
           routes: {
-            '/auth_gate': (context) => AuthGate(),
+            '/auth_gate': (context) => MockAuthGate(),
             '/fix_account': (context) => FixAccountPage(),
             '/login': (context) => LoginScreen(),
             '/signup': (context) => SignUpScreen(),

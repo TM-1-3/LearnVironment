@@ -3,79 +3,77 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:learnvironment/data/notification_storage.dart';
 
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+class FirebaseMessagingService {
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+  final FirebaseMessaging firebaseMessaging;
 
-Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message, {FlutterLocalNotificationsPlugin? plugin, bool? flag}) async {
-  if (flag == true) {
-    //nothing
-  } else {
-    await Firebase.initializeApp();
+  FirebaseMessagingService({
+    FlutterLocalNotificationsPlugin? localNotificationsPlugin,
+    FirebaseMessaging? firebaseMessaging,
+  })  : flutterLocalNotificationsPlugin = localNotificationsPlugin ?? FlutterLocalNotificationsPlugin(),
+        firebaseMessaging = firebaseMessaging ?? FirebaseMessaging.instance;
+
+  Future<void> firebaseMessagingBackgroundHandler(
+      RemoteMessage message, {bool flag = false}) async {
+    if (!flag) {
+      await Firebase.initializeApp();
+    }
+    showNotification(message);
   }
 
-  plugin ??= flutterLocalNotificationsPlugin;
-  showNotification(message, plugin: plugin);
-}
+  Future<void> initNotifications({InitializationSettings? initializationSettings, AndroidNotificationChannel? channel}) async {
+    initializationSettings ??= const InitializationSettings(
+      android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+    );
 
-Future<void> initNotifications({
-  InitializationSettings? initializationSettings,
-  AndroidNotificationChannel? channel,
-  FlutterLocalNotificationsPlugin? plugin
-}) async {
-  initializationSettings ??= const InitializationSettings(
-    android: AndroidInitializationSettings('@mipmap/ic_launcher'),
-  );
-
-  channel ??= const AndroidNotificationChannel(
-    'default_channel',
-    'Default Notifications',
-    description: 'This channel is used for FCM notifications.',
-    importance: Importance.high,
-  );
-
-  plugin ??= flutterLocalNotificationsPlugin;
-
-  // Initialize notifications
-  await plugin.initialize(initializationSettings);
-
-  // Create the notification channel
-  await plugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(channel);
-}
-
-void showNotification(RemoteMessage message, {FlutterLocalNotificationsPlugin? plugin}) {
-  final notification = message.notification;
-  final android = message.notification?.android;
-
-  if (notification != null && android != null) {
-    final androidDetails = AndroidNotificationDetails(
+    channel ??= const AndroidNotificationChannel(
       'default_channel',
       'Default Notifications',
-      channelDescription: 'This channel is used for FCM notifications.',
+      description: 'This channel is used for FCM notifications.',
       importance: Importance.high,
-      priority: Priority.high,
     );
 
-    final platformDetails = NotificationDetails(android: androidDetails);
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
-    plugin ??= flutterLocalNotificationsPlugin;
-
-    plugin.show(
-      notification.hashCode,
-      notification.title,
-      notification.body,
-      platformDetails,
-    );
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
   }
-}
 
-void setupFCMListeners() {
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    print('FCM message received in foreground');
-    showNotification(message);
-    NotificationStorage.notificationMessages.add(message);
-  });
+  void showNotification(RemoteMessage message) {
+    final notification = message.notification;
+    final android = message.notification?.android;
 
-  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-    print('App opened from notification: ${message.data}');
-    // Navigate to a specific screen if needed
-  });
+    if (notification != null && android != null) {
+      final androidDetails = AndroidNotificationDetails(
+        'default_channel',
+        'Default Notifications',
+        channelDescription: 'This channel is used for FCM notifications.',
+        importance: Importance.high,
+        priority: Priority.high,
+      );
+
+      final platformDetails = NotificationDetails(android: androidDetails);
+
+      flutterLocalNotificationsPlugin.show(
+        notification.hashCode,
+        notification.title,
+        notification.body,
+        platformDetails,
+      );
+    }
+  }
+
+  void setupFCMListeners() {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print('FCM message received in foreground');
+      showNotification(message);
+      NotificationStorage.notificationMessages.add(message);
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print('App opened from notification: ${message.data}');
+      // Navigate to a specific screen if needed
+    });
+  }
 }

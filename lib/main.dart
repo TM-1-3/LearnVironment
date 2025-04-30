@@ -6,6 +6,7 @@ import 'package:learnvironment/authentication/auth_gate.dart';
 import 'package:learnvironment/authentication/fix_account.dart';
 import 'package:learnvironment/authentication/reset_password_screen.dart';
 import 'package:learnvironment/authentication/signup_screen.dart';
+import 'package:learnvironment/data/notification_storage.dart';
 import 'package:learnvironment/firebase_options.dart';
 import 'package:learnvironment/services/assignment_cache_service.dart';
 import 'package:learnvironment/services/auth_service.dart';
@@ -22,9 +23,11 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-  await initNotifications();
-  setupFCMListeners();
+  final FirebaseMessagingService messagingService = FirebaseMessagingService();
+
+  FirebaseMessaging.onBackgroundMessage(messagingService.firebaseMessagingBackgroundHandler);
+  await messagingService.initNotifications();
+  messagingService.setupFCMListeners();
   FirebaseMessaging.instance.subscribeToTopic('your_event_topic');
   NotificationSettings settings = await FirebaseMessaging.instance.requestPermission(
     alert: true,
@@ -39,12 +42,20 @@ void main() async {
   final authService = AuthService();
   await authService.init();
 
+  FirestoreService firestoreService = FirestoreService();
+
+  if (authService.loggedIn) {
+    NotificationStorage.notificationMessages.addAll(await firestoreService.fetchNotifications(uid: await authService.getUid()));
+    authService.fetchedNotifications = true;
+  }
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider<AuthService>(create: (_) => authService),
-        Provider<FirestoreService>(create: (_) => FirestoreService()),
+        Provider<FirestoreService>(create: (_) => firestoreService),
         Provider<UserCacheService>(create: (_) => UserCacheService()),
+        Provider<FirebaseMessagingService>(create: (_) => messagingService),
         Provider<GameCacheService>(create: (_) => GameCacheService()),
         Provider<SubjectCacheService>(create: (_) => SubjectCacheService()),
         Provider<AssignmentCacheService>(create: (_) => AssignmentCacheService()),
