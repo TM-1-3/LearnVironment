@@ -394,9 +394,12 @@ You can find below information and references related with the project managemen
 
 - The blackout that happened the day before the sprint deadline prevented us from making progress on our work.
 
-**Happiness Meter:**
-
-![sprint2HappinessMeter](docs/sprint2HappinessMeter.png)
+**Happiness Meter:**  
+- Tomás Morais: 😀  
+- Henrique Vilarinho: 😀  
+- Maria Sousa: 🙂  
+- Miguel Roque: 🙂  
+- Leonor Bidarra: 😀  
 
 
 **Board at the Beginning of Sprint 2**
@@ -405,8 +408,36 @@ You can find below information and references related with the project managemen
 
 **Board at the End of Sprint 2**
 
+<img width="1346" alt="image" src="https://github.com/user-attachments/assets/420fb54f-ec58-417f-be73-c5e8cbd671cb" />
 
 ### Sprint 3
+
+**Goal:** Create an interface for game developers to build, test, edit and publish games on the app; Allow students, as well as their respective teachers, to see their statitics relative to ther performance and the games they played; Fix various bugs; Enhance features and visuals.
+
+**Sprint Retrospective:**
+
+**Did Well:**
+  
+  
+**Do Differently:**
+  
+
+**Challenges:**
+
+
+**Happiness Meter:**  
+- Tomás Morais:
+- Henrique Vilarinho:  
+- Maria Sousa:  
+- Miguel Roque: 
+- Leonor Bidarra: 
+
+
+**Board at the Beginning of Sprint 3**
+
+![beginSprint3](docs/beginSprint3.png)
+
+**Board at the End of Sprint 3**
 
 ### Sprint 4
 
