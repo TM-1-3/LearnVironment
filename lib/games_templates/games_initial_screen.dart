@@ -94,7 +94,7 @@ class GamesInitialScreen extends StatelessWidget {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-                      child: Text("Play", style: TextStyle(fontSize: 20, color: Colors.grey)),
+                      child: Text("Play", style: TextStyle(fontSize: 20)),
                     ),
                   ),
                 ),

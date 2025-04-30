@@ -12,6 +12,128 @@ class FirestoreService {
   FirestoreService({FirebaseFirestore? firestore})
       : _firestore = firestore ?? FirebaseFirestore.instance;
 
+  // 1. Users & Accounts
+  // 2. Games
+  // 3. Subjects (Aka Classes)
+  // 4. Assignments ("Assigments")
+
+                                                                      // USERS & ACCOUNTS //
+  Future<void> updateUserGamesPlayed({required String uid, required String gameId}) async {
+    final userDoc = _firestore.collection('users').doc(uid);
+    final userSnapshot = await userDoc.get();
+
+    List<String> gamesPlayed = [];
+
+    if (userSnapshot.exists && userSnapshot.data() != null) {
+      final data = userSnapshot.data()!;
+      gamesPlayed = List<String>.from(data['gamesPlayed'] ?? []);
+    }
+
+    gamesPlayed.remove(gameId);
+    gamesPlayed.insert(0, gameId);
+
+    try {
+      await userDoc.update({'gamesPlayed': gamesPlayed});
+      print('[FirestoreService] Updated gamesPlayed for user $uid');
+
+    } catch (e, stackTrace) {
+      print('[FirestoreService] Error updating gamesPlayed in Firestore: $e\n$stackTrace');
+      rethrow;
+    }
+  }
+
+  Future<UserData> fetchUserData({required String userId}) async {
+    try {
+      DocumentSnapshot snapshot = await _firestore.collection('users').doc(userId).get();
+
+      if (!snapshot.exists) {
+        throw Exception("User not found in Firestore for ID: $userId");
+      }
+
+      var data = snapshot.data() as Map<String, dynamic>;
+
+      var birthdateField = data['birthdate'];
+      DateTime birthdateValue;
+
+      if (birthdateField is Timestamp) {
+        birthdateValue = birthdateField.toDate();
+      } else if (birthdateField is String) {
+        birthdateValue = DateTime.tryParse(birthdateField) ?? DateTime(2000);
+      } else {
+        birthdateValue = DateTime(2000);
+      }
+
+      return UserData(
+        id: userId,
+        username: data['username'] ?? 'Unknown User',
+        email: data['email'] ?? 'Unknown Email',
+        name: data['name'] ?? 'Unknown Name',
+        role: data['role'] ?? 'Unknown Role',
+        img: data['img'] ?? 'assets/placeholder.png',
+        birthdate: birthdateValue,
+        gamesPlayed: List<String>.from(data['gamesPlayed'] ?? []),
+        classes: List<String>.from(data['classes'] ?? []),
+      );
+    } catch (e, stackTrace) {
+      debugPrint("Error loading UserData: $e\n$stackTrace");
+      rethrow;
+    }
+  }
+
+  Future<String?> fetchUserType({required String uid}) async {
+    try {
+      final userDoc = await _firestore.collection('users').doc(uid).get();
+      final data = userDoc.data();
+      return data?['role'];
+    } catch (e, stackTrace) {
+      debugPrint("Error fetching user role: $e\n$stackTrace");
+      return null;
+    }
+  }
+
+  Future<void> setUserInfo({
+    required String uid,
+    required String name,
+    required String username,
+    required String selectedAccountType,
+    required String email,
+    required String birthDate,
+    required String img,
+    List<String>? classes,
+    List<String>? gamesPlayed
+  }) async {
+    try {
+      if (selectedAccountType == '') {
+        throw Exception("No selected Account Type");
+      }
+      await _firestore.collection('users').doc(uid).set({
+        'name': name,
+        'username': username,
+        'role': selectedAccountType,
+        'email': email,
+        'birthdate': birthDate,
+        'gamesPlayed': gamesPlayed,
+        'classes': classes,
+        'img' : img
+      });
+      print("[FirestoreService] User Info set!");
+    } catch (e) {
+      print("[FirestoreService] Unable to set user info!");
+      throw Exception("Unable to set user info!");
+    }
+  }
+
+  Future<void> deleteAccount({required String uid}) async {
+    try {
+      await _firestore.collection('users').doc(uid).delete();
+      print("[FirestoreService] Account Deleted");
+    } catch (e) {
+      print("[FirestoreService] Error deleting account $uid");
+      rethrow;
+    }
+  }
+
+                                                                          // GAMES //
   Future<List<Map<String, dynamic>>> getAllGames() async {
     try {
       final querySnapshot = await _firestore.collection('games').get();
@@ -44,7 +166,7 @@ class FirestoreService {
         final games = data!['gamesPlayed'];
 
         if (games is List) {
-          final gameIds = games.whereType<String>().toList(); // Ensure it's a list of strings
+          final gameIds = games.whereType<String>().toList();
           if (gameIds.isEmpty) return [];
 
           final querySnapshot = await _firestore
@@ -74,53 +196,6 @@ class FirestoreService {
       return [];
     }
   }
-
-  Future<List<Map<String, dynamic>>> getAllSubjects({required String teacherId}) async {
-    try {
-      final querySnapshot = await _firestore
-          .collection('subjects')
-          .where('teacher', isEqualTo: teacherId)
-          .get();
-
-      return querySnapshot.docs.map((doc) {
-        final data = doc.data();
-        return {
-          'imagePath': data['logo'] ?? 'assets/placeholder.png',
-          'subjectName': data['name'] ?? 'Default Game Title',
-          'subjectId': doc.id,
-        };
-      }).toList();
-    } catch (e, stackTrace) {
-      debugPrint('[FirestoreService] Error getting subjects: $e\n$stackTrace');
-      rethrow;
-    }
-  }
-
-
-  Future<void> updateUserGamesPlayed({required String uid, required String gameId}) async {
-    final userDoc = _firestore.collection('users').doc(uid);
-    final userSnapshot = await userDoc.get();
-
-    List<String> gamesPlayed = [];
-
-    if (userSnapshot.exists && userSnapshot.data() != null) {
-      final data = userSnapshot.data()!;
-      gamesPlayed = List<String>.from(data['gamesPlayed'] ?? []);
-    }
-
-    gamesPlayed.remove(gameId);
-    gamesPlayed.insert(0, gameId);
-
-    try {
-      await userDoc.update({'gamesPlayed': gamesPlayed});
-      print('[FirestoreService] Updated gamesPlayed for user $uid');
-
-    } catch (e, stackTrace) {
-      print('[FirestoreService] Error updating gamesPlayed in Firestore: $e\n$stackTrace');
-      rethrow;
-    }
-  }
-
   Future<GameData> fetchGameData({required String gameId}) async {
     try {
       DocumentSnapshot snapshot = await _firestore.collection('games').doc(gameId).get();
@@ -181,40 +256,24 @@ class FirestoreService {
     }
   }
 
-  Future<UserData> fetchUserData({required String userId}) async {
+                                                                  // SUBJECTS (Aka CLASSES) //
+  Future<List<Map<String, dynamic>>> getAllSubjects({required String teacherId}) async {
     try {
-      DocumentSnapshot snapshot = await _firestore.collection('users').doc(userId).get();
+      final querySnapshot = await _firestore
+          .collection('subjects')
+          .where('teacher', isEqualTo: teacherId)
+          .get();
 
-      if (!snapshot.exists) {
-        throw Exception("User not found in Firestore for ID: $userId");
-      }
-
-      var data = snapshot.data() as Map<String, dynamic>;
-
-      var birthdateField = data['birthdate'];
-      DateTime birthdateValue;
-
-      if (birthdateField is Timestamp) {
-        birthdateValue = birthdateField.toDate();
-      } else if (birthdateField is String) {
-        birthdateValue = DateTime.tryParse(birthdateField) ?? DateTime(2000);
-      } else {
-        birthdateValue = DateTime(2000);
-      }
-
-      return UserData(
-        id: userId,
-        username: data['username'] ?? 'Unknown User',
-        email: data['email'] ?? 'Unknown Email',
-        name: data['name'] ?? 'Unknown Name',
-        role: data['role'] ?? 'Unknown Role',
-        img: data['img'] ?? 'assets/placeholder.png',
-        birthdate: birthdateValue,
-        gamesPlayed: List<String>.from(data['gamesPlayed'] ?? []),
-        classes: List<String>.from(data['classes'] ?? []),
-      );
+      return querySnapshot.docs.map((doc) {
+        final data = doc.data();
+        return {
+          'imagePath': data['logo'] ?? 'assets/placeholder.png',
+          'subjectName': data['name'] ?? 'Default Game Title',
+          'subjectId': doc.id,
+        };
+      }).toList();
     } catch (e, stackTrace) {
-      debugPrint("Error loading UserData: $e\n$stackTrace");
+      debugPrint('[FirestoreService] Error getting subjects: $e\n$stackTrace');
       rethrow;
     }
   }
@@ -240,103 +299,6 @@ class FirestoreService {
     } catch (e, stackTrace) {
       debugPrint("Error loading SubjectData: $e\n$stackTrace");
       rethrow;
-    }
-  }
-
-  Future<String?> fetchUserType({required String uid}) async {
-    try {
-      final userDoc = await _firestore.collection('users').doc(uid).get();
-      final data = userDoc.data();
-      return data?['role'];
-    } catch (e, stackTrace) {
-      debugPrint("Error fetching user role: $e\n$stackTrace");
-      return null;
-    }
-  }
-
-  Future<void> setUserInfo({
-    required String uid,
-    required String name,
-    required String username,
-    required String selectedAccountType,
-    required String email,
-    required String birthDate,
-    required String img,
-    List<String>? classes,
-    List<String>? gamesPlayed
-  }) async {
-    try {
-      if (selectedAccountType == '') {
-        throw Exception("No selected Account Type");
-      }
-      await _firestore.collection('users').doc(uid).set({
-        'name': name,
-        'username': username,
-        'role': selectedAccountType,
-        'email': email,
-        'birthdate': birthDate,
-        'gamesPlayed': gamesPlayed,
-        'classes': classes,
-        'img' : img
-      });
-      print("[FirestoreService] User Info set!");
-    } catch (e) {
-      print("[FirestoreService] Unable to set user info!");
-      throw Exception("Unable to set user info!");
-    }
-  }
-
-  Future<void> deleteAccount({required String uid}) async {
-    try {
-      await _firestore.collection('users').doc(uid).delete();
-      print("[FirestoreService] Account Deleted");
-    } catch (e) {
-      print("[FirestoreService] Error deleting account $uid");
-      rethrow;
-    }
-  }
-
-  Future<String> createAssignment({
-    required String title,
-    required String gameId,
-    required String turma,
-    required String dueDate,
-  }) async {
-    try {
-      if (turma== '') {
-        throw Exception("No class selected");
-      }
-      await _firestore.collection('events').add({
-        'name': 'New Assignment!',
-        'className': turma,
-      });
-
-      DocumentReference docRef = await _firestore.collection('assignment').add({
-        'title': title,
-        'gameId': gameId,
-        'class': turma,
-        'dueDate': dueDate,
-      });
-
-      final assignmentDoc = _firestore.collection('subjects').doc(turma);
-      final assignmentSnapshot = await assignmentDoc.get();
-
-      List<String> assignments = [];
-
-      if (assignmentSnapshot.exists && assignmentSnapshot.data() != null) {
-        final data = assignmentSnapshot.data()!;
-        assignments = List<String>.from(data['assignments'] ?? []);
-      }
-
-      assignments.remove(docRef.id);
-      assignments.insert(0, docRef.id);
-
-      await assignmentDoc.update({'assignments': assignments});
-      print("[FirestoreService] Created Assignment!");
-      return docRef.id;
-    } catch (e) {
-      print("[FirestoreService] Unable to create assignment!");
-      throw Exception("Unable to create assignment!");
     }
   }
 
@@ -399,7 +361,85 @@ class FirestoreService {
     }
   }
 
-  // ASSIGNMENTS //
+  Future<void> addStudentToSubject({required String subjectId, required String studentId}) async {
+    try {
+      final subjectRef = _firestore.collection('subjects').doc(subjectId);
+
+      await subjectRef.update({
+        'students': FieldValue.arrayUnion([studentId]),
+      });
+
+      print("[FirestoreService] Added student $studentId to subject $subjectId");
+    } catch (e, stackTrace) {
+      print("[FirestoreService] Error adding student to subject: $e\n$stackTrace");
+      rethrow;
+    }
+  }
+
+  Future<void> removeStudentFromSubject({
+    required String subjectId,
+    required String studentId,
+  }) async {
+    try {
+      final subjectRef = _firestore.collection('subjects').doc(subjectId);
+
+      await subjectRef.update({
+        'students': FieldValue.arrayRemove([studentId]),
+      });
+
+      print("[FirestoreService] Removed student $studentId from subject $subjectId");
+    } catch (e, stackTrace) {
+      print("[FirestoreService] Error removing student from subject: $e\n$stackTrace");
+      rethrow;
+    }
+  }
+
+                                                                        // ASSIGNMENTS//
+
+  Future<String> createAssignment({
+    required String title,
+    required String gameId,
+    required String turma,
+    required String dueDate,
+  }) async {
+    try {
+      if (turma== '') {
+        throw Exception("No class selected");
+      }
+      await _firestore.collection('events').add({
+        'name': 'New Assignment!',
+        'className': turma,
+      });
+
+      DocumentReference docRef = await _firestore.collection('assignment').add({
+        'title': title,
+        'gameId': gameId,
+        'class': turma,
+        'dueDate': dueDate,
+      });
+
+      final assignmentDoc = _firestore.collection('subjects').doc(turma);
+      final assignmentSnapshot = await assignmentDoc.get();
+
+      List<String> assignments = [];
+
+      if (assignmentSnapshot.exists && assignmentSnapshot.data() != null) {
+        final data = assignmentSnapshot.data()!;
+        assignments = List<String>.from(data['assignments'] ?? []);
+      }
+
+      assignments.remove(docRef.id);
+      assignments.insert(0, docRef.id);
+
+      await assignmentDoc.update({'assignments': assignments});
+      print("[FirestoreService] Created Assignment!");
+      return docRef.id;
+    } catch (e) {
+      print("[FirestoreService] Unable to create assignment!");
+      throw Exception("Unable to create assignment!");
+    }
+  }
+
   Future<AssignmentData> fetchAssignmentData({required String assignmentId}) async {
     try {
       DocumentSnapshot snapshot = await _firestore.collection('assignment').doc(assignmentId).get();
@@ -464,39 +504,6 @@ class FirestoreService {
       }).toList();
     } catch (e, stackTrace) {
       debugPrint('[FirestoreService] Error getting assignments: $e\n$stackTrace');
-      rethrow;
-    }
-  }
-
-  Future<void> addStudentToSubject({required String subjectId, required String studentId}) async {
-    try {
-      final subjectRef = _firestore.collection('subjects').doc(subjectId);
-
-      await subjectRef.update({
-        'students': FieldValue.arrayUnion([studentId]),
-      });
-
-      print("[FirestoreService] Added student $studentId to subject $subjectId");
-    } catch (e, stackTrace) {
-      print("[FirestoreService] Error adding student to subject: $e\n$stackTrace");
-      rethrow;
-    }
-  }
-
-  Future<void> removeStudentFromSubject({
-    required String subjectId,
-    required String studentId,
-  }) async {
-    try {
-      final subjectRef = _firestore.collection('subjects').doc(subjectId);
-
-      await subjectRef.update({
-        'students': FieldValue.arrayRemove([studentId]),
-      });
-
-      print("[FirestoreService] Removed student $studentId from subject $subjectId");
-    } catch (e, stackTrace) {
-      print("[FirestoreService] Error removing student from subject: $e\n$stackTrace");
       rethrow;
     }
   }

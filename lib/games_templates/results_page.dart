@@ -106,7 +106,7 @@ class ResultsPage extends StatelessWidget {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   child: const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-                    child: Text("Play Again", style: TextStyle(fontSize: 20, color: Colors.grey)),
+                    child: Text("Play Again", style: TextStyle(fontSize: 20)),
                   ),
                 ),
               ),
@@ -120,7 +120,7 @@ class ResultsPage extends StatelessWidget {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   child: const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-                    child: Text("Exit", style: TextStyle(fontSize: 20, color: Colors.grey)),
+                    child: Text("Exit", style: TextStyle(fontSize: 20)),
                   ),
                 ),
               ),

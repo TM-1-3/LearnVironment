@@ -26,36 +26,12 @@ class DataService {
     _assignmentCacheService = Provider.of<AssignmentCacheService>(context, listen: false);
   }
 
-  Future<List<Map<String, dynamic>>> getPlayedGames({required String userId}) async {
-    try {
-      final cachedGames = await _userCacheService.getCachedGamesPlayed();
+  // 1. Users & Accounts
+  // 2. Games
+  // 3. Subjects (Aka Classes)
+  // 4. Assignments ("Assigments")
 
-      if (cachedGames.isNotEmpty) {
-        print('[DataService] Loaded gamesPlayed from cache: $cachedGames');
-
-        final games = await Future.wait(cachedGames.map((id) async {
-          final game = await getGameData(gameId: id);
-          if (game != null) {
-            return {
-              'imagePath': game.gameLogo,
-              'gameTitle': game.gameName,
-              'tags': game.tags,
-              'gameId': game.documentName,
-            };
-          }
-          return null;
-        }));
-        return games.whereType<Map<String, dynamic>>().toList();
-      }
-
-      print('[DataService] Cache empty — falling back to Firestore');
-      return await _firestoreService.getPlayedGames(uid: userId);
-    } catch (e, stack) {
-      print('[DataService] Error in getPlayedGames: $e\n$stack');
-      return [];
-    }
-  }
-
+                                                                      // USERS & ACCOUNTS //
   // Function to update the 'gamesPlayed' array in both Firestore and the cache
   Future<void> updateUserGamesPlayed({required String userId, required String gameId}) async {
     try {
@@ -99,8 +75,38 @@ class DataService {
       return null;
     }
   }
+  Future<void> deleteAccount({required String uid}) async {
+    try {
+      await _firestoreService.deleteAccount(uid: uid);
+      await _userCacheService.clearUserCache();
+      print("[DataService] Account deleted");
+    } catch(e) {
+      print("[DataService] Error deleting account");
+      rethrow;
+    }
+  }
 
+  Future<void> updateUserProfile({
+    required String uid,
+    required String name,
+    required String username,
+    required String email,
+    required String birthDate,
+    required String role,
+    required String img,
+  }) async {
+    try {
+      final List<String> gamesPlayed = await _userCacheService.getCachedGamesPlayed();
+      final List<String> classes = await _userCacheService.getCachedClasses();
+      await _firestoreService.setUserInfo(uid: uid, name: name, email: email, username: username, birthDate: birthDate, selectedAccountType: role, img: img, classes: classes, gamesPlayed: gamesPlayed);
+      await _userCacheService.clearUserCache();
+      await _userCacheService.cacheUserData(UserData(id: uid, username: username, email: email, name: name, role: role, birthdate: DateTime.parse(birthDate), gamesPlayed: gamesPlayed, classes: classes, img: img));
+    } catch (e) {
+      print("Error updating profile");
+    }
+  }
 
+                                                                           // GAMES //
   Future<GameData?> getGameData({required String gameId}) async {
     try {
       final cachedGame = await _gameCacheService.getCachedGameData(gameId);
@@ -119,25 +125,6 @@ class DataService {
     }
   }
 
-  Future<SubjectData?> getSubjectData({required String subjectId}) async {
-    try {
-      final cachedSubject = await _subjectCacheService.getCachedSubjectData(subjectId);
-      if (cachedSubject != null) {
-        print('[DataService] Loaded subject from cache');
-        return cachedSubject;
-      }
-
-      final freshSubject = await _firestoreService.fetchSubjectData(subjectId: subjectId);
-      await _subjectCacheService.cacheSubjectData(freshSubject);
-      print('[DataService] Loaded subject from Firestore and cached it');
-      return freshSubject;
-    } catch (e) {
-      print('[DataService] Error getting subject data: $e');
-      return null;
-    }
-  }
-
-  // Function to fetch all games, handling cache and Firestore
   Future<List<Map<String, dynamic>>> getAllGames() async {
     try {
       // First, try to load cached game IDs
@@ -176,6 +163,55 @@ class DataService {
     } catch (e) {
       print('[DataService] Error fetching games: $e');
       return [];
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getPlayedGames({required String userId}) async {
+    try {
+      final cachedGames = await _userCacheService.getCachedGamesPlayed();
+
+      if (cachedGames.isNotEmpty) {
+        print('[DataService] Loaded gamesPlayed from cache: $cachedGames');
+
+        final games = await Future.wait(cachedGames.map((id) async {
+          final game = await getGameData(gameId: id);
+          if (game != null) {
+            return {
+              'imagePath': game.gameLogo,
+              'gameTitle': game.gameName,
+              'tags': game.tags,
+              'gameId': game.documentName,
+            };
+          }
+          return null;
+        }));
+        return games.whereType<Map<String, dynamic>>().toList();
+      }
+
+      print('[DataService] Cache empty — falling back to Firestore');
+      return await _firestoreService.getPlayedGames(uid: userId);
+    } catch (e, stack) {
+      print('[DataService] Error in getPlayedGames: $e\n$stack');
+      return [];
+    }
+  }
+
+                                                                  // SUBJECTS (Aka CLASSES) //
+  Future<SubjectData?> getSubjectData({required String subjectId}) async {
+    try {
+      final cachedSubject = await _subjectCacheService.getCachedSubjectData(subjectId);
+      if (cachedSubject != null) {
+        print('[DataService] Loaded subject from cache');
+        return cachedSubject;
+      }
+
+      final freshSubject = await _firestoreService.fetchSubjectData(subjectId: subjectId);
+      await _subjectCacheService.cacheSubjectData(freshSubject);
+      print('[DataService] Loaded subject from Firestore and cached it');
+      return freshSubject;
+    } catch (e) {
+      print('[DataService] Error getting subject data: $e');
+      return null;
     }
   }
 
@@ -218,57 +254,6 @@ class DataService {
     }
   }
 
-  Future<void> deleteAccount({required String uid}) async {
-    try {
-      await _firestoreService.deleteAccount(uid: uid);
-      await _userCacheService.clearUserCache();
-      print("[DataService] Account deleted");
-    } catch(e) {
-      print("[DataService] Error deleting account");
-      rethrow;
-    }
-  }
-
-  Future<void> updateUserProfile({
-    required String uid,
-    required String name,
-    required String username,
-    required String email,
-    required String birthDate,
-    required String role,
-    required String img,
-  }) async {
-    try {
-      final List<String> gamesPlayed = await _userCacheService.getCachedGamesPlayed();
-      final List<String> classes = await _userCacheService.getCachedClasses();
-      await _firestoreService.setUserInfo(uid: uid, name: name, email: email, username: username, birthDate: birthDate, selectedAccountType: role, img: img, classes: classes, gamesPlayed: gamesPlayed);
-      await _userCacheService.clearUserCache();
-      await _userCacheService.cacheUserData(UserData(id: uid, username: username, email: email, name: name, role: role, birthdate: DateTime.parse(birthDate), gamesPlayed: gamesPlayed, classes: classes, img: img));
-    } catch (e) {
-      print("Error updating profile");
-    }
-  }
-
-  Future<void> createAssignment({
-    required String title,
-    required DateTime dueDate,
-    required String turma,
-    required String gameId,
-  }) async {
-    try {
-      String assId = await _firestoreService.createAssignment(title: title, dueDate: dueDate.toString(), turma: turma, gameId: gameId);
-      SubjectData? subjectData = await _subjectCacheService.getCachedSubjectData(turma);
-      subjectData ??= await _firestoreService.fetchSubjectData(subjectId: turma);
-      await _subjectCacheService.deleteSubject(subjectId: turma);
-
-      subjectData.assignments.add(assId);
-      await _subjectCacheService.cacheSubjectData(subjectData);
-
-    } catch (e) {
-      print("Error creating Assignment");
-    }
-  }
-
   Future<void> addSubject({required SubjectData subject, required String uid}) async {
     try {
       // Update Firestore
@@ -308,7 +293,71 @@ class DataService {
     }
   }
 
-                            // ASSIGNMENTS //
+  Future<void> addStudentToSubject({required String subjectId, required String studentId}) async {
+    try {
+      // First, update the Firestore document for the subject
+      await _firestoreService.addStudentToSubject(subjectId: subjectId, studentId: studentId);
+      print('[DataService] Student added to subject in Firestore');
+
+      // Fetch the updated subject data from Firestore
+      final updatedSubject = await _firestoreService.fetchSubjectData(subjectId: subjectId);
+
+      // Remove the old subject data from the cache
+      await _subjectCacheService.deleteSubject(subjectId: subjectId);
+      print('[DataService] Removed old subject data from cache');
+
+      // Cache the updated subject data with the new student
+      await _subjectCacheService.cacheSubjectData(updatedSubject);
+      print('[DataService] Cached updated subject data with new student');
+    } catch (e) {
+      print('[DataService] Error adding student to subject: $e');
+      throw Exception("Error adding student to subject");
+    }
+  }
+
+  Future<void> removeStudentFromSubject({required String subjectId, required String studentId}) async {
+    try {
+      // Step 1: Remove student from subject in Firestore
+      await _firestoreService.removeStudentFromSubject(subjectId: subjectId, studentId: studentId);
+      print('[DataService] Student removed from subject in Firestore');
+
+      // Step 2: Delete old cached subject data
+      await _subjectCacheService.deleteSubject(subjectId: subjectId);
+      print('[DataService] Removed old subject data from cache');
+
+      // Step 3: Fetch updated subject data
+      final updatedSubject = await _firestoreService.fetchSubjectData(subjectId: subjectId);
+
+      // Step 4: Cache the updated subject
+      await _subjectCacheService.cacheSubjectData(updatedSubject);
+      print('[DataService] Cached updated subject data after removing student');
+    } catch (e) {
+      print('[DataService] Error removing student from subject: $e');
+      throw Exception("Error removing student from subject");
+    }
+  }
+
+                                                                        // ASSIGNMENTS //
+  Future<void> createAssignment({
+    required String title,
+    required DateTime dueDate,
+    required String turma,
+    required String gameId,
+  }) async {
+    try {
+      String assId = await _firestoreService.createAssignment(title: title, dueDate: dueDate.toString(), turma: turma, gameId: gameId);
+      SubjectData? subjectData = await _subjectCacheService.getCachedSubjectData(turma);
+      subjectData ??= await _firestoreService.fetchSubjectData(subjectId: turma);
+      await _subjectCacheService.deleteSubject(subjectId: turma);
+
+      subjectData.assignments.add(assId);
+      await _subjectCacheService.cacheSubjectData(subjectData);
+
+    } catch (e) {
+      print("Error creating Assignment");
+    }
+  }
+
   Future<List<Map<String, dynamic>>> getAllAssignments({required String subjectId}) async {
     try {
       List<Map<String, dynamic>> loadedAssignments = [];
@@ -388,50 +437,6 @@ class DataService {
 
     } catch (e) {
       print("Error creating Assignment");
-    }
-  }
-
-  Future<void> addStudentToSubject({required String subjectId, required String studentId}) async {
-    try {
-      // First, update the Firestore document for the subject
-      await _firestoreService.addStudentToSubject(subjectId: subjectId, studentId: studentId);
-      print('[DataService] Student added to subject in Firestore');
-
-      // Fetch the updated subject data from Firestore
-      final updatedSubject = await _firestoreService.fetchSubjectData(subjectId: subjectId);
-
-      // Remove the old subject data from the cache
-      await _subjectCacheService.deleteSubject(subjectId: subjectId);
-      print('[DataService] Removed old subject data from cache');
-
-      // Cache the updated subject data with the new student
-      await _subjectCacheService.cacheSubjectData(updatedSubject);
-      print('[DataService] Cached updated subject data with new student');
-    } catch (e) {
-      print('[DataService] Error adding student to subject: $e');
-      throw Exception("Error adding student to subject");
-    }
-  }
-
-  Future<void> removeStudentFromSubject({required String subjectId, required String studentId}) async {
-    try {
-      // Step 1: Remove student from subject in Firestore
-      await _firestoreService.removeStudentFromSubject(subjectId: subjectId, studentId: studentId);
-      print('[DataService] Student removed from subject in Firestore');
-
-      // Step 2: Delete old cached subject data
-      await _subjectCacheService.deleteSubject(subjectId: subjectId);
-      print('[DataService] Removed old subject data from cache');
-
-      // Step 3: Fetch updated subject data
-      final updatedSubject = await _firestoreService.fetchSubjectData(subjectId: subjectId);
-
-      // Step 4: Cache the updated subject
-      await _subjectCacheService.cacheSubjectData(updatedSubject);
-      print('[DataService] Cached updated subject data after removing student');
-    } catch (e) {
-      print('[DataService] Error removing student from subject: $e');
-      throw Exception("Error removing student from subject");
     }
   }
 }
