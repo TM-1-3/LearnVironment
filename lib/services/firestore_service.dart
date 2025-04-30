@@ -376,6 +376,24 @@ class FirestoreService {
     }
   }
 
+  Future<void> removeStudentFromSubject({
+    required String subjectId,
+    required String studentId,
+  }) async {
+    try {
+      final subjectRef = _firestore.collection('subjects').doc(subjectId);
+
+      await subjectRef.update({
+        'students': FieldValue.arrayRemove([studentId]),
+      });
+
+      print("[FirestoreService] Removed student $studentId from subject $subjectId");
+    } catch (e, stackTrace) {
+      print("[FirestoreService] Error removing student from subject: $e\n$stackTrace");
+      rethrow;
+    }
+  }
+
                                                                         // ASSIGNMENTS//
 
   Future<String> createAssignment({
