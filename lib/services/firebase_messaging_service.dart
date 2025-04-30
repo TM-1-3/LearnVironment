@@ -5,10 +5,13 @@ import 'package:learnvironment/data/notification_storage.dart';
 
 class FirebaseMessagingService {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+  final FirebaseMessaging firebaseMessaging;
 
   FirebaseMessagingService({
     FlutterLocalNotificationsPlugin? localNotificationsPlugin,
-  })  : flutterLocalNotificationsPlugin = localNotificationsPlugin ?? FlutterLocalNotificationsPlugin();
+    FirebaseMessaging? firebaseMessaging,
+  })  : flutterLocalNotificationsPlugin = localNotificationsPlugin ?? FlutterLocalNotificationsPlugin(),
+        firebaseMessaging = firebaseMessaging ?? FirebaseMessaging.instance;
 
   Future<void> firebaseMessagingBackgroundHandler(
       RemoteMessage message, {bool flag = false}) async {

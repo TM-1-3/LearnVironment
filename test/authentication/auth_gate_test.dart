@@ -1,10 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:learnvironment/authentication/auth_gate.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:learnvironment/authentication/fix_account.dart';
 import 'package:learnvironment/developer/developer_home.dart';
 import 'package:learnvironment/services/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
+import 'package:learnvironment/services/firebase_messaging_service.dart';
+import 'package:learnvironment/services/firestore_service.dart';
 import 'package:learnvironment/student/student_home.dart';
 import 'package:learnvironment/teacher/teacher_home.dart';
 import 'package:mockito/mockito.dart';
@@ -15,19 +18,29 @@ import 'package:learnvironment/data/user_data.dart';
 
 class MockAuthService extends Mock implements AuthService {
   late bool _loggedIn;
+  late bool _fetchedNotifications;
   late String uid;
 
   @override
   bool get loggedIn => _loggedIn;
 
   @override
+  bool get fetchedNotifications => _fetchedNotifications;
+
+  @override
   set loggedIn(bool value) {
     _loggedIn = value;
+  }
+
+  @override
+  set fetchedNotifications(bool value) {
+    _fetchedNotifications = value;
   }
 
   MockAuthService({MockFirebaseAuth? firebaseAuth}) {
     loggedIn = firebaseAuth?.currentUser != null;
     uid = firebaseAuth?.currentUser?.uid ?? '';
+    fetchedNotifications = true;
   }
 
   @override
@@ -56,15 +69,28 @@ class MockDataService extends Mock implements DataService {
   }
 }
 
+class MockFirestoreService extends Mock implements FirestoreService {
+  @override
+  Future<List<RemoteMessage>> fetchNotifications({required String uid}) async {
+    return [];
+  }
+}
+class MockFirebaseMessagingService extends Mock implements FirebaseMessagingService {}
+
 void main() {
   group('AuthGate - Widget Navigation Tests', () {
     late MockFirebaseAuth mockAuth;
     late Widget testWidget;
     late MockDataService mockDataService;
+    late MockFirebaseMessagingService firebaseMessagingService;
+    late MockFirestoreService mockFirestoreService;
+    late AuthService authService;
 
     setUp(() {
       mockAuth = MockFirebaseAuth();
       mockDataService = MockDataService();
+      firebaseMessagingService = MockFirebaseMessagingService();
+      mockFirestoreService = MockFirestoreService();
     });
 
     testWidgets('Navigates to Developer home screen', (WidgetTester tester) async {
@@ -76,12 +102,17 @@ void main() {
         ),
       );
 
+      authService = MockAuthService(firebaseAuth: mockAuth);
+      authService.fetchedNotifications = true;
+
       testWidget = MultiProvider(
         providers: [
           ChangeNotifierProvider<AuthService>(
-            create: (_) => MockAuthService(firebaseAuth: mockAuth),
+            create: (_) => authService,
           ),
           Provider<DataService>(create: (_) => mockDataService),
+          Provider<FirestoreService>(create: (_) => mockFirestoreService),
+          Provider<FirebaseMessagingService>(create: (_) => firebaseMessagingService),
         ],
         child: MaterialApp(
           home: AuthGate(),
@@ -109,6 +140,8 @@ void main() {
             create: (_) => MockAuthService(firebaseAuth: mockAuth),
           ),
           Provider<DataService>(create: (_) => mockDataService),
+          Provider<FirestoreService>(create: (_) => mockFirestoreService),
+          Provider<FirebaseMessagingService>(create: (_) => firebaseMessagingService),
         ],
         child: MaterialApp(
           home: AuthGate(),
@@ -134,6 +167,8 @@ void main() {
         providers: [
           ChangeNotifierProvider<AuthService>(create: (_) => MockAuthService(firebaseAuth: mockAuth)),
           Provider<DataService>(create: (_) => mockDataService),
+          Provider<FirestoreService>(create: (_) => mockFirestoreService),
+          Provider<FirebaseMessagingService>(create: (_) => firebaseMessagingService),
         ],
         child: MaterialApp(
           home: AuthGate(),
@@ -159,6 +194,8 @@ void main() {
         providers: [
           ChangeNotifierProvider<AuthService>(create: (_) => MockAuthService(firebaseAuth: mockAuth)),
           Provider<DataService>(create: (_) => mockDataService),
+          Provider<FirestoreService>(create: (_) => mockFirestoreService),
+          Provider<FirebaseMessagingService>(create: (_) => firebaseMessagingService),
         ],
         child: MaterialApp(
           home: AuthGate(),
@@ -184,6 +221,8 @@ void main() {
         providers: [
           ChangeNotifierProvider<AuthService>(create: (_) => MockAuthService(firebaseAuth: mockAuth)),
           Provider<DataService>(create: (_) => mockDataService),
+          Provider<FirestoreService>(create: (_) => mockFirestoreService),
+          Provider<FirebaseMessagingService>(create: (_) => firebaseMessagingService),
         ],
         child: MaterialApp(
           home: AuthGate(),

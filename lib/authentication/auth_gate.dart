@@ -1,4 +1,3 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:learnvironment/authentication/fix_account.dart';
 import 'package:learnvironment/authentication/login_screen.dart';
@@ -7,6 +6,7 @@ import 'package:learnvironment/data/user_data.dart';
 import 'package:learnvironment/developer/developer_home.dart';
 import 'package:learnvironment/services/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
+import 'package:learnvironment/services/firebase_messaging_service.dart';
 import 'package:learnvironment/services/firestore_service.dart';
 import 'package:learnvironment/student/student_home.dart';
 import 'package:learnvironment/teacher/teacher_home.dart';
@@ -16,28 +16,33 @@ class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
 
   Future<Map<String, dynamic>> _initialize(BuildContext context) async {
+    print("Here");
     final authService = Provider.of<AuthService>(context, listen: false);
     final dataService = Provider.of<DataService>(context, listen: false);
     final firestoreService = Provider.of<FirestoreService>(context, listen: false);
-    final firebaseMessaging = Provider.of<FirebaseMessaging>(context, listen: false);
+    final messagingService = Provider.of<FirebaseMessagingService>(context, listen: false);
 
+    print("1");
     final uid = await authService.getUid();
 
+    print("2");
     if (!authService.fetchedNotifications) {
-      //NotificationStorage.notificationMessages = await firestoreService.fetchNotifications(uid: uid);
+      NotificationStorage.notificationMessages.addAll(await firestoreService.fetchNotifications(uid: uid));
       authService.fetchedNotifications = true;
     }
 
     final userData = await dataService.getUserData(userId: uid);
 
+    print("3");
+
     if (userData != null && userData.classes.isNotEmpty) {
-      for (var className in userData.classes) {
+      await Future.wait(userData.classes.map((className) {
         String sanitizedClassName = className.replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '_');
-        await firebaseMessaging.subscribeToTopic(sanitizedClassName);
-        print('Subscribed to $sanitizedClassName');
-      }
+        return messagingService.firebaseMessaging.subscribeToTopic(sanitizedClassName);
+      }));
     }
 
+    print("Done");
     return {'userData': userData};
   }
 

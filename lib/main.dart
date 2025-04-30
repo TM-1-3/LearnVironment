@@ -45,7 +45,7 @@ void main() async {
   FirestoreService firestoreService = FirestoreService();
 
   if (authService.loggedIn) {
-    //NotificationStorage.notificationMessages = await firestoreService.fetchNotifications(uid: await authService.getUid());
+    NotificationStorage.notificationMessages.addAll(await firestoreService.fetchNotifications(uid: await authService.getUid()));
     authService.fetchedNotifications = true;
   }
 
@@ -55,7 +55,7 @@ void main() async {
         ChangeNotifierProvider<AuthService>(create: (_) => authService),
         Provider<FirestoreService>(create: (_) => firestoreService),
         Provider<UserCacheService>(create: (_) => UserCacheService()),
-        Provider<FirebaseMessaging>(create: (_) => FirebaseMessaging.instance),
+        Provider<FirebaseMessagingService>(create: (_) => messagingService),
         Provider<GameCacheService>(create: (_) => GameCacheService()),
         Provider<SubjectCacheService>(create: (_) => SubjectCacheService()),
         Provider<AssignmentCacheService>(create: (_) => AssignmentCacheService()),

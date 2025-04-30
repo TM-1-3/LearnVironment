@@ -16,10 +16,12 @@ import 'firebase_messaging_service_test.mocks.dart';
 void main() {
   late MockFlutterLocalNotificationsPlugin mockFlutterLocalNotificationsPlugin;
   late FirebaseMessagingService firebaseMessagingService;
+  late MockFirebaseMessaging mockFirebaseMessaging;
 
   setUp(() {
+    mockFirebaseMessaging = MockFirebaseMessaging();
     mockFlutterLocalNotificationsPlugin = MockFlutterLocalNotificationsPlugin();
-    firebaseMessagingService = FirebaseMessagingService(localNotificationsPlugin: mockFlutterLocalNotificationsPlugin);
+    firebaseMessagingService = FirebaseMessagingService(localNotificationsPlugin: mockFlutterLocalNotificationsPlugin, firebaseMessaging: mockFirebaseMessaging);
   });
 
   group('FirebaseMessagingService Tests', () {
