@@ -73,10 +73,12 @@
 # Sprint 3
 ### We implemented the following user stories:
 - As a teacher I want to be able to remove students from classes so that I can regulate drop-outs [#9](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/9)
+- As a student I want the games to offer tips so that I can improve my learning [#5](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/5)
 
 ### Detailed description
 - Teachers can now remove students from their classes [#107](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/107)
 - When an user opens the app previously sent notifications now appear in the notifications page [#96](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/96)
+- After playing a game, the user receives tips based on what it got wrong
 
 ### Test User
 - email: up202307719@up.pt
