@@ -78,7 +78,7 @@
 ### Detailed description
 - Teachers can now remove students from their classes [#107](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/107)
 - When an user opens the app previously sent notifications now appear in the notifications page [#96](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/96)
-- After playing a game, the user receives tips based on what it got wrong
+- After playing a game, the user receives tips based on what it got wrong [#111](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/111)
 
 ### Test User
 - email: up202307719@up.pt
