@@ -261,7 +261,7 @@ class _TeacherSubjectScreenState extends State<TeacherSubjectScreen> {
                           content: TextField(
                             controller: studentIdDialogController,
                             decoration: const InputDecoration(
-                              labelText: 'Enter Student ID',
+                              labelText: 'Enter Student Name',
                               border: OutlineInputBorder(),
                             ),
                           ),
@@ -274,10 +274,18 @@ class _TeacherSubjectScreenState extends State<TeacherSubjectScreen> {
                             ),
                             ElevatedButton(
                               onPressed: () async {
-                                final newStudentId = studentIdDialogController.text.trim();
-                                if (newStudentId.isNotEmpty) {
+                                final newStudentName = studentIdDialogController.text.trim();
+                                if (newStudentName.isNotEmpty) {
                                   final dataService = Provider.of<DataService>(context, listen: false);
-
+                                  final newStudentId = await dataService.getUserIdByName(newStudentName);
+                                  if (newStudentId == null) {
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text('Student Not Found')),
+                                      );
+                                    }
+                                    return;
+                                  }
                                   try {
                                     await dataService.addStudentToSubject(
                                       subjectId: widget.subjectData.subjectId,
