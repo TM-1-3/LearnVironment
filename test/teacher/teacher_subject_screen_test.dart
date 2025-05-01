@@ -64,6 +64,14 @@ class MockDataService extends Mock implements DataService {
       throw Exception('Failed to remove student');
     }
   }
+
+  @override
+  Future<String?> getUserIdByName(String name) async {
+    if (name=='NonExisting Student'){
+      return null;
+    }
+    return name;
+  }
 }
 
 // Helper class to fake user data
@@ -188,6 +196,24 @@ void main() {
 
       // Check snackbar shows success message
       expect(find.textContaining('Student added successfully'), findsOneWidget);
+    });
+
+    testWidgets('shows snackbar on student invalid name', (tester) async {
+      await tester.pumpWidget(testWidget);
+      await tester.pumpAndSettle();
+
+      // Tap the "Add Student" button
+      await tester.ensureVisible(find.byKey(Key("addStudent")));
+      await tester.tap(find.byKey(Key("addStudent")));
+      await tester.pumpAndSettle();
+
+      // Enter invalid student Name
+      await tester.enterText(find.byType(TextField), 'NonExisting Student');
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Add'));
+      await tester.pump(); // Begin async call
+      await tester.pump(const Duration(seconds: 1)); // Wait for async work
+
+      expect(find.text('Student Not Found'), findsOneWidget);
     });
 
     testWidgets('shows snackbar on student add failure', (tester) async {

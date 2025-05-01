@@ -293,6 +293,10 @@ class DataService {
     }
   }
 
+  Future<String?> getUserIdByName(String name) async {
+    return await _firestoreService.getUserIdByName(name);
+  }
+
   Future<void> addStudentToSubject({required String subjectId, required String studentId}) async {
     try {
       // First, update the Firestore document for the subject

@@ -81,6 +81,18 @@ class FirestoreService {
     }
   }
 
+  Future<String?> getUserIdByName(String name) async {
+    final snapshot = await _firestore
+        .collection('users')
+        .where('name', isEqualTo: name)
+        .limit(1)
+        .get();
+    if (snapshot.docs.isNotEmpty) {
+      return snapshot.docs.first.id;
+    }
+    return null;
+  }
+
   Future<String?> fetchUserType({required String uid}) async {
     try {
       final userDoc = await _firestore.collection('users').doc(uid).get();
