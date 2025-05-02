@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/games_templates/results_page.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class Quiz extends StatefulWidget {
   final GameData quizData;
@@ -15,6 +16,7 @@ class Quiz extends StatefulWidget {
 class QuizState extends State<Quiz> {
   late final Map<String, List<String>> questionsAndOptions;
   late final Map<String, String> correctAnswers;
+
 
   late List<String> availableQuestions;
   String currentQuestion = "";
@@ -29,6 +31,7 @@ class QuizState extends State<Quiz> {
   bool quizFinished = false;
   late DateTime startTime;
   List<String> tipsToAppear=[];
+  final player = AudioPlayer();
 
   @override
   void initState() {
@@ -105,17 +108,20 @@ class QuizState extends State<Quiz> {
     });
   }
 
-  void checkSelectedAnswer(String selected) {
+  void checkSelectedAnswer(String selected) async {
     setState(() {
       selectedAnswer = selected;
       rightAnswer = selectedAnswer == correctAnswer;
       rightAnswer! ? correctCount++ : wrongCount++;
       if (!rightAnswer!) {
+        player.play(AssetSource('wrong_answer.mp3'));
         tipsToAppear.add(widget.quizData.tips[currentQuestion] ?? "No tip available.");
       }
+      else {
+        player.play(AssetSource('correct_answer.mp3'));
+      }
     });
-
-    Timer(const Duration(seconds: 2), () {
+    Timer(const Duration(seconds: 3), () {
       updateQuestionAndOptions(); //Move to next question
     });
   }

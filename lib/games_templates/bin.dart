@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/games_templates/results_page.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class BinScreen extends StatefulWidget {
   final GameData binData;
@@ -45,6 +46,7 @@ class BinScreenState extends State<BinScreen> {
     "trash9": "yellow",
     "trash10": "brown",
   };
+  final player = AudioPlayer();
 
   @override
   void initState() {
@@ -61,7 +63,11 @@ class BinScreenState extends State<BinScreen> {
       rightAnswer = trashItems[item] == bin;
       rightAnswer ? correctCount++ : wrongCount++;
       if (!rightAnswer) {
+        player.play(AssetSource('wrong_answer.mp3'));
         tipsToAppear.add(widget.binData.tips[item] ?? "No tip available.");
+      }
+      else{
+        player.play(AssetSource('correct_answer.mp3'));
       }
       iconPosition = position;
       showIcon = true;
