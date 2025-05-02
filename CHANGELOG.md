@@ -74,12 +74,14 @@
 ### We implemented the following user stories:
 - As a teacher I want to be able to remove students from classes so that I can regulate drop-outs [#9](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/9)
 - As a student I want the games to offer tips so that I can improve my learning [#5](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/5)
+- As a user I want to be able to hear a sound when I select an option in a game so that I can easily know if I selected the correct answer [#62](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/62)
 
 ### Detailed description
 - Teachers can now remove students from their classes [#107](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/107)
 - When an user opens the app previously sent notifications now appear in the notifications page [#96](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/96)
 - After playing a game, the user receives tips based on what it got wrong [#111](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/111)
 - As a teacher, you can type the name of the student you want to add to a class, instead of using the ID [#102](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/112)
+- When playing a game, whenever the user gives an answer, a sound effect will play indicating if the answer was right or wrong
 
 ### Test User
 - email: up202307719@up.pt
