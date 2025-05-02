@@ -56,6 +56,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Future<void> _registerUser() async {
+    final dataService = Provider.of<DataService>(context, listen: false);
     setState(() {
       _isButtonEnabled = false;
     });
@@ -83,6 +84,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
         return;
       }
 
+      if (await dataService.checkIfUsernameAlreadyExists(username)){
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Username already in use.')),
+        );
+        return;
+      }
+
       final authService = Provider.of<AuthService>(context, listen: false);
       String? uid = await authService.registerUser(username: username, email: email, password: password);
 
@@ -95,7 +103,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       }
 
       if (mounted) {
-        final dataService = Provider.of<DataService>(context, listen: false);
+        //final dataService = Provider.of<DataService>(context, listen: false);
         await dataService.updateUserProfile(
           uid: uid,
           name: name,
