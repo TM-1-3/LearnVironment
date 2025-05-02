@@ -6,6 +6,7 @@ import 'package:learnvironment/data/subject_data.dart';
 import 'package:learnvironment/data/user_data.dart';
 
 import '../data/assignment_data.dart';
+import '../data/game_result_data.dart';
 
 class FirestoreService {
   final FirebaseFirestore _firestore;
@@ -269,6 +270,24 @@ class FirestoreService {
     }
   }
 
+  Future<void> recordGameResult(GameResultData result) async {
+    try {
+      // Assuming you have a 'game_results' collection in Firestore
+      await FirebaseFirestore.instance.collection('game_results').add({
+        'subjectId': result.subjectId,
+        'studentId': result.studentId,
+        'gameId': result.gameId,
+        'correctCount': result.correctCount,
+        'wrongCount': result.wrongCount,
+        'timestamp': FieldValue.serverTimestamp(),  // Automatically set the timestamp
+      });
+      print('[FirestoreService] Game result stored in Firestore successfully.');
+    } catch (e) {
+      print('[FirestoreService] Error storing game result in Firestore: $e');
+      throw Exception("Error storing game result in Firestore");
+    }
+  }
+
   // =========================== SUBJECTS (Aka CLASSES) ==============================//
   Future<List<Map<String, dynamic>>> getAllSubjects({required String teacherId}) async {
     try {
@@ -374,20 +393,36 @@ class FirestoreService {
     }
   }
 
-  Future<void> addStudentToSubject({required String subjectId, required String studentId}) async {
+  Future<void> addStudentToSubject({
+    required String subjectId,
+    required String studentId,
+  }) async {
     try {
       final subjectRef = _firestore.collection('subjects').doc(subjectId);
+      final studentRef = _firestore.collection('users').doc(studentId);
 
-      await subjectRef.update({
+      // Run both updates in a batch
+      final batch = _firestore.batch();
+
+      // Add student to subject's student list
+      batch.update(subjectRef, {
         'students': FieldValue.arrayUnion([studentId]),
       });
 
-      print("[FirestoreService] Added student $studentId to subject $subjectId");
+      // Add subject to student's subject list
+      batch.update(studentRef, {
+        'classes': FieldValue.arrayUnion([subjectId]),
+      });
+
+      await batch.commit();
+
+      print("[FirestoreService] Added student $studentId to subject $subjectId and updated student record.");
     } catch (e, stackTrace) {
-      print("[FirestoreService] Error adding student to subject: $e\n$stackTrace");
+      print("[FirestoreService] Error adding student to subject and updating student: $e\n$stackTrace");
       rethrow;
     }
   }
+
 
   Future<void> removeStudentFromSubject({
     required String subjectId,
@@ -395,14 +430,26 @@ class FirestoreService {
   }) async {
     try {
       final subjectRef = _firestore.collection('subjects').doc(subjectId);
+      final studentRef = _firestore.collection('users').doc(studentId);
 
-      await subjectRef.update({
+      // Run both removals in a batch
+      final batch = _firestore.batch();
+
+      // Remove student from subject
+      batch.update(subjectRef, {
         'students': FieldValue.arrayRemove([studentId]),
       });
 
-      print("[FirestoreService] Removed student $studentId from subject $subjectId");
+      // Remove subject from student
+      batch.update(studentRef, {
+        'classes': FieldValue.arrayRemove([subjectId]),
+      });
+
+      await batch.commit();
+
+      print("[FirestoreService] Removed student $studentId from subject $subjectId and updated student record.");
     } catch (e, stackTrace) {
-      print("[FirestoreService] Error removing student from subject: $e\n$stackTrace");
+      print("[FirestoreService] Error removing student from subject and updating student: $e\n$stackTrace");
       rethrow;
     }
   }

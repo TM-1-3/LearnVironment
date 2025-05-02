@@ -97,7 +97,8 @@ class BinScreenState extends State<BinScreen> {
                     gameImage: widget.binData.gameLogo,
                     tipsToAppear: tipsToAppear.toSet().toList(),
                     duration: duration,
-                    onReplay: () => BinScreen(binData: widget.binData)
+                    onReplay: () => BinScreen(binData: widget.binData),
+                    gameId: widget.binData.documentName,
                   ),
             ),
           );

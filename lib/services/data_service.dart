@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:learnvironment/data/game_data.dart';
+import 'package:learnvironment/data/game_result_data.dart';
 import 'package:learnvironment/data/subject_data.dart';
 import 'package:learnvironment/data/user_data.dart';
 import 'package:learnvironment/services/firestore_service.dart';
@@ -193,6 +194,22 @@ class DataService {
     } catch (e, stack) {
       print('[DataService] Error in getPlayedGames: $e\n$stack');
       return [];
+    }
+  }
+
+  Future<void> recordGameResult(GameResultData result) async {
+    try {
+      // Log result data to Firestore
+      await _firestoreService.recordGameResult(result);
+      print('[DataService] Game result recorded successfully for student: ${result.studentId}, game: ${result.gameId}');
+
+      // Optionally, update any caches related to the result
+      // This step depends on your cache system and whether you want to track game results locally.
+      // For example, updating the user's played games or the subject's assignments.
+
+    } catch (e) {
+      print('[DataService] Error recording game result: $e');
+      throw Exception("Error recording game result");
     }
   }
 

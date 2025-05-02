@@ -1,4 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../data/game_result_data.dart';
+import '../data/subject_data.dart';
+import '../data/user_data.dart';
+import '../services/auth_service.dart';
+import '../services/data_service.dart';
 
 class ResultsPage extends StatelessWidget {
   final int questionsCount;
@@ -8,8 +15,10 @@ class ResultsPage extends StatelessWidget {
   final String gameImage;
   final List<String> tipsToAppear;
   final Duration duration;
-
+  final dynamic gameId;
   final Widget Function() onReplay;
+
+
 
   const ResultsPage({
     super.key,
@@ -21,7 +30,45 @@ class ResultsPage extends StatelessWidget {
     required this.tipsToAppear,
     required this.duration,
     required this.onReplay,
+    required this.gameId,
   });
+
+  Future<void> sendResultIfAssigned(BuildContext context) async {
+    DataService dataService = Provider.of<DataService>(context, listen: false);
+    AuthService authService = Provider.of<AuthService>(context, listen: false);
+    String studentId = await authService.getUid();
+    UserData? userData = await dataService.getUserData(userId: studentId);
+
+    if (userData?.role == 'student') {
+      List<String> studentSubjectIds = userData?.classes ?? [];
+
+      for (final subjectId in studentSubjectIds) {
+        SubjectData? subject = await dataService.getSubjectData(subjectId: subjectId);
+
+        if (subject != null) {
+          for (final assignmentId in subject.assignments) {
+            final assignment = await dataService.getAssignmentData(assignmentId: assignmentId);
+
+            if (assignment != null && assignment.gameId == gameId) {
+              final result = GameResultData(
+                subjectId: subjectId,
+                studentId: studentId,
+                gameId: assignment.gameId,
+                correctCount: correctCount,
+                wrongCount: wrongCount,
+              );
+
+              await dataService.recordGameResult(result);
+              return; // Stop after first valid match
+            }
+          }
+        }
+      }
+    }
+  }
+
+
+
 
   @override
   Widget build(BuildContext context) {

@@ -97,7 +97,8 @@ class QuizState extends State<Quiz> {
                 gameImage: widget.quizData.gameLogo,
                 tipsToAppear: tipsToAppear,
                 duration: duration,
-                onReplay: () => Quiz(quizData: widget.quizData)
+                onReplay: () => Quiz(quizData: widget.quizData),
+                gameId: widget.quizData.documentName,
             ),
           ),
         );
