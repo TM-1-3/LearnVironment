@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:learnvironment/teacher/statistics_teacher_page.dart';
 import 'package:learnvironment/teacher/teacher_main_page.dart';
 import 'package:learnvironment/main_pages/profile_screen.dart';
 import 'package:learnvironment/main_pages/statistics_page.dart';
@@ -26,7 +27,7 @@ class _TeacherHomePage extends State<TeacherHomePage> {
     super.initState();
 
     // Initialize the _pages map with the passed firestore and auth
-    _pages[TabItem.statistics] = StatisticsPage();
+    _pages[TabItem.statistics] = StatisticsTeacherPage();
     _pages[TabItem.home] = TeacherMainPage();
     _pages[TabItem.games] = const GamesPageTeacher();
   }
