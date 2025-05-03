@@ -29,7 +29,7 @@ class DataService {
   // 1. Users & Accounts
   // 2. Games
   // 3. Subjects (Aka Classes)
-  // 4. Assignments ("Assigments")
+  // 4. Assignments
 
                                                                       // USERS & ACCOUNTS //
   // Function to update the 'gamesPlayed' array in both Firestore and the cache
@@ -97,10 +97,11 @@ class DataService {
   }) async {
     try {
       final List<String> gamesPlayed = await _userCacheService.getCachedGamesPlayed();
-      final List<String> classes = await _userCacheService.getCachedClasses();
-      await _firestoreService.setUserInfo(uid: uid, name: name, email: email, username: username, birthDate: birthDate, selectedAccountType: role, img: img, classes: classes, gamesPlayed: gamesPlayed);
+      final List<String> stClasses = await _userCacheService.getCachedClasses(type: 'stClasses');
+      final List<String> tClasses = await _userCacheService.getCachedClasses(type: 'tClasses');
+      await _firestoreService.setUserInfo(uid: uid, name: name, email: email, username: username, birthDate: birthDate, selectedAccountType: role, img: img, stClasses: stClasses, tClasses: tClasses, gamesPlayed: gamesPlayed);
       await _userCacheService.clearUserCache();
-      await _userCacheService.cacheUserData(UserData(id: uid, username: username, email: email, name: name, role: role, birthdate: DateTime.parse(birthDate), gamesPlayed: gamesPlayed, classes: classes, img: img));
+      await _userCacheService.cacheUserData(UserData(id: uid, username: username, email: email, name: name, role: role, birthdate: DateTime.parse(birthDate), gamesPlayed: gamesPlayed, tClasses: tClasses, stClasses: stClasses, img: img));
     } catch (e) {
       print("Error updating profile");
     }
@@ -224,7 +225,7 @@ class DataService {
       if (userData == null) {
         throw Exception("User is null");
       }
-      List<String> mySubjects = userData.classes;
+      List<String> mySubjects = userData.role == "student" ? userData.stClasses : userData.tClasses;
 
       for (final id in mySubjects) {
         print(id);
@@ -265,7 +266,7 @@ class DataService {
       UserData? userData = await _userCacheService.getCachedUserData();
       userData ??= await _firestoreService.fetchUserData(userId: uid);
 
-      userData.classes.add(subject.subjectId);
+      userData.tClasses.add(subject.subjectId);
       await _userCacheService.clearUserCache();
       await _userCacheService.cacheUserData(userData);
     } catch (e) {
@@ -282,7 +283,7 @@ class DataService {
       UserData? userData = await _userCacheService.getCachedUserData();
       userData ??= await _firestoreService.fetchUserData(userId: uid);
 
-      userData.classes.remove(subjectId);
+      userData.tClasses.remove(subjectId);
       await _userCacheService.clearUserCache();
       await _userCacheService.cacheUserData(userData);
 

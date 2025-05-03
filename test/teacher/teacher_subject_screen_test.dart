@@ -44,8 +44,8 @@ class MockDataService extends Mock implements DataService {
       birthdate: DateTime(2000, 1, 1),
       gamesPlayed: [],
       img: '',
-      classes: [],
-      // add any other fields if needed, depending on your UserData constructor
+      stClasses: ['class1', 'class2'],
+      tClasses: ['tClass1', 'tClass2']
     );
   }
 
