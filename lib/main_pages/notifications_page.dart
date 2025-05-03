@@ -42,29 +42,33 @@ class NotificationsPageState extends State<NotificationsPage> {
         ),
       ),
       body: RefreshIndicator(
-        onRefresh: _refreshNotifications, // Triggered when user pulls down
-        child: notifications.isEmpty
-            ? Center(
-          child: Text(
-            'No notifications yet!',
-            style: TextStyle(fontSize: 18),
-          ),
-        )
-            : ListView.builder(
-          itemCount: notifications.length,
-          itemBuilder: (context, index) {
-            final message = notifications[index];
-            return ListTile(
-              title: Text(message.notification?.title ?? 'No title'),
-              subtitle: Text(message.notification?.body ?? 'No body'),
-              trailing: Text(
-                message.sentTime?.toLocal().toString().split('.')[0] ?? '',
-                style: TextStyle(fontSize: 12, color: Colors.grey),
+        onRefresh: _refreshNotifications,
+        child: ListView(
+          physics: AlwaysScrollableScrollPhysics(), // Ensures pull-to-refresh works even when empty
+          children: [
+            notifications.isEmpty
+                ? Center(
+              child: Padding(
+                padding: EdgeInsets.only(top: 200), // Adds space for scrolling
+                child: Text('No notifications yet!', style: TextStyle(fontSize: 16)),
               ),
-            );
-          },
+            )
+                : Column(
+              children: notifications.map((message) {
+                return ListTile(
+                  title: Text(message.notification?.title ?? 'No title'),
+                  subtitle: Text(message.notification?.body ?? 'No body'),
+                  trailing: Text(
+                    message.sentTime?.toLocal().toString().split('.')[0] ?? '',
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
         ),
       ),
+
     );
   }
 }

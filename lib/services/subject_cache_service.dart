@@ -97,4 +97,27 @@ class SubjectCacheService {
       print('[CACHE ERROR] Exception while deleting subject $subjectId: $e');
     }
   }
+
+  Future<void> clearSubjectCache() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final keys = ['subjectId', 'subjectName', 'subjectLogo', 'teacher', 'students', 'assignments'];
+
+      print('[CACHE] Clearing subject cache...');
+
+      // Attempt to remove each key
+      for (final key in keys) {
+        final success = await prefs.remove(key);
+        if (!success) {
+          print('[CACHE ERROR] Failed to remove key: $key');
+        } else {
+          print('[CACHE] Successfully removed key: $key');
+        }
+      }
+
+      print('[CACHE] User cache cleared successfully.');
+    } catch (e) {
+      print('[CACHE ERROR] Error clearing user cache: $e');
+    }
+  }
 }

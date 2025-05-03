@@ -73,7 +73,8 @@ class FirestoreService {
         img: data['img'] ?? 'assets/placeholder.png',
         birthdate: birthdateValue,
         gamesPlayed: List<String>.from(data['gamesPlayed'] ?? []),
-        classes: List<String>.from(data['classes'] ?? []),
+        tClasses: List<String>.from(data['tClasses'] ?? []),
+        stClasses: List<String>.from(data['stClasses'] ?? []),
       );
     } catch (e, stackTrace) {
       debugPrint("Error loading UserData: $e\n$stackTrace");
@@ -121,7 +122,8 @@ class FirestoreService {
     required String email,
     required String birthDate,
     required String img,
-    List<String>? classes,
+    List<String>? stClasses,
+    List<String>? tClasses,
     List<String>? gamesPlayed
   }) async {
     try {
@@ -135,7 +137,8 @@ class FirestoreService {
         'email': email,
         'birthdate': birthDate,
         'gamesPlayed': gamesPlayed,
-        'classes': classes,
+        'stClasses': stClasses,
+        'tClasses': tClasses,
         'img' : img
       });
       print("[FirestoreService] User Info set!");
@@ -344,14 +347,14 @@ class FirestoreService {
 
     if (userSnapshot.exists && userSnapshot.data() != null) {
       final data = userSnapshot.data()!;
-      classes = List<String>.from(data['classes'] ?? []);
+      classes = List<String>.from(data['tClasses'] ?? []);
     }
 
     classes.remove(subject.subjectId);
     classes.insert(0, subject.subjectId);
 
     try {
-      await userDoc.update({'classes': classes});
+      await userDoc.update({'tClasses': classes});
       print('[FirestoreService] Updated classes for user $uid');
 
     } catch (e, stackTrace) {
@@ -536,8 +539,10 @@ class FirestoreService {
 
     List<RemoteMessage> notifications = [];
 
-    for (String my_class in userData.classes) {
-      SubjectData subjectData = await fetchSubjectData(subjectId: my_class);
+    List<String> myClasses = userData.role == "student" ? userData.stClasses : userData.tClasses;
+
+    for (String myClass in myClasses) {
+      SubjectData subjectData = await fetchSubjectData(subjectId: myClass);
 
       for (String ass in subjectData.assignments) {
         AssignmentData assignmentData = await fetchAssignmentData(assignmentId: ass);

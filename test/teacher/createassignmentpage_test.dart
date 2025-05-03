@@ -39,10 +39,11 @@ class MockDataService extends Mock implements DataService {
       email: "john@example.com",
       img: "assets/placeholder.png",
       birthdate: DateTime(2000, 1, 1),
-      role: "student",
+      role: "teacher",
       id: userId,
       gamesPlayed: [],
-      classes: ['class1', 'class2'],
+      tClasses: ['class1', 'class2'],
+      stClasses: ['stClass1', 'stClass2'],
     );
   }
   @override
@@ -226,5 +227,3 @@ void main() {
     expect(find.text('Error creating assignment.'), findsOneWidget);
   });
 }
-
-//Just for the pull request

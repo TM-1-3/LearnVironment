@@ -6,16 +6,16 @@ void main() {
   late Map<String, String> cacheData;
 
   setUp(() {
-    // Setup valid UserData instance
     userData = UserData(
       id: '123',
       username: 'testuser',
       email: 'test@example.com',
       name: 'Test User',
-      role: 'admin',
+      role: 'teacher',
       birthdate: DateTime(1990, 5, 15),
       gamesPlayed: ['game1', 'game2'],
-      classes: ['class1', 'class2'],
+      stClasses: ['class1', 'class2'],
+      tClasses: ['tClass1', 'tClass2'],
       img: 'assets/placeholder'
     );
 
@@ -29,10 +29,11 @@ void main() {
       expect(cacheData['username'], 'testuser');
       expect(cacheData['email'], 'test@example.com');
       expect(cacheData['name'], 'Test User');
-      expect(cacheData['role'], 'admin');
+      expect(cacheData['role'], 'teacher');
       expect(cacheData['birthdate'], '1990-05-15T00:00:00.000');
       expect(cacheData['gamesPlayed'], 'game1,game2');
-      expect(cacheData['classes'], 'class1,class2');
+      expect(cacheData['stClasses'], 'class1,class2');
+      expect(cacheData['tClasses'], 'tClass1,tClass2');
     });
 
     test('Test toCache with empty fields', () {
@@ -44,7 +45,8 @@ void main() {
         role: '',
         birthdate: DateTime(2000, 1, 1),  // Default date value
         gamesPlayed: [],
-        classes: [],
+        stClasses: [],
+        tClasses: [],
         img: ''
       );
 
@@ -57,7 +59,8 @@ void main() {
       expect(cacheData['role'], '');
       expect(cacheData['birthdate'], '2000-01-01T00:00:00.000');
       expect(cacheData['gamesPlayed'], '');
-      expect(cacheData['classes'], '');
+      expect(cacheData['stClasses'], '');
+      expect(cacheData['tClasses'], '');
     });
 
     test('Test fromCache with valid data', () {
@@ -69,7 +72,8 @@ void main() {
         'role': 'admin',
         'birthdate': '1990-05-15T00:00:00.000',
         'gamesPlayed': 'game1,game2',
-        'classes': 'class1,class2',
+        'stClasses': 'class1,class2',
+        'tClasses': 'tClass1,tClass2',
       };
 
       final userDataFromCache = UserData.fromCache(cacheData);
@@ -81,7 +85,8 @@ void main() {
       expect(userDataFromCache.role, 'admin');
       expect(userDataFromCache.birthdate, DateTime(1990, 5, 15));
       expect(userDataFromCache.gamesPlayed, ['game1', 'game2']);
-      expect(userDataFromCache.classes, ['class1', 'class2']);
+      expect(userDataFromCache.stClasses, ['class1', 'class2']);
+      expect(userDataFromCache.tClasses, ['tClass1', 'tClass2']);
     });
 
     test('Test fromCache with invalid data (empty values)', () {
@@ -93,7 +98,8 @@ void main() {
         'role': '',
         'birthdate': '',
         'gamesPlayed': '',
-        'classes': '',
+        'stClasses': '',
+        'tClasses': '',
       };
 
       final userDataFromCache = UserData.fromCache(cacheData);
@@ -105,7 +111,8 @@ void main() {
       expect(userDataFromCache.role, '');
       expect(userDataFromCache.birthdate, DateTime(2000));
       expect(userDataFromCache.gamesPlayed, ['']);
-      expect(userDataFromCache.classes, ['']);
+      expect(userDataFromCache.stClasses, ['']);
+      expect(userDataFromCache.tClasses, ['']);
     });
 
     test('Test copyWith method', () {

@@ -54,12 +54,9 @@ class UserCacheService {
         role: cachedData['role']!,
         birthdate: DateTime.tryParse(cachedData['birthdate']!) ?? DateTime(2000),
         img: cachedData['img']!,
-        gamesPlayed: cachedData['gamesPlayed']!.isEmpty
-            ? []
-            : cachedData['gamesPlayed']!.split(','),
-        classes: cachedData['classes']!.isEmpty
-            ? []
-            : cachedData['classes']!.split(','),
+        gamesPlayed: cachedData['gamesPlayed']!.isEmpty ? [] : cachedData['gamesPlayed']!.split(','),
+        stClasses: cachedData['stClasses']!.isEmpty ? [] : cachedData['stClasses']!.split(','),
+        tClasses: cachedData['tClasses']!.isEmpty ? [] : cachedData['tClasses']!.split(','),
       );
     } catch (e) {
       print('[CACHE ERROR] Error retrieving cached user data: $e');
@@ -132,10 +129,10 @@ class UserCacheService {
     }
   }
 
-  Future<List<String>> getCachedClasses() async {
+  Future<List<String>> getCachedClasses({required String type}) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final rawClasses = prefs.getString('classes');
+      final rawClasses = prefs.getString(type);
 
       if (rawClasses == null || rawClasses.isEmpty) {
         print('[CACHE] No cached Classes found.');
