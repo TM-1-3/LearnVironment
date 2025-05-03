@@ -347,14 +347,14 @@ class FirestoreService {
 
     if (userSnapshot.exists && userSnapshot.data() != null) {
       final data = userSnapshot.data()!;
-      classes = List<String>.from(data['classes'] ?? []);
+      classes = List<String>.from(data['tClasses'] ?? []);
     }
 
     classes.remove(subject.subjectId);
     classes.insert(0, subject.subjectId);
 
     try {
-      await userDoc.update({'classes': classes});
+      await userDoc.update({'tClasses': classes});
       print('[FirestoreService] Updated classes for user $uid');
 
     } catch (e, stackTrace) {

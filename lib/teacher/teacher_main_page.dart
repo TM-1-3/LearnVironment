@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:learnvironment/services/auth_service.dart';
-import 'package:learnvironment/services/subject_cache_service.dart';
 import 'package:learnvironment/services/user_cache_service.dart';
 import 'package:learnvironment/teacher/teacher_subject_screen.dart';
 import 'package:provider/provider.dart';
@@ -97,6 +96,18 @@ class TeacherMainPageState extends State<TeacherMainPage> {
   Widget build(BuildContext context) {
     final filteredSubjects = getFilteredSubjects();
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    double mainAxisExtent = 500.0;
+    if (screenWidth <= 600) {
+      mainAxisExtent = screenWidth - 150;
+    } else if (screenWidth <= 1000) {
+      mainAxisExtent = 550;
+    } else if (screenWidth <= 2000) {
+      mainAxisExtent = 950;
+    } else {
+      mainAxisExtent = 1400;
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: TextField(
@@ -122,23 +133,15 @@ class TeacherMainPageState extends State<TeacherMainPage> {
           Expanded(
             child: RefreshIndicator(
               onRefresh: _refreshSubjects,
-              child: SingleChildScrollView(
+              child: ListView(
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
                 physics: AlwaysScrollableScrollPhysics(),
-                  child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    double mainAxisExtent = 500.0;
-                    if (constraints.maxWidth <= 600) {
-                      mainAxisExtent = constraints.maxWidth - 150;
-                    } else if (constraints.maxWidth <= 1000) {
-                      mainAxisExtent = 550;
-                    } else if (constraints.maxWidth <= 2000) {
-                      mainAxisExtent = 950;
-                    } else {
-                      mainAxisExtent = 1400;
-                    }
-
-                    return subjects.isNotEmpty
+                children: [
+                    subjects.isNotEmpty
                         ? GridView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
                       padding: const EdgeInsets.all(8),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
@@ -157,9 +160,11 @@ class TeacherMainPageState extends State<TeacherMainPage> {
                         );
                       },
                     )
-                        : const Center(child: Text('No results found'));
-                  },
-                ),
+                        : SizedBox(
+                      height: MediaQuery.of(context).size.height,
+                      child: const Center(child: Text('No results found')),
+                    )
+                ]
               ),
             ),
           ),
