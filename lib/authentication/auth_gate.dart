@@ -16,24 +16,19 @@ class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
 
   Future<Map<String, dynamic>> _initialize(BuildContext context) async {
-    print("Here");
     final authService = Provider.of<AuthService>(context, listen: false);
     final dataService = Provider.of<DataService>(context, listen: false);
     final firestoreService = Provider.of<FirestoreService>(context, listen: false);
     final messagingService = Provider.of<FirebaseMessagingService>(context, listen: false);
 
-    print("1");
     final uid = await authService.getUid();
 
-    print("2");
     if (!authService.fetchedNotifications) {
       NotificationStorage.notificationMessages.addAll(await firestoreService.fetchNotifications(uid: uid));
       authService.fetchedNotifications = true;
     }
 
     final userData = await dataService.getUserData(userId: uid);
-
-    print("3");
 
     if (userData != null && userData.classes.isNotEmpty) {
       await Future.wait(userData.classes.map((className) {
@@ -42,7 +37,6 @@ class AuthGate extends StatelessWidget {
       }));
     }
 
-    print("Done");
     return {'userData': userData};
   }
 
