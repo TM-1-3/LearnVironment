@@ -425,14 +425,6 @@ You can find below information and references related with the project managemen
 **Challenges:**
 
 
-**Happiness Meter:**  
-- Tomás Morais:
-- Henrique Vilarinho:  
-- Maria Sousa:  
-- Miguel Roque: 
-- Leonor Bidarra: 
-
-
 **Board at the Beginning of Sprint 3**
 
 ![beginSprint3](docs/beginSprint3.png)
