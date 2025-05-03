@@ -293,6 +293,10 @@ class DataService {
     }
   }
 
+  Future<bool> checkIfUsernameAlreadyExists(String username) async {
+    return await _firestoreService.checkIfUsernameAlreadyExists(username);
+  }
+
   Future<String?> getUserIdByName(String name) async {
     return await _firestoreService.getUserIdByName(name);
   }

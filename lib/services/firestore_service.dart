@@ -81,6 +81,15 @@ class FirestoreService {
     }
   }
 
+  Future<bool> checkIfUsernameAlreadyExists(String username) async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('username', isEqualTo: username)
+        .limit(1)
+        .get();
+    return snapshot.docs.isNotEmpty;
+  }
+
   Future<String?> getUserIdByName(String name) async {
     final snapshot = await _firestore
         .collection('users')
