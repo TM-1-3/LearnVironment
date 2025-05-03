@@ -18,7 +18,7 @@ class AssignmentPageTeacher extends StatelessWidget {
       final authService = Provider.of<AuthService>(context, listen: false);
       await dataService.deleteAssignment(assignmentId: assignmentData.assId, uid: await authService.getUid());
       if (context.mounted) {
-        Navigator.of(context).pop(); // Go back after deletion
+        Navigator.of(context).pushReplacementNamed('/auth_gate'); // Go back after deletion
       }
     } catch (e) {
       print('[deleteSubject] Error deleting subject: $e');
@@ -44,6 +44,7 @@ class AssignmentPageTeacher extends StatelessWidget {
           ElevatedButton(
             onPressed: () async {
               Navigator.of(context).pop(); // Close the dialog
+              Navigator.of(context).pushReplacementNamed('/auth_gate');
               await _deleteAssignment(context);
             },
             style: ElevatedButton.styleFrom(
