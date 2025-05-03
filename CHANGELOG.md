@@ -83,6 +83,7 @@
 - As a teacher, you can type the name of the student you want to add to a class, instead of using the ID [#102](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/112)
 - When playing a game, whenever the user gives an answer, a sound effect will play indicating if the answer was right or wrong [#113](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/113)
 - When signing up, the username cannot be the same as the one of an already exiting account [#114](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/114)
+- As a teacher, after deleting a class or an assignment, the app goes back to the "Home Page" to ensure refresh [#115](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/115)
 
 ### Test User
 - email: up202307719@g.uporto.pt
