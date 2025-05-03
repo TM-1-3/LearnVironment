@@ -75,6 +75,7 @@
 - As a teacher I want to be able to remove students from classes so that I can regulate drop-outs [#9](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/9)
 - As a student I want the games to offer tips so that I can improve my learning [#5](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/5)
 - As a user I want to be able to hear a sound when I select an option in a game so that I can easily know if I selected the correct answer [#62](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/62)
+- As a game developer I want to be able to create a game so that others could play it. [#15](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/15)
 
 ### Detailed description
 - Teachers can now remove students from their classes [#107](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/107)
@@ -84,6 +85,7 @@
 - When playing a game, whenever the user gives an answer, a sound effect will play indicating if the answer was right or wrong [#113](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/113)
 - When signing up, the username cannot be the same as the one of an already exiting account [#114](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/114)
 - As a teacher, after deleting a class or an assignment, the app goes back to the "Home Page" to ensure refresh [#115](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/115)
+- Students cannot see their classes in teacher mode [#103](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/103)
 
 ### Test User
 - email: up202307719@g.uporto.pt
