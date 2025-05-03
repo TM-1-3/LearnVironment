@@ -126,7 +126,7 @@ class CreateAssignmentPageState extends State<CreateAssignmentPage> {
         return;
       }
       setState(() {
-        _classes = userData.role == "student" ? userData.stClasses : userData.tClasses;
+        _classes = userData.tClasses;
       });
     } catch (e) {
       print("Failed to load Classes");

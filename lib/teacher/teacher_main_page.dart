@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/services/subject_cache_service.dart';
+import 'package:learnvironment/services/user_cache_service.dart';
 import 'package:learnvironment/teacher/teacher_subject_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -32,7 +34,23 @@ class TeacherMainPageState extends State<TeacherMainPage> {
       final fetchedSubjects = await dataService.getAllSubjects(uid: await authService.getUid());
       print('[TeacherMainPage] Fetched Subjects');
       setState((){
-        print(fetchedSubjects);
+        subjects = fetchedSubjects;
+      });
+    } catch (e) {
+      print('[TeacherMainPage] Error fetching subjects: $e');
+    }
+  }
+
+  Future<void> _refreshSubjects() async {
+    try {
+      final dataService = Provider.of<DataService>(context, listen: false);
+      final authService = Provider.of<AuthService>(context, listen: false);
+      final userCacheService = Provider.of<UserCacheService>(context, listen: false);
+      await userCacheService.clearUserCache();
+
+      final fetchedSubjects = await dataService.getAllSubjects(uid: await authService.getUid());
+      print('[TeacherMainPage] Refreshed Subjects');
+      setState((){
         subjects = fetchedSubjects;
       });
     } catch (e) {
@@ -99,47 +117,50 @@ class TeacherMainPageState extends State<TeacherMainPage> {
             padding: const EdgeInsets.all(8.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
             ),
           ),
           Expanded(
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                double mainAxisExtent = 500.0;
-                if (constraints.maxWidth <= 600) {
-                  mainAxisExtent = constraints.maxWidth-150;
-                } else if (constraints.maxWidth <= 1000) {
-                  mainAxisExtent = 550;
-                } else if (constraints.maxWidth <= 2000) {
-                  mainAxisExtent = 950;
-                } else {
-                  mainAxisExtent = 1400;
-                }
+            child: RefreshIndicator(
+              onRefresh: _refreshSubjects,
+              child: SingleChildScrollView(
+                physics: AlwaysScrollableScrollPhysics(),
+                  child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    double mainAxisExtent = 500.0;
+                    if (constraints.maxWidth <= 600) {
+                      mainAxisExtent = constraints.maxWidth - 150;
+                    } else if (constraints.maxWidth <= 1000) {
+                      mainAxisExtent = 550;
+                    } else if (constraints.maxWidth <= 2000) {
+                      mainAxisExtent = 950;
+                    } else {
+                      mainAxisExtent = 1400;
+                    }
 
-                return subjects.isNotEmpty
-                    ? GridView.builder(
-                  padding: const EdgeInsets.all(8),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 10.0,
-                    mainAxisSpacing: 10.0,
-                    mainAxisExtent: mainAxisExtent,
-                  ),
-                  itemCount: filteredSubjects.length,
-                  itemBuilder: (context, index) {
-                    final subject = filteredSubjects[index];
-                    return SubjectCard(
-                      imagePath: subject['imagePath'],
-                      subjectName: subject['subjectName'],
-                      subjectId: subject['subjectId'],
-                      loadSubject: loadSubject,
-                    );
+                    return subjects.isNotEmpty
+                        ? GridView.builder(
+                      padding: const EdgeInsets.all(8),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 10.0,
+                        mainAxisSpacing: 10.0,
+                        mainAxisExtent: mainAxisExtent,
+                      ),
+                      itemCount: filteredSubjects.length,
+                      itemBuilder: (context, index) {
+                        final subject = filteredSubjects[index];
+                        return SubjectCard(
+                          imagePath: subject['imagePath'],
+                          subjectName: subject['subjectName'],
+                          subjectId: subject['subjectId'],
+                          loadSubject: loadSubject,
+                        );
+                      },
+                    )
+                        : const Center(child: Text('No results found'));
                   },
-                )
-                    : const Center(
-                  child: Text('No results found'),
-                );
-              },
+                ),
+              ),
             ),
           ),
         ],
@@ -154,7 +175,6 @@ class TeacherMainPageState extends State<TeacherMainPage> {
             _fetchSubjects();
           });
         },
-        backgroundColor: Colors.grey,
         child: Icon(Icons.add),
       ),
     );
