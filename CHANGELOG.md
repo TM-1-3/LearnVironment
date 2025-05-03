@@ -86,6 +86,6 @@
 - When signing up, the username cannot be the same as the one of an already exiting account [#114](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/114)
 
 ### Test User
-- email: up202307719@up.pt
+- email: up202307719@g.uporto.pt
 - password: 123456
 - role: developer
