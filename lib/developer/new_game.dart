@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:learnvironment/developer/CreateGames/CreateDrag.dart';
-import 'package:learnvironment/developer/CreateGames/CreateQuiz.dart';
+import 'package:learnvironment/developer/CreateGames/create_drag.dart';
+import 'package:learnvironment/developer/CreateGames/create_quiz.dart';
 
 class NewGamePage extends StatelessWidget {
   const NewGamePage({super.key});
