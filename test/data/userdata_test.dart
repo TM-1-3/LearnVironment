@@ -14,6 +14,7 @@ void main() {
       role: 'teacher',
       birthdate: DateTime(1990, 5, 15),
       gamesPlayed: ['game1', 'game2'],
+      myGames: ['game1', 'game2'],
       stClasses: ['class1', 'class2'],
       tClasses: ['tClass1', 'tClass2'],
       img: 'assets/placeholder'
@@ -32,6 +33,7 @@ void main() {
       expect(cacheData['role'], 'teacher');
       expect(cacheData['birthdate'], '1990-05-15T00:00:00.000');
       expect(cacheData['gamesPlayed'], 'game1,game2');
+      expect(cacheData['myGames'], 'game1,game2');
       expect(cacheData['stClasses'], 'class1,class2');
       expect(cacheData['tClasses'], 'tClass1,tClass2');
     });
@@ -45,6 +47,7 @@ void main() {
         role: '',
         birthdate: DateTime(2000, 1, 1),  // Default date value
         gamesPlayed: [],
+        myGames: [],
         stClasses: [],
         tClasses: [],
         img: ''
@@ -59,6 +62,7 @@ void main() {
       expect(cacheData['role'], '');
       expect(cacheData['birthdate'], '2000-01-01T00:00:00.000');
       expect(cacheData['gamesPlayed'], '');
+      expect(cacheData['myGames'], '');
       expect(cacheData['stClasses'], '');
       expect(cacheData['tClasses'], '');
     });

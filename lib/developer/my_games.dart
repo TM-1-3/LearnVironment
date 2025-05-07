@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:learnvironment/developer/create_game_page.dart';
 import 'package:learnvironment/games_templates/games_initial_screen.dart';
 import 'package:learnvironment/main_pages/widgets/game_card.dart';
 import 'package:learnvironment/services/auth_service.dart';
@@ -220,18 +219,6 @@ class MyGamesPageState extends State<MyGamesPage> {
             ),
           ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => CreateGamePage()),
-          ).then((_) {
-            // Refresh games when coming back from create page
-            _fetchMyGames(); // ✅ Fixed function call
-          });
-        },
-        child: Icon(Icons.add),
       ),
     );
   }

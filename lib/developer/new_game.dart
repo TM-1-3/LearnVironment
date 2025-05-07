@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 
 class NewGamePage extends StatelessWidget {
+  const NewGamePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
+      appBar: AppBar(
+        title: const Text('Create Game'),
+      ),
+      body: const Center(
         child: Text(
-          'Create new games here!',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          'Create a New Game',
+          style: TextStyle(fontSize: 24),
         ),
       ),
     );

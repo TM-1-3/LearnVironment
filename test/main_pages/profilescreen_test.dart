@@ -58,6 +58,7 @@ class MockDataService extends Mock implements DataService {
       role: "student",
       id: userId,
       gamesPlayed: [],
+      myGames: [],
       tClasses: [],
       stClasses: []
     );

@@ -57,6 +57,7 @@ class MockDataService extends Mock implements DataService {
       role: '',
       birthdate: DateTime(2000, 1, 1),
       gamesPlayed: [],
+      myGames: [],
       img: '',
       stClasses: ['class1', 'class2'],
       tClasses: ['tClass1', 'tClass2']
