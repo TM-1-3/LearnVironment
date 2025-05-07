@@ -41,7 +41,7 @@ void main() {
     );
   });
 
-  group('StudentHomePage Widget Tests', () {
+  group('DeveloperHomePage Widget Tests', () {
     testWidgets('Displays default Home page content', (tester) async {
       await tester.pumpWidget(testWidget);
 

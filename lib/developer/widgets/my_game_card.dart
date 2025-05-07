@@ -88,10 +88,11 @@ class MyGameCard extends StatelessWidget {
                         );
                       },
                     ),
-                    const SizedBox(height: 10),
+                   const SizedBox(height: 10),
                     Center(
                       child: IconButton(
                         icon: Icon(Icons.edit),
+                        key: Key("edit"),
                         tooltip: 'Edit',
                         onPressed: () {
                           Navigator.push(context, MaterialPageRoute(builder: (context) => EditGame(gameId: gameId,)));

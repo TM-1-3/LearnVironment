@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:learnvironment/developer/widgets/my_game_card.dart';
 import 'package:learnvironment/games_templates/games_initial_screen.dart';
-import 'package:learnvironment/main_pages/widgets/game_card.dart';
 import 'package:learnvironment/services/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:learnvironment/services/user_cache_service.dart';
@@ -76,7 +76,7 @@ class MyGamesPageState extends State<MyGamesPage> {
 
   Future<void> loadGame(String gameId) async {
     try {
-      print('[Games Page] Loading Game');
+      print('[MyGames Page] Loading Game');
       final dataService = Provider.of<DataService>(context, listen: false);
       final authService = Provider.of<AuthService>(context, listen: false);
 
@@ -108,13 +108,13 @@ class MyGamesPageState extends State<MyGamesPage> {
     final screenWidth = MediaQuery.of(context).size.width;
     double mainAxisExtent = 500.0;
     if (screenWidth <= 600) {
-      mainAxisExtent = screenWidth - 150;
+      mainAxisExtent = screenWidth;
     } else if (screenWidth <= 1000) {
-      mainAxisExtent = 550;
+      mainAxisExtent = 850;
     } else if (screenWidth <= 2000) {
-      mainAxisExtent = 950;
+      mainAxisExtent = 1050;
     } else {
-      mainAxisExtent = 1400;
+      mainAxisExtent = 1600;
     }
 
     return Scaffold(
@@ -201,7 +201,7 @@ class MyGamesPageState extends State<MyGamesPage> {
                     itemCount: filteredSubjects.length,
                     itemBuilder: (context, index) {
                       final game = filteredSubjects[index];
-                      return GameCard(
+                      return MyGameCard(
                         imagePath: game['imagePath'],
                         gameTitle: game['gameTitle'],
                         tags: List<String>.from(game['tags']),

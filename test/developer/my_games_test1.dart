@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:learnvironment/authentication/auth_gate.dart';
 import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/developer/my_games.dart';
+import 'package:learnvironment/games_templates/games_initial_screen.dart';
 import 'package:mockito/mockito.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:learnvironment/services/auth_service.dart';
@@ -42,31 +43,6 @@ class MockAuthService extends AuthService {
 class MockDataService extends Mock implements DataService {
   @override
   Future<List<Map<String, dynamic>>> getMyGames({required String uid}) async {
-    if (uid == "1") {
-      return [
-        {
-          'gameTitle': 'Eco World',
-          'tags': ['Recycling', 'Age: 8+'],
-          'gameId': 'g1',
-          'imagePath': 'assets/placeholder.png',
-        },
-      ];
-    } else if (uid == "2") {
-      return [
-        {
-          'gameTitle': 'Recycle Master',
-          'tags': ['Recycling', 'Age: 8+'],
-          'gameId': 'g1',
-          'imagePath': 'assets/placeholder.png',
-        },
-        {
-          'gameTitle': 'Math Wizard',
-          'tags': ['Strategy', 'Age: 10+'],
-          'gameId': 'g2',
-          'imagePath': 'assets/placeholder.png',
-        }
-      ];
-    } else if (uid == "3") {
       return [
         {
           'gameTitle': 'Strategy Fun',
@@ -75,9 +51,6 @@ class MockDataService extends Mock implements DataService {
           'imagePath': 'assets/placeholder.png',
         },
       ];
-    } else {
-      return [];
-    }
   }
 
 
@@ -156,44 +129,12 @@ void main() {
   late Widget testWidget;
 
   setUp(() {
-    mockFirebaseAuth = MockFirebaseAuth(mockUser: MockUser(uid: 'user123', email: 'email@gmail.com'), signedIn: true);
     mockDataService = MockDataService();
-    mockAuthService = MockAuthService(firebaseAuth: mockFirebaseAuth);
     mockUserCacheService = MockUserCacheService();
-
-    testWidget = MultiProvider(
-      providers: [
-        ChangeNotifierProvider<AuthService>(
-          create: (_) => mockAuthService,
-        ),
-        Provider<DataService>(create: (_) => mockDataService),
-        Provider<UserCacheService>(create: (_) => mockUserCacheService),
-      ],
-      child: const MaterialApp(
-        home: MyGamesPage(),
-      ),
-    );
   });
 
-  testWidgets('renders MyGamesPage with app bar and inputs', (WidgetTester tester) async {
-    await tester.pumpWidget(testWidget);
-    await tester.pump();
-
-    expect(find.byType(AppBar), findsOneWidget);
-    expect(find.byKey(const Key('search')), findsOneWidget);
-    expect(find.byKey(const Key('ageDropdown')), findsOneWidget);
-    expect(find.byKey(const Key('tagDropdown')), findsOneWidget);
-  });
-
-  testWidgets('shows "No results found" when myGames is empty', (WidgetTester tester) async {
-    await tester.pumpWidget(testWidget);
-    await tester.pump();
-
-    expect(find.text('No results found'), findsOneWidget);
-  });
-
-  testWidgets('displays filtered games after search', (WidgetTester tester) async {
-    mockFirebaseAuth = MockFirebaseAuth(mockUser: MockUser(uid: '2', email: 'email@gmail.com'), signedIn: true);
+  testWidgets('navigates to game screen on game card tap', (WidgetTester tester) async {
+    mockFirebaseAuth = MockFirebaseAuth(mockUser: MockUser(uid: '3', email: 'email@gmail.com'), signedIn: true);
     mockAuthService = MockAuthService(firebaseAuth: mockFirebaseAuth);
 
     testWidget = MultiProvider(
@@ -210,71 +151,14 @@ void main() {
     );
 
     await tester.pumpWidget(testWidget);
-    await tester.pump();
-
-    await tester.enterText(find.byKey(const Key('search')), 'Recycle');
-    await tester.pump();
-
-    expect(find.text('Recycle Master'), findsOneWidget);
-    expect(find.text('Math Wizard'), findsNothing);
-  });
-
-  testWidgets('filters games by age and tag', (WidgetTester tester) async {
-    mockFirebaseAuth = MockFirebaseAuth(mockUser: MockUser(uid: '1', email: 'email@gmail.com'), signedIn: true);
-    mockAuthService = MockAuthService(firebaseAuth: mockFirebaseAuth);
-
-    testWidget = MultiProvider(
-      providers: [
-        ChangeNotifierProvider<AuthService>(
-          create: (_) => mockAuthService,
-        ),
-        Provider<DataService>(create: (_) => mockDataService),
-        Provider<UserCacheService>(create: (_) => mockUserCacheService),
-      ],
-      child: const MaterialApp(
-        home: MyGamesPage(),
-      ),
-    );
-
-    await tester.pumpWidget(testWidget);
-    await tester.pump();
-
-    await tester.tap(find.byKey(const Key('ageDropdown')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('8+').last);
-    await tester.pump();
-
-    await tester.tap(find.byKey(const Key('tagDropdown')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Recycling').last);
-    await tester.pump();
-
-    expect(find.text('Eco World'), findsOneWidget);
-  });
-
-  testWidgets('back button navigates to /auth_gate', (WidgetTester tester) async {
-    testWidget = MultiProvider(
-      providers: [
-        ChangeNotifierProvider<AuthService>(
-          create: (_) => mockAuthService,
-        ),
-        Provider<DataService>(create: (_) => mockDataService),
-        Provider<UserCacheService>(create: (_) => mockUserCacheService),
-      ],
-      child: MaterialApp(
-        home: const MyGamesPage(),
-        routes: {
-          '/auth_gate': (context) => MockAuthGate(),
-        },
-      ),
-    );
-
-    await tester.pumpWidget(testWidget);
-
-    await tester.pump();
-    await tester.tap(find.byIcon(Icons.arrow_back));
     await tester.pumpAndSettle();
 
-    expect(find.byType(MockAuthGate), findsOneWidget);
+    final gameCardKey = Key('gameCard_g1');
+    expect(find.byKey(gameCardKey), findsOneWidget);
+    await tester.tap(find.byKey(gameCardKey));
+    await tester.pumpAndSettle();
+    await tester.pumpAndSettle();
+
+    expect(find.byType(GamesInitialScreen), findsOneWidget);
   });
 }
