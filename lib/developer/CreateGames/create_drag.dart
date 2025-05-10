@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:learnvironment/developer/CreateGames/trash_object.dart';
 import 'package:learnvironment/developer/widgets/game_form_field.dart';
+import 'package:learnvironment/developer/widgets/tag_selection.dart';
+import 'package:learnvironment/developer/widgets/trash_object_form.dart';
 
-class TrashObject {
-  TextEditingController imageUrlController = TextEditingController();
-  TextEditingController tipController = TextEditingController();
-  TextEditingController answerController = TextEditingController();
-}
+import '../widgets/age_dropdown.dart';
 
 class CreateDragPage extends StatefulWidget {
   const CreateDragPage({super.key});
@@ -20,6 +19,7 @@ class _CreateDragPageState extends State<CreateDragPage> {
 
   final List<String> ageOptions = ['12+', '10+', '8+', '6+'];
   String selectedAge = '12+';
+  late List<String> selectedTags = [];
 
   final TextEditingController gameLogoController = TextEditingController();
   final TextEditingController gameNameController = TextEditingController();
@@ -29,9 +29,6 @@ class _CreateDragPageState extends State<CreateDragPage> {
 
   late List<TrashObject> trashObjects = [];
   late List<bool> isExpandedList = [];
-
-  final List<String> availableTags = ['Recycling', 'Strategy', 'Citizenship'];
-  final List<String> selectedTags = [];
 
   @override
   void initState() {
@@ -124,6 +121,13 @@ class _CreateDragPageState extends State<CreateDragPage> {
     }
   }
 
+  void updateExpansionState(int index, bool expanded) {
+    setState(() {
+      isExpandedList[index] = expanded;
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -150,7 +154,6 @@ class _CreateDragPageState extends State<CreateDragPage> {
                   maxLines: 10,
                   keyboardType: TextInputType.multiline,
               ),
-
               GameFormField(
                 controller: gameBibliographyController,
                 label: 'Bibliography',
@@ -158,39 +161,21 @@ class _CreateDragPageState extends State<CreateDragPage> {
                 keyboardType: TextInputType.multiline,
               ),
 
-              const SizedBox(height: 16),
-              const Text('Select Tags', style: TextStyle(fontWeight: FontWeight.bold)),
-              Wrap(
-                spacing: 8,
-                children: availableTags.map((tag) {
-                  final isSelected = selectedTags.contains(tag);
-                  return FilterChip(
-                    label: Text(tag),
-                    selected: isSelected,
-                    onSelected: (selected) {
-                      setState(() {
-                        if (selected) {
-                          selectedTags.add(tag);
-                        } else {
-                          selectedTags.remove(tag);
-                        }
-                      });
-                    },
-                  );
-                }).toList(),
+              const SizedBox(height: 8),
+              const Divider(),
+              const SizedBox(height: 8),
+              TagSelection(
+                selectedTags: selectedTags,
+                onTagsUpdated: (updatedTags) {
+                  setState(() {
+                    selectedTags = updatedTags;
+                  });
+                },
               ),
-
               const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                value: selectedAge,
-                decoration: const InputDecoration(labelText: 'Select Age Group'),
-                items: ageOptions.map((age) {
-                  return DropdownMenuItem(
-                    value: age,
-                    child: Text(age),
-                  );
-                }).toList(),
-                onChanged: (value) {
+              AgeGroupDropdown(
+                selectedAge: selectedAge,
+                onAgeSelected: (value) {
                   if (value != null) {
                     setState(() {
                       selectedAge = value;
@@ -199,7 +184,9 @@ class _CreateDragPageState extends State<CreateDragPage> {
                 },
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 12),
+              const Divider(),
+              const SizedBox(height: 12),
               ExpansionTile(
                 title: const Text(
                   'Trash Objects',
@@ -233,85 +220,23 @@ class _CreateDragPageState extends State<CreateDragPage> {
                 collapsedIconColor: Colors.green.shade900,
                 childrenPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                 children: [...List.generate(trashObjects.length, (index) {
-                final object = trashObjects[index];
-                return ExpansionTile(
-                  title: Text('Object ${index + 1}'),
-                  onExpansionChanged: (expanded) {
-                    setState(() {
-                      isExpandedList[index] = expanded;
-                    });
-                    if (!expanded) {
-                      final object = trashObjects[index];
-                      final isEmpty = object.imageUrlController.text.trim().isEmpty ||
-                          object.tipController.text.trim().isEmpty ||
-                          object.answerController.text.trim().isEmpty;
-
-                      if (isEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Please fill in all fields for Object ${index + 1}'),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                      }
-                    }
-                  },
-                  initiallyExpanded: isExpandedList[index],
-                  backgroundColor: Colors.green.shade50,
-                  collapsedBackgroundColor: Colors.green.shade100,
-                  textColor: Colors.green.shade700,
-                  iconColor: Colors.green.shade700,
-                  collapsedTextColor: Colors.green.shade900,
-                  collapsedIconColor: Colors.green.shade900,
-                  childrenPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                  children: [
-                    TextFormField(
-                      controller: object.imageUrlController,
-                      decoration: const InputDecoration(labelText: 'Image URL'),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'This field is required';
-                        }
-                        return null;
-                      },
-                    ),
-                    TextFormField(
-                      controller: object.tipController,
-                      decoration: const InputDecoration(labelText: 'Tip'),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'This field is required';
-                        }
-                        return null;
-                      },
-                    ),
-                    TextFormField(
-                      controller: object.answerController,
-                      decoration: const InputDecoration(labelText: 'Correct Answer'),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'This field is required';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 8),
-                    if (trashObjects.length > 4)
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: () {
-                            setState(() {
-                              trashObjects.removeAt(index);
-                            });
-                          },
-                          child: const Text('Remove'),
-                        ),
-                      ),
-                    const Divider(),
-                  ],
-                );
-              }),
+                  return TrashObjectForm(
+                    isExpandedList: isExpandedList,
+                    trashObject: trashObjects[index],
+                    index: index,
+                    onRemove: (removedIndex) {
+                      setState(() {
+                        trashObjects.removeAt(removedIndex);
+                        isExpandedList.removeAt(removedIndex);
+                      });
+                    },
+                    onIsExpandedList: (expandedList) {
+                      setState(() {
+                        isExpandedList = expandedList;
+                      });
+                    },
+                  );
+                }),
                   ElevatedButton(
                     onPressed: () {
                       setState(() {
