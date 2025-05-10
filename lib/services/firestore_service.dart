@@ -163,7 +163,12 @@ class FirestoreService {
   Future<List<Map<String, dynamic>>> getAllGames() async {
     try {
       final querySnapshot = await _firestore.collection('games').get();
-      return querySnapshot.docs.map((doc) {
+
+      // Filter games where the 'public' field (as a string) is 'true'
+      return querySnapshot.docs.where((doc) {
+        final data = doc.data();
+        return data['public']!.toLowerCase() == 'true'; // Convert string to boolean
+      }).map((doc) {
         final data = doc.data();
         return {
           'imagePath': data['logo'] ?? 'assets/placeholder.png',

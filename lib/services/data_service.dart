@@ -144,12 +144,14 @@ class DataService {
       for (final id in cachedIds) {
         final cachedGame = await _gameCacheService.getCachedGameData(id);
         if (cachedGame != null) {
-          loadedGames.add({
-            'imagePath': cachedGame.gameLogo,
-            'gameTitle': cachedGame.gameName,
-            'tags': cachedGame.tags,
-            'gameId': cachedGame.documentName,
-          });
+          if (cachedGame.public) {
+            loadedGames.add({
+              'imagePath': cachedGame.gameLogo,
+              'gameTitle': cachedGame.gameName,
+              'tags': cachedGame.tags,
+              'gameId': cachedGame.documentName,
+            });
+          }
         }
       }
 
