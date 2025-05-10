@@ -333,6 +333,18 @@ class FirestoreService {
     }
   }
 
+  Future<void> updateGamePublicStatus({required String gameId, required bool status}) async {
+    try {
+      final gameDoc = _firestore.collection('games').doc(gameId);
+
+      await gameDoc.update({'public': status.toString()});
+      print('[FirestoreService] Updated public for game $gameId');
+    } catch (e, stackTrace) {
+      debugPrint("[FirestoreService] Error updating public: $e\n$stackTrace");
+      rethrow;
+    }
+  }
+
   // =========================== SUBJECTS (Aka CLASSES) ==============================//
   Future<List<Map<String, dynamic>>> getAllSubjects({required String teacherId}) async {
     try {

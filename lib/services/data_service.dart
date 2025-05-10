@@ -51,7 +51,7 @@ class DataService {
       // Fetch the user data from cache
       final cachedUser = await _userCacheService.getCachedUserData();
       if (cachedUser != null && cachedUser.id == userId) {
-        _userCacheService.updateCachedGamesPlayed(gameId);
+        await _userCacheService.updateCachedGamesPlayed(gameId);
         print('[DataService] Cached user data updated with new gamesPlayed');
       } else {
         print('[DataService] User data not found in cache');
@@ -205,6 +205,24 @@ class DataService {
     } catch (e, stack) {
       print('[DataService] Error in getMyGames: $e\n$stack');
       return [];
+    }
+  }
+
+  Future<void> updateGamePublicStatus({required String gameId, required bool status}) async {
+    try {
+      print('[DataService] Updating public for game: $gameId');
+
+      // Update Firestore
+      await _firestoreService.updateGamePublicStatus(gameId: gameId, status: status);
+      print('[DataService] Firestore updated successfully');
+
+      await _gameCacheService.updateGamePublicStatus(gameId: gameId, status: status);
+      print('[DataService] Game Cache updated successfully');
+
+
+    } catch (e) {
+      print('[DataService] Error updating user\'s gamesPlayed: $e');
+      throw Exception("Error updating user's gamesPlayed");
     }
   }
 
@@ -480,9 +498,5 @@ class DataService {
     } catch (e) {
       print("Error creating Assignment");
     }
-  }
-
-  Future<void> updateGamePublicStatus({required String gameId, required bool status}) async {
-
   }
 }
