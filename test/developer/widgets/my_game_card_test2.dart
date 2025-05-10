@@ -15,6 +15,7 @@ void main() {
           tags: ['Tag1', 'Tag2'],
           gameId: 'g1',
           loadGame: loadGame,
+          isPublic: true,
         ),
       ),
       routes: {

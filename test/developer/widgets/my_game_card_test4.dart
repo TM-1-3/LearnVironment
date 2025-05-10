@@ -1,4 +1,3 @@
-// test/developer/widgets/my_game_card_tests/empty_tag_test.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:learnvironment/developer/widgets/my_game_card.dart';
@@ -20,6 +19,7 @@ void main() {
       tags: [],
       gameId: 'g1',
       loadGame: loadGame,
+      isPublic: true,
     ));
 
     await tester.pumpWidget(widget);

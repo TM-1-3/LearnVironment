@@ -192,6 +192,7 @@ class DataService {
               'gameTitle': game.gameName,
               'tags': game.tags,
               'gameId': game.documentName,
+              'public': game.public
             };
           }
           return null;
@@ -479,5 +480,9 @@ class DataService {
     } catch (e) {
       print("Error creating Assignment");
     }
+  }
+
+  Future<void> updateGamePublicStatus({required String gameId, required bool status}) async {
+
   }
 }

@@ -107,14 +107,14 @@ class MyGamesPageState extends State<MyGamesPage> {
 
     final screenWidth = MediaQuery.of(context).size.width;
     double mainAxisExtent = 500.0;
-    if (screenWidth <= 600) {
-      mainAxisExtent = screenWidth;
-    } else if (screenWidth <= 1000) {
+    if (screenWidth <= 630) {
+      mainAxisExtent = screenWidth+40;
+    } else if (screenWidth <= 1040) {
       mainAxisExtent = 850;
-    } else if (screenWidth <= 2000) {
-      mainAxisExtent = 1050;
+    } else if (screenWidth <= 2040) {
+      mainAxisExtent = 1060;
     } else {
-      mainAxisExtent = 1600;
+      mainAxisExtent = 1640;
     }
 
     return Scaffold(
@@ -207,6 +207,7 @@ class MyGamesPageState extends State<MyGamesPage> {
                         tags: List<String>.from(game['tags']),
                         gameId: game['gameId'],
                         loadGame: loadGame,
+                        isPublic: game['public'],
                       );
                     },
                   )

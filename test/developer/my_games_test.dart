@@ -49,6 +49,7 @@ class MockDataService extends Mock implements DataService {
           'tags': ['Recycling', 'Age: 8+'],
           'gameId': 'g1',
           'imagePath': 'assets/placeholder.png',
+          'public' : true
         },
       ];
     } else if (uid == "2") {
@@ -58,12 +59,14 @@ class MockDataService extends Mock implements DataService {
           'tags': ['Recycling', 'Age: 8+'],
           'gameId': 'g1',
           'imagePath': 'assets/placeholder.png',
+          'public' : false
         },
         {
           'gameTitle': 'Math Wizard',
           'tags': ['Strategy', 'Age: 10+'],
           'gameId': 'g2',
           'imagePath': 'assets/placeholder.png',
+          'public' : true
         }
       ];
     } else if (uid == "3") {
@@ -73,6 +76,7 @@ class MockDataService extends Mock implements DataService {
           'tags': ['Strategy', 'Age: 12+'],
           'gameId': 'g1',
           'imagePath': 'assets/placeholder.png',
+          'public' : true
         },
       ];
     } else {
@@ -119,6 +123,7 @@ class MockDataService extends Mock implements DataService {
       'description': 'description',
       'bibliography': 'Bibliography',
       'template': 'drag',
+      'public': 'true'
     };
 
 
