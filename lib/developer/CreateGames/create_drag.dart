@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:learnvironment/developer/widgets/game_form_field.dart';
 
 class TrashObject {
   TextEditingController imageUrlController = TextEditingController();
@@ -25,33 +27,96 @@ class _CreateDragPageState extends State<CreateDragPage> {
   final TextEditingController gameBibliographyController = TextEditingController();
   final TextEditingController gameTemplateController = TextEditingController();
 
-  final Map<String, String> tips = {};
-  final Map<String, String> correctAnswers = {};
-
-  List<TrashObject> trashObjects = List.generate(4, (_) => TrashObject());
+  late List<TrashObject> trashObjects = [];
+  late List<bool> isExpandedList = [];
 
   final List<String> availableTags = ['Recycling', 'Strategy', 'Citizenship'];
   final List<String> selectedTags = [];
 
-  void _submitForm() {
+  @override
+  void initState() {
+    super.initState();
+    trashObjects = List.generate(4, (_) => TrashObject());
+    isExpandedList = List.generate(trashObjects.length, (_) => true);
+  }
+
+  Future<bool> _validateImage(String imageUrl) async {
+    http.Response res;
+    try {
+      res = await http.get(Uri.parse(imageUrl));
+    } catch (e) {
+      return false;
+    }
+    if (res.statusCode != 200) return false;
+    Map<String, dynamic> data = res.headers;
+    if (data['content-type'] == 'image/jpeg' || data['content-type'] == 'image/png' || data['content-type'] == 'image/gif') {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+
+  Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      final String gameLogo = gameLogoController.text.trim();
+      String gameLogo = gameLogoController.text.trim();
       final String gameName = gameNameController.text.trim();
       final String gameDescription = gameDescriptionController.text.trim();
       final String gameBibliography = gameBibliographyController.text.trim();
       final List<String> tags = selectedTags;
       final String gameTemplate = 'drag';
-      tags.insert(0, selectedAge);
+      final Map<String, String> tips = {};
+      final Map<String, String> correctAnswers = {};
 
+      tags.insert(0, selectedAge); //Add age to tags
+
+      int index = 0;
       for (var object in trashObjects) {
         final key = object.imageUrlController.text.trim();
         final tip = object.tipController.text.trim();
         final answer = object.answerController.text.trim();
 
+        //Validate image
+        bool isValidImage = await _validateImage(key);
+        if (!isValidImage) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Please use a valid image URL in Object $index'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+          object.imageUrlController.text = "";
+          return;
+        }
+
         if (key.isNotEmpty && tip.isNotEmpty && answer.isNotEmpty) {
           tips[key] = tip;
           correctAnswers[key] = answer;
         }
+        index++;
+      }
+
+      // Validate Logo
+      if (gameLogo.isNotEmpty) {
+        bool isValidImage = await _validateImage(gameLogo);
+        if (!isValidImage) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Please use a valid image URL for the Logo'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+          setState(() {
+            gameLogoController.text = "";
+          });
+          return;
+        }
+      } else {
+        gameLogo = "assets/placeholder.png";
       }
 
       //Create the game and add it to database
@@ -70,19 +135,25 @@ class _CreateDragPageState extends State<CreateDragPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextFormField(controller: gameLogoController, decoration: const InputDecoration(labelText: 'Logo URL')),
-              TextFormField(controller: gameNameController, decoration: const InputDecoration(labelText: 'Name')),
-              TextFormField(
-                controller: gameDescriptionController,
-                decoration: const InputDecoration(labelText: 'Description'),
-                minLines: 1,
-                maxLines: 10,
-                keyboardType: TextInputType.multiline,
+              GameFormField(
+                controller: gameLogoController,
+                label: 'Logo URL',
+                validator: (value) {return null;},
               ),
-              TextFormField(
+              GameFormField(
+                controller: gameNameController,
+                label: 'Name'
+              ),
+              GameFormField(
+                  controller: gameDescriptionController,
+                  label: 'Description',
+                  maxLines: 10,
+                  keyboardType: TextInputType.multiline,
+              ),
+
+              GameFormField(
                 controller: gameBibliographyController,
-                decoration: const InputDecoration(labelText: 'Bibliography'),
-                minLines: 1,
+                label: 'Bibliography',
                 maxLines: 10,
                 keyboardType: TextInputType.multiline,
               ),
@@ -135,6 +206,25 @@ class _CreateDragPageState extends State<CreateDragPage> {
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 initiallyExpanded: true,
+                onExpansionChanged: (expanded) {
+                  if (!expanded) {
+                    var isEmpty = false;
+                    for (var object in trashObjects) {
+                      isEmpty = isEmpty ||
+                          object.imageUrlController.text.trim().isEmpty ||
+                          object.tipController.text.trim().isEmpty ||
+                          object.answerController.text.trim().isEmpty;
+                    }
+                    if (isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Please fill in all fields for all Objects'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+                  }
+                },
                 backgroundColor: Colors.green.shade100,
                 collapsedBackgroundColor: Colors.green.shade200,
                 textColor: Colors.green.shade800,
@@ -146,6 +236,27 @@ class _CreateDragPageState extends State<CreateDragPage> {
                 final object = trashObjects[index];
                 return ExpansionTile(
                   title: Text('Object ${index + 1}'),
+                  onExpansionChanged: (expanded) {
+                    setState(() {
+                      isExpandedList[index] = expanded;
+                    });
+                    if (!expanded) {
+                      final object = trashObjects[index];
+                      final isEmpty = object.imageUrlController.text.trim().isEmpty ||
+                          object.tipController.text.trim().isEmpty ||
+                          object.answerController.text.trim().isEmpty;
+
+                      if (isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Please fill in all fields for Object ${index + 1}'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    }
+                  },
+                  initiallyExpanded: isExpandedList[index],
                   backgroundColor: Colors.green.shade50,
                   collapsedBackgroundColor: Colors.green.shade100,
                   textColor: Colors.green.shade700,
@@ -157,14 +268,32 @@ class _CreateDragPageState extends State<CreateDragPage> {
                     TextFormField(
                       controller: object.imageUrlController,
                       decoration: const InputDecoration(labelText: 'Image URL'),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'This field is required';
+                        }
+                        return null;
+                      },
                     ),
                     TextFormField(
                       controller: object.tipController,
                       decoration: const InputDecoration(labelText: 'Tip'),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'This field is required';
+                        }
+                        return null;
+                      },
                     ),
                     TextFormField(
                       controller: object.answerController,
                       decoration: const InputDecoration(labelText: 'Correct Answer'),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'This field is required';
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 8),
                     if (trashObjects.length > 4)
@@ -187,6 +316,7 @@ class _CreateDragPageState extends State<CreateDragPage> {
                     onPressed: () {
                       setState(() {
                         trashObjects.add(TrashObject());
+                        isExpandedList.add(true);
                       });
                     },
                     child: const Text('Add New Object'),
