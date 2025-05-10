@@ -78,6 +78,7 @@
 - As a game developer I want to be able to create a game so that others could play it. [#15](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/15)
 - As a game developer I want to be able to dry run my game so that I can ensure it is bug-free. [#17](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/17)
 - As a game developer I want to be able to add a description to my game so that users can understand what it is about before playing it. [#20](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/20)
+- As a game developer I want to be able to associate my game with an age group so that my games reach their target audience. [#21](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/21)
 
 ### Detailed description
 - Teachers can now remove students from their classes [#107](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/107)
@@ -89,6 +90,7 @@
 - As a teacher, after deleting a class or an assignment, the app goes back to the "Home Page" to ensure refresh [#115](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/115)
 - Students cannot see their classes in teacher mode [#103](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/103)
 - Developers can now dry run their games [#117](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/117)
+- Developers can add a description to their games [#118](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/118)
 
 ### Test User
 - email: up202307719@g.uporto.pt
