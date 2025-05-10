@@ -3,7 +3,9 @@ import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:learnvironment/data/game_data.dart';
+import 'package:learnvironment/games_templates/games_initial_screen.dart';
 import 'package:learnvironment/main_pages/games_page.dart';
+import 'package:learnvironment/main_pages/widgets/game_card.dart';
 import 'package:learnvironment/services/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:mockito/mockito.dart';
@@ -181,10 +183,94 @@ void main() {
       );
     });
 
-    testWidgets('should display search bar', (WidgetTester tester) async {
+    testWidgets('should filter games by search query', (WidgetTester tester) async {
       await tester.pumpWidget(testWidget);
       await tester.pumpAndSettle();
-      expect(find.byKey(Key('search')), findsOneWidget);
+
+      expect(find.byType(GameCard), findsNWidgets(2));
+      await tester.enterText(find.byKey(Key('search')), 'Test');
+      await tester.pumpAndSettle();
+
+      expect(find.text('Test Game'), findsOneWidget);
+      expect(find.text('Another Game'), findsNothing);
+      expect(find.byType(GameCard), findsOneWidget);
+    });
+
+    testWidgets('should filter games by age tag', (WidgetTester tester) async {
+      await tester.pumpWidget(testWidget);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(Key('ageDropdown')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('12+').last);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Game 12+'), findsOneWidget);
+      expect(find.text('Game 10+'), findsNothing);
+      expect(find.byType(GameCard), findsOneWidget);
+    });
+
+    testWidgets('should reset age filter when "All Ages" is selected', (WidgetTester tester) async {
+      await tester.pumpWidget(testWidget);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(Key('ageDropdown')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('12+').last);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(GameCard), findsOneWidget);
+
+      await tester.tap(find.byKey(Key('ageDropdown')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('All Ages').last);
+      await tester.pumpAndSettle();
+
+      expect(
+          find.byType(GameCard), findsNWidgets(2));
+    });
+
+    testWidgets('should reset tag filter when "All Tags" is selected', (
+        WidgetTester tester) async {
+      await tester.pumpWidget(testWidget);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(Key('tagDropdown')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Strategy').last);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Test Game'), findsOneWidget);
+      expect(find.byType(GameCard), findsNWidgets(2));
+
+      await tester.tap(find.byKey(Key('tagDropdown')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('All Tags').last);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(GameCard), findsNWidgets(2));
+    });
+
+    testWidgets('should call load game correctly', (WidgetTester tester) async {
+      await tester.pumpWidget(testWidget);
+      await tester.pumpAndSettle();
+
+      final gameCardKey = Key('gameCard_mock_game_0');
+      expect(find.byKey(gameCardKey), findsOneWidget);
+      await tester.tap(find.byKey(gameCardKey));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(GamesInitialScreen), findsOneWidget);
+    });
+
+    testWidgets('should display no results found message if no games match the filters', (WidgetTester tester) async {
+      await tester.pumpWidget(testWidget);
+
+      await tester.enterText(find.byKey(Key('search')), 'Nonexistent');
+      await tester.pumpAndSettle();
+
+      expect(find.text('No results found'),
+          findsOneWidget); // No games should match
     });
   });
 }

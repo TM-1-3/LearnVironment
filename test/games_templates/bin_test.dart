@@ -34,6 +34,20 @@ class MockGameData extends Mock implements GameData {
     "trash9": "Plastic and metal go to the yellow can",
     "trash10": "Organic trash goes to the brown can",
   };
+
+  @override
+  Map<String, String> get correctAnswers => {
+    "assets/trash1.png": "brown",
+    "assets/trash2.png": "red",
+    "assets/trash3.png": "yellow",
+    "assets/trash4.png": "blue",
+    "assets/trash5.png": "green",
+    "assets/trash6.png": "blue",
+    "assets/trash7.png": "red",
+    "assets/trash8.png": "green",
+    "assets/trash9.png": "yellow",
+    "assets/trash10.png": "brown",
+  };
 }
 
 void main() {
@@ -50,15 +64,8 @@ void main() {
   testWidgets('BinScreen renders all bins and trash items', (WidgetTester tester) async {
     await tester.pumpWidget(testWidget);
 
-    // Verify bins are shown
     expect(find.byType(DragTarget<String>), findsNWidgets(5));
-
-    // Verify all 4 initial trash items
     expect(find.byType(Draggable<String>), findsNWidgets(4));
-    expect(find.image(const AssetImage('assets/trash1.png')), findsOneWidget);
-    expect(find.image(const AssetImage('assets/trash2.png')), findsOneWidget);
-    expect(find.image(const AssetImage('assets/trash3.png')), findsOneWidget);
-    expect(find.image(const AssetImage('assets/trash4.png')), findsOneWidget);
   });
 
   testWidgets('Dropping correct item into correct bin increments correctCount', (WidgetTester tester) async {
@@ -66,13 +73,13 @@ void main() {
     final state = tester.state<BinScreenState>(find.byType(BinScreen));
 
     fakeAsync((async) {
-      final initialCorrectCount = state.correctCount;
-
-      state.removeTrashItem('trash1', 'brown', Offset.zero);
+      final Map<String, String> trashItems = state.trashItems;
+      final firstEntry = trashItems.entries.first;
+      state.removeTrashItem(firstEntry.key, firstEntry.value, Offset.zero);
       async.elapse(Duration(seconds: 1)); // Simulate time passing
 
-      expect(state.correctCount, initialCorrectCount + 1);
-      expect(state.trashItems.containsKey('trash1'), isFalse);
+      expect(state.correctCount, 1);
+      expect(state.trashItems.containsKey(firstEntry.key), isFalse);
     });
   });
 
@@ -81,13 +88,16 @@ void main() {
     final state = tester.state<BinScreenState>(find.byType(BinScreen));
 
     fakeAsync((async) {
-      final initialWrongCount = state.wrongCount;
+      final Map<String, String> trashItems = state.trashItems;
+      final firstEntry = trashItems.entries.first;
+      if (firstEntry.value == "blue") {
+        state.removeTrashItem(firstEntry.key, "brown", Offset.zero);
+      } else {
+        state.removeTrashItem(firstEntry.key, "blue", Offset.zero);
+      }
 
-      state.removeTrashItem('trash2', 'blue', Offset.zero);
-      async.elapse(Duration(seconds: 1)); // Simulate time passing
-
-      expect(state.wrongCount, initialWrongCount + 1);
-      expect(state.trashItems.containsKey('trash2'), isFalse);
+      expect(state.wrongCount, 1);
+      expect(state.trashItems.containsKey(firstEntry.key), isFalse);
     });
   });
 

@@ -16,7 +16,7 @@ import 'package:provider/provider.dart';
 class MockDataService extends Mock implements DataService {
   @override
   Future<UserData?> getUserData({required String userId}) {
-      return Future.value(UserData(role: '', id: '', username: '', name: '', email: '', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: [], stClasses: [], tClasses: [], img: 'assets/placeholder.png'));
+      return Future.value(UserData(role: '', id: '', username: '', name: '', email: '', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: [], myGames: [], stClasses: [], tClasses: [], img: 'assets/placeholder.png'));
   }
 }
 
@@ -41,7 +41,7 @@ void main() {
     );
   });
 
-  group('StudentHomePage Widget Tests', () {
+  group('DeveloperHomePage Widget Tests', () {
     testWidgets('Displays default Home page content', (tester) async {
       await tester.pumpWidget(testWidget);
 
@@ -49,7 +49,7 @@ void main() {
       expect(find.byType(MyGamesPage), findsOneWidget);
     });
 
-    testWidgets('Navigates to Statistics page', (tester) async {
+    testWidgets('Navigates to New Game Page page', (tester) async {
       await tester.pumpWidget(testWidget);
       await tester.tap(find.byIcon(Icons.add));
       await tester.pumpAndSettle();

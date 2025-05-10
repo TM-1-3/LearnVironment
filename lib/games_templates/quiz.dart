@@ -36,12 +36,12 @@ class QuizState extends State<Quiz> {
   @override
   void initState() {
     super.initState();
-    if (widget.quizData.questionsAndOptions == null || widget.quizData.correctAnswers == null) {
+    if (widget.quizData.questionsAndOptions == null) {
       throw Exception("Missing quiz data in GameData object.");
     }
 
     questionsAndOptions = widget.quizData.questionsAndOptions!;
-    correctAnswers = widget.quizData.correctAnswers!;
+    correctAnswers = widget.quizData.correctAnswers;
     questionsAndOptions.removeWhere((key, value) => value.length < 4);
     availableQuestions = List.from(questionsAndOptions.keys);
     if (availableQuestions.isEmpty) {

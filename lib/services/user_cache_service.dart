@@ -55,6 +55,7 @@ class UserCacheService {
         birthdate: DateTime.tryParse(cachedData['birthdate']!) ?? DateTime(2000),
         img: cachedData['img']!,
         gamesPlayed: cachedData['gamesPlayed']!.isEmpty ? [] : cachedData['gamesPlayed']!.split(','),
+        myGames: cachedData['myGames']!.isEmpty ? [] : cachedData['myGames']!.split(','),
         stClasses: cachedData['stClasses']!.isEmpty ? [] : cachedData['stClasses']!.split(','),
         tClasses: cachedData['tClasses']!.isEmpty ? [] : cachedData['tClasses']!.split(','),
       );
@@ -107,6 +108,25 @@ class UserCacheService {
     } catch (e) {
       print('[UserCacheService] Error updating cached gamesPlayed: $e');
       rethrow;
+    }
+  }
+
+  Future<List<String>> getMyGames() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final rawGames = prefs.getString('myGames');
+
+      if (rawGames == null || rawGames.isEmpty) {
+        print('[CACHE] No cached games found.');
+        return [];
+      }
+
+      final games = rawGames.split(',').where((id) => id.isNotEmpty).toList();
+      print('[CACHE] Loaded games from cache: $games');
+      return games;
+    } catch (e) {
+      print('[CACHE ERROR] Failed to get cached games: $e');
+      return [];
     }
   }
 

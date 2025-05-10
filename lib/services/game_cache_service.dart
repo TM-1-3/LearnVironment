@@ -75,4 +75,23 @@ class GameCacheService {
       return [];
     }
   }
+
+  Future<void> clear() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final cachedIds = prefs.getStringList('cached_game_ids') ?? [];
+
+      // Remove each game's cache
+      for (String id in cachedIds) {
+        await prefs.remove('game_$id');
+      }
+
+      // Remove the cached_game_ids list
+      await prefs.remove('cached_game_ids');
+
+      print('[CACHE] All cached games cleared.');
+    } catch (e) {
+      print('[CACHE ERROR] Failed to clear GAMECACHE: $e');
+    }
+  }
 }

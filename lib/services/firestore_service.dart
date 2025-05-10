@@ -73,6 +73,7 @@ class FirestoreService {
         img: data['img'] ?? 'assets/placeholder.png',
         birthdate: birthdateValue,
         gamesPlayed: List<String>.from(data['gamesPlayed'] ?? []),
+        myGames: List<String>.from(data['myGames'] ?? []),
         tClasses: List<String>.from(data['tClasses'] ?? []),
         stClasses: List<String>.from(data['stClasses'] ?? []),
       );
@@ -177,6 +178,51 @@ class FirestoreService {
     }
   }
 
+  Future<List<Map<String, dynamic>>> getMyGames({required String uid}) async {
+    try {
+      final userDoc = await _firestore.collection('users').doc(uid).get();
+
+      if (!userDoc.exists) {
+        debugPrint("Error: No user found for UID: $uid");
+        return [];
+      }
+
+      final data = userDoc.data();
+      if (data?.containsKey('myGames') ?? false) {
+        final games = data!['myGames'];
+
+        if (games is List) {
+          final gameIds = games.whereType<String>().toList();
+          if (gameIds.isEmpty) return [];
+
+          final querySnapshot = await _firestore
+              .collection('games')
+              .where(FieldPath.documentId, whereIn: gameIds)
+              .get();
+
+          return querySnapshot.docs.map((doc) {
+            final data = doc.data();
+            return {
+              'imagePath': data['logo'] ?? 'assets/placeholder.png',
+              'gameTitle': data['name'] ?? 'Default Game Title',
+              'tags': List<String>.from(data['tags'] ?? []),
+              'gameId': doc.id,
+            };
+          }).toList();
+        } else {
+          debugPrint("Error: 'myGames' is not a List.");
+          return [];
+        }
+      } else {
+        debugPrint("Error: No 'myGames' field found for user.");
+        return [];
+      }
+    } catch (e, stackTrace) {
+      debugPrint("Error fetching user played games: $e\n$stackTrace");
+      return [];
+    }
+  }
+
   Future<List<Map<String, dynamic>>> getPlayedGames({required String uid}) async {
     try {
       final userDoc = await _firestore.collection('users').doc(uid).get();
@@ -221,6 +267,7 @@ class FirestoreService {
       return [];
     }
   }
+
   Future<GameData> fetchGameData({required String gameId}) async {
     try {
       DocumentSnapshot snapshot = await _firestore.collection('games').doc(gameId).get();
@@ -234,20 +281,14 @@ class FirestoreService {
       String template = data['template'] ?? '';
       Map<String, String> tips = {};
       Map<String, List<String>>? questionsAndOptions;
-      Map<String, String>? correctAnswers;
+      Map<String, String> correctAnswers = {};
 
       // If it's a quiz game, extract questions and answers
       if (template == "quiz") {
         try {
           var rawQuestionsAndOptions = Map<String, dynamic>.from(data['questionsAndOptions'] ?? {});
-          var rawCorrectAnswers = Map<String, dynamic>.from(data['correctAnswers'] ?? {});
-
           questionsAndOptions = rawQuestionsAndOptions.map(
                 (key, value) => MapEntry(key, List<String>.from(value)),
-          );
-
-          correctAnswers = rawCorrectAnswers.map(
-                (key, value) => MapEntry(key, value.toString()),
           );
         } catch (e) {
           throw Exception("Error parsing quiz fields for game $gameId: $e");
@@ -257,6 +298,11 @@ class FirestoreService {
       try {
         var rawTips = Map<String, dynamic>.from(data['tips'] ?? {});
         tips = rawTips.map(
+              (key, value) => MapEntry(key, value.toString()),
+        );
+
+        var rawCorrectAnswers = Map<String, dynamic>.from(data['correctAnswers'] ?? {});
+        correctAnswers = rawCorrectAnswers.map(
               (key, value) => MapEntry(key, value.toString()),
         );
       } catch (e) {

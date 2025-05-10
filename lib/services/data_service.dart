@@ -31,8 +31,15 @@ class DataService {
   // 3. Subjects (Aka Classes)
   // 4. Assignments
 
-                                                                      // USERS & ACCOUNTS //
-  // Function to update the 'gamesPlayed' array in both Firestore and the cache
+  //================================ USERS & ACCOUNTS =======================================//
+  Future<bool> checkIfUsernameAlreadyExists(String username) async {
+    return await _firestoreService.checkIfUsernameAlreadyExists(username);
+  }
+
+  Future<String?> getUserIdByName(String name) async {
+    return await _firestoreService.getUserIdByName(name);
+  }
+
   Future<void> updateUserGamesPlayed({required String userId, required String gameId}) async {
     try {
       print('[DataService] Updating gamesPlayed for userId: $userId, gameId: $gameId');
@@ -97,17 +104,18 @@ class DataService {
   }) async {
     try {
       final List<String> gamesPlayed = await _userCacheService.getCachedGamesPlayed();
+      final List<String> myGames = await _userCacheService.getMyGames();
       final List<String> stClasses = await _userCacheService.getCachedClasses(type: 'stClasses');
       final List<String> tClasses = await _userCacheService.getCachedClasses(type: 'tClasses');
       await _firestoreService.setUserInfo(uid: uid, name: name, email: email, username: username, birthDate: birthDate, selectedAccountType: role, img: img, stClasses: stClasses, tClasses: tClasses, gamesPlayed: gamesPlayed);
       await _userCacheService.clearUserCache();
-      await _userCacheService.cacheUserData(UserData(id: uid, username: username, email: email, name: name, role: role, birthdate: DateTime.parse(birthDate), gamesPlayed: gamesPlayed, tClasses: tClasses, stClasses: stClasses, img: img));
+      await _userCacheService.cacheUserData(UserData(id: uid, username: username, email: email, name: name, role: role, birthdate: DateTime.parse(birthDate), gamesPlayed: gamesPlayed, myGames: myGames, tClasses: tClasses, stClasses: stClasses, img: img));
     } catch (e) {
       print("Error updating profile");
     }
   }
 
-                                                                           // GAMES //
+  //==================================== GAMES ====================================//
   Future<GameData?> getGameData({required String gameId}) async {
     try {
       final cachedGame = await _gameCacheService.getCachedGameData(gameId);
@@ -167,6 +175,36 @@ class DataService {
     }
   }
 
+  Future<List<Map<String, dynamic>>> getMyGames({required String uid}) async {
+    try {
+      final cachedGames = await _userCacheService.getMyGames();
+
+      if (cachedGames.isNotEmpty) {
+        print('[DataService] Loaded myGames from cache: $cachedGames');
+
+        final games = await Future.wait(cachedGames.map((id) async {
+          final game = await getGameData(gameId: id);
+          if (game != null) {
+            return {
+              'imagePath': game.gameLogo,
+              'gameTitle': game.gameName,
+              'tags': game.tags,
+              'gameId': game.documentName,
+            };
+          }
+          return null;
+        }));
+        return games.whereType<Map<String, dynamic>>().toList();
+      }
+
+      print('[DataService] Cache empty — falling back to Firestore');
+      return await _firestoreService.getMyGames(uid: uid);
+    } catch (e, stack) {
+      print('[DataService] Error in getMyGames: $e\n$stack');
+      return [];
+    }
+  }
+
   Future<List<Map<String, dynamic>>> getPlayedGames({required String userId}) async {
     try {
       final cachedGames = await _userCacheService.getCachedGamesPlayed();
@@ -197,7 +235,7 @@ class DataService {
     }
   }
 
-                                                                  // SUBJECTS (Aka CLASSES) //
+  //======================================= SUBJECTS ====================================//
   Future<SubjectData?> getSubjectData({required String subjectId}) async {
     try {
       final cachedSubject = await _subjectCacheService.getCachedSubjectData(subjectId);
@@ -294,14 +332,6 @@ class DataService {
     }
   }
 
-  Future<bool> checkIfUsernameAlreadyExists(String username) async {
-    return await _firestoreService.checkIfUsernameAlreadyExists(username);
-  }
-
-  Future<String?> getUserIdByName(String name) async {
-    return await _firestoreService.getUserIdByName(name);
-  }
-
   Future<void> addStudentToSubject({required String subjectId, required String studentId}) async {
     try {
       // First, update the Firestore document for the subject
@@ -346,7 +376,7 @@ class DataService {
     }
   }
 
-                                                                        // ASSIGNMENTS //
+  //========================================= ASSIGNMENTS ======================================================//
   Future<void> createAssignment({
     required String title,
     required DateTime dueDate,

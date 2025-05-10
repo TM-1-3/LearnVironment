@@ -25,7 +25,7 @@ class MockAuthGate extends AuthGate {
 class MockDataService extends Mock implements DataService {
   @override
   Future<UserData?> getUserData({required String userId}) {
-    return Future.value(UserData(role: '', id: '', username: '', name: '', email: '', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: [], tClasses: [], stClasses: [], img: ''));
+    return Future.value(UserData(role: '', id: '', username: '', name: '', email: '', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: [], myGames: [], tClasses: [], stClasses: [], img: ''));
   }
 }
 
