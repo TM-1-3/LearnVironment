@@ -9,10 +9,10 @@ class GameData {
   final String gameTemplate;
   final String documentName;
   final Map<String, String> tips;
+  final Map<String, String> correctAnswers;
 
   // These fields will only exist for quizzes
   final Map<String, List<String>>? questionsAndOptions;
-  final Map<String, String>? correctAnswers;
 
   GameData({
     required this.gameLogo,
@@ -23,7 +23,7 @@ class GameData {
     required this.gameTemplate,
     required this.documentName,
     this.questionsAndOptions,
-    this.correctAnswers,
+    required this.correctAnswers,
     required this.tips,
   });
 
@@ -38,13 +38,13 @@ class GameData {
       'gameTemplate': gameTemplate,
       'documentName': documentName,
       'tips' : jsonEncode(tips),
+      'correctAnswers' : jsonEncode(correctAnswers)
     };
 
     // Add quiz-specific fields only if it's a quiz game
     if (gameTemplate == "quiz") {
       try {
         cacheData['questionsAndOptions'] = jsonEncode(questionsAndOptions);
-        cacheData['correctAnswers'] = jsonEncode(correctAnswers);
       } catch (e) {
         print("Error serializing quiz data to cache: $e");
       }
@@ -56,16 +56,17 @@ class GameData {
   factory GameData.fromCache(Map<String, String> data) {
     String gameTemplate = data['gameTemplate'] ?? '';
     Map<String, String> tips = {};
+    Map<String, String> correctAnswers = {};
 
     try {
       tips = Map<String, String>.from(jsonDecode(data['tips']!));
+      correctAnswers = Map<String, String>.from(jsonDecode(data['correctAnswers']!));
     }catch (e) {
-      print("Error Getting Tips.");
+      print("Error Getting Tips or Answers.");
     }
 
     // Declare quiz-specific fields
     Map<String, List<String>>? questionsAndOptions;
-    Map<String, String>? correctAnswers;
 
     // Only deserialize quiz fields if it's a "quiz" game
     if (gameTemplate == "quiz") {
@@ -73,10 +74,6 @@ class GameData {
         questionsAndOptions = data['questionsAndOptions'] != null
             ? (jsonDecode(data['questionsAndOptions']!) as Map<String, dynamic>)
             .map((key, value) => MapEntry(key, List<String>.from(value)))
-            : null;
-
-        correctAnswers = data['correctAnswers'] != null
-            ? Map<String, String>.from(jsonDecode(data['correctAnswers']!))
             : null;
       } catch (e) {
         print("Error deserializing quiz data from cache: $e");
@@ -106,6 +103,7 @@ class GameData {
         tags: List<String>.from(jsonDecode(data['tags'] ?? '[]')),
         gameTemplate: gameTemplate,
         documentName: data['documentName'] ?? '',
+        correctAnswers: correctAnswers,
         tips: tips,
       );
     }

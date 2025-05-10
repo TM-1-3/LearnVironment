@@ -281,20 +281,14 @@ class FirestoreService {
       String template = data['template'] ?? '';
       Map<String, String> tips = {};
       Map<String, List<String>>? questionsAndOptions;
-      Map<String, String>? correctAnswers;
+      Map<String, String> correctAnswers = {};
 
       // If it's a quiz game, extract questions and answers
       if (template == "quiz") {
         try {
           var rawQuestionsAndOptions = Map<String, dynamic>.from(data['questionsAndOptions'] ?? {});
-          var rawCorrectAnswers = Map<String, dynamic>.from(data['correctAnswers'] ?? {});
-
           questionsAndOptions = rawQuestionsAndOptions.map(
                 (key, value) => MapEntry(key, List<String>.from(value)),
-          );
-
-          correctAnswers = rawCorrectAnswers.map(
-                (key, value) => MapEntry(key, value.toString()),
           );
         } catch (e) {
           throw Exception("Error parsing quiz fields for game $gameId: $e");
@@ -304,6 +298,11 @@ class FirestoreService {
       try {
         var rawTips = Map<String, dynamic>.from(data['tips'] ?? {});
         tips = rawTips.map(
+              (key, value) => MapEntry(key, value.toString()),
+        );
+
+        var rawCorrectAnswers = Map<String, dynamic>.from(data['correctAnswers'] ?? {});
+        correctAnswers = rawCorrectAnswers.map(
               (key, value) => MapEntry(key, value.toString()),
         );
       } catch (e) {

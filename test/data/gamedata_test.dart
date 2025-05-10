@@ -161,7 +161,7 @@ void main() {
 
     // Verify quiz-specific fields are deserialized correctly
     expect(deserializedGameData.questionsAndOptions!['What is recycling?']![0], 'Reusing materials');
-    expect(deserializedGameData.correctAnswers!['What is recycling?'], 'Reusing materials');
+    expect(deserializedGameData.correctAnswers['What is recycling?'], 'Reusing materials');
     expect(deserializedGameData.tips['What is recycling?'], "Tip1");
   });
 
@@ -175,6 +175,7 @@ void main() {
       'gameTemplate': 'quiz',
       'documentName': 'game1',
       'tips' : '{}',
+      'correctAnswers' : '{}'
     };
 
     // Attempt to deserialize with missing quiz data fields (questionsAndOptions, correctAnswers)
@@ -182,7 +183,7 @@ void main() {
 
     // Check that missing fields are handled gracefully (should be null)
     expect(deserializedGameData.questionsAndOptions, null);
-    expect(deserializedGameData.correctAnswers, null);
+    expect(deserializedGameData.correctAnswers, {});
     expect(deserializedGameData.tips, {});
   });
 

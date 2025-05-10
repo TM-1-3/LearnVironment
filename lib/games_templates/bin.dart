@@ -29,29 +29,26 @@ class BinScreenState extends State<BinScreen> {
   int wrongCount = 0;
   List<String> tipsToAppear=[];
   late DateTime startTime;
-
-  // Trash items mapped to their correct bin
-  Map<String, String> trashItems = {
-    "trash1": "brown",
-    "trash2": "red",
-    "trash3": "yellow",
-    "trash4": "blue",
-  };
-
-  Map<String, String> remainingTrashItems = {
-    "trash5": "green",
-    "trash6": "blue",
-    "trash7": "red",
-    "trash8": "green",
-    "trash9": "yellow",
-    "trash10": "brown",
-  };
+  late Map<String, String> trashItems;
   final player = AudioPlayer();
+
+  late Map<String, String> remainingTrashItems = widget.binData.correctAnswers;
 
   @override
   void initState() {
     super.initState();
     startTime = DateTime.now();
+
+    //Shuffle objects
+    remainingTrashItems = Map.fromEntries(
+      remainingTrashItems.entries.toList()..shuffle(),
+    );
+
+    //Get 4 original objects
+    trashItems = Map.fromEntries(
+      remainingTrashItems.entries.take(4),
+    );
+    trashItems.keys.forEach(remainingTrashItems.remove);
   }
 
   bool isGameOver() {
@@ -173,12 +170,12 @@ class BinScreenState extends State<BinScreen> {
                             children: trashItems.keys.map((item) {
                               return Draggable<String>(
                                 data: item,
-                                feedback: Image.asset('assets/$item.png', width: 80, height: 80),
+                                feedback: Image.asset(item, width: 80, height: 80),
                                 childWhenDragging: Opacity(
                                   opacity: 0.5,
-                                  child: Image.asset('assets/$item.png', width: 80, height: 80),
+                                  child: Image.asset(item, width: 80, height: 80),
                                 ),
-                                child: Image.asset('assets/$item.png', width: 80, height: 80),
+                                child: Image.asset(item, width: 80, height: 80),
                               );
                             }).toList(),
                           ),
