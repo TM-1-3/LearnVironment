@@ -15,6 +15,7 @@ class CreateDragPage extends StatefulWidget {
 }
 
 class _CreateDragPageState extends State<CreateDragPage> {
+  bool _isSaved = false;
   final _formKey = GlobalKey<FormState>();
 
   final List<String> ageOptions = ['12+', '10+', '8+', '6+'];
@@ -25,7 +26,6 @@ class _CreateDragPageState extends State<CreateDragPage> {
   final TextEditingController gameNameController = TextEditingController();
   final TextEditingController gameDescriptionController = TextEditingController();
   final TextEditingController gameBibliographyController = TextEditingController();
-  final TextEditingController gameTemplateController = TextEditingController();
 
   late List<TrashObject> trashObjects = [];
   late List<bool> isExpandedList = [];
@@ -35,6 +35,15 @@ class _CreateDragPageState extends State<CreateDragPage> {
     super.initState();
     trashObjects = List.generate(4, (_) => TrashObject());
     isExpandedList = List.generate(trashObjects.length, (_) => true);
+  }
+
+  @override
+  void dispose() {
+    gameLogoController.dispose();
+    gameNameController.dispose();
+    gameDescriptionController.dispose();
+    gameBibliographyController.dispose();
+    super.dispose();
   }
 
   Future<bool> _validateImage(String imageUrl) async {
