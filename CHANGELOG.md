@@ -91,6 +91,7 @@
 - Students cannot see their classes in teacher mode [#103](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/103)
 - Developers can now dry run their games [#117](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/117)
 - Developers can add a description to their games [#118](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/118)
+- Developers can assign an age group to their games [#119](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/119)
 
 ### Test User
 - email: up202307719@g.uporto.pt
