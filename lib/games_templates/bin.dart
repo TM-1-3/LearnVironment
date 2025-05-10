@@ -39,6 +39,8 @@ class BinScreenState extends State<BinScreen> {
     super.initState();
     startTime = DateTime.now();
 
+    print(widget.binData.correctAnswers);
+
     //Shuffle objects
     remainingTrashItems = Map.fromEntries(
       remainingTrashItems.entries.toList()..shuffle(),
