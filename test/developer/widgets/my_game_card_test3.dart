@@ -19,10 +19,12 @@ void main() {
       tags: ['Tag1', 'Tag2', 'Tag3', 'Tag4', 'Tag5'],
       gameId: 'g1',
       loadGame: loadGame,
+      isPublic: true,
     ));
 
     await tester.pumpWidget(widget);
 
+    expect(find.text('Make Private'), findsOneWidget);
     expect(find.byType(TagWidget), findsNWidgets(4)); // 3 visible + 1 more
     expect(find.text('+2 more'), findsOneWidget);
   });

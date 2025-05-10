@@ -163,7 +163,12 @@ class FirestoreService {
   Future<List<Map<String, dynamic>>> getAllGames() async {
     try {
       final querySnapshot = await _firestore.collection('games').get();
-      return querySnapshot.docs.map((doc) {
+
+      // Filter games where the 'public' field (as a string) is 'true'
+      return querySnapshot.docs.where((doc) {
+        final data = doc.data();
+        return data['public']!.toLowerCase() == 'true'; // Convert string to boolean
+      }).map((doc) {
         final data = doc.data();
         return {
           'imagePath': data['logo'] ?? 'assets/placeholder.png',
@@ -320,9 +325,22 @@ class FirestoreService {
         questionsAndOptions: questionsAndOptions,
         correctAnswers: correctAnswers,
         tips: tips,
+        public: data['public']!.toLowerCase() == 'true'
       );
     } catch (e, stackTrace) {
       debugPrint("Error loading GameData: $e\n$stackTrace");
+      rethrow;
+    }
+  }
+
+  Future<void> updateGamePublicStatus({required String gameId, required bool status}) async {
+    try {
+      final gameDoc = _firestore.collection('games').doc(gameId);
+
+      await gameDoc.update({'public': status.toString()});
+      print('[FirestoreService] Updated public for game $gameId');
+    } catch (e, stackTrace) {
+      debugPrint("[FirestoreService] Error updating public: $e\n$stackTrace");
       rethrow;
     }
   }

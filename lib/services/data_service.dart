@@ -51,7 +51,7 @@ class DataService {
       // Fetch the user data from cache
       final cachedUser = await _userCacheService.getCachedUserData();
       if (cachedUser != null && cachedUser.id == userId) {
-        _userCacheService.updateCachedGamesPlayed(gameId);
+        await _userCacheService.updateCachedGamesPlayed(gameId);
         print('[DataService] Cached user data updated with new gamesPlayed');
       } else {
         print('[DataService] User data not found in cache');
@@ -144,12 +144,14 @@ class DataService {
       for (final id in cachedIds) {
         final cachedGame = await _gameCacheService.getCachedGameData(id);
         if (cachedGame != null) {
-          loadedGames.add({
-            'imagePath': cachedGame.gameLogo,
-            'gameTitle': cachedGame.gameName,
-            'tags': cachedGame.tags,
-            'gameId': cachedGame.documentName,
-          });
+          if (cachedGame.public) {
+            loadedGames.add({
+              'imagePath': cachedGame.gameLogo,
+              'gameTitle': cachedGame.gameName,
+              'tags': cachedGame.tags,
+              'gameId': cachedGame.documentName,
+            });
+          }
         }
       }
 
@@ -190,6 +192,7 @@ class DataService {
               'gameTitle': game.gameName,
               'tags': game.tags,
               'gameId': game.documentName,
+              'public': game.public
             };
           }
           return null;
@@ -202,6 +205,24 @@ class DataService {
     } catch (e, stack) {
       print('[DataService] Error in getMyGames: $e\n$stack');
       return [];
+    }
+  }
+
+  Future<void> updateGamePublicStatus({required String gameId, required bool status}) async {
+    try {
+      print('[DataService] Updating public for game: $gameId');
+
+      // Update Firestore
+      await _firestoreService.updateGamePublicStatus(gameId: gameId, status: status);
+      print('[DataService] Firestore updated successfully');
+
+      await _gameCacheService.updateGamePublicStatus(gameId: gameId, status: status);
+      print('[DataService] Game Cache updated successfully');
+
+
+    } catch (e) {
+      print('[DataService] Error updating user\'s gamesPlayed: $e');
+      throw Exception("Error updating user's gamesPlayed");
     }
   }
 

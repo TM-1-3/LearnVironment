@@ -60,6 +60,8 @@ class MockDataService extends Mock implements DataService {
         'bibliography': 'Bibliography',
         'template': 'drag',
         'tips' : tips,
+        'correctAnswers': correctAnswers,
+        'public' : 'true'
       },
       {
         'logo': 'assets/placeholder.png',
@@ -71,6 +73,7 @@ class MockDataService extends Mock implements DataService {
         'questionsAndOptions': questionsAndOptions,
         'correctAnswers': correctAnswers,
         'tips' : tips,
+        'public' : 'true'
       },
       {
         'logo': 'assets/placeholder.png',
@@ -82,6 +85,7 @@ class MockDataService extends Mock implements DataService {
         'questionsAndOptions': questionsAndOptions,
         'correctAnswers': correctAnswers,
         'tips' : tips,
+        'public' : 'true'
       },
       {
         'logo': 'assets/placeholder.png',
@@ -91,6 +95,8 @@ class MockDataService extends Mock implements DataService {
         'bibliography': 'Bibliography',
         'template': 'drag',
         'tips' : tips,
+        'correctAnswers': correctAnswers,
+        'public' : 'true'
       },
     ];
 
@@ -155,7 +161,8 @@ class MockDataService extends Mock implements DataService {
       documentName: 'mock_game_0',
       questionsAndOptions: questionsAndOptions,
       correctAnswers: correctAnswers,
-      tips: tips
+      tips: tips,
+      public: true
     );
 
     print('[Mocked DataService] Returning mocked game data for gameId: $gameId');

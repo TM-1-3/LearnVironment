@@ -19,11 +19,13 @@ void main() {
       tags: ['Tag1', 'Tag2'],
       gameId: 'g1',
       loadGame: loadGame,
+      isPublic: false,
     ));
 
     await tester.pumpWidget(widget);
 
     expect(find.text('Test Game'), findsOneWidget);
+    expect(find.text('Make Public'), findsOneWidget);
     expect(find.byType(Image), findsOneWidget);
     expect(find.byIcon(Icons.edit), findsOneWidget);
     expect(find.byType(TagWidget), findsNWidgets(2));

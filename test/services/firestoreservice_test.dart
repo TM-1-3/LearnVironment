@@ -90,6 +90,7 @@ void main() {
       'template': 'quiz',
       'questionsAndOptions': questionsAndOptions,
       'correctAnswers': correctAnswers,
+      'public': "true"
     });
 
     firestoreService = FirestoreService(firestore: firestore);
@@ -114,17 +115,24 @@ void main() {
       expect(games[0]['gameId'], 'game1');
     });
 
-    test('getAllGames should handle missing fields safely', () async {
+    test('getAllGames should not return private games', () async {
       firestore = FakeFirebaseFirestore();
       firestoreService = FirestoreService(firestore: firestore);
-      await firestore.collection('games').add({});
+      await firestore.collection('games').doc('game1').set({
+        'logo': 'game_logo.png',
+        'name': 'Game Name',
+        'description': 'Game Description',
+        'bibliography': 'Game Bibliography',
+        'tags': ['action', 'adventure'],
+        'template': 'quiz',
+        'questionsAndOptions': '{}',
+        'correctAnswers': '{}',
+        'public': "false"
+      });
 
       final games = await firestoreService.getAllGames();
 
-      expect(games.length, 1);
-      expect(games[0]['imagePath'], 'assets/placeholder.png');
-      expect(games[0]['gameTitle'], 'Default Game Title');
-      expect(games[0]['tags'], isEmpty);
+      expect(games.length, 0);
     });
   });
 
@@ -146,6 +154,8 @@ void main() {
         'bibliography': 'Game 2 Bibliography',
         'tags': ['strategy', 'simulation'],
         'template': 'drag',
+        'correctAnswers': '{}',
+        'public' : 'true'
       });
 
       final gameData = await firestoreService.fetchGameData(gameId: docRef.id);
@@ -156,6 +166,8 @@ void main() {
       expect(gameData.gameBibliography, 'Game 2 Bibliography');
       expect(gameData.tags, ['strategy', 'simulation']);
       expect(gameData.gameTemplate, 'drag');
+      expect(gameData.public, true);
+      expect(gameData.correctAnswers, {});
       expect(gameData.documentName, docRef.id);
     });
   });
