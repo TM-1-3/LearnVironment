@@ -57,6 +57,14 @@ class BinScreenState extends State<BinScreen> {
     return trashItems.isEmpty && remainingTrashItems.isEmpty;
   }
 
+  Widget getImageWidget(String path, double size) {
+    if (path.startsWith('assets/trash')) {
+      return Image.asset(path, width: size, height: size);
+    } else {
+      return Image.network(path, width: size, height: size);
+    }
+  }
+
   void removeTrashItem(String item, String bin, Offset position) {
     setState(() {
       rightAnswer = trashItems[item] == bin;
@@ -172,12 +180,12 @@ class BinScreenState extends State<BinScreen> {
                             children: trashItems.keys.map((item) {
                               return Draggable<String>(
                                 data: item,
-                                feedback: Image.asset(item, width: 80, height: 80),
+                                feedback: getImageWidget(item, 80),
                                 childWhenDragging: Opacity(
                                   opacity: 0.5,
-                                  child: Image.asset(item, width: 80, height: 80),
+                                  child: getImageWidget(item, 80),
                                 ),
-                                child: Image.asset(item, width: 80, height: 80),
+                                child: getImageWidget(item, 80),
                               );
                             }).toList(),
                           ),
