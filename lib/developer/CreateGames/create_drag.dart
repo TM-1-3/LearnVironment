@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 
+class TrashObject {
+  TextEditingController imageUrlController = TextEditingController();
+  TextEditingController tipController = TextEditingController();
+  TextEditingController answerController = TextEditingController();
+}
+
 class CreateDragPage extends StatefulWidget {
   const CreateDragPage({super.key});
 
@@ -22,28 +28,10 @@ class _CreateDragPageState extends State<CreateDragPage> {
   final Map<String, String> tips = {};
   final Map<String, String> correctAnswers = {};
 
-  final TextEditingController imageUrlController = TextEditingController();
-  final TextEditingController tipValueController = TextEditingController();
-  final TextEditingController answerValueController = TextEditingController();
+  List<TrashObject> trashObjects = List.generate(4, (_) => TrashObject());
 
   final List<String> availableTags = ['Recycling', 'Strategy', 'Citizenship'];
   final List<String> selectedTags = [];
-
-  void _addTipAndAnswer() {
-    final key = imageUrlController.text.trim();
-    final tip = tipValueController.text.trim();
-    final answer = answerValueController.text.trim();
-
-    if (key.isNotEmpty && tip.isNotEmpty && answer.isNotEmpty) {
-      setState(() {
-        tips[key] = tip;
-        correctAnswers[key] = answer;
-        imageUrlController.clear();
-        tipValueController.clear();
-        answerValueController.clear();
-      });
-    }
-  }
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
@@ -54,6 +42,17 @@ class _CreateDragPageState extends State<CreateDragPage> {
       final List<String> tags = selectedTags;
       final String gameTemplate = 'drag';
       tags.insert(0, selectedAge);
+
+      for (var object in trashObjects) {
+        final key = object.imageUrlController.text.trim();
+        final tip = object.tipController.text.trim();
+        final answer = object.answerController.text.trim();
+
+        if (key.isNotEmpty && tip.isNotEmpty && answer.isNotEmpty) {
+          tips[key] = tip;
+          correctAnswers[key] = answer;
+        }
+      }
 
       //Create the game and add it to database
 
@@ -71,10 +70,22 @@ class _CreateDragPageState extends State<CreateDragPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextFormField(controller: gameLogoController, decoration: const InputDecoration(labelText: 'Game Logo URL')),
-              TextFormField(controller: gameNameController, decoration: const InputDecoration(labelText: 'Game Name')),
-              TextFormField(controller: gameDescriptionController, decoration: const InputDecoration(labelText: 'Game Description')),
-              TextFormField(controller: gameBibliographyController, decoration: const InputDecoration(labelText: 'Game Bibliography')),
+              TextFormField(controller: gameLogoController, decoration: const InputDecoration(labelText: 'Logo URL')),
+              TextFormField(controller: gameNameController, decoration: const InputDecoration(labelText: 'Name')),
+              TextFormField(
+                controller: gameDescriptionController,
+                decoration: const InputDecoration(labelText: 'Description'),
+                minLines: 1,
+                maxLines: 10,
+                keyboardType: TextInputType.multiline,
+              ),
+              TextFormField(
+                controller: gameBibliographyController,
+                decoration: const InputDecoration(labelText: 'Bibliography'),
+                minLines: 1,
+                maxLines: 10,
+                keyboardType: TextInputType.multiline,
+              ),
 
               const SizedBox(height: 16),
               const Text('Select Tags', style: TextStyle(fontWeight: FontWeight.bold)),
@@ -98,7 +109,7 @@ class _CreateDragPageState extends State<CreateDragPage> {
                 }).toList(),
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 value: selectedAge,
                 decoration: const InputDecoration(labelText: 'Select Age Group'),
@@ -109,26 +120,82 @@ class _CreateDragPageState extends State<CreateDragPage> {
                   );
                 }).toList(),
                 onChanged: (value) {
-                  setState(() {
-                    if (value != null) {
-                      setState(() {
-                        selectedAge = value;
-                      });
-                    }
-                  });
-                }
+                  if (value != null) {
+                    setState(() {
+                      selectedAge = value;
+                    });
+                  }
+                },
               ),
 
               const SizedBox(height: 24),
-              const Text('Add Object to Put in Trash Cans', style: TextStyle(fontWeight: FontWeight.bold)),
-              TextFormField(controller: imageUrlController, decoration: const InputDecoration(labelText: 'Image URL')),
-              TextFormField(controller: tipValueController, decoration: const InputDecoration(labelText: 'Tip')),
-              TextFormField(controller: answerValueController, decoration: const InputDecoration(labelText: 'Correct Answer')),
-              const SizedBox(height: 8),
-              ElevatedButton(onPressed: _addTipAndAnswer, child: const Text('Create Object')),
+              ExpansionTile(
+                title: const Text(
+                  'Trash Objects',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                initiallyExpanded: true,
+                backgroundColor: Colors.green.shade100,
+                collapsedBackgroundColor: Colors.green.shade200,
+                textColor: Colors.green.shade800,
+                iconColor: Colors.green.shade800,
+                collapsedTextColor: Colors.green.shade900,
+                collapsedIconColor: Colors.green.shade900,
+                childrenPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                children: [...List.generate(trashObjects.length, (index) {
+                final object = trashObjects[index];
+                return ExpansionTile(
+                  title: Text('Object ${index + 1}'),
+                  backgroundColor: Colors.green.shade50,
+                  collapsedBackgroundColor: Colors.green.shade100,
+                  textColor: Colors.green.shade700,
+                  iconColor: Colors.green.shade700,
+                  collapsedTextColor: Colors.green.shade900,
+                  collapsedIconColor: Colors.green.shade900,
+                  childrenPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  children: [
+                    TextFormField(
+                      controller: object.imageUrlController,
+                      decoration: const InputDecoration(labelText: 'Image URL'),
+                    ),
+                    TextFormField(
+                      controller: object.tipController,
+                      decoration: const InputDecoration(labelText: 'Tip'),
+                    ),
+                    TextFormField(
+                      controller: object.answerController,
+                      decoration: const InputDecoration(labelText: 'Correct Answer'),
+                    ),
+                    const SizedBox(height: 8),
+                    if (trashObjects.length > 4)
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: () {
+                            setState(() {
+                              trashObjects.removeAt(index);
+                            });
+                          },
+                          child: const Text('Remove'),
+                        ),
+                      ),
+                    const Divider(),
+                  ],
+                );
+              }),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        trashObjects.add(TrashObject());
+                      });
+                    },
+                    child: const Text('Add New Object'),
+                  ),
+                ],
+              ),
 
               const SizedBox(height: 20),
-              ElevatedButton(onPressed: _submitForm, child: const Text('Create Game')),
+              Center(child: ElevatedButton(onPressed: _submitForm, child: const Text('Create Game'))),
             ],
           ),
         ),
