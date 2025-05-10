@@ -320,6 +320,7 @@ class FirestoreService {
         questionsAndOptions: questionsAndOptions,
         correctAnswers: correctAnswers,
         tips: tips,
+        public: data['public']!.toLowerCase() == 'true'
       );
     } catch (e, stackTrace) {
       debugPrint("Error loading GameData: $e\n$stackTrace");

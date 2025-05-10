@@ -104,6 +104,7 @@ void main() {
       questionsAndOptions: questionsAndOptions,
       correctAnswers: correctAnswers,
       tips: tips,
+      public: true
     );
   });
 
@@ -131,6 +132,7 @@ void main() {
     expect(jsonDecode(cacheData['tags']!), ['action', 'adventure']);
     expect(cacheData['gameTemplate'], 'quiz');
     expect(cacheData['documentName'], 'game1');
+    expect(cacheData['public'], 'true');
 
     // Test quiz-specific data
     final questionsAndOptionsCache = jsonDecode(cacheData['questionsAndOptions']!);
@@ -175,7 +177,8 @@ void main() {
       'gameTemplate': 'quiz',
       'documentName': 'game1',
       'tips' : '{}',
-      'correctAnswers' : '{}'
+      'correctAnswers' : '{}',
+      'public' : 'true'
     };
 
     // Attempt to deserialize with missing quiz data fields (questionsAndOptions, correctAnswers)
@@ -199,6 +202,7 @@ void main() {
       questionsAndOptions: {},
       correctAnswers: {},
       tips: {},
+      public: false
     );
 
     final cacheData = malformedGameData.toCache();
@@ -207,6 +211,7 @@ void main() {
     expect(cacheData['questionsAndOptions'], '{}');
     expect(cacheData['correctAnswers'], '{}');
     expect(cacheData['tips'], '{}');
+    expect(cacheData['public'], 'false');
   });
 
   test('Test toCache with empty string values', () {
@@ -221,15 +226,20 @@ void main() {
       questionsAndOptions: {},
       correctAnswers: {},
       tips: {},
+      public: true
     );
 
     final cacheData = gameDataWithEmptyStrings.toCache();
 
     // Verify that empty fields are handled correctly and converted as expected
     expect(cacheData['gameLogo'], '');
+    expect(cacheData['gameName'], 'Game Name');
+    expect(cacheData['gameBibliography'], 'Game Bibliography');
     expect(cacheData['gameDescription'], '');
     expect(cacheData['questionsAndOptions'], '{}');
     expect(cacheData['correctAnswers'], '{}');
     expect(cacheData['tips'], '{}');
+    expect(cacheData['tags'], '["action","adventure"]');
+    expect(cacheData['public'], 'true');
   });
 }

@@ -10,6 +10,7 @@ class GameData {
   final String documentName;
   final Map<String, String> tips;
   final Map<String, String> correctAnswers;
+  final bool public;
 
   // These fields will only exist for quizzes
   final Map<String, List<String>>? questionsAndOptions;
@@ -25,6 +26,7 @@ class GameData {
     this.questionsAndOptions,
     required this.correctAnswers,
     required this.tips,
+    required this.public
   });
 
   // Convert to cache format: Only serialize quiz fields if applicable
@@ -38,7 +40,8 @@ class GameData {
       'gameTemplate': gameTemplate,
       'documentName': documentName,
       'tips' : jsonEncode(tips),
-      'correctAnswers' : jsonEncode(correctAnswers)
+      'correctAnswers' : jsonEncode(correctAnswers),
+      'public' : public.toString()
     };
 
     // Add quiz-specific fields only if it's a quiz game
@@ -93,6 +96,7 @@ class GameData {
         questionsAndOptions: questionsAndOptions,
         correctAnswers: correctAnswers,
         tips: tips,
+        public: data['public']!.toLowerCase() == 'true'
       );
     } else {
       return GameData(
@@ -105,6 +109,7 @@ class GameData {
         documentName: data['documentName'] ?? '',
         correctAnswers: correctAnswers,
         tips: tips,
+        public: data['public']!.toLowerCase() == 'true'
       );
     }
   }

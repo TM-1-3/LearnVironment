@@ -146,6 +146,8 @@ void main() {
         'bibliography': 'Game 2 Bibliography',
         'tags': ['strategy', 'simulation'],
         'template': 'drag',
+        'correctAnswers': '{}',
+        'public' : 'true'
       });
 
       final gameData = await firestoreService.fetchGameData(gameId: docRef.id);
@@ -156,6 +158,8 @@ void main() {
       expect(gameData.gameBibliography, 'Game 2 Bibliography');
       expect(gameData.tags, ['strategy', 'simulation']);
       expect(gameData.gameTemplate, 'drag');
+      expect(gameData.public, true);
+      expect(gameData.correctAnswers, {});
       expect(gameData.documentName, docRef.id);
     });
   });

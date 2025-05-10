@@ -133,7 +133,8 @@ class MockDataService extends Mock implements DataService {
         documentName: 'mock_game_0',
         questionsAndOptions: questionsAndOptions,
         correctAnswers: correctAnswers,
-        tips: tips
+        tips: tips,
+        public: false
     );
 
     print('[Mocked DataService] Returning mocked game data for gameId: $gameId');
