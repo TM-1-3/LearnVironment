@@ -9,7 +9,6 @@ import 'package:provider/provider.dart';
 class MockLoginScreen extends LoginScreen {
   const MockLoginScreen({super.key});
 
-  @override
   Widget build(BuildContext context) {
     return const Scaffold(
       body: Center(
