@@ -641,6 +641,98 @@ void main() {
         throwsA(isA<FirebaseException>()),
       );
     });
+
+    group('fetchNotifications', () {
+      test('fetchNotifications returns correct notifications for student', () async {
+        final assRef = await firestore.collection('assignment').add({
+          'title': 'Test Assignment',
+          'gameId': 'game123',
+          'class': 'class1',
+          'dueDate': '2025-05-11',
+        });
+
+        final docRef = await firestore.collection('users').add({
+          'username': 'Lebi',
+          'email': 'up202307719@g.uporto.pt',
+          'name': 'L',
+          'role': 'student',
+          'birthdate': Timestamp.fromDate(DateTime(2000, 1, 1)),
+          'img' : 'assets/placeholder.png',
+          'stClasses' : ['class1'],
+          'tClasses' : ['turma']
+        });
+
+        await firestore.collection('subjects').doc('class1').set({
+          'subjectId': 'class1',
+          'name': 'subjectName',
+          'logo': 'subjectLogo',
+          'teacher': 'id',
+          'students': [docRef.id],
+          'assignments' : [assRef.id]
+        });
+        firestoreService = FirestoreService(firestore: firestore);
+
+        final notifications = await firestoreService.fetchNotifications(uid: docRef.id);
+
+        expect(notifications.length, 1);
+        expect(notifications.first.notification?.title, 'Assignment: Test Assignment');
+        expect(notifications.first.notification?.body, 'Due Date: 2025-05-11');
+        expect(notifications.first.data['gameId'], 'game123');
+      });
+
+      test('fetchNotifications returns correct notifications for teacher', () async {
+        final assRef = await firestore.collection('assignment').add({
+          'title': 'Teacher Assignment',
+          'gameId': 'game456',
+          'class': 'turma',
+          'dueDate': '2025-06-01',
+        });
+
+        final docRef = await firestore.collection('users').add({
+          'username': 'Lebi',
+          'email': 'up202307719@g.uporto.pt',
+          'name': 'L',
+          'role': 'teacher',
+          'birthdate': Timestamp.fromDate(DateTime(2000, 1, 1)),
+          'img' : 'assets/placeholder.png',
+          'stClasses' : [],
+          'tClasses' : ['turma']
+        });
+
+        await firestore.collection('subjects').doc('turma').set({
+          'subjectId': 'turma',
+          'name': 'subjectName',
+          'logo': 'subjectLogo',
+          'teacher': docRef.id,
+          'students': [],
+          'assignments' : [assRef.id]
+        });
+
+        firestoreService = FirestoreService(firestore: firestore);
+        final notifications = await firestoreService.fetchNotifications(uid: docRef.id);
+
+        expect(notifications.length, 1);
+        expect(notifications.first.notification?.title, 'Assignment: Teacher Assignment');
+        expect(notifications.first.notification?.body, 'Due Date: 2025-06-01');
+        expect(notifications.first.data['gameId'], 'game456');
+      });
+
+      test('fetchNotifications returns empty list if no classes', () async {
+        final docRef = await firestore.collection('users').add({
+          'username': 'Lebi',
+          'email': 'up202307719@g.uporto.pt',
+          'name': 'L',
+          'role': 'developer',
+          'birthdate': Timestamp.fromDate(DateTime(2000, 1, 1)),
+          'img' : 'assets/placeholder.png'
+        });
+        firestoreService = FirestoreService(firestore: firestore);
+
+        final notifications = await firestoreService.fetchNotifications(uid: docRef.id);
+
+        expect(notifications, isEmpty);
+      });
+    });
   });
 }
 
@@ -654,5 +746,4 @@ void main() {
 - fetchAssignmentData
 - deleteAssignment
 - getAllAssignments
-- fetchNotifications
  */
