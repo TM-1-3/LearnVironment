@@ -570,10 +570,81 @@ void main() {
       expect(result, []);
     });
   });
+
+  group("updateGamePublicStatus", () {
+    test('successfully updates public status to true', () async {
+      final docRef = await firestore.collection('games').add({
+        'logo': 'game_logo.png',
+        'name': 'Game Name',
+        'description': 'Game Description',
+        'bibliography': 'Game Bibliography',
+        'tags': ['action', 'adventure'],
+        'template': 'quiz',
+        'questionsAndOptions': {},
+        'correctAnswers': {},
+        'public': 'false'
+      });
+      firestoreService = FirestoreService(firestore: firestore);
+
+      await firestoreService.updateGamePublicStatus(gameId: docRef.id, status: true);
+
+      final updatedDoc = await docRef.get();
+      expect(updatedDoc.data()?['public'], 'true');
+    });
+
+    test('successfully updates public status to false', () async {
+      final docRef = await firestore.collection('games').add({
+        'logo': 'game_logo.png',
+        'name': 'Game Name',
+        'description': 'Game Description',
+        'bibliography': 'Game Bibliography',
+        'tags': ['action', 'adventure'],
+        'template': 'quiz',
+        'questionsAndOptions': {},
+        'correctAnswers': {},
+        'public': 'true'
+      });
+      firestoreService = FirestoreService(firestore: firestore);
+
+      await firestoreService.updateGamePublicStatus(gameId: docRef.id, status: false);
+
+      final updatedDoc = await docRef.get();
+      expect(updatedDoc.data()?['public'], 'false');
+    });
+
+    test('does not change value if it is the same as before', () async {
+      final docRef = await firestore.collection('games').add({
+        'logo': 'game_logo.png',
+        'name': 'Game Name',
+        'description': 'Game Description',
+        'bibliography': 'Game Bibliography',
+        'tags': ['action', 'adventure'],
+        'template': 'quiz',
+        'questionsAndOptions': {},
+        'correctAnswers': {},
+        'public': 'false'
+      });
+      firestoreService = FirestoreService(firestore: firestore);
+
+      await firestoreService.updateGamePublicStatus(gameId: docRef.id, status: false);
+
+      final updatedDoc = await docRef.get();
+      expect(updatedDoc.data()?['public'], 'false');
+    });
+
+    test('throws when update fails', () async {
+      MockFakeFirebaseFirestoreWithErrors firestore = MockFakeFirebaseFirestoreWithErrors(true);
+      firestoreService = FirestoreService(firestore: firestore);
+
+      expect(
+            () async => await firestoreService.updateGamePublicStatus(gameId: 'id', status: true),
+        throwsA(isA<FirebaseException>()),
+      );
+    });
+  });
 }
 
 /* Missing tests:
-- updateGamePublicStatus
 - getAllSubjects
 - fetchSubjectData
 - addSubjectData
