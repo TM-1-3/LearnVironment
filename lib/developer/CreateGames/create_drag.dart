@@ -127,6 +127,11 @@ class _CreateDragPageState extends State<CreateDragPage> {
 
       //Create the game and add it to database
 
+      //Navigate to auth_service and display SnackBar
+
+      setState(() {
+        _isSaved = true;
+      });
     }
   }
 
@@ -136,134 +141,171 @@ class _CreateDragPageState extends State<CreateDragPage> {
     });
   }
 
+  Future<bool?> _onWillPop() async {
+    if (!_isSaved) {
+      return await showDialog<bool>(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Unsaved Changes'),
+            content: const Text(
+                'You have unsaved changes. Do you want to leave without saving?'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Stay'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Leave'),
+              ),
+            ],
+          );
+        },
+      ) ?? false;
+    }
+    return true;
+  }
+
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Create Drag Game')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              GameFormField(
-                controller: gameLogoController,
-                label: 'Logo URL',
-                validator: (value) {return null;},
-              ),
-              GameFormField(
-                controller: gameNameController,
-                label: 'Name'
-              ),
-              GameFormField(
-                  controller: gameDescriptionController,
-                  label: 'Description',
+    return PopScope(
+        canPop: _isSaved,
+        onPopInvokedWithResult: (didPop, result) async {
+        if (!_isSaved && !didPop) {
+          final shouldLeave = await _onWillPop();
+          if (shouldLeave! && context.mounted) {
+            Navigator.of(context).pushReplacementNamed('/auth_gate');
+          }
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Create Drag Game')),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                GameFormField(
+                  controller: gameLogoController,
+                  label: 'Logo URL',
+                  validator: (value) {return null;},
+                ),
+                GameFormField(
+                  controller: gameNameController,
+                  label: 'Name'
+                ),
+                GameFormField(
+                    controller: gameDescriptionController,
+                    label: 'Description',
+                    maxLines: 10,
+                    keyboardType: TextInputType.multiline,
+                ),
+                GameFormField(
+                  controller: gameBibliographyController,
+                  label: 'Bibliography',
                   maxLines: 10,
                   keyboardType: TextInputType.multiline,
-              ),
-              GameFormField(
-                controller: gameBibliographyController,
-                label: 'Bibliography',
-                maxLines: 10,
-                keyboardType: TextInputType.multiline,
-              ),
-
-              const SizedBox(height: 8),
-              const Divider(),
-              const SizedBox(height: 8),
-              TagSelection(
-                selectedTags: selectedTags,
-                onTagsUpdated: (updatedTags) {
-                  setState(() {
-                    selectedTags = updatedTags;
-                  });
-                },
-              ),
-              const SizedBox(height: 16),
-              AgeGroupDropdown(
-                selectedAge: selectedAge,
-                onAgeSelected: (value) {
-                  if (value != null) {
-                    setState(() {
-                      selectedAge = value;
-                    });
-                  }
-                },
-              ),
-
-              const SizedBox(height: 12),
-              const Divider(),
-              const SizedBox(height: 12),
-              ExpansionTile(
-                title: const Text(
-                  'Trash Objects',
-                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-                initiallyExpanded: true,
-                onExpansionChanged: (expanded) {
-                  if (!expanded) {
-                    var isEmpty = false;
-                    for (var object in trashObjects) {
-                      isEmpty = isEmpty ||
-                          object.imageUrlController.text.trim().isEmpty ||
-                          object.tipController.text.trim().isEmpty ||
-                          object.answerController.text.trim().isEmpty;
-                    }
-                    if (isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Please fill in all fields for all Objects'),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    }
-                  }
-                },
-                backgroundColor: Colors.green.shade100,
-                collapsedBackgroundColor: Colors.green.shade200,
-                textColor: Colors.green.shade800,
-                iconColor: Colors.green.shade800,
-                collapsedTextColor: Colors.green.shade900,
-                collapsedIconColor: Colors.green.shade900,
-                childrenPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                children: [...List.generate(trashObjects.length, (index) {
-                  return TrashObjectForm(
-                    isExpandedList: isExpandedList,
-                    trashObject: trashObjects[index],
-                    index: index,
-                    onRemove: (removedIndex) {
-                      setState(() {
-                        trashObjects.removeAt(removedIndex);
-                        isExpandedList.removeAt(removedIndex);
-                      });
-                    },
-                    onIsExpandedList: (expandedList) {
-                      setState(() {
-                        isExpandedList = expandedList;
-                      });
-                    },
-                  );
-                }),
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        trashObjects.add(TrashObject());
-                        isExpandedList.add(true);
-                      });
-                    },
-                    child: const Text('Add New Object'),
-                  ),
-                ],
-              ),
 
-              const SizedBox(height: 20),
-              Center(child: ElevatedButton(onPressed: _submitForm, child: const Text('Create Game'))),
-            ],
+                const SizedBox(height: 8),
+                const Divider(),
+                const SizedBox(height: 8),
+                TagSelection(
+                  selectedTags: selectedTags,
+                  onTagsUpdated: (updatedTags) {
+                    setState(() {
+                      selectedTags = updatedTags;
+                    });
+                  },
+                ),
+                const SizedBox(height: 16),
+                AgeGroupDropdown(
+                  selectedAge: selectedAge,
+                  onAgeSelected: (value) {
+                    if (value != null) {
+                      setState(() {
+                        selectedAge = value;
+                      });
+                    }
+                  },
+                ),
+
+                const SizedBox(height: 12),
+                const Divider(),
+                const SizedBox(height: 12),
+                ExpansionTile(
+                  title: const Text(
+                    'Trash Objects',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  initiallyExpanded: true,
+                  onExpansionChanged: (expanded) {
+                    if (!expanded) {
+                      var isEmpty = false;
+                      for (var object in trashObjects) {
+                        isEmpty = isEmpty ||
+                            object.imageUrlController.text.trim().isEmpty ||
+                            object.tipController.text.trim().isEmpty ||
+                            object.answerController.text.trim().isEmpty;
+                      }
+                      if (isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Please fill in all fields for all Objects'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    }
+                  },
+                  backgroundColor: Colors.green.shade100,
+                  collapsedBackgroundColor: Colors.green.shade200,
+                  textColor: Colors.green.shade800,
+                  iconColor: Colors.green.shade800,
+                  collapsedTextColor: Colors.green.shade900,
+                  collapsedIconColor: Colors.green.shade900,
+                  childrenPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  children: [...List.generate(trashObjects.length, (index) {
+                    return TrashObjectForm(
+                      isExpandedList: isExpandedList,
+                      trashObject: trashObjects[index],
+                      index: index,
+                      onRemove: (removedIndex) {
+                        setState(() {
+                          trashObjects.removeAt(removedIndex);
+                          isExpandedList.removeAt(removedIndex);
+                        });
+                      },
+                      onIsExpandedList: (expandedList) {
+                        setState(() {
+                          isExpandedList = expandedList;
+                        });
+                      },
+                    );
+                  }),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          trashObjects.add(TrashObject());
+                          isExpandedList.add(true);
+                        });
+                      },
+                      child: const Text('Add New Object'),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 20),
+                Center(child: ElevatedButton(onPressed: _submitForm, child: const Text('Create Game'))),
+              ],
+            ),
           ),
         ),
-      ),
+      )
     );
   }
 }
