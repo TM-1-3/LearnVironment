@@ -76,6 +76,7 @@ class DataService {
       return null;
     }
   }
+
   Future<void> deleteAccount({required String uid}) async {
     try {
       await _firestoreService.deleteAccount(uid: uid);

@@ -273,14 +273,18 @@ class FirestoreService {
   Future<void> recordGameResult(GameResultData result) async {
     try {
       // Assuming you have a 'game_results' collection in Firestore
-      await FirebaseFirestore.instance.collection('game_results').add({
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(result.studentId)
+          .collection('game_results')
+          .add({
         'subjectId': result.subjectId,
-        'studentId': result.studentId,
         'gameId': result.gameId,
         'correctCount': result.correctCount,
         'wrongCount': result.wrongCount,
-        'timestamp': FieldValue.serverTimestamp(),  // Automatically set the timestamp
+        'timestamp': FieldValue.serverTimestamp(),
       });
+
       print('[FirestoreService] Game result stored in Firestore successfully.');
     } catch (e) {
       print('[FirestoreService] Error storing game result in Firestore: $e');
