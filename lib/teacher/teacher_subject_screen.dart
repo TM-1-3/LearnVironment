@@ -86,7 +86,7 @@ class _TeacherSubjectScreenState extends State<TeacherSubjectScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final List<String> studentIds = widget.subjectData.students;
+    final List<Map<String,dynamic>> allStudentData = widget.subjectData.students;
 
     return Scaffold(
       appBar: AppBar(
@@ -135,13 +135,13 @@ class _TeacherSubjectScreenState extends State<TeacherSubjectScreen> {
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 10),
-                studentIds.isNotEmpty
+                allStudentData.isNotEmpty
                     ? ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: studentIds.length,
+                  itemCount: allStudentData.length,
                   itemBuilder: (context, index) {
-                    final studentId = studentIds[index];
+                    final studentId = allStudentData[index]['studentId'];
 
                     return FutureBuilder<Map<String, dynamic>?>(
                       future: _getStudentData(
@@ -292,8 +292,10 @@ class _TeacherSubjectScreenState extends State<TeacherSubjectScreen> {
                                       studentId: newStudentId,
                                     );
 
+                                    Map<String, dynamic> newStudent = {'studentId':newStudentId, 'correctCount':0, 'wrongCount':0};
+
                                     setState(() {
-                                      widget.subjectData.students.add(newStudentId);
+                                      widget.subjectData.students.add(newStudent);
                                     });
 
                                     if (context.mounted) {

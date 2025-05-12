@@ -324,7 +324,7 @@ class FirestoreService {
         subjectId: snapshot.id,
         subjectLogo: data['logo'] ?? 'assets/placeholder.png',
         subjectName: data['name'] ?? 'Unknown Name',
-        students: List<String>.from(data['students'] ?? []),
+        students: List<Map<String,dynamic>>.from(data['students'] ?? []),
         assignments: List<String>.from(data['assignments'] ?? []),
         teacher: data['teacher'],
       );
@@ -404,9 +404,14 @@ class FirestoreService {
       // Run both updates in a batch
       final batch = _firestore.batch();
 
-      // Add student to subject's student list
       batch.update(subjectRef, {
-        'students': FieldValue.arrayUnion([studentId]),
+        'students': FieldValue.arrayUnion([
+          {
+            'studentId': studentId,
+            'correctCount': 0,
+            'wrongCount': 0,
+          }
+        ]),
       });
 
       // Add subject to student's subject list
