@@ -51,7 +51,7 @@ class ResultsPage extends StatelessWidget {
 
             if (assignment != null && assignment.gameId == gameId) {
               final result = GameResultData(
-                subjectId: subjectId,
+                subjectId: subjectId, //TODO achar todos os subjects que o aluno esteja e que o assignment tenha esse jogo (trocar pra uma lista de subjects)
                 studentId: studentId,
                 gameId: assignment.gameId,
                 correctCount: correctCount,
@@ -59,16 +59,12 @@ class ResultsPage extends StatelessWidget {
               );
 
               await dataService.recordGameResult(result);
-              return; // Stop after first valid match
             }
           }
         }
       }
     }
   }
-
-
-
 
   @override
   Widget build(BuildContext context) {
