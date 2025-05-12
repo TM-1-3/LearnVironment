@@ -35,7 +35,7 @@ class StudentSubjectScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<dynamic> studentIds = subjectData.students;
+    final List<dynamic> allStudentData = subjectData.students;
 
     return Scaffold(
       appBar: AppBar(
@@ -68,13 +68,13 @@ class StudentSubjectScreen extends StatelessWidget {
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 10),
-                studentIds.isNotEmpty
+                allStudentData.isNotEmpty
                     ? ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: studentIds.length,
+                  itemCount: allStudentData.length,
                   itemBuilder: (context, index) {
-                    final studentId = studentIds[index];
+                    final studentId = allStudentData[index]['studentId'];
 
                     return FutureBuilder<Map<String, dynamic>?>(
                       future: getStudentData(studentId: studentId, context: context),
