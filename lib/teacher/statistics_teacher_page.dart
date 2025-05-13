@@ -3,9 +3,12 @@ import 'package:learnvironment/data/subject_data.dart';
 import 'package:learnvironment/data/user_data.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/services/subject_cache_service.dart';
 import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'dart:math' as math;
+
+import '../services/user_cache_service.dart';
 
 class StatisticsTeacherPage extends StatefulWidget {
   const StatisticsTeacherPage({super.key});
@@ -51,6 +54,26 @@ class StatisticsTeacherPageState extends State<StatisticsTeacherPage> {
     }
   }
 
+  Future<void> _refreshClasses() async {
+    try {
+      final subjectCacheService = Provider.of<SubjectCacheService>(context, listen: false);
+      final userCacheService = Provider.of<UserCacheService>(context, listen: false);
+
+      await userCacheService.clearUserCache();
+      await subjectCacheService.clearSubjectCache();
+
+      setState(() {
+        _classes = [];
+        _selectedClass = null;
+      });
+
+      await _loadClasses();
+
+    } catch (e) {
+      print('[StatisticsTeacherPage] Error refreshing StatisticsPage: $e');
+    }
+  }
+
   void _showErrorDialog(String message, String ctx) {
     showDialog(
       context: context,
@@ -66,61 +89,72 @@ class StatisticsTeacherPageState extends State<StatisticsTeacherPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const Padding(
-            padding: EdgeInsets.only(top: 24),
-            child: Center(child: Text("Class Statistics", style: TextStyle(fontSize: 30))),
-          ),
-          const SizedBox(height: 20),
-          DropdownButtonFormField<SubjectData>(
-            value: _selectedClass,
-            decoration: const InputDecoration(labelText: 'Class'),
-            items: _classes.map((subject) {
-              return DropdownMenuItem<SubjectData>(
-                value: subject,
-                child: Text(subject.subjectName),
-              );
-            }).toList(),
-            onChanged: (SubjectData? newValue) {
-              if (newValue != null) {
-                setState(() {
-                  _selectedClass = newValue;
-                  _isSaved = false;
-                });
-              }
-            },
-          ),
-          if (_selectedClass != null) ...[
-            const SizedBox(height: 24),
-            _buildChartLegend(),
-            const SizedBox(height: 16),
-            FutureBuilder<Widget>(
-              future: _buildBarChart(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text("Error: ${snapshot.error}"));
-                } else if (snapshot.hasData) {
-                  return snapshot.data!;
-                } else {
-                  return const Center(child: Text("No data available."));
+    return RefreshIndicator(
+      onRefresh: _refreshClasses,  // Calling the refresh method when the user pulls to refresh
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text("Class Statistics", style: TextStyle(fontSize: 30)),
+                IconButton(
+                  icon: const Icon(Icons.refresh),
+                  tooltip: 'Refresh Classes',
+                  onPressed: _refreshClasses, // Button to refresh manually
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            DropdownButtonFormField<SubjectData>(
+              value: _selectedClass,
+              decoration: const InputDecoration(labelText: 'Class'),
+              items: _classes.map((subject) {
+                return DropdownMenuItem<SubjectData>(
+                  value: subject,
+                  child: Text(subject.subjectName),
+                );
+              }).toList(),
+              onChanged: (SubjectData? newValue) {
+                if (newValue != null) {
+                  setState(() {
+                    _selectedClass = newValue;
+                    _isSaved = false;
+                  });
                 }
               },
             ),
-          ] else
-            const Padding(
-              padding: EdgeInsets.only(top: 24),
-              child: Center(child: Text("Select a class to see statistics")),
-            ),
-        ],
+            if (_selectedClass != null) ...[
+              const SizedBox(height: 24),
+              _buildChartLegend(),
+              const SizedBox(height: 16),
+              FutureBuilder<Widget>(
+                future: _buildBarChart(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text("Error: ${snapshot.error}"));
+                  } else if (snapshot.hasData) {
+                    return snapshot.data!;
+                  } else {
+                    return const Center(child: Text("No data available."));
+                  }
+                },
+              ),
+            ] else
+              const Padding(
+                padding: EdgeInsets.only(top: 24),
+                child: Center(child: Text("Select a class to see statistics")),
+              ),
+          ],
+        ),
       ),
     );
   }
+
 
   Widget _buildChartLegend() {
     return Column(

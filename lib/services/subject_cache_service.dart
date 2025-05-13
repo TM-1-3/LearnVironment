@@ -97,4 +97,40 @@ class SubjectCacheService {
       print('[CACHE ERROR] Exception while deleting subject $subjectId: $e');
     }
   }
+
+  // Clears all Subject Data from Cache
+  Future<void> clearSubjectCache() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+
+      // Retrieve the list of cached subject IDs
+      List<String> cachedIds = prefs.getStringList('cached_subject_ids') ?? [];
+
+      if (cachedIds.isEmpty) {
+        print('[CACHE] No cached subjects to clear.');
+        return;
+      }
+
+      // Iterate through each cached subject ID and remove it from cache
+      for (String subjectId in cachedIds) {
+        final key = 'subject_$subjectId';
+
+        // Remove the subject data
+        bool success = await prefs.remove(key);
+
+        if (success) {
+          print('[CACHE] Removed subject $subjectId from cache.');
+        } else {
+          print('[CACHE ERROR] Failed to remove subject $subjectId from cache.');
+        }
+      }
+
+      // Finally, clear the cached subject IDs list
+      await prefs.remove('cached_subject_ids');
+      print('[CACHE] Cleared all cached subject IDs.');
+    } catch (e) {
+      print('[CACHE ERROR] Exception while clearing all subject cache: $e');
+    }
+  }
+
 }
