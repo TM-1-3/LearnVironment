@@ -10,4 +10,10 @@ class TrashObject {
            tipController.text.trim().isEmpty ||
            answerController.text.trim().isEmpty;
   }
+
+  void dispose() {
+    imageUrlController.dispose();
+    tipController.dispose();
+    answerController.dispose();
+  }
 }
