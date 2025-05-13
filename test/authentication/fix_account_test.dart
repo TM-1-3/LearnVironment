@@ -27,18 +27,32 @@ class MockAuthService extends AuthService {
       : super(firebaseAuth: firebaseAuth);
 
   @override
-  Future<void> signInWithEmailAndPassword({
-    required String email,
-    required String password,
-  }) async {
-
-  }
-
-  @override
   Stream<User?> get authStateChanges => Stream.value(MockUser());
 }
 
-class MockDataService extends Mock implements DataService {}
+class MockDataService extends Mock implements DataService {
+  MockDataService();
+
+  @override
+  Future<bool> checkIfUsernameAlreadyExists(String username) async {
+    if (username=='testuser'){
+      return true;
+    }
+    return false;
+  }
+
+  @override
+  Future<void> updateUserProfile({
+    required String uid,
+    required String name,
+    required String username,
+    required String email,
+    required String role,
+    required String birthDate,
+    required String img}) async {
+
+  }
+}
 
 void main() {
   late MockFirebaseAuth mockAuth;
@@ -52,6 +66,7 @@ void main() {
         email: 'test@example.com',
         displayName: 'Test User',
       ),
+      signedIn: true
     );
 
 
@@ -77,6 +92,7 @@ void main() {
     await tester.pumpWidget(testWidget);
 
     final registerButton = find.byType(ElevatedButton);
+    await tester.ensureVisible(registerButton);
     await tester.tap(registerButton);
     await tester.pump();
 
@@ -94,10 +110,41 @@ void main() {
     await tester.enterText(find.byType(TextField).at(4), 'john@example.com');
 
     // Select account type
+    await tester.ensureVisible(find.byType(DropdownButton<String>));
     await tester.tap(find.byType(DropdownButton<String>));
     await tester.pump();
     await tester.tap(find.text('developer').last);
     await tester.pump();
+
+    // Find the birthdate TextField
+    final dateField = find.byKey(Key("birthDate"));
+    await tester.ensureVisible(dateField);
+    await tester.pumpAndSettle();
+    await tester.tap(dateField);
+    await tester.pumpAndSettle();
+    expect(find.byType(CalendarDatePicker), findsOneWidget);
+
+    //Select Year
+    await tester.ensureVisible(find.text('January 2000'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('January 2000'));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('1993'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('1993'));
+    await tester.pumpAndSettle();
+
+    //Select Date
+    await tester.ensureVisible(find.text('20'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('20'));
+    await tester.pumpAndSettle();
+
+    //Enter Date
+    await tester.ensureVisible(find.text('OK'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
 
     // Verify that the Register button is now enabled
     final registerButton = find.byType(ElevatedButton);
@@ -115,14 +162,46 @@ void main() {
     await tester.enterText(find.byType(TextField).at(4), 'john@example.com');
 
     // Select account type
+    await tester.ensureVisible(find.byType(DropdownButton<String>));
     await tester.tap(find.byType(DropdownButton<String>));
     await tester.pump();
     await tester.tap(find.text('developer').last);
     await tester.pump();
 
+    // Find the birthdate TextField
+    final dateField = find.byKey(Key("birthDate"));
+    await tester.ensureVisible(dateField);
+    await tester.pumpAndSettle();
+    await tester.tap(dateField);
+    await tester.pumpAndSettle();
+    expect(find.byType(CalendarDatePicker), findsOneWidget);
+
+    //Select Year
+    await tester.ensureVisible(find.text('January 2000'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('January 2000'));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('1993'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('1993'));
+    await tester.pumpAndSettle();
+
+    //Select Date
+    await tester.ensureVisible(find.text('20'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('20'));
+    await tester.pumpAndSettle();
+
+    //Enter Date
+    await tester.ensureVisible(find.text('OK'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+
     // Press the Register button
+    await tester.ensureVisible(find.byType(ElevatedButton));
     await tester.tap(find.byType(ElevatedButton));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(find.byType(MockAuthGate), findsOneWidget);
   });

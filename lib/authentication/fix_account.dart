@@ -84,6 +84,15 @@ class _FixAccountPageState extends State<FixAccountPage> {
       final dataService = Provider.of<DataService>(context, listen: false);
       String? uid = await authService.getUid();
 
+      if (await dataService.checkIfUsernameAlreadyExists(username)){
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Username already in use.')),
+          );
+        }
+        return;
+      }
+
       if (!await _validateImage(img)) {
         img = "assets/placeholder.png";
       }
