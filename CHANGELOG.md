@@ -92,6 +92,7 @@
 - Developers can now dry run their games [#117](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/117)
 - Developers can add a description to their games [#118](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/118)
 - Organized source code in firestore service and dataservice reposirtories [#105](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/105)
+- Fixed bug where students couldn´t see their new classes, by adding a refresh indicator to the home page [#123](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/123)
 
 ### Test User
 - email: up202307719@g.uporto.pt
