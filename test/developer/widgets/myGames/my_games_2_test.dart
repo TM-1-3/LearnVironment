@@ -43,6 +43,17 @@ class MockAuthService extends AuthService {
 class MockDataService extends Mock implements DataService {
   @override
   Future<List<Map<String, dynamic>>> getMyGames({required String uid}) async {
+    if (uid == "error") {
+      return [
+        {
+          'gameTitle': 'Strategy Fun',
+          'tags': ['Strategy', 'Age: 12+'],
+          'gameId': 'gx',
+          'imagePath': 'assets/placeholder.png',
+          'public' : true,
+        },
+      ];
+    }
       return [
         {
           'gameTitle': 'Strategy Fun',
@@ -58,7 +69,7 @@ class MockDataService extends Mock implements DataService {
   @override
   Future<GameData?> getGameData({required String gameId}) async {
     if (gameId == "gx") {
-      Exception('Failed to load');
+      throw Exception('Failed to load');
     }
 
     final Map<String, List<String>> questionsAndOptions = {
@@ -162,5 +173,35 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(GamesInitialScreen), findsOneWidget);
+  });
+
+  testWidgets('Error loading game', (WidgetTester tester) async {
+    mockFirebaseAuth = MockFirebaseAuth(mockUser: MockUser(uid: 'error', email: 'email@gmail.com'), signedIn: true);
+    mockAuthService = MockAuthService(firebaseAuth: mockFirebaseAuth);
+
+    testWidget = MultiProvider(
+      providers: [
+        ChangeNotifierProvider<AuthService>(
+          create: (_) => mockAuthService,
+        ),
+        Provider<DataService>(create: (_) => mockDataService),
+        Provider<UserCacheService>(create: (_) => mockUserCacheService),
+      ],
+      child: const MaterialApp(
+        home: MyGamesPage(),
+      ),
+    );
+
+    await tester.pumpWidget(testWidget);
+    await tester.pumpAndSettle();
+
+    final gameCardKey = Key('gameCard_gx');
+    expect(find.byKey(gameCardKey), findsOneWidget);
+    await tester.tap(find.byKey(gameCardKey));
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.textContaining('Error loading game'), findsOneWidget);
+    expect(find.textContaining('Failed to load'), findsOneWidget);
   });
 }
