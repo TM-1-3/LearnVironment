@@ -13,11 +13,8 @@ class FirebaseMessagingService {
   })  : flutterLocalNotificationsPlugin = localNotificationsPlugin ?? FlutterLocalNotificationsPlugin(),
         firebaseMessaging = firebaseMessaging ?? FirebaseMessaging.instance;
 
-  Future<void> firebaseMessagingBackgroundHandler(
-      RemoteMessage message, {bool flag = false}) async {
-    if (!flag) {
-      await Firebase.initializeApp();
-    }
+  Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+    await Firebase.initializeApp();
     showNotification(message);
   }
 
