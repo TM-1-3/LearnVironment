@@ -11,7 +11,6 @@ void main() {
     });
 
     tearDown(() {
-      // Dispose of the controllers to prevent memory leaks
       optionObject.option1Controller.dispose();
       optionObject.option2Controller.dispose();
       optionObject.option3Controller.dispose();

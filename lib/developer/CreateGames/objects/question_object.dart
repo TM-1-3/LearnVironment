@@ -11,4 +11,10 @@ class QuestionObject {
            tipController.text.trim().isEmpty ||
            options.isEmpty();
   }
+
+  void dispose() {
+    questionController.dispose();
+    tipController.dispose();
+    options.dispose();
+  }
 }
