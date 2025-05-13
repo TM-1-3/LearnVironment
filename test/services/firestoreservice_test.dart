@@ -201,6 +201,21 @@ void main() {
       expect(userDataFetched.birthdate, DateTime(2000, 1, 1));
       expect(userDataFetched.img, 'assets/placeholder.png');
     });
+
+    test('get UserId by UserName if exists', () async {
+      final docRef = await firestore.collection('users').add({
+        'username': 'Lebi',
+        'email': 'up202307719@g.uporto.pt',
+        'name': 'L',
+        'role': 'developer',
+        'birthdate': Timestamp.fromDate(DateTime(2000, 1, 1)),
+        'img' : 'assets/placeholder.png'
+      });
+
+      final userIdFetched = await firestoreService.getUserIdByUserName('Lebi');
+
+      expect(userIdFetched, docRef.id);
+    });
   });
 
   group('fetchUserType Tests', () {

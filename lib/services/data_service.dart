@@ -38,8 +38,8 @@ class DataService {
     return await _firestoreService.checkIfUsernameAlreadyExists(username);
   }
 
-  Future<String?> getUserIdByName(String name) async {
-    return await _firestoreService.getUserIdByName(name);
+  Future<String?> getUserIdByUserName(String name) async {
+    return await _firestoreService.getUserIdByUserName(name);
   }
 
   Future<void> updateUserGamesPlayed({required String userId, required String gameId}) async {

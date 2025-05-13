@@ -95,10 +95,10 @@ class FirestoreService {
     return snapshot.docs.isNotEmpty;
   }
 
-  Future<String?> getUserIdByName(String name) async {
+  Future<String?> getUserIdByUserName(String username) async {
     final snapshot = await _firestore
         .collection('users')
-        .where('name', isEqualTo: name)
+        .where('username', isEqualTo: username)
         .limit(1)
         .get();
     if (snapshot.docs.isNotEmpty) {
