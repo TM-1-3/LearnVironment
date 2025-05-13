@@ -20,6 +20,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
 
   final List<String> ageOptions = ['12+', '10+', '8+', '6+'];
   String selectedAge = '12+';
+  String selectedOption = '';
   late List<String> selectedTags = [];
 
   final TextEditingController gameLogoController = TextEditingController();
@@ -77,17 +78,18 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
       for (var object in questionObjects) {
         final key = object.questionController.text.trim();
         final tip = object.tipController.text.trim();
-        final answer = object.answerController.text.trim();
 
-        if (key.isNotEmpty && tip.isNotEmpty && answer.isNotEmpty) {
+        if (key.isNotEmpty && tip.isNotEmpty && !(object.options.isEmpty()) && selectedOption != '') {
           tips[key] = tip;
-          correctAnswers[key] = answer;
 
           final opt1 = object.options.option1Controller.text.trim();
           final opt2 = object.options.option2Controller.text.trim();
           final opt3 = object.options.option3Controller.text.trim();
           final opt4 = object.options.option4Controller.text.trim();
-          questionsAndOptions[key] = [opt1, opt2, opt3, opt4];
+          List<String> options = [opt1, opt2, opt3, opt4];
+          questionsAndOptions[key] = options;
+
+          correctAnswers[key] = options[int.parse(selectedOption)];
         }
         index++;
       }
@@ -277,6 +279,11 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                           onIsExpandedListOpt: (expandedList) {
                             setState(() {
                               isExpandedListOpt = expandedList;
+                            });
+                          }, selectedOption: selectedOption,
+                          onSelectedOptionChanged:  (value) {
+                            setState(() {
+                              selectedOption = value;
                             });
                           },
                         );

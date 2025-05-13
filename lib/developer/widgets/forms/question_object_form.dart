@@ -5,7 +5,7 @@ import 'package:learnvironment/developer/widgets/dropdown/option_dropdown.dart';
 import 'package:learnvironment/developer/widgets/forms/options_object_form.dart';
 import 'package:learnvironment/developer/widgets/game_form_field.dart';
 
-class QuestionObjectForm extends StatelessWidget {
+class QuestionObjectForm extends StatefulWidget {
   final QuestionObject questionObject;
   final OptionObject optionObject;
   final int index;
@@ -14,6 +14,8 @@ class QuestionObjectForm extends StatelessWidget {
   final ValueChanged<List<bool>> onIsExpandedListOpt;
   final List<bool> isExpandedList;
   final List<bool> isExpandedListOpt;
+  final String selectedOption;
+  final ValueChanged<String> onSelectedOptionChanged;
 
   const QuestionObjectForm({
     super.key,
@@ -25,32 +27,46 @@ class QuestionObjectForm extends StatelessWidget {
     required this.optionObject,
     required this.onIsExpandedListOpt,
     required this.isExpandedListOpt,
+    required this.selectedOption,
+    required this.onSelectedOptionChanged,
   });
+
+  @override
+  State<QuestionObjectForm> createState() => _QuestionObjectFormState();
+}
+
+class _QuestionObjectFormState extends State<QuestionObjectForm> {
+  late String selectedOption;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedOption = widget.selectedOption;
+  }
 
   @override
   Widget build(BuildContext context) {
     return ExpansionTile(
-      title: Text('Question ${index + 1}'),
-        onExpansionChanged: (expanded) {
-          onIsExpandedList(List.from(isExpandedList)..[index] = expanded);
-          isExpandedList[index] = expanded;
+      title: Text('Question ${widget.index + 1}'),
+      onExpansionChanged: (expanded) {
+        widget.onIsExpandedList(List.from(widget.isExpandedList)..[widget.index] = expanded);
+        widget.isExpandedList[widget.index] = expanded;
         if (!expanded) {
-          final isEmpty = questionObject.questionController.text.trim().isEmpty ||
-              questionObject.tipController.text.trim().isEmpty ||
-              questionObject.answerController.text.trim().isEmpty ||
-              questionObject.options.isEmpty();
+          final isEmpty = widget.questionObject.questionController.text.trim().isEmpty ||
+              widget.questionObject.tipController.text.trim().isEmpty ||
+              widget.questionObject.options.isEmpty();
 
           if (isEmpty) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Please fill in all fields for Question ${index + 1}'),
+                content: Text('Please fill in all fields for Question ${widget.index + 1}'),
                 backgroundColor: Colors.red,
               ),
             );
           }
         }
       },
-      initiallyExpanded: isExpandedList[index],
+      initiallyExpanded: widget.isExpandedList[widget.index],
       backgroundColor: Colors.green.shade50,
       collapsedBackgroundColor: Colors.green.shade100,
       textColor: Colors.green.shade700,
@@ -60,7 +76,7 @@ class QuestionObjectForm extends StatelessWidget {
       childrenPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       children: [
         GameFormField(
-          controller: questionObject.questionController,
+          controller: widget.questionObject.questionController,
           label: 'Question',
           validator: (value) {
             if (value == null || value.trim().isEmpty) {
@@ -70,7 +86,7 @@ class QuestionObjectForm extends StatelessWidget {
           },
         ),
         GameFormField(
-          controller: questionObject.tipController,
+          controller: widget.questionObject.tipController,
           label: 'Tip',
           validator: (value) {
             if (value == null || value.trim().isEmpty) {
@@ -79,13 +95,28 @@ class QuestionObjectForm extends StatelessWidget {
             return null;
           },
         ),
-        OptionsObjectForm(optionObject: optionObject, index: index, onIsExpandedList: onIsExpandedListOpt, isExpandedList: isExpandedListOpt),
-        OptionDropdown(selectedOption: selectedOption, onOptionSelected: onOptionSelected),
-        if (index >= 5)
+        OptionsObjectForm(
+          optionObject: widget.optionObject,
+          index: widget.index,
+          onIsExpandedList: widget.onIsExpandedListOpt,
+          isExpandedList: widget.isExpandedListOpt,
+        ),
+        OptionDropdown(
+          selectedOption: selectedOption,
+          onOptionSelected: (value) {
+            if (value != null) {
+              setState(() {
+                selectedOption = value;
+              });
+              widget.onSelectedOptionChanged(value);
+            }
+          },
+        ),
+        if (widget.index >= 5)
           Align(
             alignment: Alignment.centerRight,
             child: TextButton(
-              onPressed: () => onRemove(index),
+              onPressed: () => widget.onRemove(widget.index),
               child: const Text('Remove'),
             ),
           ),
