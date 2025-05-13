@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:learnvironment/developer/CreateGames/trash_object.dart';
+import 'package:learnvironment/developer/CreateGames/objects/question_object.dart';
 import 'package:learnvironment/developer/widgets/age_dropdown.dart';
 import 'package:learnvironment/developer/widgets/game_form_field.dart';
+import 'package:learnvironment/developer/widgets/question_object_form.dart';
 import 'package:learnvironment/developer/widgets/tag_selection.dart';
 
-class CreateQuizPage extends StatelessWidget {
+class CreateQuizPage extends StatefulWidget {
   const CreateQuizPage({super.key});
 
   @override
@@ -66,33 +66,25 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
       final String gameTemplate = 'quiz';
       final Map<String, String> tips = {};
       final Map<String, String> correctAnswers = {};
+      final Map<String, List<String>> questionsAndOptions = {};
 
       tags.insert(0, selectedAge); //Add age to tags
 
       int index = 0;
-      for (var object in trashObjects) {
-        final key = object.imageUrlController.text.trim();
+      for (var object in questionObjects) {
+        final key = object.questionController.text.trim();
         final tip = object.tipController.text.trim();
         final answer = object.answerController.text.trim();
-
-        //Validate image
-        bool isValidImage = await _validateImage(key);
-        if (!isValidImage) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Please use a valid image URL in Object $index'),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
-          object.imageUrlController.text = "";
-          return;
-        }
 
         if (key.isNotEmpty && tip.isNotEmpty && answer.isNotEmpty) {
           tips[key] = tip;
           correctAnswers[key] = answer;
+
+          final opt1 = object.options.option1Controller.text.trim();
+          final opt2 = object.options.option2Controller.text.trim();
+          final opt3 = object.options.option3Controller.text.trim();
+          final opt4 = object.options.option4Controller.text.trim();
+          questionsAndOptions[key] = [opt1, opt2, opt3, opt4];
         }
         index++;
       }
@@ -236,11 +228,8 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                     onExpansionChanged: (expanded) {
                       if (!expanded) {
                         var isEmpty = false;
-                        for (var object in trashObjects) {
-                          isEmpty = isEmpty ||
-                              object.imageUrlController.text.trim().isEmpty ||
-                              object.tipController.text.trim().isEmpty ||
-                              object.answerController.text.trim().isEmpty;
+                        for (var object in questionObjects) {
+                          isEmpty = isEmpty || object.isEmpty();
                         }
                         if (isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -262,14 +251,14 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                     childrenPadding: const EdgeInsets.symmetric(
                         horizontal: 16.0, vertical: 8.0),
                     children: [
-                      ...List.generate(trashObjects.length, (index) {
-                        return TrashObjectForm(
+                      ...List.generate(questionObjects.length, (index) {
+                        return QuestionObjectForm(
                           isExpandedList: isExpandedList,
-                          trashObject: trashObjects[index],
+                          questionObject: questionObjects[index],
                           index: index,
                           onRemove: (removedIndex) {
                             setState(() {
-                              trashObjects.removeAt(removedIndex);
+                              questionObjects.removeAt(removedIndex);
                               isExpandedList.removeAt(removedIndex);
                             });
                           },
@@ -283,7 +272,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                       ElevatedButton(
                         onPressed: () {
                           setState(() {
-                            trashObjects.add(TrashObject());
+                            questionObjects.add(QuestionObject());
                             isExpandedList.add(true);
                           });
                         },
@@ -295,7 +284,9 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                   Center(
                       child: ElevatedButton(
                           onPressed: _submitForm,
-                          child: const Text('Create Game'))),
+                          child: const Text('Create Game')
+                      )
+                  ),
                 ],
               ),
             ),

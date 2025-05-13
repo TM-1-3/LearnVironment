@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:learnvironment/developer/CreateGames/trash_object.dart';
+import 'package:learnvironment/developer/CreateGames/objects/question_object.dart';
 import 'package:learnvironment/developer/widgets/game_form_field.dart';
 
 class QuestionObjectForm extends StatelessWidget {
@@ -61,7 +61,7 @@ class QuestionObjectForm extends StatelessWidget {
           },
         ),
         GameFormField(
-          controller: trashObject.tipController,
+          controller: questionObject.tipController,
           label: 'Tip',
           validator: (value) {
             if (value == null || value.trim().isEmpty) {

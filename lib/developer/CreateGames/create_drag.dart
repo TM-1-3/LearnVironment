@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:learnvironment/developer/CreateGames/trash_object.dart';
+import 'package:learnvironment/developer/CreateGames/objects/trash_object.dart';
 import 'package:learnvironment/developer/widgets/age_dropdown.dart';
 import 'package:learnvironment/developer/widgets/game_form_field.dart';
 import 'package:learnvironment/developer/widgets/tag_selection.dart';
@@ -238,10 +238,7 @@ class _CreateDragPageState extends State<CreateDragPage> {
                     if (!expanded) {
                       var isEmpty = false;
                       for (var object in trashObjects) {
-                        isEmpty = isEmpty ||
-                            object.imageUrlController.text.trim().isEmpty ||
-                            object.tipController.text.trim().isEmpty ||
-                            object.answerController.text.trim().isEmpty;
+                        isEmpty = isEmpty || object.isEmpty();
                       }
                       if (isEmpty) {
                         ScaffoldMessenger.of(context).showSnackBar(

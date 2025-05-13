@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:learnvironment/developer/CreateGames/trash_object.dart';
+import 'package:learnvironment/developer/CreateGames/objects/option_object.dart';
 import 'package:learnvironment/developer/widgets/game_form_field.dart';
 
 class OptionsObjectForm extends StatelessWidget {
@@ -26,12 +26,7 @@ class OptionsObjectForm extends StatelessWidget {
         onIsExpandedList(List.from(isExpandedList)..[index] = expanded);
         isExpandedList[index] = expanded;
         if (!expanded) {
-          final isEmpty = optionObject.option1Controller.text.trim().isEmpty ||
-              optionObject.option2Controller.text.trim().isEmpty ||
-              optionObject.option3Controller.text.trim().isEmpty ||
-              optionObject.option4Controller.text.trim().isEmpty;
-
-          if (isEmpty) {
+          if (optionObject.isEmpty()) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text('Please fill in all fields for Object ${index + 1}'),
@@ -90,6 +85,7 @@ class OptionsObjectForm extends StatelessWidget {
             return null;
           },
         )
+      ]
     );
   }
 }

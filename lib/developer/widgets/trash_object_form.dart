@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:learnvironment/developer/CreateGames/trash_object.dart';
+import 'package:learnvironment/developer/CreateGames/objects/trash_object.dart';
 import 'package:learnvironment/developer/widgets/game_form_field.dart';
 
 class TrashObjectForm extends StatelessWidget {
