@@ -53,7 +53,7 @@ class MockDataService extends Mock implements DataService {
       name: 'Student $userId',
       email: '$userId@example.com',
       id: userId,
-      username: '',
+      username: 'user_$userId',
       role: '',
       birthdate: DateTime(2000, 1, 1),
       gamesPlayed: [],
@@ -81,11 +81,11 @@ class MockDataService extends Mock implements DataService {
   }
 
   @override
-  Future<String?> getUserIdByName(String name) async {
-    if (name=='NonExisting Student'){
+  Future<String?> getUserIdByUserName(String username) async {
+    if (username=='NonExisting Student'){
       return null;
     }
-    return name;
+    return username;
   }
 }
 
@@ -141,8 +141,8 @@ void main() {
 
       await tester.pumpAndSettle(); // Wait for FutureBuilders
 
-      expect(find.text('Student student1'), findsOneWidget);
-      expect(find.text('Student student2'), findsOneWidget);
+      expect(find.text('user_student1'), findsOneWidget);
+      expect(find.text('user_student2'), findsOneWidget);
     });
 
     testWidgets('shows "No students enrolled yet." if no students', (tester) async {
@@ -216,7 +216,7 @@ void main() {
       expect(find.textContaining('Student added successfully'), findsOneWidget);
     });
 
-    testWidgets('shows snackbar on student invalid name', (tester) async {
+    testWidgets('shows snackbar on student invalid username', (tester) async {
       await tester.pumpWidget(testWidget);
       await tester.pumpAndSettle();
 
@@ -298,7 +298,7 @@ void main() {
       expect(find.text('Failed to remove student'), findsOneWidget);
 
       // Student should still be present
-      expect(find.text('Student student1'), findsOneWidget);
+      expect(find.text('user_student1'), findsOneWidget);
     });
   });
 }
