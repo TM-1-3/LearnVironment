@@ -183,6 +183,42 @@ class FirestoreService {
     }
   }
 
+  Future<void> createGame({required String uid, required GameData game}) async {
+    //Update User doc
+    final userDoc = _firestore.collection('users').doc(uid);
+    final userSnapshot = await userDoc.get();
+
+    List<String> myGames = [];
+
+    if (userSnapshot.exists && userSnapshot.data() != null) {
+      final data = userSnapshot.data()!;
+      myGames = List<String>.from(data['myGames'] ?? []);
+    }
+    myGames.insert(0, game.documentName);
+
+    try {
+      await userDoc.update({'myGames': myGames});
+      print('[FirestoreService] Updated myGames for user $uid');
+
+    } catch (e, stackTrace) {
+      print('[FirestoreService] Error updating myGames in Firestore: $e\n$stackTrace');
+      rethrow;
+    }
+
+    //Add game to games collection
+    await _firestore.collection('games').doc(game.documentName).set({
+      'logo': game.gameLogo,
+      'name': game.gameName,
+      'description': game.gameDescription,
+      'bibliography': game.gameBibliography,
+      'tags': game.tags,
+      'template': game.gameTemplate,
+      'tips' : game.tips,
+      'correctAnswers' : game.correctAnswers,
+      'public' : game.public.toString()
+    });
+  }
+
   Future<List<Map<String, dynamic>>> getMyGames({required String uid}) async {
     try {
       final userDoc = await _firestore.collection('users').doc(uid).get();

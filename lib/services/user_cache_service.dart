@@ -1,3 +1,4 @@
+import 'package:learnvironment/data/game_data.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:learnvironment/data/user_data.dart';
 
@@ -165,6 +166,26 @@ class UserCacheService {
     } catch (e) {
       print('[CACHE ERROR] Failed to get cached Classes: $e');
       return [];
+    }
+  }
+
+  Future<void> createGame({required String uid, required String gameId}) async {
+    try {
+      UserData? cachedUser = await getCachedUserData();
+
+      if (cachedUser != null) {
+        List<String> myGames = List.from(cachedUser.myGames);
+
+        myGames.insert(0, gameId);
+
+        UserData updatedUser = cachedUser.copyWith(myGames: myGames);
+
+        await cacheUserData(updatedUser);
+        print('[UserCacheService] Updated cached myGames');
+      }
+    } catch (e) {
+      print('[UserCacheService] Error updating cached myGames: $e');
+      rethrow;
     }
   }
 }

@@ -180,9 +180,9 @@ class DataService {
   Future<void> createGame({required String uid, required GameData game}) async {
     try {
       print('[DataService] Creating a new game');
-      _firestoreService.createGame(uid: await authService.getUid(), game: gameData);
-      _userCacheService.createGame(uid: await authService.getUid(), game: gameData);
-      _gameCacheService.createGame(uid: await authService.getUid(), game: gameData);
+      await _firestoreService.createGame(uid: uid, game: game);
+      await _userCacheService.createGame(uid: uid, gameId: game.documentName);
+      await _gameCacheService.cacheGameData(game);
 
       print('[DataService] Finished creating a new game');
     } catch (e) {
