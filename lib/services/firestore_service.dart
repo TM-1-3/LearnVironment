@@ -453,11 +453,13 @@ class FirestoreService {
   Future<void> addStudentToSubject({required String subjectId, required String studentId}) async {
     try {
       final subjectRef = _firestore.collection('subjects').doc(subjectId);
-
+      final userRef = _firestore.collection('users').doc(studentId);
       await subjectRef.update({
         'students': FieldValue.arrayUnion([studentId]),
       });
-
+      await userRef.update({
+        'stClasses': FieldValue.arrayUnion([subjectId]),
+      });
       print("[FirestoreService] Added student $studentId to subject $subjectId");
     } catch (e, stackTrace) {
       print("[FirestoreService] Error adding student to subject: $e\n$stackTrace");
