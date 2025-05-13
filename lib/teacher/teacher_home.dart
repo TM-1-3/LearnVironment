@@ -49,7 +49,7 @@ class _TeacherHomePage extends State<TeacherHomePage> {
             onPressed: () {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => NotificationsPage()), // Navigate to HomePage
+                MaterialPageRoute(builder: (context) => NotificationsPage()),
               );
             },
           ),
