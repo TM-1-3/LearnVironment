@@ -12,4 +12,11 @@ class OptionObject {
            option3Controller.text.isEmpty ||
            option4Controller.text.isEmpty;
   }
+
+  void dispose() {
+    option1Controller.dispose();
+    option2Controller.dispose();
+    option3Controller.dispose();
+    option4Controller.dispose();
+  }
 }

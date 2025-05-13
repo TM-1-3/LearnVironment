@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:learnvironment/developer/CreateGames/objects/option_object.dart';
 
@@ -33,6 +34,28 @@ void main() {
       optionObject.option3Controller.text = 'Option 3';
       optionObject.option4Controller.text = 'Option 4';
       expect(optionObject.isEmpty(), isFalse);
+    });
+
+    test('should dispose all controllers', () {
+      final optionObject = OptionObject();
+      optionObject.dispose();
+
+      expect(
+            () => optionObject.option1Controller.text = "New Value",
+        throwsA(isA<FlutterError>()),
+      );
+      expect(
+            () => optionObject.option2Controller.text = "New Value",
+        throwsA(isA<FlutterError>()),
+      );
+      expect(
+            () => optionObject.option3Controller.text = "New Value",
+        throwsA(isA<FlutterError>()),
+      );
+      expect(
+            () => optionObject.option4Controller.text = "New Value",
+        throwsA(isA<FlutterError>()),
+      );
     });
   });
 }
