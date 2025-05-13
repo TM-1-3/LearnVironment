@@ -1,10 +1,7 @@
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:learnvironment/authentication/fix_account.dart';
 import 'package:learnvironment/authentication/login_screen.dart';
-import 'package:learnvironment/authentication/reset_password_screen.dart';
-import 'package:learnvironment/authentication/signup_screen.dart';
 import 'package:learnvironment/main.dart';
 import 'package:learnvironment/services/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
