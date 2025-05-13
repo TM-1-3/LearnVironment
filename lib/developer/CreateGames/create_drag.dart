@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/developer/CreateGames/objects/trash_object.dart';
 import 'package:learnvironment/developer/widgets/dropdown/age_dropdown.dart';
 import 'package:learnvironment/developer/widgets/dropdown/tag_selection.dart';
 import 'package:learnvironment/developer/widgets/game_form_field.dart';
 import 'package:learnvironment/developer/widgets/forms/trash_object_form.dart';
+import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/services/data_service.dart';
+import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 
 
 class CreateDragPage extends StatefulWidget {
@@ -69,6 +74,7 @@ class _CreateDragPageState extends State<CreateDragPage> {
       tags.insert(0, selectedAge); //Add age to tags
 
       int index = 0;
+      //Validate Objects
       for (var object in trashObjects) {
         if (object.isEmpty() || selectedOption == null) {
           if (mounted) {
@@ -129,9 +135,30 @@ class _CreateDragPageState extends State<CreateDragPage> {
       }
 
       //Create the game and add it to database
+      if (mounted) {
+        final DataService dataService = Provider.of<DataService>(context, listen: false);
+        final AuthService authService = Provider.of<AuthService>(context, listen: false);
 
-      //Navigate to auth_service and display SnackBar
+        final String gameId = const Uuid().v4();
 
+        GameData gameData = GameData(
+            gameLogo: gameLogo,
+            gameName: gameName,
+            gameBibliography: gameBibliography,
+            gameTemplate: gameTemplate,
+            gameDescription: gameDescription,
+            public: false,
+            tags: tags,
+            documentName: gameId,
+            correctAnswers: correctAnswers,
+            tips: tips
+        );
+
+        dataService.createGame(uid: await authService.getUid(), game: gameData);
+
+        //Navigate to auth_service and display SnackBar
+
+      }
       setState(() {
         _isSaved = true;
       });

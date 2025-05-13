@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/developer/CreateGames/objects/option_object.dart';
 import 'package:learnvironment/developer/CreateGames/objects/question_object.dart';
 import 'package:learnvironment/developer/widgets/dropdown/age_dropdown.dart';
 import 'package:learnvironment/developer/widgets/dropdown/tag_selection.dart';
 import 'package:learnvironment/developer/widgets/game_form_field.dart';
 import 'package:learnvironment/developer/widgets/forms/question_object_form.dart';
+import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/services/data_service.dart';
+import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 
 class CreateQuizPage extends StatefulWidget {
   const CreateQuizPage({super.key});
@@ -90,6 +95,16 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
           questionsAndOptions[key] = options;
 
           correctAnswers[key] = options[int.parse(selectedOption!)];
+        } else {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Please set the questions and answers information properly.'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+          return;
         }
         index++;
       }
@@ -115,10 +130,31 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
         gameLogo = "assets/placeholder.png";
       }
 
-      //Create the game and add it to database
+      if (mounted) {
+        final DataService dataService = Provider.of<DataService>(context, listen: false);
+        final AuthService authService = Provider.of<AuthService>(context, listen: false);
 
-      //Navigate to auth_service and display SnackBar
+        final String gameId = const Uuid().v4();
 
+        GameData gameData = GameData(
+            gameLogo: gameLogo,
+            gameName: gameName,
+            gameBibliography: gameBibliography,
+            gameTemplate: gameTemplate,
+            gameDescription: gameDescription,
+            public: false,
+            tags: tags,
+            documentName: gameId,
+            correctAnswers: correctAnswers,
+            tips: tips,
+            questionsAndOptions: questionsAndOptions
+        );
+
+        dataService.createGame(uid: await authService.getUid(), game: gameData);
+
+        //Navigate to auth_service and display SnackBar
+
+      }
       setState(() {
         _isSaved = true;
       });

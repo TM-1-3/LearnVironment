@@ -177,6 +177,19 @@ class DataService {
     }
   }
 
+  Future<void> createGame({required String uid, required GameData game}) async {
+    try {
+      print('[DataService] Creating a new game');
+      _firestoreService.createGame(uid: await authService.getUid(), game: gameData);
+      _userCacheService.createGame(uid: await authService.getUid(), game: gameData);
+      _gameCacheService.createGame(uid: await authService.getUid(), game: gameData);
+
+      print('[DataService] Finished creating a new game');
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<List<Map<String, dynamic>>> getMyGames({required String uid}) async {
     try {
       final cachedGames = await _userCacheService.getMyGames();
