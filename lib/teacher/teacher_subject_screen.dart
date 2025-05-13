@@ -282,8 +282,22 @@ class _TeacherSubjectScreenState extends State<TeacherSubjectScreen> {
                                   final newStudentId = await dataService.getUserIdByUserName(newStudentUserName);
                                   if (newStudentId == null) {
                                     if (context.mounted) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                            content: Text('Student Not Found')),
+                                      );
+                                    }
+                                    return;
+                                  }
+                                  final studentAlreadyInClass = await dataService.checkIfStudentAlreadyInClass(
+                                    subjectId: widget.subjectData.subjectId,
+                                    studentId: newStudentId,
+                                  );
+                                  if (studentAlreadyInClass) {
+                                    if (context.mounted) {
                                       ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text('Student Not Found')),
+                                        const SnackBar(content: Text('Student is already in this subject')),
                                       );
                                     }
                                     return;

@@ -216,6 +216,22 @@ void main() {
 
       expect(userIdFetched, docRef.id);
     });
+
+    test('check if Student already in Subject', () async {
+      final docRef = await firestore.collection('subjects').add({
+        'assignments': [],
+        'logo': 'assets/placeholder.png',
+        'name': 'test',
+        'students': ['student'],
+        'subjectId': 'something',
+        'teacher': 'someone'
+      });
+
+      final studentInClass = await firestoreService.checkIfStudentAlreadyInClass(subjectId: docRef.id, studentId: 'student');
+      final studentNotInClass = await firestoreService.checkIfStudentAlreadyInClass(subjectId: docRef.id, studentId: 'otherStudent');
+      expect(studentInClass, true);
+      expect(studentNotInClass, false);
+    });
   });
 
   group('fetchUserType Tests', () {

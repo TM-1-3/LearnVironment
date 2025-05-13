@@ -402,6 +402,30 @@ class FirestoreService {
     }
   }
 
+  Future<bool> checkIfStudentAlreadyInClass({required String subjectId, required String studentId}) async {
+    try {
+      DocumentSnapshot snapshot = await _firestore.collection('subjects').doc(
+          subjectId).get();
+
+      if (!snapshot.exists) {
+        throw Exception("Subject not found in Firestore for ID: $subjectId");
+      }
+
+      var data = snapshot.data() as Map<String, dynamic>;
+
+      List<String> students = List<String>.from(data['students']);
+      for (String student in students) {
+        if (student == studentId) {
+          return true;
+        }
+      }
+      return false;
+    } catch (e, stackTrace) {
+      debugPrint("Error loading checking if student already in class: $e\n$stackTrace");
+      rethrow;
+    }
+  }
+
   Future<void> addSubjectData({required SubjectData subject, required String uid}) async {
     await _firestore
         .collection('subjects')
