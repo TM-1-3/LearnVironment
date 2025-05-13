@@ -80,6 +80,7 @@ class StudentMainPageState extends State<StudentMainPage> {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: TextField(
           key: Key('search'),
           onChanged: (query) {
