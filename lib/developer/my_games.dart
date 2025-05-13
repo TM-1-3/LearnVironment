@@ -95,7 +95,7 @@ class MyGamesPageState extends State<MyGamesPage> {
       print(e);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading game: $e')),
+          SnackBar(content: Text('Error loading game')),
         );
       }
     }

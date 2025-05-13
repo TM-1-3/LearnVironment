@@ -146,8 +146,8 @@ void main() {
     mockUserCacheService = MockUserCacheService();
   });
 
-  testWidgets('navigates to game screen on game card tap', (WidgetTester tester) async {
-    mockFirebaseAuth = MockFirebaseAuth(mockUser: MockUser(uid: '3', email: 'email@gmail.com'), signedIn: true);
+  testWidgets('Error loading game', (WidgetTester tester) async {
+    mockFirebaseAuth = MockFirebaseAuth(mockUser: MockUser(uid: 'error', email: 'email@gmail.com'), signedIn: true);
     mockAuthService = MockAuthService(firebaseAuth: mockFirebaseAuth);
 
     testWidget = MultiProvider(
@@ -166,12 +166,12 @@ void main() {
     await tester.pumpWidget(testWidget);
     await tester.pumpAndSettle();
 
-    final gameCardKey = Key('gameCard_g1');
+    final gameCardKey = Key('gameCard_gx');
     expect(find.byKey(gameCardKey), findsOneWidget);
     await tester.tap(find.byKey(gameCardKey));
-    await tester.pumpAndSettle();
-    await tester.pumpAndSettle();
+    await tester.pump();
 
-    expect(find.byType(GamesInitialScreen), findsOneWidget);
+    expect(find.byType(GamesInitialScreen), findsNothing);
+    expect(find.textContaining('Error loading game'), findsOneWidget);
   });
 }
