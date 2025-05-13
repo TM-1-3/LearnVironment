@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class OptionDropdown extends StatelessWidget {
-  final String selectedOption;
+  final String? selectedOption;
   final ValueChanged<String?> onOptionSelected;
 
   const OptionDropdown({
@@ -14,6 +14,7 @@ class OptionDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
       value: selectedOption,
+      hint: Text("Select answer"),
       decoration: const InputDecoration(labelText: 'Select Correct Answer'),
       items: ['1', '2', '3', '4'].map((options) {
         return DropdownMenuItem(

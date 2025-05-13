@@ -20,7 +20,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
 
   final List<String> ageOptions = ['12+', '10+', '8+', '6+'];
   String selectedAge = '12+';
-  String selectedOption = '';
+  String? selectedOption;
   late List<String> selectedTags = [];
 
   final TextEditingController gameLogoController = TextEditingController();
@@ -79,7 +79,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
         final key = object.questionController.text.trim();
         final tip = object.tipController.text.trim();
 
-        if (key.isNotEmpty && tip.isNotEmpty && !(object.options.isEmpty()) && selectedOption != '') {
+        if (key.isNotEmpty && tip.isNotEmpty && !(object.options.isEmpty()) && selectedOption!= null) {
           tips[key] = tip;
 
           final opt1 = object.options.option1Controller.text.trim();
@@ -89,7 +89,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
           List<String> options = [opt1, opt2, opt3, opt4];
           questionsAndOptions[key] = options;
 
-          correctAnswers[key] = options[int.parse(selectedOption)];
+          correctAnswers[key] = options[int.parse(selectedOption!)];
         }
         index++;
       }

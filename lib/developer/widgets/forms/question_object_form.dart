@@ -14,8 +14,8 @@ class QuestionObjectForm extends StatefulWidget {
   final ValueChanged<List<bool>> onIsExpandedListOpt;
   final List<bool> isExpandedList;
   final List<bool> isExpandedListOpt;
-  final String selectedOption;
-  final ValueChanged<String> onSelectedOptionChanged;
+  final String? selectedOption;
+  final ValueChanged<String?> onSelectedOptionChanged;
 
   const QuestionObjectForm({
     super.key,
@@ -36,7 +36,7 @@ class QuestionObjectForm extends StatefulWidget {
 }
 
 class _QuestionObjectFormState extends State<QuestionObjectForm> {
-  late String selectedOption;
+  late String? selectedOption;
 
   @override
   void initState() {
@@ -103,13 +103,11 @@ class _QuestionObjectFormState extends State<QuestionObjectForm> {
         ),
         OptionDropdown(
           selectedOption: selectedOption,
-          onOptionSelected: (value) {
-            if (value != null) {
+          onOptionSelected: (String? value) {
               setState(() {
                 selectedOption = value;
               });
               widget.onSelectedOptionChanged(value);
-            }
           },
         ),
         if (widget.index >= 5)
