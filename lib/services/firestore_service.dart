@@ -635,8 +635,8 @@ class FirestoreService {
 
     for (var student in students) {
       if (student['studentId'] == gameResultData.studentId) {
-        student['correctCount'] = (student['correctCount'] ?? 0) + gameResultData.correctCount;
-        student['wrongCount'] = (student['wrongCount'] ?? 0) + gameResultData.wrongCount;
+        student['correctCount'] = (student['correctCount']) + gameResultData.correctCount;
+        student['wrongCount'] = (student['wrongCount']) + gameResultData.wrongCount;
         updated = true;
         break;
       }
@@ -644,6 +644,7 @@ class FirestoreService {
 
     if (updated) {
       try {
+        print("[FirestoreService] Loading new students $students to firestore");
         await subjectRef.update({'students': students});
         print('[FirestoreService] Student count updated successfully for student: ${gameResultData.studentId}');
       } catch (e) {

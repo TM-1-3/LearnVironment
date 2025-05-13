@@ -207,6 +207,16 @@ class DataService {
 
       await _firestoreService.updateStudentCount(gameResultData: result, subjectData: subjectData);
 
+      // Fetch the updated subject data from Firestore
+      final updatedSubject = await _firestoreService.fetchSubjectData(subjectId: subjectData!.subjectId);
+
+      // Remove the old subject data from the cache
+      await _subjectCacheService.deleteSubject(subjectId: updatedSubject.subjectId);
+      print('[DataService] Removed old subject data from cache');
+
+      // Cache the updated subject data with the new student
+      await _subjectCacheService.cacheSubjectData(updatedSubject);
+      print('[DataService] Cached updated subject data with new student');
     } catch (e) {
       print('[DataService] Error recording game result: $e');
       throw Exception("Error recording game result");

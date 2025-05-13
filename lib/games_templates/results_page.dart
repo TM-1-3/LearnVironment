@@ -40,13 +40,16 @@ class ResultsPage extends StatelessWidget {
     UserData? userData = await dataService.getUserData(userId: studentId);
 
     if (userData?.role == 'student') {
+      print("[GameResultScreen] User is a student");
+
       List<String> studentSubjectIds = userData?.classes ?? [];
 
       for (final subjectId in studentSubjectIds) {
         SubjectData? subject = await dataService.getSubjectData(subjectId: subjectId);
-
         if (subject != null) {
+          print(subject.assignments);
           for (final assignmentId in subject.assignments) {
+            print("[GameResultScreen] Checking $assignmentId for valid assignments");
             final assignment = await dataService.getAssignmentData(assignmentId: assignmentId);
 
             if (assignment != null && assignment.gameId == gameId) {
