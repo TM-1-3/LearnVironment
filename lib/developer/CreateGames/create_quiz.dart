@@ -79,12 +79,11 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
 
       tags.insert(0, selectedAge); //Add age to tags
 
-      int index = 0;
       for (var object in questionObjects) {
         final key = object.questionController.text.trim();
         final tip = object.tipController.text.trim();
 
-        if (key.isNotEmpty && tip.isNotEmpty && !(object.options.isEmpty()) && selectedOption!= null) {
+        if (key.isNotEmpty && tip.isNotEmpty && !(object.options.isEmpty()) && selectedOption != null) {
           tips[key] = tip;
 
           final opt1 = object.options.option1Controller.text.trim();
@@ -106,7 +105,6 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
           }
           return;
         }
-        index++;
       }
 
       // Validate Logo
@@ -348,6 +346,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
               ),
             ),
           ),
-        ));
+        )
+    );
   }
 }
