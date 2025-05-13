@@ -49,6 +49,7 @@ class MockDataService extends Mock implements DataService {
           'tags': ['Strategy', 'Age: 12+'],
           'gameId': 'g1',
           'imagePath': 'assets/placeholder.png',
+          'public' : true,
         },
       ];
   }
