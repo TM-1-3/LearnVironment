@@ -17,8 +17,11 @@ class FirestoreService {
   // 2. Games
   // 3. Subjects (Aka Classes)
   // 4. Assignments
+  // 5. Events
 
   //============================== USER =================================================//
+
+
   Future<void> updateUserGamesPlayed({required String uid, required String gameId}) async {
     final userDoc = _firestore.collection('users').doc(uid);
     final userSnapshot = await userDoc.get();
@@ -159,7 +162,11 @@ class FirestoreService {
     }
   }
 
+
+
   //========================= GAMES =========================//
+
+
   Future<List<Map<String, dynamic>>> getAllGames() async {
     try {
       final querySnapshot = await _firestore.collection('games').get();
@@ -345,7 +352,11 @@ class FirestoreService {
     }
   }
 
+
+
   // =========================== SUBJECTS (Aka CLASSES) ==============================//
+
+
   Future<List<Map<String, dynamic>>> getAllSubjects({required String teacherId}) async {
     try {
       final querySnapshot = await _firestore
@@ -483,7 +494,11 @@ class FirestoreService {
     }
   }
 
+
+
   //================================ ASSIGNMENTS ====================================//
+
+
   Future<String> createAssignment({
     required String title,
     required String gameId,
@@ -597,7 +612,11 @@ class FirestoreService {
     }
   }
 
+
+
 //================================ EVENTS ====================================//
+
+
   Future<List<RemoteMessage>> fetchNotifications({required String uid}) async {
     UserData userData = await fetchUserData(userId: uid);
 
