@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:learnvironment/developer/CreateGames/objects/question_object.dart';
+import 'package:learnvironment/developer/CreateGames/objects/option_object.dart';
 import 'package:learnvironment/developer/widgets/game_form_field.dart';
 
-class QuestionObjectForm extends StatelessWidget {
-  final QuestionObject questionObject;
+class OptionsObjectForm extends StatelessWidget {
+  final OptionObject optionObject;
   final int index;
-  final ValueChanged<int> onRemove;
   final ValueChanged<List<bool>> onIsExpandedList;
   final List<bool> isExpandedList;
 
-  const QuestionObjectForm({
+  const OptionsObjectForm({
     super.key,
-    required this.questionObject,
+    required this.optionObject,
     required this.index,
-    required this.onRemove,
     required this.onIsExpandedList,
     required this.isExpandedList,
   });
@@ -21,20 +19,15 @@ class QuestionObjectForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ExpansionTile(
-      title: Text('Question ${index + 1}'),
-        onExpansionChanged: (expanded) {
-          onIsExpandedList(List.from(isExpandedList)..[index] = expanded);
-          isExpandedList[index] = expanded;
+      title: Text('Options for Question number ${index + 1}'),
+      onExpansionChanged: (expanded) {
+        onIsExpandedList(List.from(isExpandedList)..[index] = expanded);
+        isExpandedList[index] = expanded;
         if (!expanded) {
-          final isEmpty = questionObject.questionController.text.trim().isEmpty ||
-              questionObject.tipController.text.trim().isEmpty ||
-              questionObject.answerController.text.trim().isEmpty ||
-              questionObject.options.isEmpty();
-
-          if (isEmpty) {
+          if (optionObject.isEmpty()) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Please fill in all fields for Question ${index + 1}'),
+                content: Text('Please fill in all fields for Object ${index + 1}'),
                 backgroundColor: Colors.red,
               ),
             );
@@ -51,8 +44,8 @@ class QuestionObjectForm extends StatelessWidget {
       childrenPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       children: [
         GameFormField(
-          controller: questionObject.questionController,
-          label: 'Question',
+          controller: optionObject.option1Controller,
+          label: 'Option 1',
           validator: (value) {
             if (value == null || value.trim().isEmpty) {
               return 'This field is required';
@@ -61,8 +54,8 @@ class QuestionObjectForm extends StatelessWidget {
           },
         ),
         GameFormField(
-          controller: questionObject.tipController,
-          label: 'Tip',
+          controller: optionObject.option2Controller,
+          label: 'Option 2',
           validator: (value) {
             if (value == null || value.trim().isEmpty) {
               return 'This field is required';
@@ -70,17 +63,27 @@ class QuestionObjectForm extends StatelessWidget {
             return null;
           },
         ),
-        //Answer ?????? Number corresponding to the correct option
-        if (index >= 5)
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton(
-              onPressed: () => onRemove(index),
-              child: const Text('Remove'),
-            ),
-          ),
-        const Divider(),
-      ],
+        GameFormField(
+          controller: optionObject.option3Controller,
+          label: 'Option 3',
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'This field is required';
+            }
+            return null;
+          },
+        ),
+        GameFormField(
+          controller: optionObject.option4Controller,
+          label: 'Option 4',
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'This field is required';
+            }
+            return null;
+          },
+        )
+      ]
     );
   }
 }

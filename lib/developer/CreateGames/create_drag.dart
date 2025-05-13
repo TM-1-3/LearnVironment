@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:learnvironment/developer/CreateGames/objects/trash_object.dart';
-import 'package:learnvironment/developer/widgets/age_dropdown.dart';
+import 'package:learnvironment/developer/widgets/dropdown/age_dropdown.dart';
+import 'package:learnvironment/developer/widgets/dropdown/tag_selection.dart';
 import 'package:learnvironment/developer/widgets/game_form_field.dart';
-import 'package:learnvironment/developer/widgets/tag_selection.dart';
-import 'package:learnvironment/developer/widgets/trash_object_form.dart';
+import 'package:learnvironment/developer/widgets/forms/trash_object_form.dart';
 
 
 class CreateDragPage extends StatefulWidget {

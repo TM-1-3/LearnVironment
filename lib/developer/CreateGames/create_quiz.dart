@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:learnvironment/developer/CreateGames/objects/option_object.dart';
 import 'package:learnvironment/developer/CreateGames/objects/question_object.dart';
-import 'package:learnvironment/developer/widgets/age_dropdown.dart';
+import 'package:learnvironment/developer/widgets/dropdown/age_dropdown.dart';
+import 'package:learnvironment/developer/widgets/dropdown/tag_selection.dart';
 import 'package:learnvironment/developer/widgets/game_form_field.dart';
-import 'package:learnvironment/developer/widgets/question_object_form.dart';
-import 'package:learnvironment/developer/widgets/tag_selection.dart';
+import 'package:learnvironment/developer/widgets/forms/question_object_form.dart';
 
 class CreateQuizPage extends StatefulWidget {
   const CreateQuizPage({super.key});
@@ -23,19 +24,21 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
 
   final TextEditingController gameLogoController = TextEditingController();
   final TextEditingController gameNameController = TextEditingController();
-  final TextEditingController gameDescriptionController =
-  TextEditingController();
-  final TextEditingController gameBibliographyController =
-  TextEditingController();
+  final TextEditingController gameDescriptionController = TextEditingController();
+  final TextEditingController gameBibliographyController = TextEditingController();
 
   late List<QuestionObject> questionObjects = [];
+  late List<OptionObject> optionObjects = [];
   late List<bool> isExpandedList = [];
+  late List<bool> isExpandedListOpt = [];
 
   @override
   void initState() {
     super.initState();
-    questionObjects = List.generate(4, (_) => QuestionObject());
+    questionObjects = List.generate(5, (_) => QuestionObject());
+    optionObjects = List.generate(5, (_) => OptionObject());
     isExpandedList = List.generate(questionObjects.length, (_) => true);
+    isExpandedListOpt = List.generate(optionObjects.length, (_) => true);
   }
 
   Future<bool> _validateImage(String imageUrl) async {
@@ -166,7 +169,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
           }
         },
         child: Scaffold(
-          appBar: AppBar(title: const Text('Create Drag Game')),
+          appBar: AppBar(title: const Text('Create Quiz Game')),
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Form(
@@ -221,7 +224,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                   const SizedBox(height: 12),
                   ExpansionTile(
                     title: const Text(
-                      'Trash Objects',
+                      'QuestionsTrash Objects',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     initiallyExpanded: true,
@@ -254,17 +257,26 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                       ...List.generate(questionObjects.length, (index) {
                         return QuestionObjectForm(
                           isExpandedList: isExpandedList,
+                          isExpandedListOpt: isExpandedListOpt,
                           questionObject: questionObjects[index],
+                          optionObject: optionObjects[index],
                           index: index,
                           onRemove: (removedIndex) {
                             setState(() {
                               questionObjects.removeAt(removedIndex);
+                              optionObjects.removeAt(removedIndex);
                               isExpandedList.removeAt(removedIndex);
+                              isExpandedListOpt.removeAt(removedIndex);
                             });
                           },
                           onIsExpandedList: (expandedList) {
                             setState(() {
                               isExpandedList = expandedList;
+                            });
+                          },
+                          onIsExpandedListOpt: (expandedList) {
+                            setState(() {
+                              isExpandedListOpt = expandedList;
                             });
                           },
                         );
@@ -273,10 +285,12 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                         onPressed: () {
                           setState(() {
                             questionObjects.add(QuestionObject());
+                            optionObjects.add(OptionObject());
                             isExpandedList.add(true);
+                            isExpandedListOpt.add(true);
                           });
                         },
-                        child: const Text('Add New Object'),
+                        child: const Text('Add New Question'),
                       ),
                     ],
                   ),
