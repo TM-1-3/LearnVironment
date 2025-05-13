@@ -11,7 +11,6 @@ void main() {
     });
 
     tearDown(() {
-      trashObject.answerController.dispose();
       trashObject.tipController.dispose();
       trashObject.imageUrlController.dispose();
     });
@@ -20,15 +19,7 @@ void main() {
       expect(trashObject.isEmpty(), isTrue);
     });
 
-    test('should return true when answer is empty', () {
-      trashObject.tipController.text = 'Some tip';
-      trashObject.imageUrlController.text = 'Some tip';
-
-      expect(trashObject.isEmpty(), isTrue);
-    });
-
     test('should return true when tip is empty', () {
-      trashObject.answerController.text = 'Some tip';
       trashObject.imageUrlController.text = 'Some tip';
 
       expect(trashObject.isEmpty(), isTrue);
@@ -36,14 +27,12 @@ void main() {
 
     test('should return true when image is empty', () {
       trashObject.tipController.text = 'Some tip';
-      trashObject.answerController.text = 'Some tip';
 
       expect(trashObject.isEmpty(), isTrue);
     });
 
     test('should return false when all fields are filled', () {
       trashObject.tipController.text = 'Some tip';
-      trashObject.answerController.text = 'Some tip';
       trashObject.imageUrlController.text = 'Some tip';
 
       expect(trashObject.isEmpty(), isFalse);
@@ -51,7 +40,6 @@ void main() {
 
     test('should treat whitespace-only fields as empty', () {
       trashObject.tipController.text = '   ';
-      trashObject.answerController.text = '   ';
       trashObject.imageUrlController.text = '   ';
 
       expect(trashObject.isEmpty(), isTrue);
@@ -62,9 +50,6 @@ void main() {
       trashObject.dispose();
 
       expect(() => trashObject.tipController.text = 'Test',
-          throwsA(isA<FlutterError>()));
-
-      expect(() => trashObject.answerController.text = 'Tip',
           throwsA(isA<FlutterError>()));
 
       expect(() => trashObject.imageUrlController.text = 'Option',

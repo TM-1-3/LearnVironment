@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:learnvironment/developer/CreateGames/objects/trash_object.dart';
+import 'package:learnvironment/developer/widgets/dropdown/trash_can_dropdown.dart';
 import 'package:learnvironment/developer/widgets/game_form_field.dart';
 
-class TrashObjectForm extends StatelessWidget {
+class TrashObjectForm extends StatefulWidget {
   final TrashObject trashObject;
   final int index;
   final ValueChanged<int> onRemove;
   final ValueChanged<List<bool>> onIsExpandedList;
   final List<bool> isExpandedList;
+  final String? selectedOption;
+  final ValueChanged<String?> onSelectedOptionChanged;
 
   const TrashObjectForm({
     super.key,
@@ -16,31 +19,42 @@ class TrashObjectForm extends StatelessWidget {
     required this.onRemove,
     required this.onIsExpandedList,
     required this.isExpandedList,
+    required this.selectedOption,
+    required this.onSelectedOptionChanged
   });
+
+  @override
+  State<TrashObjectForm> createState() => _TrashObjectFormState();
+}
+
+class _TrashObjectFormState extends State<TrashObjectForm> {
+  late String? selectedOption;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedOption = widget.selectedOption;
+  }
 
   @override
   Widget build(BuildContext context) {
     return ExpansionTile(
-      title: Text('Object ${index + 1}'),
+      title: Text('Object ${widget.index + 1}'),
         onExpansionChanged: (expanded) {
-          onIsExpandedList(List.from(isExpandedList)..[index] = expanded);
-          isExpandedList[index] = expanded;
+          widget.onIsExpandedList(List.from(widget.isExpandedList)..[widget.index] = expanded);
+          widget.isExpandedList[widget.index] = expanded;
         if (!expanded) {
-          final isEmpty = trashObject.imageUrlController.text.trim().isEmpty ||
-              trashObject.tipController.text.trim().isEmpty ||
-              trashObject.answerController.text.trim().isEmpty;
-
-          if (isEmpty) {
+          if (widget.trashObject.isEmpty()) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Please fill in all fields for Object ${index + 1}'),
+                content: Text('Please fill in all fields for Object ${widget.index + 1}'),
                 backgroundColor: Colors.red,
               ),
             );
           }
         }
       },
-      initiallyExpanded: isExpandedList[index],
+      initiallyExpanded: widget.isExpandedList[widget.index],
       backgroundColor: Colors.green.shade50,
       collapsedBackgroundColor: Colors.green.shade100,
       textColor: Colors.green.shade700,
@@ -50,7 +64,7 @@ class TrashObjectForm extends StatelessWidget {
       childrenPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       children: [
         GameFormField(
-          controller: trashObject.imageUrlController,
+          controller: widget.trashObject.imageUrlController,
           label: 'Image URL',
           validator: (value) {
             if (value == null || value.trim().isEmpty) {
@@ -60,7 +74,7 @@ class TrashObjectForm extends StatelessWidget {
           },
         ),
         GameFormField(
-          controller: trashObject.tipController,
+          controller: widget.trashObject.tipController,
           label: 'Tip',
           validator: (value) {
             if (value == null || value.trim().isEmpty) {
@@ -69,21 +83,20 @@ class TrashObjectForm extends StatelessWidget {
             return null;
           },
         ),
-        GameFormField(
-          controller: trashObject.answerController,
-          label: 'Correct Answer',
-          validator: (value) {
-            if (value == null || value.trim().isEmpty) {
-              return 'This field is required';
+        TrashCanDropdown(
+            selectedOption: selectedOption,
+            onOptionSelected:  (String? value) {
+              setState(() {
+                selectedOption = value;
+              });
+              widget.onSelectedOptionChanged(value);
             }
-            return null;
-          },
         ),
-        if (index >= 4)
+        if (widget.index >= 4)
           Align(
             alignment: Alignment.centerRight,
             child: TextButton(
-              onPressed: () => onRemove(index),
+              onPressed: () => widget.onRemove(widget.index),
               child: const Text('Remove'),
             ),
           ),
