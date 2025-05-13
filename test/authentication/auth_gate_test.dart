@@ -54,7 +54,7 @@ class MockAuthService extends Mock implements AuthService {
 
 class MockDataService extends Mock implements DataService {
   @override
-  Future<UserData?> getUserData({required String userId}) {
+  Future<UserData?> getUserData({required String userId}) async {
     if (userId == 'testDeveloper') {
       return Future.value(UserData(role: 'developer', id: 'testDeveloper', username: 'Test User', email: 'test@example.com', name: 'Dev', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: [], myGames: [], stClasses: [], tClasses: [], img: ''));
     } else if (userId == 'testStudent') {
@@ -63,6 +63,8 @@ class MockDataService extends Mock implements DataService {
       return Future.value(UserData(role: 'teacher', id: '', username: '', email: '', name: '', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: [], myGames: [], stClasses: [], tClasses: [], img: ''));
     } else if (userId == 'error') {
       throw Exception('Error loading user data');
+    } else if (userId == 'null') {
+      return null;
     } else {
       return Future.value(UserData(role: '', id: '', username: '', email: '', name: '', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: [], myGames: [], stClasses: [], tClasses: [], img: ''));
     }
@@ -233,6 +235,33 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Error: Exception: Error loading user data'), findsOneWidget);
+    });
+
+    testWidgets('Goes to Fix Account Page when user is null', (WidgetTester tester) async {
+      mockAuth = MockFirebaseAuth(signedIn: true,
+        mockUser: MockUser(
+          uid: 'null',
+          email: 'test@example.com',
+          displayName: 'Test User',
+        ),
+      );
+
+      testWidget = MultiProvider(
+        providers: [
+          ChangeNotifierProvider<AuthService>(create: (_) => MockAuthService(firebaseAuth: mockAuth)),
+          Provider<DataService>(create: (_) => mockDataService),
+          Provider<FirestoreService>(create: (_) => mockFirestoreService),
+          Provider<FirebaseMessagingService>(create: (_) => firebaseMessagingService),
+        ],
+        child: MaterialApp(
+          home: AuthGate(),
+        ),
+      );
+
+      await tester.pumpWidget(testWidget);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(FixAccountPage), findsOneWidget);
     });
   });
 }

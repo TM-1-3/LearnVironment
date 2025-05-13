@@ -156,7 +156,7 @@ void main() {
 
     // Fill out the required fields
     await tester.enterText(find.byType(TextField).at(0), 'John Doe');
-    await tester.enterText(find.byType(TextField).at(1), 'https://someurl.com/image.png');
+    await tester.enterText(find.byType(TextField).at(1), 'https://www.pixartprinting.it/blog/wp-content/uploads/2021/06/1_Mona_Lisa_300ppi.jpg');
     await tester.enterText(find.byType(TextField).at(2), '2023-05-10');
     await tester.enterText(find.byType(TextField).at(3), 'john_doe');
     await tester.enterText(find.byType(TextField).at(4), 'john@example.com');
