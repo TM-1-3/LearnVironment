@@ -285,6 +285,10 @@ class DataService {
     }
   }
 
+  Future<bool> checkIfStudentAlreadyInClass({required String subjectId, required String studentId}) async {
+    return await _firestoreService.checkIfStudentAlreadyInClass(subjectId: subjectId, studentId: studentId);
+  }
+
   Future<List<Map<String, dynamic>>> getAllSubjects({required String uid}) async {
     try {
       List<Map<String, dynamic>> loadedSubjects = [];

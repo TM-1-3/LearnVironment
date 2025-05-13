@@ -26,6 +26,7 @@ class MockDataService extends Mock implements DataService {
   bool throwErrorOnDelete = false;
   bool throwErrorOnAddStudent = false;
   bool throwErrorOnRemoveStudent = false;
+  bool throwErrorAlreadyExistingStudent = false;
 
   void setThrowErrorOnDelete(bool value) {
     throwErrorOnDelete = value;
@@ -37,6 +38,10 @@ class MockDataService extends Mock implements DataService {
 
   void setThrowErrorOnRemoveStudent(bool value) {
     throwErrorOnRemoveStudent = value;
+  }
+
+  void setThrowErrorAlreadyExistingStudent(bool value){
+    throwErrorAlreadyExistingStudent = value;
   }
 
   @override
@@ -70,6 +75,9 @@ class MockDataService extends Mock implements DataService {
     if (throwErrorOnAddStudent) {
       throw Exception('Failed to add student');
     }
+    if (throwErrorAlreadyExistingStudent){
+      throw Exception('Student is already in this subject');
+    }
   }
 
   @override
@@ -86,6 +94,14 @@ class MockDataService extends Mock implements DataService {
       return null;
     }
     return username;
+  }
+
+  @override
+  Future<bool> checkIfStudentAlreadyInClass({required String subjectId, required String studentId}) async {
+    if (studentId=='user_student1' || studentId=='user_student2'){
+      return true;
+    }
+    return false;
   }
 }
 
@@ -251,6 +267,25 @@ void main() {
       await tester.pump(const Duration(seconds: 1)); // Wait for async work
 
       expect(find.text('Failed to add student'), findsOneWidget);
+    });
+
+    testWidgets('shows snackbar on adding student already in subject', (tester) async {
+      mockDataService.setThrowErrorAlreadyExistingStudent(true);
+      await tester.pumpWidget(testWidget);
+      await tester.pumpAndSettle();
+
+      // Tap the "Add Student" button
+      await tester.ensureVisible(find.byKey(Key("addStudent")));
+      await tester.tap(find.byKey(Key("addStudent")));
+      await tester.pumpAndSettle();
+
+      // Enter invalid student Username
+      await tester.enterText(find.byType(TextField), 'user_student1');
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Add'));
+      await tester.pump(); // Begin async call
+      await tester.pump(const Duration(seconds: 1)); // Wait for async work
+
+      expect(find.text('Student is already in this subject'), findsOneWidget);
     });
 
     testWidgets('removes a student successfully', (tester) async {
