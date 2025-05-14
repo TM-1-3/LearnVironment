@@ -469,15 +469,23 @@ class FirestoreService {
       final userSnapshot = await userDoc.get();
 
       List<String> classes = [];
+      List<String> stClasses = [];
+      List<String> tClasses = [];
 
       if (userSnapshot.exists && userSnapshot.data() != null) {
         final data = userSnapshot.data()!;
         classes = List<String>.from(data['classes'] ?? []);
+        stClasses = List<String>.from(data['stClasses'] ?? []);
+        tClasses = List<String>.from(data['tClasses'] ?? []);
       }
 
       classes.remove(subjectId);
+      stClasses.remove(subjectId);
+      tClasses.remove(subjectId);
 
       await userDoc.update({'classes': classes});
+      await userDoc.update({'stClasses': stClasses});
+      await userDoc.update({'tClasses': tClasses});
       print("[FirestoreService] Class Deleted");
     } catch (e) {
       print("[FirestoreService] Error deleting class $subjectId");
