@@ -12,8 +12,6 @@ class QuestionObjectForm extends StatefulWidget {
   final ValueChanged<List<bool>> onIsExpandedListOpt;
   final List<bool> isExpandedList;
   final List<bool> isExpandedListOpt;
-  final String? selectedOption;
-  final ValueChanged<String?> onSelectedOptionChanged;
 
   const QuestionObjectForm({
     super.key,
@@ -24,8 +22,6 @@ class QuestionObjectForm extends StatefulWidget {
     required this.isExpandedList,
     required this.onIsExpandedListOpt,
     required this.isExpandedListOpt,
-    required this.selectedOption,
-    required this.onSelectedOptionChanged,
   });
 
   @override
@@ -40,7 +36,7 @@ class _QuestionObjectFormState extends State<QuestionObjectForm> {
   @override
   void initState() {
     super.initState();
-    selectedOption = widget.selectedOption;
+    selectedOption = null;
     isExpandedListOpt = widget.isExpandedListOpt;
     isExpandedList = widget.isExpandedList;
   }
@@ -112,8 +108,8 @@ class _QuestionObjectFormState extends State<QuestionObjectForm> {
           onOptionSelected: (String? value) {
               setState(() {
                 selectedOption = value;
+                widget.questionObject.selectedOption = value;
               });
-              widget.onSelectedOptionChanged(value);
           },
         ),
         if (widget.index >= 5)

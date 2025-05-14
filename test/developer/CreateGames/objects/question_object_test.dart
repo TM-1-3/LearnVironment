@@ -26,6 +26,7 @@ void main() {
       questionObject.options.option2Controller.text = 'Option 2';
       questionObject.options.option3Controller.text = 'Option 3';
       questionObject.options.option4Controller.text = 'Option 4';
+      questionObject.selectedOption = 'option1';
 
       expect(questionObject.isEmpty(), isTrue);
     });
@@ -36,6 +37,7 @@ void main() {
       questionObject.options.option2Controller.text = 'Option 2';
       questionObject.options.option3Controller.text = 'Option 3';
       questionObject.options.option4Controller.text = 'Option 4';
+      questionObject.selectedOption = 'option2';
 
       expect(questionObject.isEmpty(), isTrue);
     });
@@ -47,17 +49,31 @@ void main() {
       questionObject.options.option2Controller.text = 'Option 2';
       questionObject.options.option3Controller.text = 'Option 3';
       questionObject.options.option4Controller.text = ''; // empty
+      questionObject.selectedOption = 'option1';
 
       expect(questionObject.isEmpty(), isTrue);
     });
 
-    test('should return false when all fields are filled', () {
+    test('should return true when selectedOption is null', () {
       questionObject.questionController.text = 'Question';
       questionObject.tipController.text = 'Tip';
       questionObject.options.option1Controller.text = 'Option 1';
       questionObject.options.option2Controller.text = 'Option 2';
       questionObject.options.option3Controller.text = 'Option 3';
       questionObject.options.option4Controller.text = 'Option 4';
+      questionObject.selectedOption = null;
+
+      expect(questionObject.isEmpty(), isTrue);
+    });
+
+    test('should return false when all fields are filled including selectedOption', () {
+      questionObject.questionController.text = 'Question';
+      questionObject.tipController.text = 'Tip';
+      questionObject.options.option1Controller.text = 'Option 1';
+      questionObject.options.option2Controller.text = 'Option 2';
+      questionObject.options.option3Controller.text = 'Option 3';
+      questionObject.options.option4Controller.text = 'Option 4';
+      questionObject.selectedOption = 'option3';
 
       expect(questionObject.isEmpty(), isFalse);
     });
@@ -69,6 +85,7 @@ void main() {
       questionObject.options.option2Controller.text = '   ';
       questionObject.options.option3Controller.text = '   ';
       questionObject.options.option4Controller.text = '   ';
+      questionObject.selectedOption = 'option1';
 
       expect(questionObject.isEmpty(), isTrue);
     });
@@ -79,24 +96,16 @@ void main() {
 
       expect(() => questionObject.questionController.text = 'Test',
           throwsA(isA<FlutterError>()));
-
       expect(() => questionObject.tipController.text = 'Tip',
           throwsA(isA<FlutterError>()));
-
-      expect(() => questionObject.options.option1Controller.text = 'Option',
+      expect(() => questionObject.options.option1Controller.text = 'Option 1',
           throwsA(isA<FlutterError>()));
-      expect(
-            () => questionObject.options.option2Controller.text = "New Value",
-        throwsA(isA<FlutterError>()),
-      );
-      expect(
-            () => questionObject.options.option3Controller.text = "New Value",
-        throwsA(isA<FlutterError>()),
-      );
-      expect(
-            () => questionObject.options.option4Controller.text = "New Value",
-        throwsA(isA<FlutterError>()),
-      );
+      expect(() => questionObject.options.option2Controller.text = 'Option 2',
+          throwsA(isA<FlutterError>()));
+      expect(() => questionObject.options.option3Controller.text = 'Option 3',
+          throwsA(isA<FlutterError>()));
+      expect(() => questionObject.options.option4Controller.text = 'Option 4',
+          throwsA(isA<FlutterError>()));
     });
   });
 }

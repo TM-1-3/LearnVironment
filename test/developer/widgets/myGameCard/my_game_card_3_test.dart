@@ -25,7 +25,7 @@ void main() {
     await tester.pumpWidget(widget);
 
     expect(find.text('Make Private'), findsOneWidget);
-    expect(find.byType(TagWidget), findsNWidgets(4)); // 3 visible + 1 more
-    expect(find.text('+2 more'), findsOneWidget);
+    expect(find.byType(TagWidget), findsNWidgets(3));
+    expect(find.text('+3 more'), findsOneWidget);
   });
 }

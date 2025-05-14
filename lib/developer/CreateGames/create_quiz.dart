@@ -24,7 +24,6 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
 
   final List<String> ageOptions = ['12+', '10+', '8+', '6+'];
   String selectedAge = '12+';
-  String? selectedOption;
   late List<String> selectedTags = [];
 
   final TextEditingController gameLogoController = TextEditingController();
@@ -80,7 +79,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
         final key = object.questionController.text.trim();
         final tip = object.tipController.text.trim();
 
-        if (key.isNotEmpty && tip.isNotEmpty && !(object.options.isEmpty()) && selectedOption != null) {
+        if (key.isNotEmpty && tip.isNotEmpty && !(object.options.isEmpty()) && object.selectedOption != null) {
           tips[key] = tip;
 
           final opt1 = object.options.option1Controller.text.trim();
@@ -90,9 +89,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
           List<String> options = [opt1, opt2, opt3, opt4];
           questionsAndOptions[key] = options;
 
-          print(options[int.parse(selectedOption!)-1]);
-
-          correctAnswers[key] = options[int.parse(selectedOption!)-1];
+          correctAnswers[key] = options[int.parse(object.selectedOption!)-1];
         } else {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -310,12 +307,6 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                           onIsExpandedListOpt: (expandedList) {
                             setState(() {
                               isExpandedListOpt = expandedList;
-                            });
-                          },
-                          selectedOption: selectedOption,
-                          onSelectedOptionChanged:  (value) {
-                            setState(() {
-                              selectedOption = value;
                             });
                           },
                         );

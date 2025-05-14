@@ -20,20 +20,30 @@ void main() {
     });
 
     test('should return true when tip is empty', () {
-      trashObject.imageUrlController.text = 'Some tip';
+      trashObject.imageUrlController.text = 'Some image';
+      trashObject.selectedOption = 'Option';
 
       expect(trashObject.isEmpty(), isTrue);
     });
 
     test('should return true when image is empty', () {
       trashObject.tipController.text = 'Some tip';
+      trashObject.selectedOption = 'Option';
+
+      expect(trashObject.isEmpty(), isTrue);
+    });
+
+    test('should return true when selectedOption is null', () {
+      trashObject.tipController.text = 'Some tip';
+      trashObject.imageUrlController.text = 'Some image';
 
       expect(trashObject.isEmpty(), isTrue);
     });
 
     test('should return false when all fields are filled', () {
       trashObject.tipController.text = 'Some tip';
-      trashObject.imageUrlController.text = 'Some tip';
+      trashObject.imageUrlController.text = 'Some image';
+      trashObject.selectedOption = 'Option';
 
       expect(trashObject.isEmpty(), isFalse);
     });
@@ -41,6 +51,7 @@ void main() {
     test('should treat whitespace-only fields as empty', () {
       trashObject.tipController.text = '   ';
       trashObject.imageUrlController.text = '   ';
+      trashObject.selectedOption = 'Option';
 
       expect(trashObject.isEmpty(), isTrue);
     });
