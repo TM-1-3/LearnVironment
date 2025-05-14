@@ -77,6 +77,9 @@ class _CreateDragPageState extends State<CreateDragPage> {
       //Validate Objects
       for (var object in trashObjects) {
         if (object.isEmpty() || selectedOption == null) {
+          print(selectedOption);
+          print(object.imageUrlController);
+          print(object.tipController);
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -163,12 +166,6 @@ class _CreateDragPageState extends State<CreateDragPage> {
         _isSaved = true;
       });
     }
-  }
-
-  void updateExpansionState(int index, bool expanded) {
-    setState(() {
-      isExpandedList[index] = expanded;
-    });
   }
 
   Future<bool?> _onWillPop() async {

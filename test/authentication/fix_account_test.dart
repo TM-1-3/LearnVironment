@@ -56,7 +56,6 @@ class MockDataService extends Mock implements DataService {
 
 void main() {
   late MockFirebaseAuth mockAuth;
-  late MockDataService mockDataService;
   late MockAuthService authService;
   late Widget testWidget;
 

@@ -13,9 +13,9 @@ class FirebaseMessagingService {
   })  : flutterLocalNotificationsPlugin = localNotificationsPlugin ?? FlutterLocalNotificationsPlugin(),
         firebaseMessaging = firebaseMessaging ?? FirebaseMessaging.instance;
 
-  Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  static Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     await Firebase.initializeApp();
-    showNotification(message);
+    showNotification(message: message);
   }
 
   Future<void> initNotifications({InitializationSettings? initializationSettings, AndroidNotificationChannel? channel}) async {
@@ -37,9 +37,10 @@ class FirebaseMessagingService {
         ?.createNotificationChannel(channel);
   }
 
-  void showNotification(RemoteMessage message) {
+  static void showNotification({required RemoteMessage message, FlutterLocalNotificationsPlugin? localNotificationsPlugin}) {
     final notification = message.notification;
     final android = message.notification?.android;
+    final flutterLocalNotificationsPlugin = localNotificationsPlugin ?? FlutterLocalNotificationsPlugin();
 
     if (notification != null && android != null) {
       final androidDetails = AndroidNotificationDetails(
@@ -64,7 +65,7 @@ class FirebaseMessagingService {
   void setupFCMListeners() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       print('FCM message received in foreground');
-      showNotification(message);
+      showNotification(message: message);
       NotificationStorage.notificationMessages.add(message);
     });
 
