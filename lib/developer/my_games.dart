@@ -108,11 +108,11 @@ class MyGamesPageState extends State<MyGamesPage> {
     final screenWidth = MediaQuery.of(context).size.width;
     double mainAxisExtent = 500.0;
     if (screenWidth <= 630) {
-      mainAxisExtent = screenWidth+40;
-    } else if (screenWidth <= 1040) {
+      mainAxisExtent = screenWidth+55;
+    } else if (screenWidth <= 1055) {
       mainAxisExtent = 850;
-    } else if (screenWidth <= 2040) {
-      mainAxisExtent = 1060;
+    } else if (screenWidth <= 2055) {
+      mainAxisExtent = 1075;
     } else {
       mainAxisExtent = 1640;
     }

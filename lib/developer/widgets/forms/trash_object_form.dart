@@ -24,7 +24,7 @@ class TrashObjectForm extends StatefulWidget {
 }
 
 class _TrashObjectFormState extends State<TrashObjectForm> {
-  late String? selectedOption;
+  String? selectedOption;
 
   @override
   Widget build(BuildContext context) {
@@ -78,6 +78,7 @@ class _TrashObjectFormState extends State<TrashObjectForm> {
             onOptionSelected:  (String? value) {
               setState(() {
                 selectedOption = value;
+                widget.trashObject.selectedOption = value;
               });
             }
         ),

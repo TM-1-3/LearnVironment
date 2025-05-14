@@ -134,8 +134,10 @@ class _CreateDragPageState extends State<CreateDragPage> {
 
       //Create the game and add it to database
       if (mounted) {
-        final DataService dataService = Provider.of<DataService>(context, listen: false);
-        final AuthService authService = Provider.of<AuthService>(context, listen: false);
+        final DataService dataService = Provider.of<DataService>(
+            context, listen: false);
+        final AuthService authService = Provider.of<AuthService>(
+            context, listen: false);
 
         final String gameId = const Uuid().v4();
 
@@ -152,14 +154,32 @@ class _CreateDragPageState extends State<CreateDragPage> {
             tips: tips
         );
 
-        dataService.createGame(uid: await authService.getUid(), game: gameData);
+        try {
+          await dataService.createGame(
+              uid: await authService.getUid(), game: gameData);
 
-        //Navigate to auth_service and display SnackBar
-
+          //Navigate to auth_service and display SnackBar
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Game Created with success'),
+              ),
+            );
+          }
+          setState(() {
+            _isSaved = true;
+          });
+        } catch (e) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('An error occurred. Please try again.'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        }
       }
-      setState(() {
-        _isSaved = true;
-      });
     }
   }
 
