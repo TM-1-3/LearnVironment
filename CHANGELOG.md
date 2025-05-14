@@ -96,6 +96,7 @@
 - Teachers add students in a class by entering their usernames, instead of their names, as two students can have the same name, but usernames cannot be equal [#126](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/126)
 - It is checked if a student is already in a class, before adding to it, so teachers cannot add a student to a class more than once [#127](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/127)
 - Fixed bugs in back buttons of teacher pages [#94](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/94)
+- When a teacher deletes a subject, every instance of it is deleted from the Firestore Databse [#129](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/129)
 
 ### Test User
 - email: up202307719@g.uporto.pt
