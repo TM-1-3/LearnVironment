@@ -33,12 +33,6 @@ class _TrashObjectFormState extends State<TrashObjectForm> {
   }
 
   @override
-  void dispose() {
-    widget.trashObject.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return ExpansionTile(
       title: Text('Object ${widget.index + 1}'),

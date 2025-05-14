@@ -50,6 +50,9 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
     gameNameController.dispose();
     gameDescriptionController.dispose();
     gameBibliographyController.dispose();
+    for (var object in questionObjects) {
+      object.dispose();
+    }
   }
 
   Future<bool> _validateImage(String imageUrl) async {
@@ -168,6 +171,9 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
           setState(() {
             _isSaved = true;
           });
+          if (mounted) {
+            Navigator.of(context).pushReplacementNamed('/auth_gate');
+          }
         } catch (e) {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(

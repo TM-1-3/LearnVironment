@@ -49,6 +49,9 @@ class _CreateDragPageState extends State<CreateDragPage> {
     gameNameController.dispose();
     gameDescriptionController.dispose();
     gameBibliographyController.dispose();
+    for (var object in trashObjects) {
+      object.dispose();
+    }
   }
 
   Future<bool> _validateImage(String imageUrl) async {
@@ -164,8 +167,7 @@ class _CreateDragPageState extends State<CreateDragPage> {
         );
 
         try {
-          await dataService.createGame(
-              uid: await authService.getUid(), game: gameData);
+          await dataService.createGame(uid: await authService.getUid(), game: gameData);
 
           //Navigate to auth_service and display SnackBar
           if (mounted) {
@@ -175,9 +177,14 @@ class _CreateDragPageState extends State<CreateDragPage> {
               ),
             );
           }
+
           setState(() {
             _isSaved = true;
           });
+
+          if (mounted) {
+            Navigator.of(context).pushReplacementNamed('/auth_gate');
+          }
         } catch (e) {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -348,7 +355,13 @@ class _CreateDragPageState extends State<CreateDragPage> {
                 ),
 
                 const SizedBox(height: 20),
-                Center(child: ElevatedButton(onPressed: _submitForm, child: const Text('Create Game'))),
+                Center(
+                      child: ElevatedButton(
+                        key: Key("submit"),
+                        onPressed: _submitForm,
+                        child: const Text('Create Game')
+                    )
+                ),
               ],
             ),
           ),
