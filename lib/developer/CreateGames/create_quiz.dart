@@ -34,7 +34,6 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
   final TextEditingController gameBibliographyController = TextEditingController();
 
   late List<QuestionObject> questionObjects = [];
-  late List<OptionObject> optionObjects = [];
   late List<bool> isExpandedList = [];
   late List<bool> isExpandedListOpt = [];
 
@@ -42,9 +41,8 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
   void initState() {
     super.initState();
     questionObjects = List.generate(5, (_) => QuestionObject());
-    optionObjects = List.generate(5, (_) => OptionObject());
     isExpandedList = List.generate(questionObjects.length, (_) => true);
-    isExpandedListOpt = List.generate(optionObjects.length, (_) => true);
+    isExpandedListOpt = List.generate(questionObjects.length, (_) => true);
   }
 
   Future<bool> _validateImage(String imageUrl) async {
@@ -295,12 +293,10 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                           isExpandedList: isExpandedList,
                           isExpandedListOpt: isExpandedListOpt,
                           questionObject: questionObjects[index],
-                          optionObject: optionObjects[index],
                           index: index,
                           onRemove: (removedIndex) {
                             setState(() {
                               questionObjects.removeAt(removedIndex);
-                              optionObjects.removeAt(removedIndex);
                               isExpandedList.removeAt(removedIndex);
                               isExpandedListOpt.removeAt(removedIndex);
                             });
@@ -314,7 +310,8 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                             setState(() {
                               isExpandedListOpt = expandedList;
                             });
-                          }, selectedOption: selectedOption,
+                          },
+                          selectedOption: selectedOption,
                           onSelectedOptionChanged:  (value) {
                             setState(() {
                               selectedOption = value;
@@ -326,7 +323,6 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                         onPressed: () {
                           setState(() {
                             questionObjects.add(QuestionObject());
-                            optionObjects.add(OptionObject());
                             isExpandedList.add(true);
                             isExpandedListOpt.add(true);
                           });

@@ -77,9 +77,6 @@ class _CreateDragPageState extends State<CreateDragPage> {
       //Validate Objects
       for (var object in trashObjects) {
         if (object.isEmpty() || selectedOption == null) {
-          print(selectedOption);
-          print(object.imageUrlController);
-          print(object.tipController);
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -109,10 +106,9 @@ class _CreateDragPageState extends State<CreateDragPage> {
           return;
         }
 
-        if (key.isNotEmpty && tip.isNotEmpty && answer.isNotEmpty) {
-          tips[key] = tip;
-          correctAnswers[key] = answer;
-        }
+        tips[key] = tip;
+        correctAnswers[key] = answer;
+        print(key);
         index++;
       }
 
@@ -156,6 +152,8 @@ class _CreateDragPageState extends State<CreateDragPage> {
             correctAnswers: correctAnswers,
             tips: tips
         );
+
+        print(gameData.correctAnswers);
 
         dataService.createGame(uid: await authService.getUid(), game: gameData);
 

@@ -7,7 +7,6 @@ import 'package:learnvironment/developer/widgets/game_form_field.dart';
 
 class QuestionObjectForm extends StatefulWidget {
   final QuestionObject questionObject;
-  final OptionObject optionObject;
   final int index;
   final ValueChanged<int> onRemove;
   final ValueChanged<List<bool>> onIsExpandedList;
@@ -24,7 +23,6 @@ class QuestionObjectForm extends StatefulWidget {
     required this.onRemove,
     required this.onIsExpandedList,
     required this.isExpandedList,
-    required this.optionObject,
     required this.onIsExpandedListOpt,
     required this.isExpandedListOpt,
     required this.selectedOption,
@@ -37,11 +35,15 @@ class QuestionObjectForm extends StatefulWidget {
 
 class _QuestionObjectFormState extends State<QuestionObjectForm> {
   late String? selectedOption;
+  late List<bool> isExpandedListOpt;
+  late List<bool> isExpandedList;
 
   @override
   void initState() {
     super.initState();
     selectedOption = widget.selectedOption;
+    isExpandedListOpt = widget.isExpandedListOpt;
+    isExpandedList = widget.isExpandedList;
   }
 
   @override
@@ -49,8 +51,8 @@ class _QuestionObjectFormState extends State<QuestionObjectForm> {
     return ExpansionTile(
       title: Text('Question ${widget.index + 1}'),
       onExpansionChanged: (expanded) {
-        widget.onIsExpandedList(List.from(widget.isExpandedList)..[widget.index] = expanded);
-        widget.isExpandedList[widget.index] = expanded;
+        widget.onIsExpandedList(List.from(isExpandedList)..[widget.index] = expanded);
+        isExpandedList[widget.index] = expanded;
         if (!expanded) {
           final isEmpty = widget.questionObject.questionController.text.trim().isEmpty ||
               widget.questionObject.tipController.text.trim().isEmpty ||
@@ -66,7 +68,7 @@ class _QuestionObjectFormState extends State<QuestionObjectForm> {
           }
         }
       },
-      initiallyExpanded: widget.isExpandedList[widget.index],
+      initiallyExpanded: isExpandedList[widget.index],
       backgroundColor: Colors.green.shade50,
       collapsedBackgroundColor: Colors.green.shade100,
       textColor: Colors.green.shade700,
@@ -96,10 +98,15 @@ class _QuestionObjectFormState extends State<QuestionObjectForm> {
           },
         ),
         OptionsObjectForm(
-          optionObject: widget.optionObject,
+          optionObject: widget.questionObject.options,
           index: widget.index,
-          onIsExpandedList: widget.onIsExpandedListOpt,
-          isExpandedList: widget.isExpandedListOpt,
+          onIsExpandedList: (expandedList) {
+            setState(() {
+              isExpandedListOpt = expandedList;
+            });
+            widget.onIsExpandedListOpt(expandedList);
+          },
+          isExpandedList: isExpandedListOpt,
         ),
         OptionDropdown(
           selectedOption: selectedOption,
