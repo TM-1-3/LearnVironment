@@ -25,7 +25,6 @@ class _CreateDragPageState extends State<CreateDragPage> {
 
   final List<String> ageOptions = ['12+', '10+', '8+', '6+'];
   String selectedAge = '12+';
-  String? selectedOption;
   late List<String> selectedTags = [];
 
   final TextEditingController gameLogoController = TextEditingController();
@@ -71,12 +70,12 @@ class _CreateDragPageState extends State<CreateDragPage> {
       final Map<String, String> tips = {};
       final Map<String, String> correctAnswers = {};
 
-      tags.insert(0, selectedAge); //Add age to tags
+      tags.insert(0, "Age: $selectedAge"); //Add age to tags
 
       int index = 0;
       //Validate Objects
       for (var object in trashObjects) {
-        if (object.isEmpty() || selectedOption == null) {
+        if (object.isEmpty() || object.selectedOption == null) {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -89,7 +88,7 @@ class _CreateDragPageState extends State<CreateDragPage> {
         }
         final key = object.imageUrlController.text.trim();
         final tip = object.tipController.text.trim();
-        final answer = selectedOption!.split(' ').first.toLowerCase();
+        final answer = object.selectedOption!.split(' ').first.toLowerCase();
 
         //Validate image
         bool isValidImage = await _validateImage(key);
@@ -152,8 +151,6 @@ class _CreateDragPageState extends State<CreateDragPage> {
             correctAnswers: correctAnswers,
             tips: tips
         );
-
-        print(gameData.correctAnswers);
 
         dataService.createGame(uid: await authService.getUid(), game: gameData);
 
@@ -306,13 +303,7 @@ class _CreateDragPageState extends State<CreateDragPage> {
                         setState(() {
                           isExpandedList = expandedList;
                         });
-                      },
-                      selectedOption: selectedOption,
-                      onSelectedOptionChanged: (value) {
-                        setState(() {
-                          selectedOption = value;
-                        });
-                      },
+                      }
                     );
                   }),
                     ElevatedButton(

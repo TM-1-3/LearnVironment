@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:learnvironment/data/game_data.dart';
-import 'package:learnvironment/developer/CreateGames/objects/option_object.dart';
 import 'package:learnvironment/developer/CreateGames/objects/question_object.dart';
 import 'package:learnvironment/developer/widgets/dropdown/age_dropdown.dart';
 import 'package:learnvironment/developer/widgets/dropdown/tag_selection.dart';
@@ -75,7 +74,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
       final Map<String, String> correctAnswers = {};
       final Map<String, List<String>> questionsAndOptions = {};
 
-      tags.insert(0, selectedAge); //Add age to tags
+      tags.insert(0, "Age: $selectedAge"); //Add age to tags
 
       for (var object in questionObjects) {
         final key = object.questionController.text.trim();
@@ -91,7 +90,9 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
           List<String> options = [opt1, opt2, opt3, opt4];
           questionsAndOptions[key] = options;
 
-          correctAnswers[key] = options[int.parse(selectedOption!)];
+          print(options[int.parse(selectedOption!)-1]);
+
+          correctAnswers[key] = options[int.parse(selectedOption!)-1];
         } else {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(

@@ -9,8 +9,6 @@ class TrashObjectForm extends StatefulWidget {
   final ValueChanged<int> onRemove;
   final ValueChanged<List<bool>> onIsExpandedList;
   final List<bool> isExpandedList;
-  final String? selectedOption;
-  final ValueChanged<String?> onSelectedOptionChanged;
 
   const TrashObjectForm({
     super.key,
@@ -18,9 +16,7 @@ class TrashObjectForm extends StatefulWidget {
     required this.index,
     required this.onRemove,
     required this.onIsExpandedList,
-    required this.isExpandedList,
-    required this.selectedOption,
-    required this.onSelectedOptionChanged
+    required this.isExpandedList
   });
 
   @override
@@ -29,12 +25,6 @@ class TrashObjectForm extends StatefulWidget {
 
 class _TrashObjectFormState extends State<TrashObjectForm> {
   late String? selectedOption;
-
-  @override
-  void initState() {
-    super.initState();
-    selectedOption = widget.selectedOption;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +79,6 @@ class _TrashObjectFormState extends State<TrashObjectForm> {
               setState(() {
                 selectedOption = value;
               });
-              widget.onSelectedOptionChanged(value);
             }
         ),
         if (widget.index >= 4)
