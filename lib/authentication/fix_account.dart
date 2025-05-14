@@ -22,6 +22,15 @@ class _FixAccountPageState extends State<FixAccountPage> {
   final List<String> _accountTypes = ['developer', 'student', 'teacher'];
   bool _isButtonEnabled = true;
 
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _usernameController.dispose();
+    _nameController.dispose();
+    _imgController.dispose();
+    super.dispose();
+  }
+
   Future<bool> _validateImage(String imageUrl) async {
     http.Response res;
     try {
@@ -74,6 +83,15 @@ class _FixAccountPageState extends State<FixAccountPage> {
       final authService = Provider.of<AuthService>(context, listen: false);
       final dataService = Provider.of<DataService>(context, listen: false);
       String? uid = await authService.getUid();
+
+      if (await dataService.checkIfUsernameAlreadyExists(username)){
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Username already in use.')),
+          );
+        }
+        return;
+      }
 
       if (!await _validateImage(img)) {
         img = "assets/placeholder.png";

@@ -3,6 +3,20 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:learnvironment/services/firestore_service.dart';
 
+class MockFakeFirebaseFirestoreWithErrors extends FakeFirebaseFirestore {
+  final bool shouldThrow;
+
+  MockFakeFirebaseFirestoreWithErrors(this.shouldThrow);
+
+  @override
+  CollectionReference<Map<String, dynamic>> collection(String collectionPath) {
+    if (collectionPath == 'users') {
+      throw Exception("Error getting document");
+    }
+    return super.collection(collectionPath);
+  }
+}
+
 void main() {
   late FakeFirebaseFirestore firestore;
   late FirestoreService firestoreService;
@@ -484,4 +498,283 @@ void main() {
       }
     });
   });
+
+  group('getMyGames', () {
+    test('should return empty list if user not found for UID', () async {
+      firestore = FakeFirebaseFirestore();
+      firestoreService = FirestoreService(firestore: firestore);
+      final result = await firestoreService.getMyGames(uid: 'id');
+      expect(result, []);
+    });
+
+    test("should return empty list if 'myGames' field is not found", () async {
+      firestore = FakeFirebaseFirestore();
+      final docRef = await firestore.collection('users').add({
+        'username': 'Lebi',
+        'email': 'up202307719@g.uporto.pt',
+        'name': 'L',
+        'role': 'developer',
+        'birthdate': Timestamp.fromDate(DateTime(2000, 1, 1)),
+        'img' : 'assets/placeholder.png'
+      });
+      firestoreService = FirestoreService(firestore: firestore);
+
+      final result = await firestoreService.getMyGames(uid: docRef.id);
+      expect(result, []);
+    });
+
+    test("should return empty list if 'myGames' is not a list", () async {
+      firestore = FakeFirebaseFirestore();
+      final docRef = await firestore.collection('users').add({
+        'username': 'Lebi',
+        'email': 'up202307719@g.uporto.pt',
+        'name': 'L',
+        'role': 'developer',
+        'birthdate': Timestamp.fromDate(DateTime(2000, 1, 1)),
+        'img' : 'assets/placeholder.png',
+        'myGames' : 'notAList'
+      });
+      firestoreService = FirestoreService(firestore: firestore);
+
+      final result = await firestoreService.getMyGames(uid: docRef.id);
+      expect(result, []);
+    });
+
+    test("should return empty list if 'myGames' list is empty", () async {
+      firestore = FakeFirebaseFirestore();
+      final docRef = await firestore.collection('users').add({
+        'username': 'Lebi',
+        'email': 'up202307719@g.uporto.pt',
+        'name': 'L',
+        'role': 'developer',
+        'birthdate': Timestamp.fromDate(DateTime(2000, 1, 1)),
+        'img' : 'assets/placeholder.png',
+        'myGames' : []
+      });
+      firestoreService = FirestoreService(firestore: firestore);
+
+      final result = await firestoreService.getMyGames(uid: docRef.id);
+
+      // Assert
+      expect(result, []);
+    });
+
+    test("should return list of game details if 'myGames' contains valid game IDs", () async {
+      await firestore.collection('games').doc('game2').set({
+        'logo': 'game_logo.png',
+        'name': 'Game Name 2',
+        'description': 'Game Description',
+        'bibliography': 'Game Bibliography',
+        'tags': ['action', 'adventure'],
+        'template': 'quiz',
+        'questionsAndOptions': {},
+        'correctAnswers': {},
+        'public': "true"
+      });
+
+      final docRef = await firestore.collection('users').add({
+        'username': 'Lebi',
+        'email': 'up202307719@g.uporto.pt',
+        'name': 'L',
+        'role': 'developer',
+        'birthdate': Timestamp.fromDate(DateTime(2000, 1, 1)),
+        'img' : 'assets/placeholder.png',
+        'myGames' : ['game1', 'game2']
+      });
+      firestoreService = FirestoreService(firestore: firestore);
+
+      final result = await firestoreService.getMyGames(uid: docRef.id);
+
+      // Assert
+      expect(result.length, 2);
+      expect(result[0]['gameId'], 'game1');
+      expect(result[0]['gameTitle'], 'Game Name');
+      expect(result[1]['gameId'], 'game2');
+      expect(result[1]['gameTitle'], 'Game Name 2');
+    });
+
+    test("should return empty list if Firestore throws an error", () async {
+      MockFakeFirebaseFirestoreWithErrors mockFirestore = MockFakeFirebaseFirestoreWithErrors(true);
+      FirestoreService firestoreService = FirestoreService(firestore: mockFirestore);
+
+      final result = await firestoreService.getMyGames(uid: "uid");
+      expect(result, []);
+    });
+  });
+
+  group("updateGamePublicStatus", () {
+    test('successfully updates public status to true', () async {
+      final docRef = await firestore.collection('games').add({
+        'logo': 'game_logo.png',
+        'name': 'Game Name',
+        'description': 'Game Description',
+        'bibliography': 'Game Bibliography',
+        'tags': ['action', 'adventure'],
+        'template': 'quiz',
+        'questionsAndOptions': {},
+        'correctAnswers': {},
+        'public': 'false'
+      });
+      firestoreService = FirestoreService(firestore: firestore);
+
+      await firestoreService.updateGamePublicStatus(gameId: docRef.id, status: true);
+
+      final updatedDoc = await docRef.get();
+      expect(updatedDoc.data()?['public'], 'true');
+    });
+
+    test('successfully updates public status to false', () async {
+      final docRef = await firestore.collection('games').add({
+        'logo': 'game_logo.png',
+        'name': 'Game Name',
+        'description': 'Game Description',
+        'bibliography': 'Game Bibliography',
+        'tags': ['action', 'adventure'],
+        'template': 'quiz',
+        'questionsAndOptions': {},
+        'correctAnswers': {},
+        'public': 'true'
+      });
+      firestoreService = FirestoreService(firestore: firestore);
+
+      await firestoreService.updateGamePublicStatus(gameId: docRef.id, status: false);
+
+      final updatedDoc = await docRef.get();
+      expect(updatedDoc.data()?['public'], 'false');
+    });
+
+    test('does not change value if it is the same as before', () async {
+      final docRef = await firestore.collection('games').add({
+        'logo': 'game_logo.png',
+        'name': 'Game Name',
+        'description': 'Game Description',
+        'bibliography': 'Game Bibliography',
+        'tags': ['action', 'adventure'],
+        'template': 'quiz',
+        'questionsAndOptions': {},
+        'correctAnswers': {},
+        'public': 'false'
+      });
+      firestoreService = FirestoreService(firestore: firestore);
+
+      await firestoreService.updateGamePublicStatus(gameId: docRef.id, status: false);
+
+      final updatedDoc = await docRef.get();
+      expect(updatedDoc.data()?['public'], 'false');
+    });
+
+    test('throws when update fails', () async {
+      MockFakeFirebaseFirestoreWithErrors firestore = MockFakeFirebaseFirestoreWithErrors(true);
+      firestoreService = FirestoreService(firestore: firestore);
+
+      expect(
+            () async => await firestoreService.updateGamePublicStatus(gameId: 'id', status: true),
+        throwsA(isA<FirebaseException>()),
+      );
+    });
+
+    group('fetchNotifications', () {
+      test('fetchNotifications returns correct notifications for student', () async {
+        final assRef = await firestore.collection('assignment').add({
+          'title': 'Test Assignment',
+          'gameId': 'game123',
+          'class': 'class1',
+          'dueDate': '2025-05-11',
+        });
+
+        final docRef = await firestore.collection('users').add({
+          'username': 'Lebi',
+          'email': 'up202307719@g.uporto.pt',
+          'name': 'L',
+          'role': 'student',
+          'birthdate': Timestamp.fromDate(DateTime(2000, 1, 1)),
+          'img' : 'assets/placeholder.png',
+          'stClasses' : ['class1'],
+          'tClasses' : ['turma']
+        });
+
+        await firestore.collection('subjects').doc('class1').set({
+          'subjectId': 'class1',
+          'name': 'subjectName',
+          'logo': 'subjectLogo',
+          'teacher': 'id',
+          'students': [docRef.id],
+          'assignments' : [assRef.id]
+        });
+        firestoreService = FirestoreService(firestore: firestore);
+
+        final notifications = await firestoreService.fetchNotifications(uid: docRef.id);
+
+        expect(notifications.length, 1);
+        expect(notifications.first.notification?.title, 'Assignment: Test Assignment');
+        expect(notifications.first.notification?.body, 'Due Date: 2025-05-11');
+        expect(notifications.first.data['gameId'], 'game123');
+      });
+
+      test('fetchNotifications returns correct notifications for teacher', () async {
+        final assRef = await firestore.collection('assignment').add({
+          'title': 'Teacher Assignment',
+          'gameId': 'game456',
+          'class': 'turma',
+          'dueDate': '2025-06-01',
+        });
+
+        final docRef = await firestore.collection('users').add({
+          'username': 'Lebi',
+          'email': 'up202307719@g.uporto.pt',
+          'name': 'L',
+          'role': 'teacher',
+          'birthdate': Timestamp.fromDate(DateTime(2000, 1, 1)),
+          'img' : 'assets/placeholder.png',
+          'stClasses' : [],
+          'tClasses' : ['turma']
+        });
+
+        await firestore.collection('subjects').doc('turma').set({
+          'subjectId': 'turma',
+          'name': 'subjectName',
+          'logo': 'subjectLogo',
+          'teacher': docRef.id,
+          'students': [],
+          'assignments' : [assRef.id]
+        });
+
+        firestoreService = FirestoreService(firestore: firestore);
+        final notifications = await firestoreService.fetchNotifications(uid: docRef.id);
+
+        expect(notifications.length, 1);
+        expect(notifications.first.notification?.title, 'Assignment: Teacher Assignment');
+        expect(notifications.first.notification?.body, 'Due Date: 2025-06-01');
+        expect(notifications.first.data['gameId'], 'game456');
+      });
+
+      test('fetchNotifications returns empty list if no classes', () async {
+        final docRef = await firestore.collection('users').add({
+          'username': 'Lebi',
+          'email': 'up202307719@g.uporto.pt',
+          'name': 'L',
+          'role': 'developer',
+          'birthdate': Timestamp.fromDate(DateTime(2000, 1, 1)),
+          'img' : 'assets/placeholder.png'
+        });
+        firestoreService = FirestoreService(firestore: firestore);
+
+        final notifications = await firestoreService.fetchNotifications(uid: docRef.id);
+
+        expect(notifications, isEmpty);
+      });
+    });
+  });
 }
+
+/* Missing tests:
+- getAllSubjects
+- fetchSubjectData
+- addSubjectData
+- deleteSubject
+- addStudentToSubject
+- removeStudentFromSubject
+- fetchAssignmentData
+- deleteAssignment
+- getAllAssignments
+ */

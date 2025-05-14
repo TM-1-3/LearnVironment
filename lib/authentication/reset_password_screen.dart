@@ -13,6 +13,12 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final TextEditingController _emailController = TextEditingController();
   bool _isLoading = false;
 
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
+
   Future<void> _handleResetPassword() async {
     setState(() {
       _isLoading = true;
@@ -59,7 +65,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Reset Password'),
+        title: const Text('Reset Your Password'),
         centerTitle: true,
       ),
       body: Padding(

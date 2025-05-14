@@ -113,12 +113,12 @@ class _MyGameCardState extends State<MyGameCard> {
                     LayoutBuilder(
                       builder: (context, constraints) {
                         List<Widget> tagWidgets = [];
-                        for (int i = 0; i < widget.tags.length && i < 3; i++) {
+                        for (int i = 0; i < widget.tags.length && i < 2; i++) {
                           tagWidgets.add(TagWidget(tag: widget.tags[i]));
                         }
                         if (widget.tags.length > 3) {
                           tagWidgets.add(
-                            TagWidget(tag: '+${widget.tags.length - 3} more'),
+                            TagWidget(tag: '+${widget.tags.length - 2} more'),
                           );
                         }
                         return Wrap(

@@ -91,6 +91,7 @@
 - Students cannot see their classes in teacher mode [#103](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/103)
 - Developers can now dry run their games [#117](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/117)
 - Developers can add a description to their games [#118](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/118)
+- Developers can assign an age group to their games [#119](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/119)
 - Organized source code in firestore service and dataservice reposirtories [#105](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/105)
 - Fixed bug where students couldn´t see their new classes, by adding a refresh indicator to the home page [#123](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/123)
 - Teachers add students in a class by entering their usernames, instead of their names, as two students can have the same name, but usernames cannot be equal [#126](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/126)
