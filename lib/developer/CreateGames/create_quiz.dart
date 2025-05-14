@@ -153,14 +153,32 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
             questionsAndOptions: questionsAndOptions
         );
 
-        dataService.createGame(uid: await authService.getUid(), game: gameData);
+        try {
+          await dataService.createGame(
+              uid: await authService.getUid(), game: gameData);
 
-        //Navigate to auth_service and display SnackBar
-
+          //Navigate to auth_service and display SnackBar
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Game Created with success'),
+              ),
+            );
+          }
+          setState(() {
+            _isSaved = true;
+          });
+        } catch (e) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('An error occurred. Please try again.'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        }
       }
-      setState(() {
-        _isSaved = true;
-      });
     }
   }
 
