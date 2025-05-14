@@ -32,12 +32,14 @@ class DataService {
   // 4. Assignments
 
   //================================ USERS & ACCOUNTS =======================================//
+
+
   Future<bool> checkIfUsernameAlreadyExists(String username) async {
     return await _firestoreService.checkIfUsernameAlreadyExists(username);
   }
 
-  Future<String?> getUserIdByName(String name) async {
-    return await _firestoreService.getUserIdByName(name);
+  Future<String?> getUserIdByUserName(String name) async {
+    return await _firestoreService.getUserIdByUserName(name);
   }
 
   Future<void> updateUserGamesPlayed({required String userId, required String gameId}) async {
@@ -115,7 +117,11 @@ class DataService {
     }
   }
 
+
+
   //==================================== GAMES ====================================//
+
+
   Future<GameData?> getGameData({required String gameId}) async {
     try {
       final cachedGame = await _gameCacheService.getCachedGameData(gameId);
@@ -269,7 +275,11 @@ class DataService {
     }
   }
 
+
+
   //======================================= SUBJECTS ====================================//
+
+
   Future<SubjectData?> getSubjectData({required String subjectId}) async {
     try {
       final cachedSubject = await _subjectCacheService.getCachedSubjectData(subjectId);
@@ -286,6 +296,10 @@ class DataService {
       print('[DataService] Error getting subject data: $e');
       return null;
     }
+  }
+
+  Future<bool> checkIfStudentAlreadyInClass({required String subjectId, required String studentId}) async {
+    return await _firestoreService.checkIfStudentAlreadyInClass(subjectId: subjectId, studentId: studentId);
   }
 
   Future<List<Map<String, dynamic>>> getAllSubjects({required String uid}) async {
@@ -410,7 +424,11 @@ class DataService {
     }
   }
 
+
+
   //========================================= ASSIGNMENTS ======================================================//
+
+
   Future<void> createAssignment({
     required String title,
     required DateTime dueDate,

@@ -215,6 +215,37 @@ void main() {
       expect(userDataFetched.birthdate, DateTime(2000, 1, 1));
       expect(userDataFetched.img, 'assets/placeholder.png');
     });
+
+    test('get UserId by UserName if exists', () async {
+      final docRef = await firestore.collection('users').add({
+        'username': 'Lebi',
+        'email': 'up202307719@g.uporto.pt',
+        'name': 'L',
+        'role': 'developer',
+        'birthdate': Timestamp.fromDate(DateTime(2000, 1, 1)),
+        'img' : 'assets/placeholder.png'
+      });
+
+      final userIdFetched = await firestoreService.getUserIdByUserName('Lebi');
+
+      expect(userIdFetched, docRef.id);
+    });
+
+    test('check if Student already in Subject', () async {
+      final docRef = await firestore.collection('subjects').add({
+        'assignments': [],
+        'logo': 'assets/placeholder.png',
+        'name': 'test',
+        'students': ['student'],
+        'subjectId': 'something',
+        'teacher': 'someone'
+      });
+
+      final studentInClass = await firestoreService.checkIfStudentAlreadyInClass(subjectId: docRef.id, studentId: 'student');
+      final studentNotInClass = await firestoreService.checkIfStudentAlreadyInClass(subjectId: docRef.id, studentId: 'otherStudent');
+      expect(studentInClass, true);
+      expect(studentNotInClass, false);
+    });
   });
 
   group('fetchUserType Tests', () {
