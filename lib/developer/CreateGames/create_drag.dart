@@ -42,6 +42,15 @@ class _CreateDragPageState extends State<CreateDragPage> {
     isExpandedList = List.generate(trashObjects.length, (_) => true);
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    gameLogoController.dispose();
+    gameNameController.dispose();
+    gameDescriptionController.dispose();
+    gameBibliographyController.dispose();
+  }
+
   Future<bool> _validateImage(String imageUrl) async {
     http.Response res;
     try {

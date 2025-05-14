@@ -27,6 +27,18 @@ class _TrashObjectFormState extends State<TrashObjectForm> {
   String? selectedOption;
 
   @override
+  void initState() {
+    super.initState();
+    selectedOption = null;
+  }
+
+  @override
+  void dispose() {
+    widget.trashObject.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ExpansionTile(
       title: Text('Object ${widget.index + 1}'),

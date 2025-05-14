@@ -42,6 +42,12 @@ class _QuestionObjectFormState extends State<QuestionObjectForm> {
   }
 
   @override
+  void dispose() {
+    widget.questionObject.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ExpansionTile(
       title: Text('Question ${widget.index + 1}'),
