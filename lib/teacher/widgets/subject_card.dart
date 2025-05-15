@@ -38,10 +38,11 @@ class SubjectCard extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
-                child: SizedBox(
-                  height: 150, // Fixed height for the image
-                  width: double.infinity,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: 180,
+                  ),
                   child: imagePath.startsWith('assets/')
                       ? Image.asset(
                     imagePath,
@@ -52,7 +53,7 @@ class SubjectCard extends StatelessWidget {
                     imagePath,
                     width: double.infinity,
                     fit: BoxFit.cover,
-                  )
+                  ),
                 ),
               ),
               Padding(

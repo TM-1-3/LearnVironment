@@ -90,17 +90,22 @@ class _MyGameCardState extends State<MyGameCard> {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
-                child: widget.imagePath.startsWith('assets/')
-                    ? Image.asset(
-                  widget.imagePath,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                )
-                    : Image.network(
-                  widget.imagePath,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                )
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: 180,
+                  ),
+                  child: widget.imagePath.startsWith('assets/')
+                      ? Image.asset(
+                    widget.imagePath,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  )
+                      : Image.network(
+                    widget.imagePath,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.all(10),
