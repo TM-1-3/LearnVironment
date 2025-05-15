@@ -160,7 +160,7 @@ void main() {
         // Tap the first answer card
         await tester.tap(answerCards.first);
         await tester.pumpAndSettle(); // Wait for state update
-        await tester.pump(Duration(seconds: 2));
+        await tester.pump(Duration(seconds: 3));
         questionNumber++;
       }
 
@@ -195,7 +195,7 @@ void main() {
         await tester.tap(answerCards.first); // Simulate answering the first option
         await tester.pumpAndSettle(); // Wait for state update
         expect(imageFinder, findsOneWidget); // Ensure feedback image is shown
-        await tester.pump(Duration(seconds: 2)); // Wait for feedback
+        await tester.pump(Duration(seconds: 3)); // Wait for feedback
       }
       await tester.pumpAndSettle();
       expect(find.byType(ResultsPage), findsOneWidget);

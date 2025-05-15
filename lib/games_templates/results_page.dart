@@ -42,7 +42,7 @@ class ResultsPage extends StatelessWidget {
     if (userData?.role == 'student') {
       print("[GameResultScreen] User is a student");
 
-      List<String> studentSubjectIds = userData?.classes ?? [];
+      List<String> studentSubjectIds = userData?.stClasses ?? [];
 
       for (final subjectId in studentSubjectIds) {
         SubjectData? subject = await dataService.getSubjectData(subjectId: subjectId);

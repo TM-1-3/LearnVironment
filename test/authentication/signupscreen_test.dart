@@ -9,9 +9,18 @@ import 'package:learnvironment/services/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 
 class MockDataService extends Mock implements DataService {
   MockDataService();
+
+  @override
+  Future<bool> checkIfUsernameAlreadyExists(String username) async {
+    if (username=='testuser'){
+      return true;
+    }
+    return false;
+  }
 
   @override
   Future<void> updateUserProfile({
@@ -80,6 +89,7 @@ void main() {
   late MockFirebaseAuth mockAuth;
   late Widget testWidget;
   late MockAuthService authService;
+  late FakeFirebaseFirestore firestore;
 
   setUp(() {
     mockUser = MockUser(
@@ -90,7 +100,7 @@ void main() {
     );
     mockAuth = MockFirebaseAuth(mockUser: mockUser);
     authService = MockAuthService(firebaseAuth: mockAuth);
-
+    firestore = FakeFirebaseFirestore();
     testWidget = MultiProvider(
         providers: [
           ChangeNotifierProvider<AuthService>(create: (_) => authService),
@@ -220,11 +230,53 @@ void main() {
       expect(find.text('Please fill in all fields.'), findsOneWidget);
     });
 
-    testWidgets('successful registration', (WidgetTester tester) async {
+    testWidgets('shows error when username is already in use', (WidgetTester tester) async {
+      await firestore.collection('users').doc('userInFirestore').set({
+        'username':'testuser'
+      });
       await tester.pumpWidget(testWidget);
 
       await tester.enterText(find.widgetWithText(TextField, 'Name'), 'Test User');
       await tester.enterText(find.widgetWithText(TextField, 'Username'), 'testuser');
+      await tester.enterText(find.widgetWithText(TextField, 'Email'), 'test@example.com');
+      await tester.enterText(find.widgetWithText(TextField, 'Password'), 'password123');
+      await tester.enterText(find.widgetWithText(TextField, 'Confirm Password'), 'password123');
+
+      //Select Student
+      await tester.ensureVisible(find.byType(DropdownButton<String>));
+      await tester.tap(find.byType(DropdownButton<String>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('student').last);
+      await tester.pumpAndSettle();
+
+      //Select Birthdate
+      final dateField = find.byKey(Key("birthDate"));
+      await tester.ensureVisible(dateField);
+      await tester.pumpAndSettle();
+      await tester.tap(dateField);
+      await tester.pumpAndSettle();
+      expect(find.byType(CalendarDatePicker), findsOneWidget);
+      await tester.ensureVisible(find.text('OK'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('OK'));
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text('Register'));
+      await tester.tap(find.text('Register'));
+
+      await tester.pump(); // starts the frame
+      await tester.pump(const Duration(seconds: 2)); // gives time for async op
+      await tester.pumpAndSettle(); // waits until animations and async are done
+
+      expect(find.byType(SnackBar), findsOneWidget);
+      expect(find.text('Username already in use.'), findsOneWidget);
+    });
+
+    testWidgets('successful registration', (WidgetTester tester) async {
+      await tester.pumpWidget(testWidget);
+
+      await tester.enterText(find.widgetWithText(TextField, 'Name'), 'Test User');
+      await tester.enterText(find.widgetWithText(TextField, 'Username'), 'testuser12');
       await tester.enterText(find.widgetWithText(TextField, 'Email'), 'test@example.com');
       await tester.enterText(find.widgetWithText(TextField, 'Password'), 'password123');
       await tester.enterText(find.widgetWithText(TextField, 'Confirm Password'), 'password123');

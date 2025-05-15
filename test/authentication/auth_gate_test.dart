@@ -56,15 +56,15 @@ class MockDataService extends Mock implements DataService {
   @override
   Future<UserData?> getUserData({required String userId}) {
     if (userId == 'testDeveloper') {
-      return Future.value(UserData(role: 'developer', id: 'testDeveloper', username: 'Test User', email: 'test@example.com', name: 'Dev', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: [], classes: [], img: ''));
+      return Future.value(UserData(role: 'developer', id: 'testDeveloper', username: 'Test User', email: 'test@example.com', name: 'Dev', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: [], myGames: [], stClasses: [], tClasses: [], img: ''));
     } else if (userId == 'testStudent') {
-      return Future.value(UserData(role: 'student', id: '', username: '', email: '', name: '', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: [], classes: [], img: ''));
+      return Future.value(UserData(role: 'student', id: '', username: '', email: '', name: '', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: [], myGames: [], stClasses: [], tClasses: [], img: ''));
     } else if (userId == 'testTeacher') {
-      return Future.value(UserData(role: 'teacher', id: '', username: '', email: '', name: '', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: [], classes: [], img: ''));
+      return Future.value(UserData(role: 'teacher', id: '', username: '', email: '', name: '', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: [], myGames: [], stClasses: [], tClasses: [], img: ''));
     } else if (userId == 'error') {
       throw Exception('Error loading user data');
     } else {
-      return Future.value(UserData(role: '', id: '', username: '', email: '', name: '', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: [], classes: [], img: ''));
+      return Future.value(UserData(role: '', id: '', username: '', email: '', name: '', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: [], myGames: [], stClasses: [], tClasses: [], img: ''));
     }
   }
 }

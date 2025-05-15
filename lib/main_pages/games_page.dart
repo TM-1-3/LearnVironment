@@ -3,6 +3,7 @@ import 'package:learnvironment/games_templates/games_initial_screen.dart';
 import 'package:learnvironment/main_pages/widgets/game_card.dart';
 import 'package:learnvironment/services/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
+import 'package:learnvironment/services/game_cache_service.dart';
 import 'package:provider/provider.dart';
 
 class GamesPage extends StatefulWidget {
@@ -82,18 +83,46 @@ class GamesPageState extends State<GamesPage> {
     }
   }
 
+  Future<void> _refreshGames() async {
+    try {
+      final dataService = Provider.of<DataService>(context, listen: false);
+      final gameCacheService = Provider.of<GameCacheService>(context, listen: false);
+      await gameCacheService.clear();
+
+      final fetchedGames = await dataService.getAllGames();
+      print('[MyGamesPage] Refreshed My Games');
+      setState(() {
+        games = fetchedGames;
+      });
+    } catch (e) {
+      print('[MyGamesPage] Error refreshing my games: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final filteredGames = getFilteredGames();
+    final filteredSubjects = getFilteredGames();
+
+    final screenWidth = MediaQuery.of(context).size.width;
+    double mainAxisExtent = 500.0;
+    if (screenWidth <= 600) {
+      mainAxisExtent = screenWidth;
+    } else if (screenWidth <= 1000) {
+      mainAxisExtent = 850;
+    } else if (screenWidth <= 2000) {
+      mainAxisExtent = 1050;
+    } else {
+      mainAxisExtent = 1600;
+    }
 
     return Scaffold(
       appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.of(context).pushReplacementNamed('/auth_gate');
-            },
-          ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pushReplacementNamed('/auth_gate');
+          },
+        ),
         title: TextField(
           key: Key('search'),
           onChanged: (query) {
@@ -149,44 +178,42 @@ class GamesPageState extends State<GamesPage> {
             ),
           ),
           Expanded(
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                double mainAxisExtent = 600.0;
-                if (constraints.maxWidth <= 600) {
-                  mainAxisExtent = constraints.maxWidth;
-                } else if (constraints.maxWidth <= 1000) {
-                  mainAxisExtent = 650;
-                } else if (constraints.maxWidth <= 2000) {
-                  mainAxisExtent = 1050;
-                } else {
-                  mainAxisExtent = 1500;
-                }
-
-                return filteredGames.isNotEmpty
-                    ? GridView.builder(
-                  padding: const EdgeInsets.all(8),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 10.0,
-                    mainAxisSpacing: 10.0,
-                    mainAxisExtent: mainAxisExtent,
+            child: RefreshIndicator(
+              onRefresh: _refreshGames,
+              child: ListView(
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
+                physics: AlwaysScrollableScrollPhysics(),
+                children: [
+                  games.isNotEmpty
+                      ? GridView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    padding: const EdgeInsets.all(8),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 10.0,
+                      mainAxisSpacing: 10.0,
+                      mainAxisExtent: mainAxisExtent,
+                    ),
+                    itemCount: filteredSubjects.length,
+                    itemBuilder: (context, index) {
+                      final game = filteredSubjects[index];
+                      return GameCard(
+                        imagePath: game['imagePath'],
+                        gameTitle: game['gameTitle'],
+                        tags: List<String>.from(game['tags']),
+                        gameId: game['gameId'],
+                        loadGame: loadGame,
+                      );
+                    },
+                  )
+                      : SizedBox(
+                    height: MediaQuery.of(context).size.height,
+                    child: const Center(child: Text('No results found')),
                   ),
-                  itemCount: filteredGames.length,
-                  itemBuilder: (context, index) {
-                    final game = filteredGames[index];
-                    return GameCard(
-                      imagePath: game['imagePath'],
-                      gameTitle: game['gameTitle'],
-                      tags: List<String>.from(game['tags']),
-                      gameId: game['gameId'],
-                      loadGame: loadGame,
-                    );
-                  },
-                )
-                    : const Center(
-                  child: Text('No results found'),
-                );
-              },
+                ],
+              ),
             ),
           ),
         ],

@@ -53,7 +53,9 @@ class MockDataService extends Mock implements DataService {
       role: "student",
       id: userId,
       gamesPlayed: [],
-      classes: [],
+      myGames: [],
+      tClasses: [],
+      stClasses: [],
     );
   }
 
@@ -91,7 +93,9 @@ void main() async {
       role: "student",
       id: "test",
       gamesPlayed: [],
-      classes: [],
+      myGames: [],
+      tClasses: [],
+      stClasses: [],
     );
 
     testWidget = MultiProvider(

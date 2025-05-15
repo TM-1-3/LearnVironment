@@ -98,39 +98,26 @@ class SubjectCacheService {
     }
   }
 
-  // Clears all Subject Data from Cache
   Future<void> clearSubjectCache() async {
     try {
       final prefs = await SharedPreferences.getInstance();
+      final keys = ['subjectId', 'subjectName', 'subjectLogo', 'teacher', 'students', 'assignments'];
 
-      // Retrieve the list of cached subject IDs
-      List<String> cachedIds = prefs.getStringList('cached_subject_ids') ?? [];
+      print('[CACHE] Clearing subject cache...');
 
-      if (cachedIds.isEmpty) {
-        print('[CACHE] No cached subjects to clear.');
-        return;
-      }
-
-      // Iterate through each cached subject ID and remove it from cache
-      for (String subjectId in cachedIds) {
-        final key = 'subject_$subjectId';
-
-        // Remove the subject data
-        bool success = await prefs.remove(key);
-
-        if (success) {
-          print('[CACHE] Removed subject $subjectId from cache.');
+      // Attempt to remove each key
+      for (final key in keys) {
+        final success = await prefs.remove(key);
+        if (!success) {
+          print('[CACHE ERROR] Failed to remove key: $key');
         } else {
-          print('[CACHE ERROR] Failed to remove subject $subjectId from cache.');
+          print('[CACHE] Successfully removed key: $key');
         }
       }
 
-      // Finally, clear the cached subject IDs list
-      await prefs.remove('cached_subject_ids');
-      print('[CACHE] Cleared all cached subject IDs.');
+      print('[CACHE] User cache cleared successfully.');
     } catch (e) {
-      print('[CACHE ERROR] Exception while clearing all subject cache: $e');
+      print('[CACHE ERROR] Error clearing user cache: $e');
     }
   }
-
 }

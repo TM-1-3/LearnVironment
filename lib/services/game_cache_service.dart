@@ -75,4 +75,72 @@ class GameCacheService {
       return [];
     }
   }
+
+  Future<void> clear() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final cachedIds = prefs.getStringList('cached_game_ids') ?? [];
+
+      // Remove each game's cache
+      for (String id in cachedIds) {
+        await prefs.remove('game_$id');
+      }
+
+      // Remove the cached_game_ids list
+      await prefs.remove('cached_game_ids');
+
+      print('[CACHE] All cached games cleared.');
+    } catch (e) {
+      print('[CACHE ERROR] Failed to clear GAMECACHE: $e');
+    }
+  }
+
+  Future<void> updateGamePublicStatus({required String gameId, required bool status}) async {
+    final prefs = await SharedPreferences.getInstance();
+    final key = 'game_$gameId';
+    final rawData = prefs.getString(key);
+
+    if (rawData == null) {
+      print('[CACHE] No cached data found for game $gameId');
+      return;
+    }
+
+    try {
+      final decoded = json.decode(rawData);
+      final expiresAt = decoded['expiresAt'] as int?;
+      final now = DateTime.now().millisecondsSinceEpoch;
+
+      // Check if cache is expired
+      if (expiresAt != null && now > expiresAt) {
+        print('[CACHE] Game $gameId cache expired. Deleting...');
+        await prefs.remove(key);
+
+        // Also remove from cached_game_ids list
+        List<String> cachedIds = prefs.getStringList('cached_game_ids') ?? [];
+        cachedIds.remove(gameId);
+        await prefs.setStringList('cached_game_ids', cachedIds);
+
+        print('[CACHE] Cache for game $gameId is expired, cannot update public status.');
+        return;
+      }
+
+      // Decode the cached game data
+      final gameDataMap = Map<String, String>.from(decoded['game']);
+
+      // Update the public status of the game
+      gameDataMap['public'] = status.toString();
+
+      // Save updated game data back to SharedPreferences
+      final updatedData = {
+        'game': gameDataMap,
+        'expiresAt': DateTime.now().add(Duration(days: 5)).millisecondsSinceEpoch
+      };
+
+      await prefs.setString(key, json.encode(updatedData));
+
+      print('[CACHE] Game $gameId public status updated to $status.');
+    } catch (e) {
+      print('[CACHE ERROR] Failed to update public status for game $gameId: $e');
+    }
+  }
 }

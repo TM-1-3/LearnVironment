@@ -6,7 +6,21 @@ import 'package:learnvironment/teacher/teacher_subject_screen.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
+import 'package:learnvironment/authentication/auth_gate.dart';
 
+
+class MockAuthGate extends AuthGate {
+  MockAuthGate({key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(
+        child: Text('Mock AuthGate Screen'),
+      ),
+    );
+  }
+}
 // Mock class
 class MockDataService extends Mock implements DataService {
   bool throwErrorOnDelete = false;
@@ -43,9 +57,10 @@ class MockDataService extends Mock implements DataService {
       role: '',
       birthdate: DateTime(2000, 1, 1),
       gamesPlayed: [],
+      myGames: [],
       img: '',
-      classes: [],
-      // add any other fields if needed, depending on your UserData constructor
+      stClasses: ['class1', 'class2'],
+      tClasses: ['tClass1', 'tClass2']
     );
   }
 
@@ -94,7 +109,7 @@ void main() {
       subjectId: 'subject123',
       subjectName: 'Physics',
       subjectLogo: 'assets/placeholder.png',
-      students: ['student1', 'student2'],
+      students: [{'studentId':'student1', 'correctCount':1, 'wrongCount':2}, {'studentId':'student2', 'correctCount':5, 'wrongCount':5}],
       assignments: ['assignment1', 'assignment2'],
       teacher: 'teacher',
     );
@@ -105,6 +120,9 @@ void main() {
       ],
       child: MaterialApp(
         home: TeacherSubjectScreen(subjectData: subjectData),
+        routes: {
+          '/auth_gate': (context) => MockAuthGate(),
+        },
       ),
     );
   });

@@ -164,6 +164,7 @@ class MockDataService extends Mock implements DataService {
       questionsAndOptions: questionsAndOptions,
       correctAnswers: correctAnswers,
       tips: tips,
+      public: true
     );
 
     print('[Mocked DataService] Returning mocked game data for gameId: $gameId');

@@ -44,7 +44,7 @@ class _TeacherSubjectScreenState extends State<TeacherSubjectScreen> {
       final authService = Provider.of<AuthService>(context, listen: false);
       await dataService.deleteSubject(subjectId: widget.subjectData.subjectId, uid: await authService.getUid());
       if (context.mounted) {
-        Navigator.of(context).pop(); // Go back after deletion
+        Navigator.of(context).pushReplacementNamed('/auth_gate'); // Go back after deletion
       }
     } catch (e) {
       print('[deleteSubject] Error deleting subject: $e');
@@ -72,6 +72,7 @@ class _TeacherSubjectScreenState extends State<TeacherSubjectScreen> {
               ElevatedButton(
                 onPressed: () async {
                   Navigator.of(context).pop(); // Close the dialog
+                  Navigator.of(context).pushReplacementNamed('/auth_gate');
                   await _deleteSubject(context);
                 },
                 style: ElevatedButton.styleFrom(
@@ -340,19 +341,21 @@ class _TeacherSubjectScreenState extends State<TeacherSubjectScreen> {
 
                 // EXISTING - Delete Subject Button
                 ElevatedButton.icon(
-                  onPressed: () => confirmDelete(context),
-                  icon: const Icon(Icons.delete),
-                  key: Key("delete"),
-                  label: const Text('Delete Subject'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 15),
-                    textStyle: const TextStyle(fontSize: 16),
-                  ),
-                ),
-                const SizedBox(height: 20),
+                  onPressed: () {
+                    confirmDelete(context);
+                  },
+    icon: const Icon(Icons.delete),
+    key: Key("delete"),
+    label: const Text('Delete Subject'),
+    style: ElevatedButton.styleFrom(
+    backgroundColor: Colors.red,
+    foregroundColor: Colors.white,
+    padding: const EdgeInsets.symmetric(
+    horizontal: 20, vertical: 15),
+    textStyle: const TextStyle(fontSize: 16),
+    ),
+    ),
+    const SizedBox(height: 20),
               ],
             ),
           ),

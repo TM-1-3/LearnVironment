@@ -76,12 +76,23 @@ class FirestoreService {
         img: data['img'] ?? 'assets/placeholder.png',
         birthdate: birthdateValue,
         gamesPlayed: List<String>.from(data['gamesPlayed'] ?? []),
-        classes: List<String>.from(data['classes'] ?? []),
+        myGames: List<String>.from(data['myGames'] ?? []),
+        tClasses: List<String>.from(data['tClasses'] ?? []),
+        stClasses: List<String>.from(data['stClasses'] ?? []),
       );
     } catch (e, stackTrace) {
       debugPrint("Error loading UserData: $e\n$stackTrace");
       rethrow;
     }
+  }
+
+  Future<bool> checkIfUsernameAlreadyExists(String username) async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('username', isEqualTo: username)
+        .limit(1)
+        .get();
+    return snapshot.docs.isNotEmpty;
   }
 
   Future<String?> getUserIdByName(String name) async {
@@ -115,7 +126,8 @@ class FirestoreService {
     required String email,
     required String birthDate,
     required String img,
-    List<String>? classes,
+    List<String>? stClasses,
+    List<String>? tClasses,
     List<String>? gamesPlayed
   }) async {
     try {
@@ -129,7 +141,8 @@ class FirestoreService {
         'email': email,
         'birthdate': birthDate,
         'gamesPlayed': gamesPlayed,
-        'classes': classes,
+        'stClasses': stClasses,
+        'tClasses': tClasses,
         'img' : img
       });
       print("[FirestoreService] User Info set!");
@@ -153,7 +166,12 @@ class FirestoreService {
   Future<List<Map<String, dynamic>>> getAllGames() async {
     try {
       final querySnapshot = await _firestore.collection('games').get();
-      return querySnapshot.docs.map((doc) {
+
+      // Filter games where the 'public' field (as a string) is 'true'
+      return querySnapshot.docs.where((doc) {
+        final data = doc.data();
+        return data['public']!.toLowerCase() == 'true'; // Convert string to boolean
+      }).map((doc) {
         final data = doc.data();
         return {
           'imagePath': data['logo'] ?? 'assets/placeholder.png',
@@ -165,6 +183,51 @@ class FirestoreService {
     } catch (e, stackTrace) {
       debugPrint('Error getting games: $e\n$stackTrace');
       rethrow;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getMyGames({required String uid}) async {
+    try {
+      final userDoc = await _firestore.collection('users').doc(uid).get();
+
+      if (!userDoc.exists) {
+        debugPrint("Error: No user found for UID: $uid");
+        return [];
+      }
+
+      final data = userDoc.data();
+      if (data?.containsKey('myGames') ?? false) {
+        final games = data!['myGames'];
+
+        if (games is List) {
+          final gameIds = games.whereType<String>().toList();
+          if (gameIds.isEmpty) return [];
+
+          final querySnapshot = await _firestore
+              .collection('games')
+              .where(FieldPath.documentId, whereIn: gameIds)
+              .get();
+
+          return querySnapshot.docs.map((doc) {
+            final data = doc.data();
+            return {
+              'imagePath': data['logo'] ?? 'assets/placeholder.png',
+              'gameTitle': data['name'] ?? 'Default Game Title',
+              'tags': List<String>.from(data['tags'] ?? []),
+              'gameId': doc.id,
+            };
+          }).toList();
+        } else {
+          debugPrint("Error: 'myGames' is not a List.");
+          return [];
+        }
+      } else {
+        debugPrint("Error: No 'myGames' field found for user.");
+        return [];
+      }
+    } catch (e, stackTrace) {
+      debugPrint("Error fetching user played games: $e\n$stackTrace");
+      return [];
     }
   }
 
@@ -212,6 +275,7 @@ class FirestoreService {
       return [];
     }
   }
+
   Future<GameData> fetchGameData({required String gameId}) async {
     try {
       DocumentSnapshot snapshot = await _firestore.collection('games').doc(gameId).get();
@@ -225,20 +289,14 @@ class FirestoreService {
       String template = data['template'] ?? '';
       Map<String, String> tips = {};
       Map<String, List<String>>? questionsAndOptions;
-      Map<String, String>? correctAnswers;
+      Map<String, String> correctAnswers = {};
 
       // If it's a quiz game, extract questions and answers
       if (template == "quiz") {
         try {
           var rawQuestionsAndOptions = Map<String, dynamic>.from(data['questionsAndOptions'] ?? {});
-          var rawCorrectAnswers = Map<String, dynamic>.from(data['correctAnswers'] ?? {});
-
           questionsAndOptions = rawQuestionsAndOptions.map(
                 (key, value) => MapEntry(key, List<String>.from(value)),
-          );
-
-          correctAnswers = rawCorrectAnswers.map(
-                (key, value) => MapEntry(key, value.toString()),
           );
         } catch (e) {
           throw Exception("Error parsing quiz fields for game $gameId: $e");
@@ -248,6 +306,11 @@ class FirestoreService {
       try {
         var rawTips = Map<String, dynamic>.from(data['tips'] ?? {});
         tips = rawTips.map(
+              (key, value) => MapEntry(key, value.toString()),
+        );
+
+        var rawCorrectAnswers = Map<String, dynamic>.from(data['correctAnswers'] ?? {});
+        correctAnswers = rawCorrectAnswers.map(
               (key, value) => MapEntry(key, value.toString()),
         );
       } catch (e) {
@@ -265,6 +328,7 @@ class FirestoreService {
         questionsAndOptions: questionsAndOptions,
         correctAnswers: correctAnswers,
         tips: tips,
+        public: data['public']!.toLowerCase() == 'true'
       );
     } catch (e, stackTrace) {
       debugPrint("Error loading GameData: $e\n$stackTrace");
@@ -290,6 +354,18 @@ class FirestoreService {
     } catch (e) {
       print('[FirestoreService] Error storing game result in Firestore: $e');
       throw Exception("Error storing game result in Firestore");
+    }
+  }
+
+  Future<void> updateGamePublicStatus({required String gameId, required bool status}) async {
+    try {
+      final gameDoc = _firestore.collection('games').doc(gameId);
+
+      await gameDoc.update({'public': status.toString()});
+      print('[FirestoreService] Updated public for game $gameId');
+    } catch (e, stackTrace) {
+      debugPrint("[FirestoreService] Error updating public: $e\n$stackTrace");
+      rethrow;
     }
   }
 
@@ -359,14 +435,14 @@ class FirestoreService {
 
     if (userSnapshot.exists && userSnapshot.data() != null) {
       final data = userSnapshot.data()!;
-      classes = List<String>.from(data['classes'] ?? []);
+      classes = List<String>.from(data['tClasses'] ?? []);
     }
 
     classes.remove(subject.subjectId);
     classes.insert(0, subject.subjectId);
 
     try {
-      await userDoc.update({'classes': classes});
+      await userDoc.update({'tClasses': classes});
       print('[FirestoreService] Updated classes for user $uid');
 
     } catch (e, stackTrace) {
@@ -473,6 +549,44 @@ class FirestoreService {
     } catch (e, stackTrace) {
       print("[FirestoreService] Error removing student: $e\n$stackTrace");
       rethrow;
+    }
+  }
+
+  Future<void> updateStudentCount({
+    required GameResultData gameResultData,
+    required SubjectData? subjectData,
+  }) async {
+    if (subjectData == null) {
+      print('[FirestoreService] SubjectData is null. Aborting update.');
+      return;
+    }
+
+    final subjectRef = _firestore.collection('subjects').doc(gameResultData.subjectId);
+    bool updated = false;
+
+    // Create a mutable list of students
+    final students = List<Map<String, dynamic>>.from(subjectData.students);
+
+    for (var student in students) {
+      if (student['studentId'] == gameResultData.studentId) {
+        student['correctCount'] = (student['correctCount']) + gameResultData.correctCount;
+        student['wrongCount'] = (student['wrongCount']) + gameResultData.wrongCount;
+        updated = true;
+        break;
+      }
+    }
+
+    if (updated) {
+      try {
+        print("[FirestoreService] Loading new students $students to firestore");
+        await subjectRef.update({'students': students});
+        print('[FirestoreService] Student count updated successfully for student: ${gameResultData.studentId}');
+      } catch (e) {
+        print('[FirestoreService] Failed to update student count: $e');
+        rethrow;
+      }
+    } else {
+      print('[FirestoreService] No matching student found to update.');
     }
   }
 
@@ -596,8 +710,10 @@ class FirestoreService {
 
     List<RemoteMessage> notifications = [];
 
-    for (String my_class in userData.classes) {
-      SubjectData subjectData = await fetchSubjectData(subjectId: my_class);
+    List<String> myClasses = userData.role == "student" ? userData.stClasses : userData.tClasses;
+
+    for (String myClass in myClasses) {
+      SubjectData subjectData = await fetchSubjectData(subjectId: myClass);
 
       for (String ass in subjectData.assignments) {
         AssignmentData assignmentData = await fetchAssignmentData(assignmentId: ass);
@@ -617,43 +733,4 @@ class FirestoreService {
     }
     return notifications;
   }
-
-  Future<void> updateStudentCount({
-    required GameResultData gameResultData,
-    required SubjectData? subjectData,
-  }) async {
-    if (subjectData == null) {
-      print('[FirestoreService] SubjectData is null. Aborting update.');
-      return;
-    }
-
-    final subjectRef = _firestore.collection('subjects').doc(gameResultData.subjectId);
-    bool updated = false;
-
-    // Create a mutable list of students
-    final students = List<Map<String, dynamic>>.from(subjectData.students);
-
-    for (var student in students) {
-      if (student['studentId'] == gameResultData.studentId) {
-        student['correctCount'] = (student['correctCount']) + gameResultData.correctCount;
-        student['wrongCount'] = (student['wrongCount']) + gameResultData.wrongCount;
-        updated = true;
-        break;
-      }
-    }
-
-    if (updated) {
-      try {
-        print("[FirestoreService] Loading new students $students to firestore");
-        await subjectRef.update({'students': students});
-        print('[FirestoreService] Student count updated successfully for student: ${gameResultData.studentId}');
-      } catch (e) {
-        print('[FirestoreService] Failed to update student count: $e');
-        rethrow;
-      }
-    } else {
-      print('[FirestoreService] No matching student found to update.');
-    }
-  }
-
 }

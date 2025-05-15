@@ -6,8 +6,10 @@ class UserData {
   final String role;
   final DateTime birthdate;
   final List<String> gamesPlayed;
+  final List<String> myGames;
   final String img;
-  late List<String> classes;
+  late List<String> stClasses;
+  late List<String> tClasses;
 
   UserData({
     required this.id,
@@ -17,8 +19,10 @@ class UserData {
     required this.role,
     required this.birthdate,
     required this.gamesPlayed,
+    required this.myGames,
     required this.img,
-    required this.classes
+    required this.tClasses, //teacher classes
+    required this.stClasses //student classes
   });
 
   // Convert UserData to a Map for cache storage
@@ -31,7 +35,9 @@ class UserData {
       'role': role,
       'birthdate': birthdate.toIso8601String(),
       'gamesPlayed': gamesPlayed.join(','),
-      'classes': classes.join(','),
+      'myGames': myGames.join(','),
+      'tClasses': tClasses.join(','),
+      'stClasses': stClasses.join(','),
       'img': img,
     };
   }
@@ -46,7 +52,9 @@ class UserData {
         role: data['role'] ?? 'Unknown Role',
         birthdate: DateTime.tryParse(data['birthdate'] ?? '') ?? DateTime(2000),
         gamesPlayed: (data['gamesPlayed']?.split(',') ?? []),
-        classes: (data['classes']?.split(',') ?? []),
+        myGames: (data['myGames']?.split(',') ?? []),
+        tClasses: (data['tClasses']?.split(',') ?? []),
+        stClasses: (data['stClasses']?.split(',') ?? []),
         img: data['img'] ?? 'assets/placeholder.png',
     );
   }
@@ -60,8 +68,10 @@ class UserData {
     String? role,
     DateTime? birthdate,
     List<String>? gamesPlayed,
+    List<String>? myGames,
     String? img,
-    List<String>? classes
+    List<String>? tClasses,
+    List<String>? stClasses,
   }) {
     return UserData(
         id: id ?? this.id,
@@ -71,8 +81,10 @@ class UserData {
         role: role ?? this.role,
         birthdate: birthdate ?? this.birthdate,
         gamesPlayed: gamesPlayed ?? this.gamesPlayed,
+        myGames: myGames ?? this.myGames,
         img: img ?? this.img,
-        classes: classes ?? this.classes
+        stClasses: stClasses ?? this.stClasses,
+        tClasses: tClasses ?? this.tClasses
     );
   }
 }

@@ -41,7 +41,7 @@ class StatisticsTeacherPageState extends State<StatisticsTeacherPage> {
       }
 
       final classList = <SubjectData>[];
-      for (final classId in userData.classes) {
+      for (final classId in userData.tClasses) {
         final subjectData = await dataService.getSubjectData(subjectId: classId);
         if (subjectData != null) classList.add(subjectData);
       }

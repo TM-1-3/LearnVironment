@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/games_templates/results_page.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class BinScreen extends StatefulWidget {
   final GameData binData;
@@ -28,32 +29,40 @@ class BinScreenState extends State<BinScreen> {
   int wrongCount = 0;
   List<String> tipsToAppear=[];
   late DateTime startTime;
+  late Map<String, String> trashItems;
+  final player = AudioPlayer();
 
-  // Trash items mapped to their correct bin
-  Map<String, String> trashItems = {
-    "trash1": "brown",
-    "trash2": "red",
-    "trash3": "yellow",
-    "trash4": "blue",
-  };
-
-  Map<String, String> remainingTrashItems = {
-    "trash5": "green",
-    "trash6": "blue",
-    "trash7": "red",
-    "trash8": "green",
-    "trash9": "yellow",
-    "trash10": "brown",
-  };
+  late Map<String, String> remainingTrashItems = widget.binData.correctAnswers;
 
   @override
   void initState() {
     super.initState();
     startTime = DateTime.now();
+
+    print(widget.binData.correctAnswers);
+
+    //Shuffle objects
+    remainingTrashItems = Map.fromEntries(
+      remainingTrashItems.entries.toList()..shuffle(),
+    );
+
+    //Get 4 original objects
+    trashItems = Map.fromEntries(
+      remainingTrashItems.entries.take(4),
+    );
+    trashItems.keys.forEach(remainingTrashItems.remove);
   }
 
   bool isGameOver() {
     return trashItems.isEmpty && remainingTrashItems.isEmpty;
+  }
+
+  Widget getImageWidget(String path, double size) {
+    if (path.startsWith('assets/trash')) {
+      return Image.asset(path, width: size, height: size);
+    } else {
+      return Image.network(path, width: size, height: size);
+    }
   }
 
   void removeTrashItem(String item, String bin, Offset position) {
@@ -61,7 +70,11 @@ class BinScreenState extends State<BinScreen> {
       rightAnswer = trashItems[item] == bin;
       rightAnswer ? correctCount++ : wrongCount++;
       if (!rightAnswer) {
+        player.play(AssetSource('wrong_answer.mp3'));
         tipsToAppear.add(widget.binData.tips[item] ?? "No tip available.");
+      }
+      else{
+        player.play(AssetSource('correct_answer.mp3'));
       }
       iconPosition = position;
       showIcon = true;
@@ -168,12 +181,12 @@ class BinScreenState extends State<BinScreen> {
                             children: trashItems.keys.map((item) {
                               return Draggable<String>(
                                 data: item,
-                                feedback: Image.asset('assets/$item.png', width: 80, height: 80),
+                                feedback: getImageWidget(item, 80),
                                 childWhenDragging: Opacity(
                                   opacity: 0.5,
-                                  child: Image.asset('assets/$item.png', width: 80, height: 80),
+                                  child: getImageWidget(item, 80),
                                 ),
-                                child: Image.asset('assets/$item.png', width: 80, height: 80),
+                                child: getImageWidget(item, 80),
                               );
                             }).toList(),
                           ),
