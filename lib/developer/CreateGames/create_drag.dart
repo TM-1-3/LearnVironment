@@ -36,6 +36,8 @@ class _CreateDragPageState extends State<CreateDragPage> {
   late List<TrashObject> trashObjects = [];
   late List<bool> isExpandedList = [];
 
+  late String btn;
+
   @override
   void initState() {
     super.initState();
@@ -44,6 +46,7 @@ class _CreateDragPageState extends State<CreateDragPage> {
     if (widget.gameData != null) {
       _setDefaultValues(widget.gameData!);
     }
+    btn = widget.gameData == null ? 'Create Game' : 'Save Game';
   }
 
   void _setDefaultValues(GameData gameData) {
@@ -183,7 +186,7 @@ class _CreateDragPageState extends State<CreateDragPage> {
         final DataService dataService = Provider.of<DataService>(context, listen: false);
         final AuthService authService = Provider.of<AuthService>(context, listen: false);
 
-        final String gameId = const Uuid().v4();
+        final String gameId = widget.gameData?.documentName ?? const Uuid().v4();
 
         GameData gameData = GameData(
             gameLogo: gameLogo,
@@ -391,7 +394,7 @@ class _CreateDragPageState extends State<CreateDragPage> {
                       child: ElevatedButton(
                         key: Key("submit"),
                         onPressed: _submitForm,
-                        child: const Text('Create Game')
+                        child: Text(btn)
                     )
                 ),
               ],

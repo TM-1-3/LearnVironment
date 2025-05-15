@@ -37,6 +37,8 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
   late List<bool> isExpandedList = [];
   late List<bool> isExpandedListOpt = [];
 
+  late String btn;
+
   @override
   void initState() {
     super.initState();
@@ -46,6 +48,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
     if (widget.gameData != null) {
       _setDefaultValues(widget.gameData!);
     }
+    btn = widget.gameData == null ? 'Create Game' : 'Save Game';
   }
 
   void _setDefaultValues(GameData gameData) {
@@ -189,7 +192,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
         final DataService dataService = Provider.of<DataService>(context, listen: false);
         final AuthService authService = Provider.of<AuthService>(context, listen: false);
 
-        final String gameId = const Uuid().v4();
+        final String gameId = widget.gameData?.documentName ?? const Uuid().v4();
 
         GameData gameData = GameData(
             gameLogo: gameLogo,
@@ -206,8 +209,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
         );
 
         try {
-          await dataService.createGame(
-              uid: await authService.getUid(), game: gameData);
+          await dataService.createGame(uid: await authService.getUid(), game: gameData);
 
           //Navigate to auth_service and display SnackBar
           if (mounted) {
@@ -410,7 +412,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                       child: ElevatedButton(
                           onPressed: _submitForm,
                           key: Key("submit"),
-                          child: const Text('Create Game')
+                          child: Text(btn)
                       )
                   ),
                 ],

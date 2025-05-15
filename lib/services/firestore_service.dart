@@ -201,8 +201,9 @@ class FirestoreService {
       final data = userSnapshot.data()!;
       myGames = List<String>.from(data['myGames'] ?? []);
     }
-    myGames.insert(0, game.documentName);
-
+    if (!myGames.contains(game.documentName)) {
+      myGames.insert(0, game.documentName);
+    }
     try {
       await userDoc.update({'myGames': myGames});
       print('[FirestoreService] Updated myGames for user $uid');
