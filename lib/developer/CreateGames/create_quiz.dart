@@ -289,7 +289,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                   const SizedBox(height: 12),
                   ExpansionTile(
                     title: const Text(
-                      'QuestionsTrash Objects',
+                      'Questions Objects',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     initiallyExpanded: true,
@@ -360,6 +360,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                   Center(
                       child: ElevatedButton(
                           onPressed: _submitForm,
+                          key: Key("submit"),
                           child: const Text('Create Game')
                       )
                   ),

@@ -69,10 +69,10 @@ void main() {
     );
   });
 
-  testWidgets('CreateDragPage renders correctly', (WidgetTester tester) async {
+  testWidgets('CreateQuizPage renders correctly', (WidgetTester tester) async {
     await tester.pumpWidget(testWidget);
 
-    expect(find.text('Create Drag Game'), findsOneWidget);
+    expect(find.text('Create Quiz Game'), findsOneWidget);
     expect(find.byType(TextFormField), findsNWidgets(34));
     expect(find.byType(ElevatedButton), findsExactly(2));
   });
@@ -90,69 +90,6 @@ void main() {
     expect(find.text('Please fill in all fields for all Objects'), findsOneWidget);
   });
 
-  testWidgets('Trash object image URL validation fails with invalid URL', (WidgetTester tester) async {
-    await tester.pumpWidget(testWidget);
-
-    //Fill all text fields
-    await tester.enterText(find.byType(TextFormField).at(0), 'https://example.com/logo.png');
-    await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextFormField).at(1), 'Game Title');
-    await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextFormField).at(2), 'Game Description');
-    await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextFormField).at(3), 'Game Bibliography');
-    await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextFormField).at(4), 'invalid image');
-    await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextFormField).at(5), 'tip');
-    await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextFormField).at(6), 'https://example.com/logo.png');
-    await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextFormField).at(7), 'tip');
-    await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextFormField).at(8), 'https://example.com/logo.png');
-    await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextFormField).at(9), 'tip');
-    await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextFormField).at(10), 'https://example.com/logo.png');
-    await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextFormField).at(11), 'tip');
-    await tester.pumpAndSettle();
-
-    //Select all options from dropdown
-    await tester.ensureVisible(find.byType(DropdownButtonFormField<String>).at(1));
-    await tester.tap(find.byType(DropdownButtonFormField<String>).at(1));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Yellow bin').last);
-    await tester.pumpAndSettle();
-
-    await tester.ensureVisible(find.byType(DropdownButtonFormField<String>).at(2));
-    await tester.tap(find.byType(DropdownButtonFormField<String>).at(2));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Yellow bin').last);
-    await tester.pumpAndSettle();
-
-    await tester.ensureVisible(find.byType(DropdownButtonFormField<String>).at(3));
-    await tester.tap(find.byType(DropdownButtonFormField<String>).at(3));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Yellow bin').last);
-    await tester.pumpAndSettle();
-
-    await tester.ensureVisible(find.byType(DropdownButtonFormField<String>).at(4));
-    await tester.tap(find.byType(DropdownButtonFormField<String>).at(4));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Yellow bin').last);
-    await tester.pumpAndSettle();
-
-    //Submit
-    final submit = find.byKey(Key("submit"));
-    await tester.ensureVisible(submit);
-    await tester.tap(submit);
-    await tester.pump();
-
-    expect(find.text('Please use a valid image URL in Object 0'), findsOneWidget);
-  });
-
   testWidgets('Navigating away shows confirmation dialog when there are unsaved changes', (WidgetTester tester) async {
     testWidget = MultiProvider(
       providers: [
@@ -168,12 +105,12 @@ void main() {
     );
     await tester.pumpWidget(testWidget);
 
-    final dragCard = find.text('Create a drag game');
+    final dragCard = find.text('Create a quiz game');
     expect(dragCard, findsOneWidget);
 
     await tester.tap(dragCard);
     await tester.pumpAndSettle();
-    expect(find.byType(CreateDragPage), findsOneWidget);
+    expect(find.byType(CreateQuizPage), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.arrow_back));
     await tester.pumpAndSettle();
