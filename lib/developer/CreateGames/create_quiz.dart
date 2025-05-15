@@ -64,16 +64,30 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
 
     //Set Trash Objects
     List<String> keys = gameData.tips.keys.toList();
-    for (int i = 0; i < trashObjects.length; i++) {
-      if (i < trashObjects.length) {
-        trashObjects[i].imageUrlController.text = keys[i];
-        trashObjects[i].tipController.text = gameData.tips[keys[i]]!;
-        trashObjects[i].selectedOption = "${gameData.correctAnswers[keys[i]]!} bin";
+    for (int i = 0; i < questionObjects.length; i++) {
+      if (i < questionObjects.length) {
+        questionObjects[i].questionController.text = keys[i];
+        questionObjects[i].tipController.text = gameData.tips[keys[i]]!;
+
+        List<String> options = gameData.questionsAndOptions![keys[i]]!;
+        int selectedIndex = options.indexOf(gameData.correctAnswers[keys[i]]!);
+        questionObjects[i].selectedOption = (selectedIndex + 1).toString();
+        questionObjects[i].options.option1Controller.text = gameData.questionsAndOptions![keys[i]]![0];
+        questionObjects[i].options.option2Controller.text = gameData.questionsAndOptions![keys[i]]![1];
+        questionObjects[i].options.option3Controller.text = gameData.questionsAndOptions![keys[i]]![2];
+        questionObjects[i].options.option4Controller.text = gameData.questionsAndOptions![keys[i]]![3];
       } else {
-        trashObjects.add(TrashObject());
-        trashObjects[i].imageUrlController.text = keys[i];
-        trashObjects[i].tipController.text = gameData.tips[keys[i]]!;
-        trashObjects[i].selectedOption = "${gameData.correctAnswers[keys[i]]!} bin";
+        questionObjects.add(QuestionObject());
+        questionObjects[i].questionController.text = keys[i];
+        questionObjects[i].tipController.text = gameData.tips[keys[i]]!;
+
+        List<String> options = gameData.questionsAndOptions![keys[i]]!;
+        int selectedIndex = options.indexOf(gameData.correctAnswers[keys[i]]!);
+        questionObjects[i].selectedOption = (selectedIndex + 1).toString();
+        questionObjects[i].options.option1Controller.text = gameData.questionsAndOptions![keys[i]]![0];
+        questionObjects[i].options.option2Controller.text = gameData.questionsAndOptions![keys[i]]![1];
+        questionObjects[i].options.option3Controller.text = gameData.questionsAndOptions![keys[i]]![2];
+        questionObjects[i].options.option4Controller.text = gameData.questionsAndOptions![keys[i]]![3];
       }
     }
   }
