@@ -40,7 +40,7 @@ class _EditGameState extends State<EditGame> {
           MaterialPageRoute(builder: (_) => CreateQuizPage(gameData: gameData)),
         );
       } else {
-        _showError('Unknown game role: ${gameData.gameTemplate}');
+        _showError('Unknown game template: ${gameData.gameTemplate}');
       }
     } catch (e) {
       _showError('Failed to load game: $e');
@@ -48,19 +48,17 @@ class _EditGameState extends State<EditGame> {
   }
 
   void _showError(String message) {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Error'),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+    if (mounted) {
+      Navigator.of(context).pushReplacementNamed('/auth_gate');
+    }
   }
 
   @override
