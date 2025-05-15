@@ -11,9 +11,10 @@ import 'package:learnvironment/services/data_service.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
-
 class CreateDragPage extends StatefulWidget {
-  const CreateDragPage({super.key});
+  final GameData? gameData;
+
+  const CreateDragPage({super.key, this.gameData});
 
   @override
   State<CreateDragPage> createState() => _CreateDragPageState();
@@ -35,11 +36,47 @@ class _CreateDragPageState extends State<CreateDragPage> {
   late List<TrashObject> trashObjects = [];
   late List<bool> isExpandedList = [];
 
+  late String btn;
+
   @override
   void initState() {
     super.initState();
     trashObjects = List.generate(4, (_) => TrashObject());
     isExpandedList = List.generate(trashObjects.length, (_) => true);
+    if (widget.gameData != null) {
+      _setDefaultValues(widget.gameData!);
+    }
+    btn = widget.gameData == null ? 'Create Game' : 'Save Game';
+  }
+
+  void _setDefaultValues(GameData gameData) {
+    // Set default values from the gameData to the controllers
+    if (gameData.gameLogo == "assets/placeholder.png") {
+      gameLogoController.text ="";
+    } else {
+      gameLogoController.text = gameData.gameLogo;
+    }
+    gameNameController.text = gameData.gameName;
+    gameDescriptionController.text = gameData.gameDescription;
+    gameBibliographyController.text = gameData.gameBibliography;
+
+    selectedAge = gameData.tags[0].replaceFirst("Age: ", "");
+    selectedTags = gameData.tags.sublist(1);
+
+    //Set Trash Objects
+    List<String> keys = gameData.tips.keys.toList();
+    for (int i = 0; i < trashObjects.length; i++) {
+      if (i < trashObjects.length) {
+        trashObjects[i].imageUrlController.text = keys[i];
+        trashObjects[i].tipController.text = gameData.tips[keys[i]]!;
+        trashObjects[i].selectedOption = "${gameData.correctAnswers[keys[i]]!} bin";
+      } else {
+        trashObjects.add(TrashObject());
+        trashObjects[i].imageUrlController.text = keys[i];
+        trashObjects[i].tipController.text = gameData.tips[keys[i]]!;
+        trashObjects[i].selectedOption = "${gameData.correctAnswers[keys[i]]!} bin";
+      }
+    }
   }
 
   @override
@@ -146,12 +183,10 @@ class _CreateDragPageState extends State<CreateDragPage> {
 
       //Create the game and add it to database
       if (mounted) {
-        final DataService dataService = Provider.of<DataService>(
-            context, listen: false);
-        final AuthService authService = Provider.of<AuthService>(
-            context, listen: false);
+        final DataService dataService = Provider.of<DataService>(context, listen: false);
+        final AuthService authService = Provider.of<AuthService>(context, listen: false);
 
-        final String gameId = const Uuid().v4();
+        final String gameId = widget.gameData?.documentName ?? const Uuid().v4();
 
         GameData gameData = GameData(
             gameLogo: gameLogo,
@@ -359,7 +394,7 @@ class _CreateDragPageState extends State<CreateDragPage> {
                       child: ElevatedButton(
                         key: Key("submit"),
                         onPressed: _submitForm,
-                        child: const Text('Create Game')
+                        child: Text(btn)
                     )
                 ),
               ],

@@ -29,7 +29,7 @@ class _TrashObjectFormState extends State<TrashObjectForm> {
   @override
   void initState() {
     super.initState();
-    selectedOption = null;
+    selectedOption = widget.trashObject.selectedOption;
   }
 
   @override

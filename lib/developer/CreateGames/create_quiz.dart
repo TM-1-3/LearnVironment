@@ -12,7 +12,9 @@ import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 class CreateQuizPage extends StatefulWidget {
-  const CreateQuizPage({super.key});
+  final GameData? gameData;
+
+  const CreateQuizPage({super.key, this.gameData});
 
   @override
   State<CreateQuizPage> createState() => _CreateQuizPageState();
@@ -35,12 +37,62 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
   late List<bool> isExpandedList = [];
   late List<bool> isExpandedListOpt = [];
 
+  late String btn;
+
   @override
   void initState() {
     super.initState();
     questionObjects = List.generate(5, (_) => QuestionObject());
     isExpandedList = List.generate(questionObjects.length, (_) => true);
     isExpandedListOpt = List.generate(questionObjects.length, (_) => true);
+    if (widget.gameData != null) {
+      _setDefaultValues(widget.gameData!);
+    }
+    btn = widget.gameData == null ? 'Create Game' : 'Save Game';
+  }
+
+  void _setDefaultValues(GameData gameData) {
+    // Set default values from the gameData to the controllers
+    if (gameData.gameLogo == "assets/placeholder.png") {
+      gameLogoController.text ="";
+    } else {
+      gameLogoController.text = gameData.gameLogo;
+    }
+    gameNameController.text = gameData.gameName;
+    gameDescriptionController.text = gameData.gameDescription;
+    gameBibliographyController.text = gameData.gameBibliography;
+
+    selectedAge = gameData.tags[0].replaceFirst("Age: ", "");
+    selectedTags = gameData.tags.sublist(1);
+
+    //Set Trash Objects
+    List<String> keys = gameData.tips.keys.toList();
+    for (int i = 0; i < questionObjects.length; i++) {
+      if (i < questionObjects.length) {
+        questionObjects[i].questionController.text = keys[i];
+        questionObjects[i].tipController.text = gameData.tips[keys[i]]!;
+
+        List<String> options = gameData.questionsAndOptions![keys[i]]!;
+        int selectedIndex = options.indexOf(gameData.correctAnswers[keys[i]]!);
+        questionObjects[i].selectedOption = (selectedIndex + 1).toString();
+        questionObjects[i].options.option1Controller.text = gameData.questionsAndOptions![keys[i]]![0];
+        questionObjects[i].options.option2Controller.text = gameData.questionsAndOptions![keys[i]]![1];
+        questionObjects[i].options.option3Controller.text = gameData.questionsAndOptions![keys[i]]![2];
+        questionObjects[i].options.option4Controller.text = gameData.questionsAndOptions![keys[i]]![3];
+      } else {
+        questionObjects.add(QuestionObject());
+        questionObjects[i].questionController.text = keys[i];
+        questionObjects[i].tipController.text = gameData.tips[keys[i]]!;
+
+        List<String> options = gameData.questionsAndOptions![keys[i]]!;
+        int selectedIndex = options.indexOf(gameData.correctAnswers[keys[i]]!);
+        questionObjects[i].selectedOption = (selectedIndex + 1).toString();
+        questionObjects[i].options.option1Controller.text = gameData.questionsAndOptions![keys[i]]![0];
+        questionObjects[i].options.option2Controller.text = gameData.questionsAndOptions![keys[i]]![1];
+        questionObjects[i].options.option3Controller.text = gameData.questionsAndOptions![keys[i]]![2];
+        questionObjects[i].options.option4Controller.text = gameData.questionsAndOptions![keys[i]]![3];
+      }
+    }
   }
 
   @override
@@ -140,7 +192,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
         final DataService dataService = Provider.of<DataService>(context, listen: false);
         final AuthService authService = Provider.of<AuthService>(context, listen: false);
 
-        final String gameId = const Uuid().v4();
+        final String gameId = widget.gameData?.documentName ?? const Uuid().v4();
 
         GameData gameData = GameData(
             gameLogo: gameLogo,
@@ -157,8 +209,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
         );
 
         try {
-          await dataService.createGame(
-              uid: await authService.getUid(), game: gameData);
+          await dataService.createGame(uid: await authService.getUid(), game: gameData);
 
           //Navigate to auth_service and display SnackBar
           if (mounted) {
@@ -289,7 +340,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                   const SizedBox(height: 12),
                   ExpansionTile(
                     title: const Text(
-                      'QuestionsTrash Objects',
+                      'Questions Objects',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     initiallyExpanded: true,
@@ -360,7 +411,8 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
                   Center(
                       child: ElevatedButton(
                           onPressed: _submitForm,
-                          child: const Text('Create Game')
+                          key: Key("submit"),
+                          child: Text(btn)
                       )
                   ),
                 ],

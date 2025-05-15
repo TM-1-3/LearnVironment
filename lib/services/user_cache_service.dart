@@ -175,7 +175,9 @@ class UserCacheService {
       if (cachedUser != null) {
         List<String> myGames = List.from(cachedUser.myGames);
 
-        myGames.insert(0, gameId);
+        if (!myGames.contains(gameId)) {
+          myGames.insert(0, gameId);
+        }
 
         UserData updatedUser = cachedUser.copyWith(myGames: myGames);
 
