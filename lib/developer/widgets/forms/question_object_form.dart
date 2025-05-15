@@ -36,7 +36,7 @@ class _QuestionObjectFormState extends State<QuestionObjectForm> {
   @override
   void initState() {
     super.initState();
-    selectedOption = null;
+    selectedOption = widget.questionObject.selectedOption;
     isExpandedListOpt = widget.isExpandedListOpt;
     isExpandedList = widget.isExpandedList;
   }
