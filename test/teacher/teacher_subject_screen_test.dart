@@ -21,7 +21,7 @@ class MockAuthGate extends AuthGate {
     );
   }
 }
-// Mock class
+
 class MockDataService extends Mock implements DataService {
   bool throwErrorOnDelete = false;
   bool throwErrorOnAddStudent = false;
@@ -89,7 +89,7 @@ class MockDataService extends Mock implements DataService {
   }
 }
 
-// Helper class to fake user data
+
 class FakeUserData {
   final String name;
   final String email;
@@ -139,7 +139,7 @@ void main() {
     testWidgets('displays students', (tester) async {
       await tester.pumpWidget(testWidget);
 
-      await tester.pumpAndSettle(); // Wait for FutureBuilders
+      await tester.pumpAndSettle();
 
       expect(find.text('Student student1'), findsOneWidget);
       expect(find.text('Student student2'), findsOneWidget);
@@ -191,8 +191,8 @@ void main() {
       await tester.pumpAndSettle();
 
       await tester.tap(find.widgetWithText(ElevatedButton, 'Delete'));
-      await tester.pump(); // Start async
-      await tester.pump(const Duration(seconds: 1)); // Finish async
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 1));
 
       expect(find.textContaining('Failed to delete subject'), findsOneWidget);
     });
@@ -201,18 +201,18 @@ void main() {
       await tester.pumpWidget(testWidget);
       await tester.pumpAndSettle();
 
-      // Tap the "Add Student" button
+
       await tester.ensureVisible(find.byKey(Key("addStudent")));
       await tester.tap(find.byKey(Key("addStudent")));
       await tester.pumpAndSettle();
 
-      // Enter student ID
+
       await tester.enterText(find.byType(TextField), 'student 3');
       await tester.tap(find.widgetWithText(ElevatedButton, 'Add'));
       await tester.pump(); // Begin async call
       await tester.pump(const Duration(milliseconds: 500));
 
-      // Check snackbar shows success message
+
       expect(find.textContaining('Student added successfully'), findsOneWidget);
     });
 
@@ -220,16 +220,16 @@ void main() {
       await tester.pumpWidget(testWidget);
       await tester.pumpAndSettle();
 
-      // Tap the "Add Student" button
+
       await tester.ensureVisible(find.byKey(Key("addStudent")));
       await tester.tap(find.byKey(Key("addStudent")));
       await tester.pumpAndSettle();
 
-      // Enter invalid student Name
+
       await tester.enterText(find.byType(TextField), 'NonExisting Student');
       await tester.tap(find.widgetWithText(ElevatedButton, 'Add'));
       await tester.pump(); // Begin async call
-      await tester.pump(const Duration(seconds: 1)); // Wait for async work
+      await tester.pump(const Duration(seconds: 1));
 
       expect(find.text('Student Not Found'), findsOneWidget);
     });
@@ -239,42 +239,42 @@ void main() {
       await tester.pumpWidget(testWidget);
       await tester.pumpAndSettle();
 
-      // Tap the "Add Student" button
+
       await tester.ensureVisible(find.byKey(Key("addStudent")));
       await tester.tap(find.byKey(Key("addStudent")));
       await tester.pumpAndSettle();
 
-      // Enter invalid student ID
+
       await tester.enterText(find.byType(TextField), 'errorStudentId');
       await tester.tap(find.widgetWithText(ElevatedButton, 'Add'));
-      await tester.pump(); // Begin async call
-      await tester.pump(const Duration(seconds: 1)); // Wait for async work
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 1));
 
       expect(find.text('Failed to add student'), findsOneWidget);
     });
 
     testWidgets('removes a student successfully', (tester) async {
       await tester.pumpWidget(testWidget);
-      await tester.pumpAndSettle(); // Allow FutureBuilders to complete
+      await tester.pumpAndSettle();
 
-      // Find and tap the remove icon for the first student
+
       final removeButton = find.widgetWithIcon(IconButton, Icons.remove_circle_outline).first;
       await tester.tap(removeButton);
       await tester.pumpAndSettle();
 
-      // Confirm the dialog appears
+
       expect(find.text('Remove Student'), findsOneWidget);
       expect(find.text('Are you sure you want to remove this student from the class?'), findsOneWidget);
 
-      // Tap 'Remove' button in dialog
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Remove'));
-      await tester.pump(); // Begin async
-      await tester.pump(const Duration(seconds: 1)); // Complete async
 
-      // Success snackbar shown
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Remove'));
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 1));
+
+
       expect(find.text('Student removed successfully'), findsOneWidget);
 
-      // Student should no longer be in the widget tree
+
       expect(find.text('Student student1'), findsNothing);
     });
 
@@ -282,22 +282,22 @@ void main() {
       mockDataService.setThrowErrorOnRemoveStudent(true);
 
       await tester.pumpWidget(testWidget);
-      await tester.pumpAndSettle(); // Wait for student list
+      await tester.pumpAndSettle();
 
-      // Find and tap remove icon
+
       final removeButton = find.widgetWithIcon(IconButton, Icons.remove_circle_outline).first;
       await tester.tap(removeButton);
       await tester.pumpAndSettle();
 
-      // Confirm dialog appears and tap remove
+
       await tester.tap(find.widgetWithText(ElevatedButton, 'Remove'));
       await tester.pump(); // Begin async
       await tester.pump(const Duration(seconds: 1)); // Finish async
 
-      // Error snackbar shown
+
       expect(find.text('Failed to remove student'), findsOneWidget);
 
-      // Student should still be present
+
       expect(find.text('Student student1'), findsOneWidget);
     });
   });
