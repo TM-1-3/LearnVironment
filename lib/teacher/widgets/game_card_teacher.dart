@@ -45,11 +45,17 @@ class GameCardTeacher extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
-                child: Image.asset(
+                child: imagePath.startsWith('assets/')
+                    ? Image.asset(
                   imagePath,
                   width: double.infinity,
                   fit: BoxFit.cover,
-                ),
+                )
+                    : Image.network(
+                  imagePath,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                )
               ),
               Padding(
                 padding: const EdgeInsets.all(10),
