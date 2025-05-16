@@ -102,6 +102,7 @@
 - Fixed bug in the custom image for classes [#131](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/131)
 - Developers can now edit their games [#132](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/132/)
 - Improved tests for ````FirestoreService```` [#128](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/128/)
+- Fixed notifications bug where all users receive notifications [#143](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/143/)
 
 ### Test User
 - email: up202307719@g.uporto.pt
