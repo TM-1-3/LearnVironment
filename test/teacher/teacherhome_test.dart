@@ -7,6 +7,7 @@ import 'package:learnvironment/main_pages/profile_screen.dart';
 import 'package:learnvironment/services/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:learnvironment/teacher/games_page_teacher.dart';
+import 'package:learnvironment/teacher/statistics_teacher_page.dart';
 import 'package:learnvironment/teacher/teacher_home.dart';
 import 'package:learnvironment/teacher/teacher_main_page.dart';
 import 'package:learnvironment/main_pages/notifications_page.dart';
@@ -54,8 +55,9 @@ void main() {
       await tester.tap(find.byIcon(Icons.pie_chart));
       await tester.pumpAndSettle();
 
-      expect(find.byType(StatisticsPage), findsOneWidget);
+      expect(find.byType(StatisticsTeacherPage), findsOneWidget);
     });
+
 
     testWidgets('Navigates to Games page', (tester) async {
       await tester.pumpWidget(testWidget);

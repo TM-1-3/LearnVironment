@@ -209,8 +209,8 @@ class _TeacherSubjectScreenState extends State<TeacherSubjectScreen> {
                                         );
 
                                         setState(() {
-                                          widget.subjectData.students.remove(
-                                              studentId);
+                                          widget.subjectData.students.removeWhere((student) => student['studentId'] == studentId);
+
                                         });
 
                                         if (context.mounted) {
