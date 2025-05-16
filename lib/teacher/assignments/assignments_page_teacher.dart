@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:learnvironment/teacher/assignment_page_teacher.dart';
+import 'package:learnvironment/teacher/assignments/assignment_page_teacher.dart';
 import 'package:learnvironment/teacher/widgets/assignment_card_teacher.dart';
 import 'package:learnvironment/services/firebase/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
@@ -132,7 +132,7 @@ class AssignmentsPageTeacherState extends State<AssignmentsPageTeacher> {
                   },
                 )
                     : const Center(
-                  child: Text('No results found'),
+                  child: Text('Create assignments by pressing the plus icon in the games page!'),
                 );
               },
             ),

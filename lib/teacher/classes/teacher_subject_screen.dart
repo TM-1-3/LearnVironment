@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:learnvironment/data/subject_data.dart';
 import 'package:learnvironment/services/firebase/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
-import 'package:learnvironment/teacher/assignments_page_teacher.dart';
+import 'package:learnvironment/teacher/assignments/assignments_page_teacher.dart';
 import 'package:provider/provider.dart';
 
 class TeacherSubjectScreen extends StatefulWidget {

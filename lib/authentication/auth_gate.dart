@@ -33,17 +33,15 @@ class AuthGate extends StatelessWidget {
     if (userData != null) {
       if (userData.role == "teacher" && userData.tClasses.isNotEmpty) {
         await Future.wait(userData.tClasses.map((className) {
-          String sanitizedClassName = className.replaceAll(
-              RegExp(r'[^a-zA-Z0-9_]'), '_');
-          return messagingService.firebaseMessaging.subscribeToTopic(
-              sanitizedClassName);
+          String sanitizedClassName = className.replaceAll(RegExp(r'[^a-zA-Z0-9\-_.~%]'), '_');
+          print("Subscribing to topic: $sanitizedClassName");
+          return messagingService.firebaseMessaging.subscribeToTopic(sanitizedClassName);
         }));
       } else if (userData.role == "student" && userData.stClasses.isNotEmpty) {
         await Future.wait(userData.stClasses.map((className) {
-          String sanitizedClassName = className.replaceAll(
-              RegExp(r'[^a-zA-Z0-9_]'), '_');
-          return messagingService.firebaseMessaging.subscribeToTopic(
-              sanitizedClassName);
+          String sanitizedClassName = className.replaceAll(RegExp(r'[^a-zA-Z0-9\-_.~%]'), '_');
+          print("Subscribing to topic: $sanitizedClassName");
+          return messagingService.firebaseMessaging.subscribeToTopic(sanitizedClassName);
         }));
       }
     }

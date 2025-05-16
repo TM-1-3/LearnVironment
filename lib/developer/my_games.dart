@@ -103,7 +103,7 @@ class MyGamesPageState extends State<MyGamesPage> {
 
   @override
   Widget build(BuildContext context) {
-    final filteredSubjects = getFilteredMyGames();
+    final filteredGames = getFilteredMyGames();
 
     final screenWidth = MediaQuery.of(context).size.width;
     double mainAxisExtent = 500.0;
@@ -198,9 +198,9 @@ class MyGamesPageState extends State<MyGamesPage> {
                       mainAxisSpacing: 10.0,
                       mainAxisExtent: mainAxisExtent,
                     ),
-                    itemCount: filteredSubjects.length,
+                    itemCount: filteredGames.length,
                     itemBuilder: (context, index) {
-                      final game = filteredSubjects[index];
+                      final game = filteredGames[index];
                       return MyGameCard(
                         imagePath: game['imagePath'],
                         gameTitle: game['gameTitle'],
