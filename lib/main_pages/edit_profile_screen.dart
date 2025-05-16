@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:learnvironment/data/notification_storage.dart';
 import 'package:learnvironment/data/user_data.dart';
 import 'package:learnvironment/main_pages/profile_screen.dart';
 import 'package:learnvironment/services/data_service.dart';
@@ -113,6 +114,11 @@ class EditProfilePageState extends State<EditProfilePage> {
       if (userData == null) {
         _showErrorDialog("No user is logged in.", "Error");
         return;
+      }
+
+      if (accountType != userData.role) {
+        NotificationStorage.notificationMessages = [];
+        authService.fetchedNotifications = true;
       }
 
       if (email != userData.email) {

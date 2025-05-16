@@ -3,7 +3,7 @@ import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:learnvironment/authentication/auth_gate.dart';
-import 'package:learnvironment/teacher/create_subject_page.dart';
+import 'package:learnvironment/teacher/classes/create_subject_page.dart';
 import 'package:learnvironment/services/firebase/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:learnvironment/data/subject_data.dart';

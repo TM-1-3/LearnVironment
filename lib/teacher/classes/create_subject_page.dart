@@ -4,8 +4,8 @@ import 'package:learnvironment/services/firebase/auth_service.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
-import '../data/subject_data.dart';
-import '../services/data_service.dart';
+import '../../data/subject_data.dart';
+import '../../services/data_service.dart';
 
 class CreateSubjectPage extends StatefulWidget {
   const CreateSubjectPage({super.key});

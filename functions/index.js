@@ -26,7 +26,7 @@ exports.notifyOnEvent = onDocumentCreated('events/{eventId}', async (event) => {
     topic: sanitizedClassName,
   };
 
-  await getMessaging().send(payload);
+  await getMessaging().send(payload)
     .then((response) => console.log('Successfully sent message:', response))
     .catch((error) => console.error('Error sending message:', error));
 });
