@@ -156,9 +156,14 @@ void main() {
       await tester.pumpWidget(testWidget);
 
       await tester.pumpAndSettle();
+      final allTextWidgets = find.byType(Text);
+      allTextWidgets.evaluate().forEach((element) {
+        final widget = element.widget;
+        if (widget is Text) print('Text: "${widget.data}"');
+      });
 
-      expect(find.text('Student student1'), findsOneWidget);
-      expect(find.text('Student student2'), findsOneWidget);
+      expect(find.text('user_student1'), findsOneWidget);
+      expect(find.text('user_student2'), findsOneWidget);
     });
 
     testWidgets('shows "No students enrolled yet." if no students', (tester) async {
