@@ -101,7 +101,7 @@ class GamesPageState extends State<GamesPage> {
 
   @override
   Widget build(BuildContext context) {
-    final filteredSubjects = getFilteredGames();
+    final filteredGames = getFilteredGames();
 
     final screenWidth = MediaQuery.of(context).size.width;
     double mainAxisExtent = 500.0;
@@ -185,7 +185,7 @@ class GamesPageState extends State<GamesPage> {
                 shrinkWrap: true,
                 physics: AlwaysScrollableScrollPhysics(),
                 children: [
-                  games.isNotEmpty
+                  filteredGames.isNotEmpty
                       ? GridView.builder(
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
@@ -196,9 +196,9 @@ class GamesPageState extends State<GamesPage> {
                       mainAxisSpacing: 10.0,
                       mainAxisExtent: mainAxisExtent,
                     ),
-                    itemCount: filteredSubjects.length,
+                    itemCount: filteredGames.length,
                     itemBuilder: (context, index) {
-                      final game = filteredSubjects[index];
+                      final game = filteredGames[index];
                       return GameCard(
                         imagePath: game['imagePath'],
                         gameTitle: game['gameTitle'],

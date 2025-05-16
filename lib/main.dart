@@ -25,7 +25,7 @@ void main() async {
 
   final FirebaseMessagingService messagingService = FirebaseMessagingService();
 
-  FirebaseMessaging.onBackgroundMessage(messagingService.firebaseMessagingBackgroundHandler);
+  FirebaseMessaging.onBackgroundMessage(FirebaseMessagingService.firebaseMessagingBackgroundHandler);
   await messagingService.initNotifications();
   messagingService.setupFCMListeners();
   FirebaseMessaging.instance.subscribeToTopic('your_event_topic');

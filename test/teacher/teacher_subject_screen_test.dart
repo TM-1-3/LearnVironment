@@ -26,6 +26,7 @@ class MockDataService extends Mock implements DataService {
   bool throwErrorOnDelete = false;
   bool throwErrorOnAddStudent = false;
   bool throwErrorOnRemoveStudent = false;
+  bool throwErrorAlreadyExistingStudent = false;
 
   void setThrowErrorOnDelete(bool value) {
     throwErrorOnDelete = value;
@@ -37,6 +38,10 @@ class MockDataService extends Mock implements DataService {
 
   void setThrowErrorOnRemoveStudent(bool value) {
     throwErrorOnRemoveStudent = value;
+  }
+
+  void setThrowErrorAlreadyExistingStudent(bool value){
+    throwErrorAlreadyExistingStudent = value;
   }
 
   @override
@@ -53,7 +58,7 @@ class MockDataService extends Mock implements DataService {
       name: 'Student $userId',
       email: '$userId@example.com',
       id: userId,
-      username: '',
+      username: 'user_$userId',
       role: '',
       birthdate: DateTime(2000, 1, 1),
       gamesPlayed: [],
@@ -70,6 +75,9 @@ class MockDataService extends Mock implements DataService {
     if (throwErrorOnAddStudent) {
       throw Exception('Failed to add student');
     }
+    if (throwErrorAlreadyExistingStudent){
+      throw Exception('Student is already in this subject');
+    }
   }
 
   @override
@@ -81,11 +89,19 @@ class MockDataService extends Mock implements DataService {
   }
 
   @override
-  Future<String?> getUserIdByName(String name) async {
-    if (name=='NonExisting Student'){
+  Future<String?> getUserIdByUserName(String username) async {
+    if (username=='NonExisting Student'){
       return null;
     }
-    return name;
+    return username;
+  }
+
+  @override
+  Future<bool> checkIfStudentAlreadyInClass({required String subjectId, required String studentId}) async {
+    if (studentId=='user_student1' || studentId=='user_student2'){
+      return true;
+    }
+    return false;
   }
 }
 
@@ -216,11 +232,11 @@ void main() {
       expect(find.textContaining('Student added successfully'), findsOneWidget);
     });
 
-    testWidgets('shows snackbar on student invalid name', (tester) async {
+    testWidgets('shows snackbar on student invalid username', (tester) async {
       await tester.pumpWidget(testWidget);
       await tester.pumpAndSettle();
 
-
+      // Tap the "Add Student" button
       await tester.ensureVisible(find.byKey(Key("addStudent")));
       await tester.tap(find.byKey(Key("addStudent")));
       await tester.pumpAndSettle();
@@ -251,6 +267,25 @@ void main() {
       await tester.pump(const Duration(seconds: 1));
 
       expect(find.text('Failed to add student'), findsOneWidget);
+    });
+
+    testWidgets('shows snackbar on adding student already in subject', (tester) async {
+      mockDataService.setThrowErrorAlreadyExistingStudent(true);
+      await tester.pumpWidget(testWidget);
+      await tester.pumpAndSettle();
+
+      // Tap the "Add Student" button
+      await tester.ensureVisible(find.byKey(Key("addStudent")));
+      await tester.tap(find.byKey(Key("addStudent")));
+      await tester.pumpAndSettle();
+
+      // Enter invalid student Username
+      await tester.enterText(find.byType(TextField), 'user_student1');
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Add'));
+      await tester.pump(); // Begin async call
+      await tester.pump(const Duration(seconds: 1)); // Wait for async work
+
+      expect(find.text('Student is already in this subject'), findsOneWidget);
     });
 
     testWidgets('removes a student successfully', (tester) async {

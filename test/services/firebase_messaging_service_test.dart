@@ -46,7 +46,7 @@ void main() {
         data: {},
       );
 
-      firebaseMessagingService.showNotification(message);
+      FirebaseMessagingService.showNotification(message: message, localNotificationsPlugin: mockFlutterLocalNotificationsPlugin);
 
       verify(mockFlutterLocalNotificationsPlugin.show(
         message.notification.hashCode,
@@ -59,7 +59,7 @@ void main() {
     test('should not crash when notification or android details are missing', () async {
       final RemoteMessage message = RemoteMessage(data: {});
 
-      firebaseMessagingService.showNotification(message);
+      FirebaseMessagingService.showNotification(message: message, localNotificationsPlugin: mockFlutterLocalNotificationsPlugin);
 
       verifyNever(mockFlutterLocalNotificationsPlugin.show(any, any, any, any));
     });

@@ -20,8 +20,11 @@ class FirestoreService {
   // 2. Games
   // 3. Subjects (Aka Classes)
   // 4. Assignments
+  // 5. Events
 
   //============================== USER =================================================//
+
+
   Future<void> updateUserGamesPlayed({required String uid, required String gameId}) async {
     final userDoc = _firestore.collection('users').doc(uid);
     final userSnapshot = await userDoc.get();
@@ -95,10 +98,10 @@ class FirestoreService {
     return snapshot.docs.isNotEmpty;
   }
 
-  Future<String?> getUserIdByName(String name) async {
+  Future<String?> getUserIdByUserName(String username) async {
     final snapshot = await _firestore
         .collection('users')
-        .where('name', isEqualTo: name)
+        .where('username', isEqualTo: username)
         .limit(1)
         .get();
     if (snapshot.docs.isNotEmpty) {
@@ -162,7 +165,11 @@ class FirestoreService {
     }
   }
 
+
+
   //========================= GAMES =========================//
+
+
   Future<List<Map<String, dynamic>>> getAllGames() async {
     try {
       final querySnapshot = await _firestore.collection('games').get();
@@ -184,6 +191,43 @@ class FirestoreService {
       debugPrint('Error getting games: $e\n$stackTrace');
       rethrow;
     }
+  }
+
+  Future<void> createGame({required String uid, required GameData game}) async {
+    //Update User doc
+    final userDoc = _firestore.collection('users').doc(uid);
+    final userSnapshot = await userDoc.get();
+
+    List<String> myGames = [];
+
+    if (userSnapshot.exists && userSnapshot.data() != null) {
+      final data = userSnapshot.data()!;
+      myGames = List<String>.from(data['myGames'] ?? []);
+    }
+    if (!myGames.contains(game.documentName)) {
+      myGames.insert(0, game.documentName);
+    }
+    try {
+      await userDoc.update({'myGames': myGames});
+      print('[FirestoreService] Updated myGames for user $uid');
+
+    } catch (e, stackTrace) {
+      print('[FirestoreService] Error updating myGames in Firestore: $e\n$stackTrace');
+      rethrow;
+    }
+
+    //Add game to games collection
+    await _firestore.collection('games').doc(game.documentName).set({
+      'logo': game.gameLogo,
+      'name': game.gameName,
+      'description': game.gameDescription,
+      'bibliography': game.gameBibliography,
+      'tags': game.tags,
+      'template': game.gameTemplate,
+      'tips' : game.tips,
+      'correctAnswers' : game.correctAnswers,
+      'public' : game.public.toString()
+    });
   }
 
   Future<List<Map<String, dynamic>>> getMyGames({required String uid}) async {
@@ -369,7 +413,11 @@ class FirestoreService {
     }
   }
 
+
+
   // =========================== SUBJECTS (Aka CLASSES) ==============================//
+
+
   Future<List<Map<String, dynamic>>> getAllSubjects({required String teacherId}) async {
     try {
       final querySnapshot = await _firestore
@@ -411,6 +459,30 @@ class FirestoreService {
       );
     } catch (e, stackTrace) {
       debugPrint("Error loading SubjectData: $e\n$stackTrace");
+      rethrow;
+    }
+  }
+
+  Future<bool> checkIfStudentAlreadyInClass({required String subjectId, required String studentId}) async {
+    try {
+      DocumentSnapshot snapshot = await _firestore.collection('subjects').doc(
+          subjectId).get();
+
+      if (!snapshot.exists) {
+        throw Exception("Subject not found in Firestore for ID: $subjectId");
+      }
+
+      var data = snapshot.data() as Map<String, dynamic>;
+
+      List<String> students = List<String>.from(data['students']);
+      for (String student in students) {
+        if (student == studentId) {
+          return true;
+        }
+      }
+      return false;
+    } catch (e, stackTrace) {
+      debugPrint("Error loading checking if student already in class: $e\n$stackTrace");
       rethrow;
     }
   }
@@ -458,15 +530,23 @@ class FirestoreService {
       final userSnapshot = await userDoc.get();
 
       List<String> classes = [];
+      List<String> stClasses = [];
+      List<String> tClasses = [];
 
       if (userSnapshot.exists && userSnapshot.data() != null) {
         final data = userSnapshot.data()!;
         classes = List<String>.from(data['classes'] ?? []);
+        stClasses = List<String>.from(data['stClasses'] ?? []);
+        tClasses = List<String>.from(data['tClasses'] ?? []);
       }
 
       classes.remove(subjectId);
+      stClasses.remove(subjectId);
+      tClasses.remove(subjectId);
 
       await userDoc.update({'classes': classes});
+      await userDoc.update({'stClasses': stClasses});
+      await userDoc.update({'tClasses': tClasses});
       print("[FirestoreService] Class Deleted");
     } catch (e) {
       print("[FirestoreService] Error deleting class $subjectId");
@@ -481,6 +561,10 @@ class FirestoreService {
     try {
       final subjectRef = _firestore.collection('subjects').doc(subjectId);
       final studentRef = _firestore.collection('users').doc(studentId);
+      await subjectRef.update({
+        'students': FieldValue.arrayUnion([studentId]),
+      });
+
 
       // Run both updates in a batch
       final batch = _firestore.batch();
@@ -496,8 +580,8 @@ class FirestoreService {
       });
 
       // Add subject to student's subject list
-      batch.update(studentRef, {
-        'classes': FieldValue.arrayUnion([subjectId]),
+      await userRef.update({
+        'stClasses': FieldValue.arrayUnion([subjectId]),
       });
 
       await batch.commit();
@@ -508,7 +592,6 @@ class FirestoreService {
       rethrow;
     }
   }
-
 
   Future<void> removeStudentFromSubject({
     required String subjectId,
@@ -591,6 +674,8 @@ class FirestoreService {
   }
 
   //================================ ASSIGNMENTS ====================================//
+
+
   Future<String> createAssignment({
     required String title,
     required String gameId,
@@ -704,7 +789,11 @@ class FirestoreService {
     }
   }
 
+
+
 //================================ EVENTS ====================================//
+
+
   Future<List<RemoteMessage>> fetchNotifications({required String uid}) async {
     UserData userData = await fetchUserData(userId: uid);
 

@@ -5,12 +5,10 @@ import 'package:learnvironment/developer/CreateGames/create_quiz.dart';
 import 'package:learnvironment/developer/new_game.dart';
 
 void main() {
-  testWidgets('NewGamePage renders correct number of game type cards', (WidgetTester tester) async {
-    await tester.pumpWidget(
-      const MaterialApp(home: NewGamePage()),
-    );
+  testWidgets('renders app bar with correct title', (WidgetTester tester) async {
+    await tester.pumpWidget(const MaterialApp(home: NewGamePage()));
 
-    expect(find.byType(ListTile), findsNWidgets(2));
+    expect(find.text('Select a Template'), findsOneWidget);
   });
 
   testWidgets('Each ListTile has correct text', (WidgetTester tester) async {
@@ -18,19 +16,13 @@ void main() {
       const MaterialApp(home: NewGamePage()),
     );
 
+    expect(find.byType(ListTile), findsNWidgets(NewGamePage.gameTypes.length));
     expect(find.text('Create a drag game'), findsOneWidget);
     expect(find.text('Create a quiz game'), findsOneWidget);
   });
 
-  testWidgets('Tapping "drag" navigates to CreateDragPage', (WidgetTester tester) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        home: const NewGamePage(),
-        routes: {
-          '/create_drag': (context) => const CreateDragPage(),
-        },
-      ),
-    );
+  testWidgets('navigates to CreateDragPage on drag tile tap', (WidgetTester tester) async {
+    await tester.pumpWidget(const MaterialApp(home: NewGamePage()));
 
     await tester.tap(find.text('Create a drag game'));
     await tester.pumpAndSettle();
@@ -38,15 +30,8 @@ void main() {
     expect(find.byType(CreateDragPage), findsOneWidget);
   });
 
-  testWidgets('Tapping "quiz" navigates to CreateQuizPage', (WidgetTester tester) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        home: const NewGamePage(),
-        routes: {
-          '/create_quiz': (context) => const CreateQuizPage(),
-        },
-      ),
-    );
+  testWidgets('navigates to CreateQuizPage on quiz tile tap', (WidgetTester tester) async {
+    await tester.pumpWidget(const MaterialApp(home: NewGamePage()));
 
     await tester.tap(find.text('Create a quiz game'));
     await tester.pumpAndSettle();
@@ -73,3 +58,4 @@ void main() {
     expect(brokenImage, findsWidgets);
   });
 }
+

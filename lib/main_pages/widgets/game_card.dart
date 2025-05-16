@@ -44,10 +44,21 @@ class GameCard extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
-                child: Image.asset(
-                  imagePath,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: 180,
+                  ),
+                  child: imagePath.startsWith('assets/')
+                      ? Image.asset(
+                    imagePath,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  )
+                      : Image.network(
+                    imagePath,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
               Padding(
@@ -70,12 +81,12 @@ class GameCard extends StatelessWidget {
                     LayoutBuilder(
                       builder: (context, constraints) {
                         List<Widget> tagWidgets = [];
-                        for (int i = 0; i < tags.length && i < 3; i++) {
+                        for (int i = 0; i < tags.length && i < 2; i++) {
                           tagWidgets.add(TagWidget(tag: tags[i]));
                         }
                         if (tags.length > 3) {
                           tagWidgets.add(
-                            TagWidget(tag: '+${tags.length - 3} more'),
+                            TagWidget(tag: '+${tags.length - 2} more'),
                           );
                         }
                         return Center( // Center the tags

@@ -24,6 +24,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final List<String> _accountTypes = ['developer', 'student', 'teacher'];
   bool _isButtonEnabled = true;
 
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    _usernameController.dispose();
+    _nameController.dispose();
+    _imgController.dispose();
+    super.dispose();
+  }
+
   Future<void> _pickBirthDate() async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -148,16 +159,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
         _isButtonEnabled = true;
       });
     }
-  }
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
-    _usernameController.dispose();
-    _nameController.dispose();
-    super.dispose();
   }
 
   @override

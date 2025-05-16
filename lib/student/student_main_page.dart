@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:learnvironment/services/auth_service.dart';
 import 'package:learnvironment/student/student_subject_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:learnvironment/services/user_cache_service.dart';
 
 import '../services/data_service.dart';
 import '../teacher/widgets/subject_card.dart';
@@ -21,6 +22,23 @@ class StudentMainPageState extends State<StudentMainPage> {
   void initState() {
     super.initState();
     _fetchSubjects();
+  }
+
+  Future<void> _refreshMyClasses() async {
+    try {
+      final dataService = Provider.of<DataService>(context, listen: false);
+      final authService = Provider.of<AuthService>(context, listen: false);
+      final userCacheService = Provider.of<UserCacheService>(context, listen: false);
+      await userCacheService.clearUserCache();
+
+      final fetchedMyClasses = await dataService.getAllSubjects(uid: await authService.getUid());
+      print('[StudentMainPage] Refreshed My Classes');
+      setState(() {
+        subjects = fetchedMyClasses;
+      });
+    } catch (e) {
+      print('[StudentMainPage] Error refreshing my classes: $e');
+    }
   }
 
   Future<void> _fetchSubjects() async {
@@ -80,6 +98,7 @@ class StudentMainPageState extends State<StudentMainPage> {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: TextField(
           key: Key('search'),
           onChanged: (query) {
@@ -98,51 +117,60 @@ class StudentMainPageState extends State<StudentMainPage> {
             padding: const EdgeInsets.all(8.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
             ),
           ),
           Expanded(
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                double mainAxisExtent = 500.0;
-                if (constraints.maxWidth <= 600) {
-                  mainAxisExtent = constraints.maxWidth-150;
-                } else if (constraints.maxWidth <= 1000) {
-                  mainAxisExtent = 550;
-                } else if (constraints.maxWidth <= 2000) {
-                  mainAxisExtent = 950;
-                } else {
-                  mainAxisExtent = 1400;
-                }
-
-                return subjects.isNotEmpty
-                    ? GridView.builder(
-                  padding: const EdgeInsets.all(8),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 10.0,
-                    mainAxisSpacing: 10.0,
-                    mainAxisExtent: mainAxisExtent,
-                  ),
-                  itemCount: filteredSubjects.length,
-                  itemBuilder: (context, index) {
-                    final subject = filteredSubjects[index];
-                    return SubjectCard(
-                      imagePath: subject['imagePath'],
-                      subjectName: subject['subjectName'],
-                      subjectId: subject['subjectId'],
-                      loadSubject: loadSubject,
-                    );
-                  },
-                )
-                    : const Center(
-                  child: Text('No results found'),
-                );
-              },
+            child: RefreshIndicator(
+              onRefresh: _refreshMyClasses,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  double mainAxisExtent = 500.0;
+                  if (constraints.maxWidth <= 600) {
+                    mainAxisExtent = constraints.maxWidth - 150;
+                  } else if (constraints.maxWidth <= 1000) {
+                    mainAxisExtent = 550;
+                  } else if (constraints.maxWidth <= 2000) {
+                    mainAxisExtent = 950;
+                  } else {
+                    mainAxisExtent = 1400;
+                  }
+                  return subjects.isNotEmpty
+                      ? GridView.builder(
+                    padding: const EdgeInsets.all(8),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 10.0,
+                      mainAxisSpacing: 10.0,
+                      mainAxisExtent: mainAxisExtent,
+                    ),
+                    itemCount: filteredSubjects.length,
+                    itemBuilder: (context, index) {
+                      final subject = filteredSubjects[index];
+                      return SubjectCard(
+                        imagePath: subject['imagePath'],
+                        subjectName: subject['subjectName'],
+                        subjectId: subject['subjectId'],
+                        loadSubject: loadSubject,
+                      );
+                    },
+                  )
+                      : ListView( // Needed because RefreshIndicator only works with scrollables
+                    children: const [
+                      Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(20.0),
+                          child: Text('No results found'),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
             ),
           ),
         ],
       ),
+
     );
   }
 }

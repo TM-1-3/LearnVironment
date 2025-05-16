@@ -28,6 +28,7 @@ class _TeacherSubjectScreenState extends State<TeacherSubjectScreen> {
         return {
           'name': userData.name,
           'email': userData.email,
+          'username': userData.username,
         };
       } else {
         return null;
@@ -171,7 +172,7 @@ class _TeacherSubjectScreenState extends State<TeacherSubjectScreen> {
                             ),
                             child: ListTile(
                               leading: const Icon(Icons.person),
-                              title: Text(studentData['name'] ?? 'Unknown'),
+                              title: Text(studentData['username'] ?? 'Unknown'),
                               subtitle: Text(studentData['email'] ?? ''),
                               trailing: IconButton(
                                 icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
@@ -262,7 +263,7 @@ class _TeacherSubjectScreenState extends State<TeacherSubjectScreen> {
                           content: TextField(
                             controller: studentIdDialogController,
                             decoration: const InputDecoration(
-                              labelText: 'Enter Student Name',
+                              labelText: 'Enter Student Username',
                               border: OutlineInputBorder(),
                             ),
                           ),
@@ -275,14 +276,28 @@ class _TeacherSubjectScreenState extends State<TeacherSubjectScreen> {
                             ),
                             ElevatedButton(
                               onPressed: () async {
-                                final newStudentName = studentIdDialogController.text.trim();
-                                if (newStudentName.isNotEmpty) {
+                                final newStudentUserName = studentIdDialogController.text.trim();
+                                if (newStudentUserName.isNotEmpty) {
                                   final dataService = Provider.of<DataService>(context, listen: false);
-                                  final newStudentId = await dataService.getUserIdByName(newStudentName);
+                                  final newStudentId = await dataService.getUserIdByUserName(newStudentUserName);
                                   if (newStudentId == null) {
                                     if (context.mounted) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                            content: Text('Student Not Found')),
+                                      );
+                                    }
+                                    return;
+                                  }
+                                  final studentAlreadyInClass = await dataService.checkIfStudentAlreadyInClass(
+                                    subjectId: widget.subjectData.subjectId,
+                                    studentId: newStudentId,
+                                  );
+                                  if (studentAlreadyInClass) {
+                                    if (context.mounted) {
                                       ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text('Student Not Found')),
+                                        const SnackBar(content: Text('Student is already in this subject')),
                                       );
                                     }
                                     return;

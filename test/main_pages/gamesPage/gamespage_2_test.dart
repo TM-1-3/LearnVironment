@@ -188,7 +188,7 @@ void main() {
       await tester.pumpWidget(testWidget);
       await tester.pumpAndSettle();
 
-      expect(find.byType(GameCard), findsNWidgets(2));
+      expect(find.byType(GameCard), findsNWidgets(4));
       await tester.enterText(find.byKey(Key('search')), 'Test');
       await tester.pumpAndSettle();
 
@@ -227,8 +227,7 @@ void main() {
       await tester.tap(find.text('All Ages').last);
       await tester.pumpAndSettle();
 
-      expect(
-          find.byType(GameCard), findsNWidgets(2));
+      expect(find.byType(GameCard), findsNWidgets(4));
     });
 
     testWidgets('should reset tag filter when "All Tags" is selected', (
@@ -249,7 +248,7 @@ void main() {
       await tester.tap(find.text('All Tags').last);
       await tester.pumpAndSettle();
 
-      expect(find.byType(GameCard), findsNWidgets(2));
+      expect(find.byType(GameCard), findsNWidgets(4));
     });
 
     testWidgets('should call load game correctly', (WidgetTester tester) async {
@@ -266,12 +265,12 @@ void main() {
 
     testWidgets('should display no results found message if no games match the filters', (WidgetTester tester) async {
       await tester.pumpWidget(testWidget);
+      await tester.pumpAndSettle();
 
       await tester.enterText(find.byKey(Key('search')), 'Nonexistent');
       await tester.pumpAndSettle();
 
-      expect(find.text('No results found'),
-          findsOneWidget); // No games should match
+      expect(find.text('No results found'), findsOneWidget);
     });
   });
 }

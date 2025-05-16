@@ -167,4 +167,26 @@ class UserCacheService {
       return [];
     }
   }
+
+  Future<void> createGame({required String uid, required String gameId}) async {
+    try {
+      UserData? cachedUser = await getCachedUserData();
+
+      if (cachedUser != null) {
+        List<String> myGames = List.from(cachedUser.myGames);
+
+        if (!myGames.contains(gameId)) {
+          myGames.insert(0, gameId);
+        }
+
+        UserData updatedUser = cachedUser.copyWith(myGames: myGames);
+
+        await cacheUserData(updatedUser);
+        print('[UserCacheService] Updated cached myGames');
+      }
+    } catch (e) {
+      print('[UserCacheService] Error updating cached myGames: $e');
+      rethrow;
+    }
+  }
 }

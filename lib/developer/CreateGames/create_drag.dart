@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:learnvironment/developer/CreateGames/trash_object.dart';
-import 'package:learnvironment/developer/widgets/age_dropdown.dart';
+import 'package:learnvironment/data/game_data.dart';
+import 'package:learnvironment/developer/CreateGames/objects/trash_object.dart';
+import 'package:learnvironment/developer/widgets/dropdown/age_dropdown.dart';
+import 'package:learnvironment/developer/widgets/dropdown/tag_selection.dart';
 import 'package:learnvironment/developer/widgets/game_form_field.dart';
-import 'package:learnvironment/developer/widgets/tag_selection.dart';
-import 'package:learnvironment/developer/widgets/trash_object_form.dart';
-
+import 'package:learnvironment/developer/widgets/forms/trash_object_form.dart';
+import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/services/data_service.dart';
+import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 
 class CreateDragPage extends StatefulWidget {
-  const CreateDragPage({super.key});
+  final GameData? gameData;
+
+  const CreateDragPage({super.key, this.gameData});
 
   @override
   State<CreateDragPage> createState() => _CreateDragPageState();
@@ -30,20 +36,59 @@ class _CreateDragPageState extends State<CreateDragPage> {
   late List<TrashObject> trashObjects = [];
   late List<bool> isExpandedList = [];
 
+  late String btn;
+
   @override
   void initState() {
     super.initState();
     trashObjects = List.generate(4, (_) => TrashObject());
     isExpandedList = List.generate(trashObjects.length, (_) => true);
+    if (widget.gameData != null) {
+      _setDefaultValues(widget.gameData!);
+    }
+    btn = widget.gameData == null ? 'Create Game' : 'Save Game';
+  }
+
+  void _setDefaultValues(GameData gameData) {
+    // Set default values from the gameData to the controllers
+    if (gameData.gameLogo == "assets/placeholder.png") {
+      gameLogoController.text ="";
+    } else {
+      gameLogoController.text = gameData.gameLogo;
+    }
+    gameNameController.text = gameData.gameName;
+    gameDescriptionController.text = gameData.gameDescription;
+    gameBibliographyController.text = gameData.gameBibliography;
+
+    selectedAge = gameData.tags[0].replaceFirst("Age: ", "");
+    selectedTags = gameData.tags.sublist(1);
+
+    //Set Trash Objects
+    List<String> keys = gameData.tips.keys.toList();
+    for (int i = 0; i < trashObjects.length; i++) {
+      if (i < trashObjects.length) {
+        trashObjects[i].imageUrlController.text = keys[i];
+        trashObjects[i].tipController.text = gameData.tips[keys[i]]!;
+        trashObjects[i].selectedOption = "${gameData.correctAnswers[keys[i]]!} bin";
+      } else {
+        trashObjects.add(TrashObject());
+        trashObjects[i].imageUrlController.text = keys[i];
+        trashObjects[i].tipController.text = gameData.tips[keys[i]]!;
+        trashObjects[i].selectedOption = "${gameData.correctAnswers[keys[i]]!} bin";
+      }
+    }
   }
 
   @override
   void dispose() {
+    super.dispose();
     gameLogoController.dispose();
     gameNameController.dispose();
     gameDescriptionController.dispose();
     gameBibliographyController.dispose();
-    super.dispose();
+    for (var object in trashObjects) {
+      object.dispose();
+    }
   }
 
   Future<bool> _validateImage(String imageUrl) async {
@@ -74,13 +119,25 @@ class _CreateDragPageState extends State<CreateDragPage> {
       final Map<String, String> tips = {};
       final Map<String, String> correctAnswers = {};
 
-      tags.insert(0, selectedAge); //Add age to tags
+      tags.insert(0, "Age: $selectedAge"); //Add age to tags
 
       int index = 0;
+      //Validate Objects
       for (var object in trashObjects) {
+        if (object.isEmpty() || object.selectedOption == null) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Please set the objects information properly.'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+          return;
+        }
         final key = object.imageUrlController.text.trim();
         final tip = object.tipController.text.trim();
-        final answer = object.answerController.text.trim();
+        final answer = object.selectedOption!.split(' ').first.toLowerCase();
 
         //Validate image
         bool isValidImage = await _validateImage(key);
@@ -97,10 +154,9 @@ class _CreateDragPageState extends State<CreateDragPage> {
           return;
         }
 
-        if (key.isNotEmpty && tip.isNotEmpty && answer.isNotEmpty) {
-          tips[key] = tip;
-          correctAnswers[key] = answer;
-        }
+        tips[key] = tip;
+        correctAnswers[key] = answer;
+        print(key);
         index++;
       }
 
@@ -126,144 +182,226 @@ class _CreateDragPageState extends State<CreateDragPage> {
       }
 
       //Create the game and add it to database
+      if (mounted) {
+        final DataService dataService = Provider.of<DataService>(context, listen: false);
+        final AuthService authService = Provider.of<AuthService>(context, listen: false);
 
+        final String gameId = widget.gameData?.documentName ?? const Uuid().v4();
+
+        GameData gameData = GameData(
+            gameLogo: gameLogo,
+            gameName: gameName,
+            gameBibliography: gameBibliography,
+            gameTemplate: gameTemplate,
+            gameDescription: gameDescription,
+            public: false,
+            tags: tags,
+            documentName: gameId,
+            correctAnswers: correctAnswers,
+            tips: tips
+        );
+
+        try {
+          await dataService.createGame(uid: await authService.getUid(), game: gameData);
+
+          //Navigate to auth_service and display SnackBar
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Game Created with success'),
+              ),
+            );
+          }
+
+          setState(() {
+            _isSaved = true;
+          });
+
+          if (mounted) {
+            Navigator.of(context).pushReplacementNamed('/auth_gate');
+          }
+        } catch (e) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('An error occurred. Please try again.'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        }
+      }
     }
   }
 
-  void updateExpansionState(int index, bool expanded) {
-    setState(() {
-      isExpandedList[index] = expanded;
-    });
+  Future<bool?> _onWillPop() async {
+    if (!_isSaved) {
+      return await showDialog<bool>(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Unsaved Changes'),
+            content: const Text(
+                'You have unsaved changes. Do you want to leave without saving?'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Stay'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Leave'),
+              ),
+            ],
+          );
+        },
+      ) ?? false;
+    }
+    return true;
   }
 
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Create Drag Game')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              GameFormField(
-                controller: gameLogoController,
-                label: 'Logo URL',
-                validator: (value) {return null;},
-              ),
-              GameFormField(
-                controller: gameNameController,
-                label: 'Name'
-              ),
-              GameFormField(
-                  controller: gameDescriptionController,
-                  label: 'Description',
+    return PopScope(
+        canPop: _isSaved,
+        onPopInvokedWithResult: (didPop, result) async {
+        if (!_isSaved && !didPop) {
+          final shouldLeave = await _onWillPop();
+          if (shouldLeave! && context.mounted) {
+            Navigator.of(context).pushReplacementNamed('/auth_gate');
+          }
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Create Drag Game')),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                GameFormField(
+                  controller: gameLogoController,
+                  label: 'Logo URL',
+                  validator: (value) {return null;},
+                ),
+                GameFormField(
+                  controller: gameNameController,
+                  label: 'Name'
+                ),
+                GameFormField(
+                    controller: gameDescriptionController,
+                    label: 'Description',
+                    maxLines: 10,
+                    keyboardType: TextInputType.multiline,
+                ),
+                GameFormField(
+                  controller: gameBibliographyController,
+                  label: 'Bibliography',
                   maxLines: 10,
                   keyboardType: TextInputType.multiline,
-              ),
-              GameFormField(
-                controller: gameBibliographyController,
-                label: 'Bibliography',
-                maxLines: 10,
-                keyboardType: TextInputType.multiline,
-              ),
-
-              const SizedBox(height: 8),
-              const Divider(),
-              const SizedBox(height: 8),
-              TagSelection(
-                selectedTags: selectedTags,
-                onTagsUpdated: (updatedTags) {
-                  setState(() {
-                    selectedTags = updatedTags;
-                  });
-                },
-              ),
-              const SizedBox(height: 16),
-              AgeGroupDropdown(
-                selectedAge: selectedAge,
-                onAgeSelected: (value) {
-                  if (value != null) {
-                    setState(() {
-                      selectedAge = value;
-                    });
-                  }
-                },
-              ),
-
-              const SizedBox(height: 12),
-              const Divider(),
-              const SizedBox(height: 12),
-              ExpansionTile(
-                title: const Text(
-                  'Trash Objects',
-                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-                initiallyExpanded: true,
-                onExpansionChanged: (expanded) {
-                  if (!expanded) {
-                    var isEmpty = false;
-                    for (var object in trashObjects) {
-                      isEmpty = isEmpty ||
-                          object.imageUrlController.text.trim().isEmpty ||
-                          object.tipController.text.trim().isEmpty ||
-                          object.answerController.text.trim().isEmpty;
-                    }
-                    if (isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Please fill in all fields for all Objects'),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    }
-                  }
-                },
-                backgroundColor: Colors.green.shade100,
-                collapsedBackgroundColor: Colors.green.shade200,
-                textColor: Colors.green.shade800,
-                iconColor: Colors.green.shade800,
-                collapsedTextColor: Colors.green.shade900,
-                collapsedIconColor: Colors.green.shade900,
-                childrenPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                children: [...List.generate(trashObjects.length, (index) {
-                  return TrashObjectForm(
-                    isExpandedList: isExpandedList,
-                    trashObject: trashObjects[index],
-                    index: index,
-                    onRemove: (removedIndex) {
-                      setState(() {
-                        trashObjects.removeAt(removedIndex);
-                        isExpandedList.removeAt(removedIndex);
-                      });
-                    },
-                    onIsExpandedList: (expandedList) {
-                      setState(() {
-                        isExpandedList = expandedList;
-                      });
-                    },
-                  );
-                }),
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        trashObjects.add(TrashObject());
-                        isExpandedList.add(true);
-                      });
-                    },
-                    child: const Text('Add New Object'),
-                  ),
-                ],
-              ),
 
-              const SizedBox(height: 20),
-              Center(child: ElevatedButton(onPressed: _submitForm, child: const Text('Create Game'))),
-            ],
+                const SizedBox(height: 8),
+                const Divider(),
+                const SizedBox(height: 8),
+                TagSelection(
+                  selectedTags: selectedTags,
+                  onTagsUpdated: (updatedTags) {
+                    setState(() {
+                      selectedTags = updatedTags;
+                    });
+                  },
+                ),
+                const SizedBox(height: 16),
+                AgeGroupDropdown(
+                  selectedAge: selectedAge,
+                  onAgeSelected: (value) {
+                    if (value != null) {
+                      setState(() {
+                        selectedAge = value;
+                      });
+                    }
+                  },
+                ),
+
+                const SizedBox(height: 12),
+                const Divider(),
+                const SizedBox(height: 12),
+                ExpansionTile(
+                  title: const Text(
+                    'Trash Objects',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  initiallyExpanded: true,
+                  onExpansionChanged: (expanded) {
+                    if (!expanded) {
+                      var isEmpty = false;
+                      for (var object in trashObjects) {
+                        isEmpty = isEmpty || object.isEmpty();
+                      }
+                      if (isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Please fill in all fields for all Objects'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    }
+                  },
+                  backgroundColor: Colors.green.shade100,
+                  collapsedBackgroundColor: Colors.green.shade200,
+                  textColor: Colors.green.shade800,
+                  iconColor: Colors.green.shade800,
+                  collapsedTextColor: Colors.green.shade900,
+                  collapsedIconColor: Colors.green.shade900,
+                  childrenPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  children: [...List.generate(trashObjects.length, (index) {
+                    return TrashObjectForm(
+                      isExpandedList: isExpandedList,
+                      trashObject: trashObjects[index],
+                      index: index,
+                      onRemove: (removedIndex) {
+                        setState(() {
+                          trashObjects.removeAt(removedIndex);
+                          isExpandedList.removeAt(removedIndex);
+                        });
+                      },
+                      onIsExpandedList: (expandedList) {
+                        setState(() {
+                          isExpandedList = expandedList;
+                        });
+                      }
+                    );
+                  }),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          trashObjects.add(TrashObject());
+                          isExpandedList.add(true);
+                        });
+                      },
+                      child: const Text('Add New Object'),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 20),
+                Center(
+                      child: ElevatedButton(
+                        key: Key("submit"),
+                        onPressed: _submitForm,
+                        child: Text(btn)
+                    )
+                ),
+              ],
+            ),
           ),
         ),
-      ),
+      )
     );
   }
 }
