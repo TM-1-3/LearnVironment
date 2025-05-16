@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:learnvironment/data/user_data.dart';
 import 'package:learnvironment/services/data_service.dart';
-import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/services/firebase/auth_service.dart';
 import 'package:provider/provider.dart';
 
 class CreateAssignmentPage extends StatefulWidget {

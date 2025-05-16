@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:learnvironment/data/user_data.dart';
 import 'package:learnvironment/main_pages/statistics_page.dart';
 import 'package:learnvironment/main_pages/profile_screen.dart';
-import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/services/firebase/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:learnvironment/teacher/games_page_teacher.dart';
 import 'package:learnvironment/teacher/teacher_home.dart';

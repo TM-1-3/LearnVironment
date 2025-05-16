@@ -3,11 +3,11 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:learnvironment/data/notification_storage.dart';
 
-class FirebaseMessagingService {
+class MessagingService {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
   final FirebaseMessaging firebaseMessaging;
 
-  FirebaseMessagingService({
+  MessagingService({
     FlutterLocalNotificationsPlugin? localNotificationsPlugin,
     FirebaseMessaging? firebaseMessaging,
   })  : flutterLocalNotificationsPlugin = localNotificationsPlugin ?? FlutterLocalNotificationsPlugin(),

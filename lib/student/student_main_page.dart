@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/services/firebase/auth_service.dart';
 import 'package:learnvironment/student/student_subject_screen.dart';
 import 'package:provider/provider.dart';
-import 'package:learnvironment/services/user_cache_service.dart';
+import 'package:learnvironment/services/cache/user_cache_service.dart';
 
 import '../services/data_service.dart';
 import '../teacher/widgets/subject_card.dart';

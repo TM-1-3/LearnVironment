@@ -5,7 +5,7 @@ import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/data/subject_data.dart';
 import 'package:learnvironment/data/user_data.dart';
 
-import '../data/assignment_data.dart';
+import '../../data/assignment_data.dart';
 
 class FirestoreService {
   final FirebaseFirestore _firestore;
@@ -15,7 +15,7 @@ class FirestoreService {
 
   // 1. User
   // 2. Games
-  // 3. Subjects (Aka Classes)
+  // 3. Subjects
   // 4. Assignments
   // 5. Events
 
@@ -161,7 +161,6 @@ class FirestoreService {
       rethrow;
     }
   }
-
 
 
   //========================= GAMES =========================//
@@ -479,18 +478,18 @@ class FirestoreService {
     final userDoc = _firestore.collection('users').doc(uid);
     final userSnapshot = await userDoc.get();
 
-    List<String> classes = [];
+    List<String> tClasses = [];
 
     if (userSnapshot.exists && userSnapshot.data() != null) {
       final data = userSnapshot.data()!;
-      classes = List<String>.from(data['tClasses'] ?? []);
+      tClasses = List<String>.from(data['tClasses'] ?? []);
     }
 
-    classes.remove(subject.subjectId);
-    classes.insert(0, subject.subjectId);
+    tClasses.remove(subject.subjectId);
+    tClasses.insert(0, subject.subjectId);
 
     try {
-      await userDoc.update({'tClasses': classes});
+      await userDoc.update({'tClasses': tClasses});
       print('[FirestoreService] Updated classes for user $uid');
 
     } catch (e, stackTrace) {
@@ -505,22 +504,18 @@ class FirestoreService {
       final userDoc = _firestore.collection('users').doc(uid);
       final userSnapshot = await userDoc.get();
 
-      List<String> classes = [];
       List<String> stClasses = [];
       List<String> tClasses = [];
 
       if (userSnapshot.exists && userSnapshot.data() != null) {
         final data = userSnapshot.data()!;
-        classes = List<String>.from(data['classes'] ?? []);
         stClasses = List<String>.from(data['stClasses'] ?? []);
         tClasses = List<String>.from(data['tClasses'] ?? []);
       }
 
-      classes.remove(subjectId);
       stClasses.remove(subjectId);
       tClasses.remove(subjectId);
 
-      await userDoc.update({'classes': classes});
       await userDoc.update({'stClasses': stClasses});
       await userDoc.update({'tClasses': tClasses});
       print("[FirestoreService] Class Deleted");
@@ -564,7 +559,6 @@ class FirestoreService {
       rethrow;
     }
   }
-
 
 
   //================================ ASSIGNMENTS ====================================//
@@ -682,8 +676,6 @@ class FirestoreService {
       rethrow;
     }
   }
-
-
 
 //================================ EVENTS ====================================//
 

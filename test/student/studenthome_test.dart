@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:learnvironment/data/user_data.dart';
 import 'package:learnvironment/main_pages/notifications_page.dart';
-import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/services/firebase/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:learnvironment/student/student_home.dart';
 import 'package:learnvironment/student/student_main_page.dart';

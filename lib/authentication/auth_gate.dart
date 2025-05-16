@@ -4,10 +4,10 @@ import 'package:learnvironment/authentication/login_screen.dart';
 import 'package:learnvironment/data/notification_storage.dart';
 import 'package:learnvironment/data/user_data.dart';
 import 'package:learnvironment/developer/developer_home.dart';
-import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/services/firebase/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
-import 'package:learnvironment/services/firebase_messaging_service.dart';
-import 'package:learnvironment/services/firestore_service.dart';
+import 'package:learnvironment/services/firebase/messaging_service.dart';
+import 'package:learnvironment/services/firebase/firestore_service.dart';
 import 'package:learnvironment/student/student_home.dart';
 import 'package:learnvironment/teacher/teacher_home.dart';
 import 'package:provider/provider.dart';
@@ -19,7 +19,7 @@ class AuthGate extends StatelessWidget {
     final authService = Provider.of<AuthService>(context, listen: false);
     final dataService = Provider.of<DataService>(context, listen: false);
     final firestoreService = Provider.of<FirestoreService>(context, listen: false);
-    final messagingService = Provider.of<FirebaseMessagingService>(context, listen: false);
+    final messagingService = Provider.of<MessagingService>(context, listen: false);
 
     final uid = await authService.getUid();
 
