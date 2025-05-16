@@ -580,7 +580,7 @@ class FirestoreService {
       });
 
       // Add subject to student's subject list
-      await userRef.update({
+      await studentRef.update({
         'stClasses': FieldValue.arrayUnion([subjectId]),
       });
 

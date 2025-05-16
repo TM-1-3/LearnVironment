@@ -698,7 +698,7 @@ void main() {
           'name': 'subjectName',
           'logo': 'subjectLogo',
           'teacher': 'id',
-          'students': [docRef.id],
+          'students': [{'studentId':[docRef.id], 'correctCount':0, 'wrongCount':0}],
           'assignments' : [assRef.id]
         });
         firestoreService = FirestoreService(firestore: firestore);

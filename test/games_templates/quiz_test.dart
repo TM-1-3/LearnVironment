@@ -7,6 +7,9 @@ import 'package:mockito/mockito.dart';
 
 class MockGameData extends Mock implements GameData {
   @override
+  String get documentName => 'mock_document';
+
+  @override
   String get gameLogo => 'assets/quizLogo.png';
 
   @override
