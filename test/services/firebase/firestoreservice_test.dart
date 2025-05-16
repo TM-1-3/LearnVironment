@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/data/subject_data.dart';
 import 'package:learnvironment/services/firebase/firestore_service.dart';
 
@@ -771,7 +772,6 @@ void main() {
     setUp(() async {
       firestore = FakeFirebaseFirestore();
 
-      // Create subjects for teacher "teacher123"
       await firestore.collection('subjects').doc('subject1').set({
         'logo': 'math_logo.png',
         'name': 'Mathematics',
@@ -781,16 +781,13 @@ void main() {
       await firestore.collection('subjects').doc('subject2').set({
         'name': 'Science',
         'teacher': 'teacher123',
-        // Missing logo
       });
 
       await firestore.collection('subjects').doc('subject3').set({
         'logo': 'history_logo.png',
         'teacher': 'teacher123',
-        // Missing name
       });
 
-      // Subject for a different teacher
       await firestore.collection('subjects').doc('subject4').set({
         'logo': 'art_logo.png',
         'name': 'Art',
@@ -847,7 +844,6 @@ void main() {
       });
 
       await firestore.collection('subjects').doc('subject_missing_fields').set({
-        // No logo, no name, no students, no assignments
         'teacher': 'teacher456',
       });
 
@@ -942,7 +938,6 @@ void main() {
 
       await firestore.collection('users').doc(uid).set({
         'name': 'New Teacher',
-        // No tClasses field
       });
 
       final subject = SubjectData(
@@ -971,7 +966,6 @@ void main() {
         teacher: testUid,
       );
 
-      // Delete the user document to force update failure
       await firestore.collection('users').doc(testUid).delete();
 
       expect(() async => await firestoreService.addSubjectData(subject: faultySubject, uid: testUid),
@@ -1004,11 +998,9 @@ void main() {
     test('deletes the subject and updates all related user class lists', () async {
       await firestoreService.deleteSubject(subjectId: subjectId, uid: testUid);
 
-      // Subject should be deleted
       final subjectSnapshot = await firestore.collection('subjects').doc(subjectId).get();
       expect(subjectSnapshot.exists, isFalse);
 
-      // User's class fields should no longer contain subjectId
       final userSnapshot = await firestore.collection('users').doc(testUid).get();
       final userData = userSnapshot.data()!;
 
@@ -1086,7 +1078,6 @@ void main() {
     });
 
     test('adds student to subject even if students field was missing', () async {
-      // Remove 'students' field
       await firestore.collection('subjects').doc(subjectId).update({
         'students': FieldValue.delete(),
       });
@@ -1101,7 +1092,6 @@ void main() {
     });
 
     test('adds subject to student even if stClasses field was missing', () async {
-      // Remove 'stClasses' field
       await firestore.collection('users').doc(studentId).update({
         'stClasses': FieldValue.delete(),
       });
@@ -1154,7 +1144,7 @@ void main() {
       final subjectData = subjectSnapshot.data()!;
 
       expect(subjectData['students'], isNot(contains(studentId)));
-      expect(subjectData['students'], contains('student002')); // Ensure others remain
+      expect(subjectData['students'], contains('student002'));
     });
 
     test('handles case where student is not in the students list', () async {
@@ -1166,7 +1156,6 @@ void main() {
       final subjectSnapshot = await firestore.collection('subjects').doc(subjectId).get();
       final subjectData = subjectSnapshot.data()!;
 
-      // Original list should remain unchanged since the student wasn't there
       expect(subjectData['students'], containsAll(['student002', studentId]));
     });
 
@@ -1213,7 +1202,6 @@ void main() {
       });
 
       await firestore.collection('assignment').doc('incompleteAssignment').set({
-        // Missing fields to trigger fallbacks
       });
 
       firestoreService = FirestoreService(firestore: firestore);
@@ -1258,7 +1246,7 @@ void main() {
         await faultyService.fetchAssignmentData(assignmentId: 'assignment123');
         fail('Expected exception was not thrown');
       } catch (e) {
-        expect(e.toString(), contains("Assignment not found in Firestore for ID: assignment123"));
+        expect(e.toString(), contains("Exception: Error getting document"));
       }
     });
   });
@@ -1301,7 +1289,6 @@ void main() {
     test('handles case where assignments field is missing', () async {
       await firestore.collection('subjects').doc('noAssignmentsField').set({
         'name': 'Empty Subject'
-        // No 'assignments' field
       });
 
       await firestore.collection('assignment').doc('missingAssign').set({
@@ -1321,7 +1308,7 @@ void main() {
       final subjectSnap =
       await firestore.collection('subjects').doc('noAssignmentsField').get();
       final data = subjectSnap.data()!;
-      expect(data.containsKey('assignments'), isTrue); // Still updates the field
+      expect(data.containsKey('assignments'), isTrue);
       expect(data['assignments'], isEmpty);
     });
 
@@ -1343,7 +1330,6 @@ void main() {
     setUp(() async {
       firestore = FakeFirebaseFirestore();
 
-      // Add a fully populated assignment
       await firestore.collection('assignment').doc('assign1').set({
         'title': 'Assignment One',
         'subjectId': 'subj1',
@@ -1351,9 +1337,7 @@ void main() {
         'dueDate': '2025-06-01',
       });
 
-      // Add an assignment with missing fields
       await firestore.collection('assignment').doc('assign2').set({
-        // Missing title, gameId, dueDate
         'subjectId': 'subj2',
       });
 
@@ -1379,8 +1363,7 @@ void main() {
     });
 
     test('returns empty list when there are no assignments', () async {
-      // Clear the collection
-      firestore = FakeFirebaseFirestore(); // reset
+      firestore = FakeFirebaseFirestore();
       firestoreService = FirestoreService(firestore: firestore);
 
       final assignments = await firestoreService.getAllAssignments();
@@ -1391,6 +1374,107 @@ void main() {
       final faultyService = FirestoreService(firestore: MockFakeFirebaseFirestoreWithErrors(true));
       try {
         await faultyService.getAllAssignments();
+        fail('Expected exception was not thrown');
+      } catch (e) {
+        expect(e.toString(), contains("Error getting document"));
+      }
+    });
+  });
+
+  group('FirestoreService.deleteAccount', () {
+    const String uid = 'user123';
+
+    setUp(() async {
+      firestore = FakeFirebaseFirestore();
+
+      await firestore.collection('users').doc(uid).set({
+        'name': 'John Doe',
+        'email': 'johndoe@example.com',
+      });
+
+      firestoreService = FirestoreService(firestore: firestore);
+    });
+
+    test('deletes the user account', () async {
+      final userSnapBefore = await firestore.collection('users').doc(uid).get();
+      expect(userSnapBefore.exists, isTrue);
+
+      await firestoreService.deleteAccount(uid: uid);
+
+      final userSnapAfter = await firestore.collection('users').doc(uid).get();
+      expect(userSnapAfter.exists, isFalse);
+    });
+
+    test('throws and logs error if Firestore delete fails', () async {
+      final faultyService = FirestoreService(firestore: MockFakeFirebaseFirestoreWithErrors(true));
+      try {
+        await faultyService.deleteAccount(uid: uid);
+        fail('Expected exception was not thrown');
+      } catch (e) {
+        expect(e.toString(), contains("Error getting document"));
+      }
+    });
+  });
+
+  group('FirestoreService.createGame', () {
+    const String uid = 'user123';
+    final GameData game = GameData(
+      documentName: 'game123',
+      gameLogo: 'logo.png',
+      gameName: 'Game Name',
+      gameDescription: 'Game Description',
+      gameBibliography: 'Game Bibliography',
+      tags: ['action', 'adventure'],
+      gameTemplate: 'quiz',
+      correctAnswers: {'question1': 'answer1'},
+      tips: {'question1': 'tip'},
+      public: true,
+    );
+
+    setUp(() async {
+      firestore = FakeFirebaseFirestore();
+
+      await firestore.collection('users').doc(uid).set({
+        'name': 'John Doe',
+        'email': 'johndoe@example.com',
+        'myGames': ['existingGame'],
+      });
+
+      firestoreService = FirestoreService(firestore: firestore);
+    });
+
+    test('creates game and updates user\'s myGames field', () async {
+      await firestoreService.createGame(uid: uid, game: game);
+
+      final gameDoc = await firestore.collection('games').doc(game.documentName).get();
+      expect(gameDoc.exists, isTrue);
+
+      final gameData = gameDoc.data();
+      expect(gameData?['name'], game.gameName);
+      expect(gameData?['tags'], game.tags);
+
+      final userDoc = await firestore.collection('users').doc(uid).get();
+      final userData = userDoc.data();
+      final myGames = List<String>.from(userData?['myGames'] ?? []);
+      expect(myGames, contains(game.documentName));
+      expect(myGames.first, game.documentName);
+    });
+
+    test('does not add game to myGames if already present', () async {
+      await firestoreService.createGame(uid: uid, game: game);
+
+      await firestoreService.createGame(uid: uid, game: game);
+
+      final userDoc = await firestore.collection('users').doc(uid).get();
+      final userData = userDoc.data();
+      final myGames = List<String>.from(userData?['myGames'] ?? []);
+      expect(myGames, [game.documentName, 'existingGame']);
+    });
+
+    test('throws and logs error if Firestore call fails during user update', () async {
+      final faultyService = FirestoreService(firestore: MockFakeFirebaseFirestoreWithErrors(true));
+      try {
+        await faultyService.createGame(uid: uid, game: game);
         fail('Expected exception was not thrown');
       } catch (e) {
         expect(e.toString(), contains("Error getting document"));
