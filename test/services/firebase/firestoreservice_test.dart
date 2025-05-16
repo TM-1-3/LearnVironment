@@ -11,7 +11,7 @@ class MockFakeFirebaseFirestoreWithErrors extends FakeFirebaseFirestore {
 
   @override
   CollectionReference<Map<String, dynamic>> collection(String collectionPath) {
-    if (collectionPath == 'users' || collectionPath == "subjects") {
+    if (collectionPath == 'users' || collectionPath == "subjects" || collectionPath == "assignment") {
       throw Exception("Error getting document");
     }
     return super.collection(collectionPath);
@@ -1048,12 +1048,353 @@ void main() {
       }
     });
   });
-}
 
-/* Missing tests:
-- addStudentToSubject
-- removeStudentFromSubject
-- fetchAssignmentData
-- deleteAssignment
-- getAllAssignments
- */
+  group('FirestoreService.addStudentToSubject', () {
+    const subjectId = 'subject001';
+    const studentId = 'student001';
+
+    setUp(() async {
+      firestore = FakeFirebaseFirestore();
+
+      await firestore.collection('subjects').doc(subjectId).set({
+        'name': 'Science',
+        'students': [],
+      });
+
+      await firestore.collection('users').doc(studentId).set({
+        'name': 'Student A',
+        'stClasses': [],
+      });
+
+      firestoreService = FirestoreService(firestore: firestore);
+    });
+
+    test('adds student to subject and subject to student', () async {
+      await firestoreService.addStudentToSubject(
+        subjectId: subjectId,
+        studentId: studentId,
+      );
+
+      final subjectSnapshot = await firestore.collection('subjects').doc(subjectId).get();
+      final userSnapshot = await firestore.collection('users').doc(studentId).get();
+
+      final subjectData = subjectSnapshot.data()!;
+      final userData = userSnapshot.data()!;
+
+      expect(subjectData['students'], contains(studentId));
+      expect(userData['stClasses'], contains(subjectId));
+    });
+
+    test('adds student to subject even if students field was missing', () async {
+      // Remove 'students' field
+      await firestore.collection('subjects').doc(subjectId).update({
+        'students': FieldValue.delete(),
+      });
+
+      await firestoreService.addStudentToSubject(
+        subjectId: subjectId,
+        studentId: studentId,
+      );
+
+      final subjectSnapshot = await firestore.collection('subjects').doc(subjectId).get();
+      expect(subjectSnapshot.data()!['students'], contains(studentId));
+    });
+
+    test('adds subject to student even if stClasses field was missing', () async {
+      // Remove 'stClasses' field
+      await firestore.collection('users').doc(studentId).update({
+        'stClasses': FieldValue.delete(),
+      });
+
+      await firestoreService.addStudentToSubject(
+        subjectId: subjectId,
+        studentId: studentId,
+      );
+
+      final userSnapshot = await firestore.collection('users').doc(studentId).get();
+      expect(userSnapshot.data()!['stClasses'], contains(subjectId));
+    });
+
+    test('throws and logs error if Firestore update fails', () async {
+      final faultyService = FirestoreService(firestore: MockFakeFirebaseFirestoreWithErrors(true));
+      try {
+        await faultyService.addStudentToSubject(
+          subjectId: 'nonexistent',
+          studentId: 'ghost',
+        );
+        fail('Expected exception was not thrown');
+      } catch (e) {
+        expect(e.toString(), contains("Error getting document"));
+      }
+    });
+  });
+
+  group('FirestoreService.removeStudentFromSubject', () {
+    const subjectId = 'subject001';
+    const studentId = 'student001';
+
+    setUp(() async {
+      firestore = FakeFirebaseFirestore();
+
+      await firestore.collection('subjects').doc(subjectId).set({
+        'name': 'Biology',
+        'students': [studentId, 'student002'],
+      });
+
+      firestoreService = FirestoreService(firestore: firestore);
+    });
+
+    test('removes student from subject\'s students list', () async {
+      await firestoreService.removeStudentFromSubject(
+        subjectId: subjectId,
+        studentId: studentId,
+      );
+
+      final subjectSnapshot = await firestore.collection('subjects').doc(subjectId).get();
+      final subjectData = subjectSnapshot.data()!;
+
+      expect(subjectData['students'], isNot(contains(studentId)));
+      expect(subjectData['students'], contains('student002')); // Ensure others remain
+    });
+
+    test('handles case where student is not in the students list', () async {
+      await firestoreService.removeStudentFromSubject(
+        subjectId: subjectId,
+        studentId: 'non_existing_student',
+      );
+
+      final subjectSnapshot = await firestore.collection('subjects').doc(subjectId).get();
+      final subjectData = subjectSnapshot.data()!;
+
+      // Original list should remain unchanged since the student wasn't there
+      expect(subjectData['students'], containsAll(['student002', studentId]));
+    });
+
+    test('handles case where students field is missing', () async {
+      await firestore.collection('subjects').doc('noStudentsField').set({
+        'name': 'Chemistry',
+      });
+
+      await firestoreService.removeStudentFromSubject(
+        subjectId: 'noStudentsField',
+        studentId: studentId,
+      );
+
+      final subjectSnapshot =
+      await firestore.collection('subjects').doc('noStudentsField').get();
+      final data = subjectSnapshot.data()!;
+
+      expect(data['students'], []);
+    });
+
+    test('throws and logs error if Firestore update fails', () async {
+      final faultyService = FirestoreService(firestore: MockFakeFirebaseFirestoreWithErrors(true));
+      try {
+        await faultyService.removeStudentFromSubject(
+          subjectId: 'anySubject',
+          studentId: 'anyStudent',
+        );
+        fail('Expected exception was not thrown');
+      } catch (e) {
+        expect(e.toString(), contains("Error getting document"));
+      }
+    });
+  });
+
+  group('FirestoreService.fetchAssignmentData', () {
+    setUp(() async {
+      firestore = FakeFirebaseFirestore();
+
+      await firestore.collection('assignment').doc('assignment123').set({
+        'subjectId': 'subjectABC',
+        'gameId': 'gameXYZ',
+        'title': 'Homework 1',
+        'dueDate': '2025-06-01',
+      });
+
+      await firestore.collection('assignment').doc('incompleteAssignment').set({
+        // Missing fields to trigger fallbacks
+      });
+
+      firestoreService = FirestoreService(firestore: firestore);
+    });
+
+    test('returns AssignmentData with correct values for complete document', () async {
+      final assignment = await firestoreService.fetchAssignmentData(assignmentId: 'assignment123');
+
+      expect(assignment.assId, 'assignment123');
+      expect(assignment.subjectId, 'subjectABC');
+      expect(assignment.gameId, 'gameXYZ');
+      expect(assignment.title, 'Homework 1');
+      expect(assignment.dueDate, '2025-06-01');
+    });
+
+    test('returns AssignmentData with default values for missing fields', () async {
+      final assignment = await firestoreService.fetchAssignmentData(
+        assignmentId: 'incompleteAssignment',
+      );
+
+      expect(assignment.assId, 'incompleteAssignment');
+      expect(assignment.subjectId, 'unknown');
+      expect(assignment.gameId, 'Unknown');
+      expect(assignment.title, 'Unknown Name');
+      expect(assignment.dueDate, ' ');
+    });
+
+    test('throws an exception when assignment does not exist', () async {
+      expect(
+            () async => await firestoreService.fetchAssignmentData(
+          assignmentId: 'nonexistent',
+        ),
+        throwsA(predicate((e) =>
+        e is Exception &&
+            e.toString().contains('Assignment not found in Firestore for ID: nonexistent'))),
+      );
+    });
+
+    test('throws and logs error if Firestore fails', () async {
+      final faultyService = FirestoreService(firestore: MockFakeFirebaseFirestoreWithErrors(true));
+      try {
+        await faultyService.fetchAssignmentData(assignmentId: 'assignment123');
+        fail('Expected exception was not thrown');
+      } catch (e) {
+        expect(e.toString(), contains("Assignment not found in Firestore for ID: assignment123"));
+      }
+    });
+  });
+
+  group('FirestoreService.deleteAssignment', () {
+    const assignmentId = 'assign123';
+    const subjectId = 'subject001';
+
+    setUp(() async {
+      firestore = FakeFirebaseFirestore();
+
+      await firestore.collection('assignment').doc(assignmentId).set({
+        'title': 'Quiz #1',
+        'subjectId': subjectId,
+      });
+
+      await firestore.collection('subjects').doc(subjectId).set({
+        'name': 'Science',
+        'assignments': [assignmentId, 'otherAssignment'],
+      });
+
+      firestoreService = FirestoreService(firestore: firestore);
+    });
+    test('deletes assignment and updates subject assignment list', () async {
+      await firestoreService.deleteAssignment(
+        assignmentId: assignmentId,
+        uid: subjectId,
+      );
+
+      final assignmentSnap =
+      await firestore.collection('assignment').doc(assignmentId).get();
+      expect(assignmentSnap.exists, isFalse);
+
+      final subjectSnap = await firestore.collection('subjects').doc(subjectId).get();
+      final data = subjectSnap.data()!;
+      expect(data['assignments'], isNot(contains(assignmentId)));
+      expect(data['assignments'], contains('otherAssignment'));
+    });
+
+    test('handles case where assignments field is missing', () async {
+      await firestore.collection('subjects').doc('noAssignmentsField').set({
+        'name': 'Empty Subject'
+        // No 'assignments' field
+      });
+
+      await firestore.collection('assignment').doc('missingAssign').set({
+        'title': 'Orphan Assignment',
+        'subjectId': 'noAssignmentsField',
+      });
+
+      await firestoreService.deleteAssignment(
+        assignmentId: 'missingAssign',
+        uid: 'noAssignmentsField',
+      );
+
+      final assignmentSnap =
+      await firestore.collection('assignment').doc('missingAssign').get();
+      expect(assignmentSnap.exists, isFalse);
+
+      final subjectSnap =
+      await firestore.collection('subjects').doc('noAssignmentsField').get();
+      final data = subjectSnap.data()!;
+      expect(data.containsKey('assignments'), isTrue); // Still updates the field
+      expect(data['assignments'], isEmpty);
+    });
+
+    test('throws and logs error if Firestore delete fails', () async {
+      final faultyService = FirestoreService(firestore: MockFakeFirebaseFirestoreWithErrors(true));
+      try {
+        await faultyService.deleteAssignment(
+          assignmentId: 'assign123',
+          uid: 'subject001',
+        );
+        fail('Expected exception was not thrown');
+      } catch (e) {
+        expect(e.toString(), contains("Error getting document"));
+      }
+    });
+  });
+
+  group('FirestoreService.getAllAssignments', () {
+    setUp(() async {
+      firestore = FakeFirebaseFirestore();
+
+      // Add a fully populated assignment
+      await firestore.collection('assignment').doc('assign1').set({
+        'title': 'Assignment One',
+        'subjectId': 'subj1',
+        'gameId': 'game1',
+        'dueDate': '2025-06-01',
+      });
+
+      // Add an assignment with missing fields
+      await firestore.collection('assignment').doc('assign2').set({
+        // Missing title, gameId, dueDate
+        'subjectId': 'subj2',
+      });
+
+      firestoreService = FirestoreService(firestore: firestore);
+    });
+
+    test('returns all assignments with correct data', () async {
+      final assignments = await firestoreService.getAllAssignments();
+
+      expect(assignments.length, 2);
+
+      final assign1 = assignments.firstWhere((a) => a['assignmentId'] == 'assign1');
+      expect(assign1['title'], 'Assignment One');
+      expect(assign1['subjectId'], 'subj1');
+      expect(assign1['gameId'], 'game1');
+      expect(assign1['dueDate'], '2025-06-01');
+
+      final assign2 = assignments.firstWhere((a) => a['assignmentId'] == 'assign2');
+      expect(assign2['title'], 'Default Assignment Title');
+      expect(assign2['subjectId'], 'subj2');
+      expect(assign2['gameId'], 'Unknown');
+      expect(assign2['dueDate'], ' ');
+    });
+
+    test('returns empty list when there are no assignments', () async {
+      // Clear the collection
+      firestore = FakeFirebaseFirestore(); // reset
+      firestoreService = FirestoreService(firestore: firestore);
+
+      final assignments = await firestoreService.getAllAssignments();
+      expect(assignments, isEmpty);
+    });
+
+    test('throws and logs error if Firestore call fails', () async {
+      final faultyService = FirestoreService(firestore: MockFakeFirebaseFirestoreWithErrors(true));
+      try {
+        await faultyService.getAllAssignments();
+        fail('Expected exception was not thrown');
+      } catch (e) {
+        expect(e.toString(), contains("Error getting document"));
+      }
+    });
+  });
+}
