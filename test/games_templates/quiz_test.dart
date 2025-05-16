@@ -3,7 +3,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/games_templates/results_page.dart';
 import 'package:learnvironment/games_templates/quiz.dart';
+import 'package:learnvironment/services/data_service.dart';
 import 'package:mockito/mockito.dart';
+import 'package:provider/provider.dart';
+
 
 class MockGameData extends Mock implements GameData {
   @override
@@ -117,18 +120,28 @@ class MockGameData extends Mock implements GameData {
   };
 }
 
+class MockDataService extends Mock implements DataService{
+
+}
+
 void main() {
   group('Quiz App Tests', () {
     late MockGameData quizData;
     late Widget testWidget;
+    late MockDataService mockDataService;
 
     setUp(() {
       quizData = MockGameData();
+      mockDataService = MockDataService();
 
-      testWidget = MaterialApp(
-        home: Quiz(quizData: quizData),
+      testWidget = Provider<DataService>.value(
+        value: mockDataService,
+        child: MaterialApp(
+          home: Quiz(quizData: quizData),
+        ),
       );
     });
+
 
     testWidgets('Renders start page correctly', (WidgetTester tester) async {
       await tester.pumpWidget(testWidget);
