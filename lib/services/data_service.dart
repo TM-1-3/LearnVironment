@@ -2,14 +2,14 @@ import 'package:flutter/widgets.dart';
 import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/data/subject_data.dart';
 import 'package:learnvironment/data/user_data.dart';
-import 'package:learnvironment/services/firestore_service.dart';
-import 'package:learnvironment/services/game_cache_service.dart';
-import 'package:learnvironment/services/subject_cache_service.dart';
-import 'package:learnvironment/services/user_cache_service.dart';
+import 'package:learnvironment/services/firebase/firestore_service.dart';
+import 'package:learnvironment/services/cache/game_cache_service.dart';
+import 'package:learnvironment/services/cache/subject_cache_service.dart';
+import 'package:learnvironment/services/cache/user_cache_service.dart';
 import 'package:provider/provider.dart';
 
 import '../data/assignment_data.dart';
-import 'assignment_cache_service.dart';
+import 'cache/assignment_cache_service.dart';
 
 class DataService {
   late final FirestoreService _firestoreService;

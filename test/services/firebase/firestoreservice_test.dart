@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
-import 'package:learnvironment/services/firestore_service.dart';
+import 'package:learnvironment/services/firebase/firestore_service.dart';
 
 class MockFakeFirebaseFirestoreWithErrors extends FakeFirebaseFirestore {
   final bool shouldThrow;

@@ -6,7 +6,7 @@ import 'package:learnvironment/developer/widgets/dropdown/age_dropdown.dart';
 import 'package:learnvironment/developer/widgets/dropdown/tag_selection.dart';
 import 'package:learnvironment/developer/widgets/game_form_field.dart';
 import 'package:learnvironment/developer/widgets/forms/question_object_form.dart';
-import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/services/firebase/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';

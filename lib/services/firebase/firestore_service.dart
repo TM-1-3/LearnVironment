@@ -5,7 +5,7 @@ import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/data/subject_data.dart';
 import 'package:learnvironment/data/user_data.dart';
 
-import '../data/assignment_data.dart';
+import '../../data/assignment_data.dart';
 
 class FirestoreService {
   final FirebaseFirestore _firestore;

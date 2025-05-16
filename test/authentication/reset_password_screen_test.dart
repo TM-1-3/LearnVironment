@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:learnvironment/authentication/login_screen.dart';
 import 'package:learnvironment/authentication/reset_password_screen.dart';
-import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/services/firebase/auth_service.dart';
 import 'package:provider/provider.dart';
 
 class MockLoginScreen extends LoginScreen {

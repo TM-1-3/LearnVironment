@@ -3,7 +3,7 @@ import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/games_templates/quiz.dart';
 import 'package:learnvironment/games_templates/bin.dart';
 import 'package:learnvironment/services/data_service.dart';
-import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/services/firebase/auth_service.dart';
 import 'package:provider/provider.dart';
 
 class GamesInitialScreen extends StatelessWidget {

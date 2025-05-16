@@ -7,8 +7,8 @@ import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/developer/my_games.dart';
 import 'package:mockito/mockito.dart';
 import 'package:learnvironment/services/data_service.dart';
-import 'package:learnvironment/services/auth_service.dart';
-import 'package:learnvironment/services/user_cache_service.dart';
+import 'package:learnvironment/services/firebase/auth_service.dart';
+import 'package:learnvironment/services/cache/user_cache_service.dart';
 import 'package:provider/provider.dart';
 
 class MockAuthGate extends AuthGate {
