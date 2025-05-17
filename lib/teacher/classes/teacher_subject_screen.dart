@@ -106,7 +106,7 @@ class _TeacherSubjectScreenState extends State<TeacherSubjectScreen> {
                   borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
                   child: ConstrainedBox(
                     constraints: BoxConstraints(
-                      maxHeight: 180,
+                      maxHeight: 200,
                     ),
                     child: widget.subjectData.subjectLogo.startsWith('assets/')
                         ? Image.asset(
