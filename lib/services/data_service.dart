@@ -109,7 +109,7 @@ class DataService {
       final List<String> myGames = await _userCacheService.getMyGames();
       final List<String> stClasses = await _userCacheService.getCachedClasses(type: 'stClasses');
       final List<String> tClasses = await _userCacheService.getCachedClasses(type: 'tClasses');
-      await _firestoreService.setUserInfo(uid: uid, name: name, email: email, username: username, birthDate: birthDate, selectedAccountType: role, img: img, stClasses: stClasses, tClasses: tClasses, gamesPlayed: gamesPlayed);
+      await _firestoreService.setUserInfo(uid: uid, name: name, email: email, username: username, birthDate: birthDate, selectedAccountType: role, img: img, stClasses: stClasses, tClasses: tClasses, gamesPlayed: gamesPlayed, myGames: myGames);
       await _userCacheService.clearUserCache();
       await _userCacheService.cacheUserData(UserData(id: uid, username: username, email: email, name: name, role: role, birthdate: DateTime.parse(birthDate), gamesPlayed: gamesPlayed, myGames: myGames, tClasses: tClasses, stClasses: stClasses, img: img));
     } catch (e) {
