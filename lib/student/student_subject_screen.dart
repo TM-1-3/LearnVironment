@@ -49,12 +49,22 @@ class StudentSubjectScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.asset(
-                    subjectData.subjectLogo,
-                    width: 200,
-                    height: 200,
-                    fit: BoxFit.cover,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxHeight: 180,
+                    ),
+                    child: subjectData.subjectLogo.startsWith('assets/')
+                        ? Image.asset(
+                      subjectData.subjectLogo,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    )
+                        : Image.network(
+                      subjectData.subjectLogo,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 20),
