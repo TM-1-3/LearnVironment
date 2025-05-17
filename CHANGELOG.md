@@ -104,6 +104,7 @@
 - Improved tests for ````FirestoreService```` [#128](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/128/)
 - Fixed notifications bug where all users receive notifications [#143](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/143/)
 - Fixed Image bug in ````SubjectsScreen```` [#135](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/135)
+- Fixed bug in the image of ````GameInitialScreen```` [#139](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/139)
 
 ### Test User
 - email: up202307719@g.uporto.pt
