@@ -71,12 +71,14 @@ class _CreateDragPageState extends State<CreateDragPage> {
       if (i < trashObjects.length) {
         trashObjects[i].imageUrlController.text = keys[i];
         trashObjects[i].tipController.text = gameData.tips[keys[i]]!;
-        trashObjects[i].selectedOption = "${gameData.correctAnswers[keys[i]]!} bin";
+        String option = "${gameData.correctAnswers[keys[i]]!} bin";
+        trashObjects[i].selectedOption = option[0].toUpperCase() + option.substring(1);
       } else {
         trashObjects.add(TrashObject());
         trashObjects[i].imageUrlController.text = keys[i];
         trashObjects[i].tipController.text = gameData.tips[keys[i]]!;
-        trashObjects[i].selectedOption = "${gameData.correctAnswers[keys[i]]!} bin";
+        String option = "${gameData.correctAnswers[keys[i]]!} bin";
+        trashObjects[i].selectedOption = option[0].toUpperCase() + option.substring(1);
       }
     }
   }
