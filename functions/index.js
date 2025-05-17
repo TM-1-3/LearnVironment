@@ -21,9 +21,7 @@ exports.notifyOnEvent = onDocumentCreated('events/{eventId}', async (event) => {
     return;
   }
 
-  let name = className; //Ignore this error!!!!!!!!!!!!!!!!
-
-  const sanitizedClassName = name.replace(/[^a-zA-Z0-9-_.~%]/g, '_');
+  const sanitizedClassName = className.replace(/[^a-zA-Z0-9-_.~%]/g, '_');
 
   const payload = {
     notification: {
