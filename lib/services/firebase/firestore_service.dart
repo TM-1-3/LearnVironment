@@ -128,7 +128,8 @@ class FirestoreService {
     required String img,
     List<String>? stClasses,
     List<String>? tClasses,
-    List<String>? gamesPlayed
+    List<String>? gamesPlayed,
+    List<String>? myGames
   }) async {
     try {
       if (selectedAccountType == '') {
@@ -143,7 +144,8 @@ class FirestoreService {
         'gamesPlayed': gamesPlayed,
         'stClasses': stClasses,
         'tClasses': tClasses,
-        'img' : img
+        'img' : img,
+        'myGames' : myGames
       });
       print("[FirestoreService] User Info set!");
     } catch (e) {

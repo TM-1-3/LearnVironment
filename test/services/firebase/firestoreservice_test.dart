@@ -408,7 +408,9 @@ void main() {
         selectedAccountType: 'developer',
         email: 'user1@example.com',
         birthDate: '2000-01-01',
-        img: 'assets/placeholder.png'
+        img: 'assets/placeholder.png',
+        myGames : ["g1", "g2"],
+        gamesPlayed: ["g1", "g2"]
       );
       final docSnapshot = await firestore.collection('users').doc('user1').get();
       if (docSnapshot.exists) {
@@ -419,6 +421,8 @@ void main() {
         expect(data?['email'], 'user1@example.com');
         expect(data?['birthdate'], '2000-01-01');
         expect(data?['img'], 'assets/placeholder.png');
+        expect(data?['myGames'], ["g1", "g2"]);
+        expect(data?['gamesPlayed'], ["g1", "g2"]);
       } else {
         fail("No user data");
       }

@@ -105,6 +105,7 @@
 - Fixed notifications bug where all users receive notifications [#143](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/143/)
 - Fixed Image bug in ````SubjectsScreen```` [#135](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/135)
 - Fixed bug in the image of ````GameInitialScreen```` [#139](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/139)
+- Fixed bug when updating profile, lost the data of my games [#145](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/145)
 
 ### Test User
 - email: up202307719@g.uporto.pt
