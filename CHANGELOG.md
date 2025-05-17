@@ -106,6 +106,9 @@
 - Fixed Image bug in ````SubjectsScreen```` [#135](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/135)
 - Fixed bug in the image of ````GameInitialScreen```` [#139](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/139)
 - Fixed bug when updating profile, lost the data of my games [#145](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/145)
+- Fixed bug in ````Small sized devices```` for Developer Game Cards [#148](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/148)
+- Fixed bug in ````Small sized devices```` for Teacher Game Cards [#137](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/137)
+- Fixed bug when editing drag games [#149](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/149)
 
 ### Test User
 - email: up202307719@g.uporto.pt

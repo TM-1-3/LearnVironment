@@ -37,6 +37,7 @@ class _CreateDragPageState extends State<CreateDragPage> {
   late List<bool> isExpandedList = [];
 
   late String btn;
+  late String title;
 
   @override
   void initState() {
@@ -47,6 +48,7 @@ class _CreateDragPageState extends State<CreateDragPage> {
       _setDefaultValues(widget.gameData!);
     }
     btn = widget.gameData == null ? 'Create Game' : 'Save Game';
+    title = widget.gameData == null ? 'Create Drag Game' : 'Save Drag Game';
   }
 
   void _setDefaultValues(GameData gameData) {
@@ -274,7 +276,7 @@ class _CreateDragPageState extends State<CreateDragPage> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text('Create Drag Game')),
+        appBar: AppBar(title: Text(title)),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Form(
