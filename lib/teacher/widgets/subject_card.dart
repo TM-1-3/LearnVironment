@@ -41,7 +41,7 @@ class SubjectCard extends StatelessWidget {
                 borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
                 child: ConstrainedBox(
                   constraints: BoxConstraints(
-                    maxHeight: 180,
+                    maxHeight: 135,
                   ),
                   child: imagePath.startsWith('assets/')
                       ? Image.asset(

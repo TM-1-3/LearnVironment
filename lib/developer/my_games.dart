@@ -105,18 +105,6 @@ class MyGamesPageState extends State<MyGamesPage> {
   Widget build(BuildContext context) {
     final filteredGames = getFilteredMyGames();
 
-    final screenWidth = MediaQuery.of(context).size.width;
-    double mainAxisExtent = 500.0;
-    if (screenWidth <= 630) {
-      mainAxisExtent = screenWidth+55;
-    } else if (screenWidth <= 1055) {
-      mainAxisExtent = 850;
-    } else if (screenWidth <= 2055) {
-      mainAxisExtent = 1075;
-    } else {
-      mainAxisExtent = 1640;
-    }
-
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -182,38 +170,33 @@ class MyGamesPageState extends State<MyGamesPage> {
           Expanded(
             child: RefreshIndicator(
               onRefresh: _refreshMyGames,
-              child: ListView(
-                scrollDirection: Axis.vertical,
-                shrinkWrap: true,
-                physics: AlwaysScrollableScrollPhysics(),
-                children: [
-                  myGames.isNotEmpty
-                      ? GridView.builder(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    padding: const EdgeInsets.all(8),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 10.0,
-                      mainAxisSpacing: 10.0,
-                      mainAxisExtent: mainAxisExtent,
-                    ),
-                    itemCount: filteredGames.length,
-                    itemBuilder: (context, index) {
-                      final game = filteredGames[index];
-                      return MyGameCard(
-                        imagePath: game['imagePath'],
-                        gameTitle: game['gameTitle'],
-                        tags: List<String>.from(game['tags']),
-                        gameId: game['gameId'],
-                        loadGame: loadGame,
-                        isPublic: game['public'],
-                      );
-                    },
-                  )
-                      : SizedBox(
-                    height: MediaQuery.of(context).size.height,
-                    child: const Center(child: Text('No results found')),
+              child: filteredGames.isNotEmpty
+                  ? GridView.builder(
+                padding: const EdgeInsets.all(8),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 10.0,
+                  mainAxisSpacing: 10.0,
+                  childAspectRatio: 0.32,
+                ),
+                itemCount: filteredGames.length,
+                itemBuilder: (context, index) {
+                  final game = filteredGames[index];
+                  return MyGameCard(
+                    imagePath: game['imagePath'],
+                    gameTitle: game['gameTitle'],
+                    tags: List<String>.from(game['tags']),
+                    gameId: game['gameId'],
+                    loadGame: loadGame,
+                    isPublic: game['public'],
+                  );
+                },
+              ) : ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: const [
+                  SizedBox(
+                    height: 300,
+                    child: Center(child: Text('No results found')),
                   ),
                 ],
               ),
