@@ -66,6 +66,9 @@ class BinScreenState extends State<BinScreen> {
   }
 
   void removeTrashItem(String item, String bin, Offset position) {
+    print('removeTrashItem called with $item -> $bin');
+    print('Current trashItems before remove: ${trashItems.keys}');
+    print('Current remainingTrashItems: ${remainingTrashItems.keys}');
     setState(() {
       rightAnswer = trashItems[item] == bin;
       rightAnswer ? correctCount++ : wrongCount++;
@@ -110,7 +113,8 @@ class BinScreenState extends State<BinScreen> {
                     gameImage: widget.binData.gameLogo,
                     tipsToAppear: tipsToAppear.toSet().toList(),
                     duration: duration,
-                    onReplay: () => BinScreen(binData: widget.binData)
+                    onReplay: () => BinScreen(binData: widget.binData),
+                    gameId: widget.binData.documentName,
                   ),
             ),
           );
@@ -131,80 +135,59 @@ class BinScreenState extends State<BinScreen> {
           )),
       body: LayoutBuilder(
         builder: (context, constraints) {
-          // Calculate positions based on layout constraints
-          Offset greenPosition = Offset(constraints.maxWidth * 0.2 + 35, constraints.maxHeight * 0.2);
-          Offset bluePosition = Offset(constraints.maxWidth * 0.6 + 65, constraints.maxHeight * 0.2);
-          Offset yellowPosition = Offset(constraints.maxWidth * 0.4 + 50, constraints.maxHeight * 0.4 + 50);
-          Offset brownPosition = Offset(constraints.maxWidth * 0.2 + 35, constraints.maxHeight * 0.6 + 100);
-          Offset redPosition = Offset(constraints.maxWidth * 0.6 + 65, constraints.maxHeight * 0.6 + 100);
+          final screenHeight = constraints.maxHeight;
+          final screenWidth = constraints.maxWidth;
+
+          final binWidth = screenWidth / 3; // e.g. allow for 2 bins + spacing
+          final verticalSpacing = screenHeight * 0.05;
 
           return SafeArea(
-            child: Stack(
-              children: [
-                SingleChildScrollView(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minHeight: constraints.maxHeight,
-                    ),
-                    child: Column(
-                      children: [
-                        // First Row: 2 Bins
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            binWidget('green', greenPosition),
-                            binWidget('blue', bluePosition),
-                          ],
-                        ),
-                        // Second Row: 1 Bin
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            binWidget('yellow', yellowPosition),
-                          ],
-                        ),
-                        // Third Row: 2 Bins
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            binWidget('brown', brownPosition),
-                            binWidget('red', redPosition),
-                          ],
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 60),
-                          child: Wrap(
-                            spacing: 20,
-                            runSpacing: 20,
-                            alignment: WrapAlignment.center,
-                            children: trashItems.keys.map((item) {
-                              return Draggable<String>(
-                                data: item,
-                                feedback: getImageWidget(item, 80),
-                                childWhenDragging: Opacity(
-                                  opacity: 0.5,
-                                  child: getImageWidget(item, 80),
-                                ),
-                                child: getImageWidget(item, 80),
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                      ],
-                    ),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  SizedBox(height: verticalSpacing),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      binWidget('green', Offset.zero, binWidth),
+                      binWidget('blue', Offset.zero, binWidth),
+                    ],
                   ),
-                ),
-                if (showIcon)
-                  Positioned(
-                    left: iconPosition.dx,
-                    top: iconPosition.dy,
-                    child: Image.asset(
-                      rightAnswer ? 'assets/right.png' : 'assets/wrong.png',
-                      width: 50,
-                      height: 50,
-                    ),
+                  SizedBox(height: verticalSpacing),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      binWidget('yellow', Offset.zero, binWidth),
+                    ],
                   ),
-              ],
+                  SizedBox(height: verticalSpacing),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      binWidget('brown', Offset.zero, binWidth),
+                      binWidget('red', Offset.zero, binWidth),
+                    ],
+                  ),
+                  const SizedBox(height: 40),
+                  Wrap(
+                    spacing: 20,
+                    runSpacing: 20,
+                    alignment: WrapAlignment.center,
+                    children: trashItems.keys.map((item) {
+                      return Draggable<String>(
+                        data: item,
+                        feedback: getImageWidget(item, binWidth * 0.6),
+                        childWhenDragging: Opacity(
+                          opacity: 0.5,
+                          child: getImageWidget(item, binWidth * 0.6),
+                        ),
+                        child: getImageWidget(item, binWidth * 0.6),
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 40),
+                ],
+              ),
             ),
           );
         },
@@ -212,7 +195,7 @@ class BinScreenState extends State<BinScreen> {
     );
   }
 
-  Widget binWidget(String color, Offset binPosition) {
+  Widget binWidget(String color, Offset binPosition, double binWidth) {
     return DragTarget<String>(
       onWillAcceptWithDetails: (data) {
         setState(() => binStates[color] = true);
@@ -226,8 +209,10 @@ class BinScreenState extends State<BinScreen> {
         setState(() => binStates[color] = false);
       },
       builder: (_, __, ___) => Image.asset(
-        binStates[color]! ? 'assets/open_${color}_bin.png' : 'assets/${color}_bin.png',
-        width: 150,
+        binStates[color]!
+            ? 'assets/open_${color}_bin.png'
+            : 'assets/${color}_bin.png',
+        width: binWidth,
       ),
     );
   }
