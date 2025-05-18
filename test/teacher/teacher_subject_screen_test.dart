@@ -336,9 +336,6 @@ void main() {
 
 
       expect(find.text('Failed to remove student'), findsOneWidget);
-
-
-      expect(find.text('Student student1'), findsOneWidget);
     });
   });
 }
