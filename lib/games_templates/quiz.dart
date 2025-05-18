@@ -206,7 +206,25 @@ class QuizState extends State<Quiz> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(widget.quizData.gameLogo, width: 200, height: 200), // Access gameLogo from quizData
+            ClipRRect(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: 200,
+                ),
+                child: widget.quizData.gameLogo.startsWith('assets/')
+                    ? Image.asset(
+                  widget.quizData.gameLogo,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                )
+                    : Image.network(
+                  widget.quizData.gameLogo,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
             const SizedBox(height: 20),
             Text("Question $questionNumber", style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
             const SizedBox(height: 30),
