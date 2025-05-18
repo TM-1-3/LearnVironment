@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:learnvironment/data/game_data.dart';
+import 'package:learnvironment/data/subject_data.dart';
 import 'package:learnvironment/data/user_data.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -963,6 +964,99 @@ void main() {
       expect(games.isEmpty, true);
       verify(mockUserCacheService.getCachedGamesPlayed()).called(1);
       verifyNoMoreInteractions(mockUserCacheService);
+    });
+  });
+
+  group('getSubjectData', () {
+    const subjectId = 'subject123';
+
+    setUp(() {
+      // Reset mocks for each test
+      when(mockSubjectCacheService.getCachedSubjectData(subjectId)).thenAnswer((_) async => SubjectData(
+        subjectId: subjectId,
+        subjectName: 'Mathematics',
+        subjectLogo: '',
+        teacher: '',
+        students: [],
+        assignments: [],
+      ));
+
+      when(mockFirestoreService.fetchSubjectData(subjectId: subjectId)).thenAnswer((_) async => SubjectData(
+        subjectId: subjectId,
+        subjectName: 'Mathematics',
+        subjectLogo: '',
+        teacher: '',
+        students: [],
+        assignments: [],
+      ));
+
+      when(mockSubjectCacheService.cacheSubjectData(any)).thenAnswer((_) async {});
+    });
+
+    testWidgets('should load subject data from cache', (WidgetTester tester) async {
+      // Arrange: Mock the cache with subject data
+      when(mockSubjectCacheService.getCachedSubjectData(subjectId))
+          .thenAnswer((_) async => SubjectData(subjectName: 'Mathematics', subjectId: subjectId, subjectLogo: '', teacher: '', students: [], assignments: []));
+
+      await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
+      await tester.pumpAndSettle();
+
+      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+
+      // Act
+      final subject = await state.getDataService().getSubjectData(subjectId: subjectId);
+
+      // Assert
+      expect(subject, isNotNull);
+      expect(subject?.subjectId, subjectId);
+      expect(subject?.subjectName, 'Mathematics');
+      verify(mockSubjectCacheService.getCachedSubjectData(subjectId)).called(1);
+      verifyNoMoreInteractions(mockSubjectCacheService);
+      verifyNoMoreInteractions(mockFirestoreService);
+    });
+
+    testWidgets('should load subject data from Firestore when cache is empty', (WidgetTester tester) async {
+      // Arrange: Simulate no cached subject data
+      when(mockSubjectCacheService.getCachedSubjectData(subjectId))
+          .thenAnswer((_) async => null);
+
+      await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
+      await tester.pumpAndSettle();
+
+      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+
+      // Act
+      final subject = await state.getDataService().getSubjectData(subjectId: subjectId);
+
+      // Assert
+      expect(subject, isNotNull);
+      expect(subject?.subjectId, subjectId);
+      expect(subject?.subjectName, 'Mathematics');
+      verify(mockSubjectCacheService.getCachedSubjectData(subjectId)).called(1);
+      verify(mockFirestoreService.fetchSubjectData(subjectId: subjectId)).called(1);
+      verify(mockSubjectCacheService.cacheSubjectData(any)).called(1);
+      verifyNoMoreInteractions(mockSubjectCacheService);
+      verifyNoMoreInteractions(mockFirestoreService);
+    });
+
+    testWidgets('should return null if an error occurs', (WidgetTester tester) async {
+      // Arrange: Simulate an error when fetching subject data
+      when(mockSubjectCacheService.getCachedSubjectData(subjectId))
+          .thenThrow(Exception('Cache error'));
+
+      await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
+      await tester.pumpAndSettle();
+
+      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+
+      // Act
+      final subject = await state.getDataService().getSubjectData(subjectId: subjectId);
+
+      // Assert
+      expect(subject, isNull);
+      verify(mockSubjectCacheService.getCachedSubjectData(subjectId)).called(1);
+      verifyNoMoreInteractions(mockSubjectCacheService);
+      verifyNoMoreInteractions(mockFirestoreService);
     });
   });
 
