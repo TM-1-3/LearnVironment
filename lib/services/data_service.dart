@@ -3,14 +3,14 @@ import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/data/game_result_data.dart';
 import 'package:learnvironment/data/subject_data.dart';
 import 'package:learnvironment/data/user_data.dart';
-import 'package:learnvironment/services/firestore_service.dart';
-import 'package:learnvironment/services/game_cache_service.dart';
-import 'package:learnvironment/services/subject_cache_service.dart';
-import 'package:learnvironment/services/user_cache_service.dart';
+import 'package:learnvironment/services/firebase/firestore_service.dart';
+import 'package:learnvironment/services/cache/game_cache_service.dart';
+import 'package:learnvironment/services/cache/subject_cache_service.dart';
+import 'package:learnvironment/services/cache/user_cache_service.dart';
 import 'package:provider/provider.dart';
 
 import '../data/assignment_data.dart';
-import 'assignment_cache_service.dart';
+import 'cache/assignment_cache_service.dart';
 
 class DataService {
   late final FirestoreService _firestoreService;
@@ -108,7 +108,7 @@ class DataService {
       final List<String> myGames = await _userCacheService.getMyGames();
       final List<String> stClasses = await _userCacheService.getCachedClasses(type: 'stClasses');
       final List<String> tClasses = await _userCacheService.getCachedClasses(type: 'tClasses');
-      await _firestoreService.setUserInfo(uid: uid, name: name, email: email, username: username, birthDate: birthDate, selectedAccountType: role, img: img, stClasses: stClasses, tClasses: tClasses, gamesPlayed: gamesPlayed);
+      await _firestoreService.setUserInfo(uid: uid, name: name, email: email, username: username, birthDate: birthDate, selectedAccountType: role, img: img, stClasses: stClasses, tClasses: tClasses, gamesPlayed: gamesPlayed, myGames: myGames);
       await _userCacheService.clearUserCache();
       await _userCacheService.cacheUserData(UserData(id: uid, username: username, email: email, name: name, role: role, birthdate: DateTime.parse(birthDate), gamesPlayed: gamesPlayed, myGames: myGames, tClasses: tClasses, stClasses: stClasses, img: img));
     } catch (e) {

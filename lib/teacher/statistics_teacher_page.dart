@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:learnvironment/data/subject_data.dart';
-import 'package:learnvironment/data/user_data.dart';
+import 'package:learnvironment/services/cache/subject_cache_service.dart';
+import 'package:learnvironment/services/cache/user_cache_service.dart';
 import 'package:learnvironment/services/data_service.dart';
-import 'package:learnvironment/services/auth_service.dart';
-import 'package:learnvironment/services/subject_cache_service.dart';
+import 'package:learnvironment/services/firebase/auth_service.dart';
 import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'dart:math' as math;
 
-import '../services/user_cache_service.dart';
 
 class StatisticsTeacherPage extends StatefulWidget {
   const StatisticsTeacherPage({super.key});
@@ -18,7 +17,6 @@ class StatisticsTeacherPage extends StatefulWidget {
 }
 
 class StatisticsTeacherPageState extends State<StatisticsTeacherPage> {
-  bool _isSaved = true;
   SubjectData? _selectedClass;
   List<SubjectData> _classes = [];
 
@@ -121,7 +119,6 @@ class StatisticsTeacherPageState extends State<StatisticsTeacherPage> {
                 if (newValue != null) {
                   setState(() {
                     _selectedClass = newValue;
-                    _isSaved = false;
                   });
                 }
               },

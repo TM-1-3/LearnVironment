@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:learnvironment/data/subject_data.dart';
-import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/services/firebase/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
-import 'package:learnvironment/teacher/assignments_page_teacher.dart';
+import 'package:learnvironment/teacher/assignments/assignments_page_teacher.dart';
 import 'package:provider/provider.dart';
 
 class TeacherSubjectScreen extends StatefulWidget {
@@ -103,12 +103,22 @@ class _TeacherSubjectScreenState extends State<TeacherSubjectScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.asset(
-                    widget.subjectData.subjectLogo,
-                    width: 200,
-                    height: 200,
-                    fit: BoxFit.cover,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxHeight: 200,
+                    ),
+                    child: widget.subjectData.subjectLogo.startsWith('assets/')
+                        ? Image.asset(
+                      widget.subjectData.subjectLogo,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    )
+                        : Image.network(
+                      widget.subjectData.subjectLogo,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -359,18 +369,18 @@ class _TeacherSubjectScreenState extends State<TeacherSubjectScreen> {
                   onPressed: () {
                     confirmDelete(context);
                   },
-    icon: const Icon(Icons.delete),
-    key: Key("delete"),
-    label: const Text('Delete Subject'),
-    style: ElevatedButton.styleFrom(
-    backgroundColor: Colors.red,
-    foregroundColor: Colors.white,
-    padding: const EdgeInsets.symmetric(
-    horizontal: 20, vertical: 15),
-    textStyle: const TextStyle(fontSize: 16),
-    ),
-    ),
-    const SizedBox(height: 20),
+                  icon: const Icon(Icons.delete),
+                  key: Key("delete"),
+                  label: const Text('Delete Subject'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                    horizontal: 20, vertical: 15),
+                    textStyle: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                const SizedBox(height: 20),
               ],
             ),
           ),

@@ -6,7 +6,7 @@ import 'package:learnvironment/developer/widgets/dropdown/age_dropdown.dart';
 import 'package:learnvironment/developer/widgets/dropdown/tag_selection.dart';
 import 'package:learnvironment/developer/widgets/game_form_field.dart';
 import 'package:learnvironment/developer/widgets/forms/question_object_form.dart';
-import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/services/firebase/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
@@ -38,6 +38,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
   late List<bool> isExpandedListOpt = [];
 
   late String btn;
+  late String title;
 
   @override
   void initState() {
@@ -49,6 +50,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
       _setDefaultValues(widget.gameData!);
     }
     btn = widget.gameData == null ? 'Create Game' : 'Save Game';
+    title = widget.gameData == null ? 'Create Quiz Game' : 'Save Quiz Game';
   }
 
   void _setDefaultValues(GameData gameData) {
@@ -285,7 +287,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
           }
         },
         child: Scaffold(
-          appBar: AppBar(title: const Text('Create Quiz Game')),
+          appBar: AppBar(title: Text(title)),
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Form(

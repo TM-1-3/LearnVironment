@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:learnvironment/games_templates/games_initial_screen.dart';
 import 'package:learnvironment/main_pages/widgets/game_card.dart';
-import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/services/firebase/auth_service.dart';
+import 'package:learnvironment/services/cache/game_cache_service.dart';
 import 'package:learnvironment/services/data_service.dart';
-import 'package:learnvironment/services/game_cache_service.dart';
 import 'package:provider/provider.dart';
 
 class GamesPage extends StatefulWidget {
@@ -105,7 +105,9 @@ class GamesPageState extends State<GamesPage> {
 
     final screenWidth = MediaQuery.of(context).size.width;
     double mainAxisExtent = 500.0;
-    if (screenWidth <= 600) {
+    if (screenWidth <= 500) {
+      mainAxisExtent = screenWidth + 50;
+    } else if (screenWidth <= 600) {
       mainAxisExtent = screenWidth;
     } else if (screenWidth <= 1000) {
       mainAxisExtent = 850;

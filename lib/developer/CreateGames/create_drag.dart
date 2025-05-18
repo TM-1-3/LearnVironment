@@ -6,7 +6,7 @@ import 'package:learnvironment/developer/widgets/dropdown/age_dropdown.dart';
 import 'package:learnvironment/developer/widgets/dropdown/tag_selection.dart';
 import 'package:learnvironment/developer/widgets/game_form_field.dart';
 import 'package:learnvironment/developer/widgets/forms/trash_object_form.dart';
-import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/services/firebase/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
@@ -37,6 +37,7 @@ class _CreateDragPageState extends State<CreateDragPage> {
   late List<bool> isExpandedList = [];
 
   late String btn;
+  late String title;
 
   @override
   void initState() {
@@ -47,6 +48,7 @@ class _CreateDragPageState extends State<CreateDragPage> {
       _setDefaultValues(widget.gameData!);
     }
     btn = widget.gameData == null ? 'Create Game' : 'Save Game';
+    title = widget.gameData == null ? 'Create Drag Game' : 'Save Drag Game';
   }
 
   void _setDefaultValues(GameData gameData) {
@@ -69,12 +71,14 @@ class _CreateDragPageState extends State<CreateDragPage> {
       if (i < trashObjects.length) {
         trashObjects[i].imageUrlController.text = keys[i];
         trashObjects[i].tipController.text = gameData.tips[keys[i]]!;
-        trashObjects[i].selectedOption = "${gameData.correctAnswers[keys[i]]!} bin";
+        String option = "${gameData.correctAnswers[keys[i]]!} bin";
+        trashObjects[i].selectedOption = option[0].toUpperCase() + option.substring(1);
       } else {
         trashObjects.add(TrashObject());
         trashObjects[i].imageUrlController.text = keys[i];
         trashObjects[i].tipController.text = gameData.tips[keys[i]]!;
-        trashObjects[i].selectedOption = "${gameData.correctAnswers[keys[i]]!} bin";
+        String option = "${gameData.correctAnswers[keys[i]]!} bin";
+        trashObjects[i].selectedOption = option[0].toUpperCase() + option.substring(1);
       }
     }
   }
@@ -274,7 +278,7 @@ class _CreateDragPageState extends State<CreateDragPage> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text('Create Drag Game')),
+        appBar: AppBar(title: Text(title)),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Form(

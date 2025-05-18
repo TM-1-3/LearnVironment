@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:learnvironment/developer/widgets/my_game_card.dart';
 import 'package:learnvironment/games_templates/games_initial_screen.dart';
-import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/services/firebase/auth_service.dart';
+import 'package:learnvironment/services/cache/user_cache_service.dart';
 import 'package:learnvironment/services/data_service.dart';
-import 'package:learnvironment/services/user_cache_service.dart';
 import 'package:provider/provider.dart';
 
 class MyGamesPage extends StatefulWidget {
@@ -103,12 +103,14 @@ class MyGamesPageState extends State<MyGamesPage> {
 
   @override
   Widget build(BuildContext context) {
-    final filteredSubjects = getFilteredMyGames();
+    final filteredGames = getFilteredMyGames();
 
     final screenWidth = MediaQuery.of(context).size.width;
     double mainAxisExtent = 500.0;
-    if (screenWidth <= 630) {
-      mainAxisExtent = screenWidth+55;
+    if (screenWidth <= 500) {
+      mainAxisExtent = screenWidth + 155;
+    } else if (screenWidth <= 630) {
+      mainAxisExtent = screenWidth+75;
     } else if (screenWidth <= 1055) {
       mainAxisExtent = 850;
     } else if (screenWidth <= 2055) {
@@ -198,9 +200,9 @@ class MyGamesPageState extends State<MyGamesPage> {
                       mainAxisSpacing: 10.0,
                       mainAxisExtent: mainAxisExtent,
                     ),
-                    itemCount: filteredSubjects.length,
+                    itemCount: filteredGames.length,
                     itemBuilder: (context, index) {
-                      final game = filteredSubjects[index];
+                      final game = filteredGames[index];
                       return MyGameCard(
                         imagePath: game['imagePath'],
                         gameTitle: game['gameTitle'],

@@ -4,10 +4,10 @@ import 'package:learnvironment/authentication/auth_gate.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:learnvironment/authentication/fix_account.dart';
 import 'package:learnvironment/developer/developer_home.dart';
-import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/services/firebase/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
-import 'package:learnvironment/services/firebase_messaging_service.dart';
-import 'package:learnvironment/services/firestore_service.dart';
+import 'package:learnvironment/services/firebase/messaging_service.dart';
+import 'package:learnvironment/services/firebase/firestore_service.dart';
 import 'package:learnvironment/student/student_home.dart';
 import 'package:learnvironment/teacher/teacher_home.dart';
 import 'package:mockito/mockito.dart';
@@ -77,7 +77,7 @@ class MockFirestoreService extends Mock implements FirestoreService {
     return [];
   }
 }
-class MockFirebaseMessagingService extends Mock implements FirebaseMessagingService {}
+class MockFirebaseMessagingService extends Mock implements MessagingService {}
 
 void main() {
   group('AuthGate - Widget Navigation Tests', () {
@@ -114,7 +114,7 @@ void main() {
           ),
           Provider<DataService>(create: (_) => mockDataService),
           Provider<FirestoreService>(create: (_) => mockFirestoreService),
-          Provider<FirebaseMessagingService>(create: (_) => firebaseMessagingService),
+          Provider<MessagingService>(create: (_) => firebaseMessagingService),
         ],
         child: MaterialApp(
           home: AuthGate(),
@@ -143,7 +143,7 @@ void main() {
           ),
           Provider<DataService>(create: (_) => mockDataService),
           Provider<FirestoreService>(create: (_) => mockFirestoreService),
-          Provider<FirebaseMessagingService>(create: (_) => firebaseMessagingService),
+          Provider<MessagingService>(create: (_) => firebaseMessagingService),
         ],
         child: MaterialApp(
           home: AuthGate(),
@@ -170,7 +170,7 @@ void main() {
           ChangeNotifierProvider<AuthService>(create: (_) => MockAuthService(firebaseAuth: mockAuth)),
           Provider<DataService>(create: (_) => mockDataService),
           Provider<FirestoreService>(create: (_) => mockFirestoreService),
-          Provider<FirebaseMessagingService>(create: (_) => firebaseMessagingService),
+          Provider<MessagingService>(create: (_) => firebaseMessagingService),
         ],
         child: MaterialApp(
           home: AuthGate(),
@@ -197,7 +197,7 @@ void main() {
           ChangeNotifierProvider<AuthService>(create: (_) => MockAuthService(firebaseAuth: mockAuth)),
           Provider<DataService>(create: (_) => mockDataService),
           Provider<FirestoreService>(create: (_) => mockFirestoreService),
-          Provider<FirebaseMessagingService>(create: (_) => firebaseMessagingService),
+          Provider<MessagingService>(create: (_) => firebaseMessagingService),
         ],
         child: MaterialApp(
           home: AuthGate(),
@@ -224,7 +224,7 @@ void main() {
           ChangeNotifierProvider<AuthService>(create: (_) => MockAuthService(firebaseAuth: mockAuth)),
           Provider<DataService>(create: (_) => mockDataService),
           Provider<FirestoreService>(create: (_) => mockFirestoreService),
-          Provider<FirebaseMessagingService>(create: (_) => firebaseMessagingService),
+          Provider<MessagingService>(create: (_) => firebaseMessagingService),
         ],
         child: MaterialApp(
           home: AuthGate(),
@@ -251,7 +251,7 @@ void main() {
           ChangeNotifierProvider<AuthService>(create: (_) => MockAuthService(firebaseAuth: mockAuth)),
           Provider<DataService>(create: (_) => mockDataService),
           Provider<FirestoreService>(create: (_) => mockFirestoreService),
-          Provider<FirebaseMessagingService>(create: (_) => firebaseMessagingService),
+          Provider<MessagingService>(create: (_) => firebaseMessagingService),
         ],
         child: MaterialApp(
           home: AuthGate(),

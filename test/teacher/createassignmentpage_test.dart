@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:learnvironment/authentication/auth_gate.dart';
 import 'package:learnvironment/data/user_data.dart';
-import 'package:learnvironment/teacher/create_assignment_page.dart';
+import 'package:learnvironment/teacher/assignments/create_assignment_page.dart';
 import 'package:learnvironment/services/data_service.dart';
-import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/services/firebase/auth_service.dart';
 import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
 

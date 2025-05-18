@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:learnvironment/services/firebase/auth_service.dart';
 import 'package:provider/provider.dart';
 
 import '../data/game_result_data.dart';
 import '../data/subject_data.dart';
 import '../data/user_data.dart';
-import '../services/auth_service.dart';
 import '../services/data_service.dart';
 
 class ResultsPage extends StatelessWidget {

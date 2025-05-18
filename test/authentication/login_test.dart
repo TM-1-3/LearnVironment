@@ -7,7 +7,7 @@ import 'package:learnvironment/authentication/fix_account.dart';
 import 'package:learnvironment/authentication/login_screen.dart';
 import 'package:learnvironment/authentication/signup_screen.dart';
 import 'package:learnvironment/data/user_data.dart';
-import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/services/firebase/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';

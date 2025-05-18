@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class GameResultData {
   final String subjectId;
   final String studentId;

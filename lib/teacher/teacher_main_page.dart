@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:learnvironment/services/auth_service.dart';
-import 'package:learnvironment/services/user_cache_service.dart';
-import 'package:learnvironment/teacher/teacher_subject_screen.dart';
+import 'package:learnvironment/services/firebase/auth_service.dart';
+import 'package:learnvironment/services/cache/user_cache_service.dart';
+import 'package:learnvironment/teacher/classes/teacher_subject_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../services/data_service.dart';
-import 'create_subject_page.dart';
+import 'classes/create_subject_page.dart';
 import 'widgets/subject_card.dart';
 
 class TeacherMainPage extends StatefulWidget {

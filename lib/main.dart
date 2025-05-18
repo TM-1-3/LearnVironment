@@ -8,24 +8,24 @@ import 'package:learnvironment/authentication/reset_password_screen.dart';
 import 'package:learnvironment/authentication/signup_screen.dart';
 import 'package:learnvironment/data/notification_storage.dart';
 import 'package:learnvironment/firebase_options.dart';
-import 'package:learnvironment/services/assignment_cache_service.dart';
-import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/services/cache/assignment_cache_service.dart';
+import 'package:learnvironment/services/firebase/auth_service.dart';
+import 'package:learnvironment/services/cache/game_cache_service.dart';
+import 'package:learnvironment/services/cache/user_cache_service.dart';
 import 'package:learnvironment/services/data_service.dart';
-import 'package:learnvironment/services/firestore_service.dart';
-import 'package:learnvironment/services/game_cache_service.dart';
-import 'package:learnvironment/services/subject_cache_service.dart';
-import 'package:learnvironment/services/user_cache_service.dart';
+import 'package:learnvironment/services/firebase/firestore_service.dart';
+import 'package:learnvironment/services/cache/subject_cache_service.dart';
 import 'package:provider/provider.dart';
-import 'package:learnvironment/services/firebase_messaging_service.dart';
+import 'package:learnvironment/services/firebase/messaging_service.dart';
 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  final FirebaseMessagingService messagingService = FirebaseMessagingService();
+  final MessagingService messagingService = MessagingService();
 
-  FirebaseMessaging.onBackgroundMessage(FirebaseMessagingService.firebaseMessagingBackgroundHandler);
+  FirebaseMessaging.onBackgroundMessage(MessagingService.firebaseMessagingBackgroundHandler);
   await messagingService.initNotifications();
   messagingService.setupFCMListeners();
   FirebaseMessaging.instance.subscribeToTopic('your_event_topic');
@@ -55,7 +55,7 @@ void main() async {
         ChangeNotifierProvider<AuthService>(create: (_) => authService),
         Provider<FirestoreService>(create: (_) => firestoreService),
         Provider<UserCacheService>(create: (_) => UserCacheService()),
-        Provider<FirebaseMessagingService>(create: (_) => messagingService),
+        Provider<MessagingService>(create: (_) => messagingService),
         Provider<GameCacheService>(create: (_) => GameCacheService()),
         Provider<SubjectCacheService>(create: (_) => SubjectCacheService()),
         Provider<AssignmentCacheService>(create: (_) => AssignmentCacheService()),
