@@ -107,6 +107,7 @@ class StatisticsTeacherPageState extends State<StatisticsTeacherPage> {
             ),
             const SizedBox(height: 20),
             DropdownButtonFormField<SubjectData>(
+              key: Key('DropdownButton'),
               value: _selectedClass,
               decoration: const InputDecoration(labelText: 'Class'),
               items: _classes.map((subject) {
