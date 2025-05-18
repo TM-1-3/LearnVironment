@@ -109,6 +109,7 @@
 - Fixed bug in ````Small sized devices```` for Developer Game Cards [#148](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/148)
 - Fixed bug in ````Small sized devices```` for Teacher Game Cards [#137](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/137)
 - Fixed bug when editing drag games [#149](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/149)
+- Fixed bug in ````Small sized devices```` for drag games and added the missing tests for it [#138](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/138)
 
 ### Test User
 - email: up202307719@g.uporto.pt
