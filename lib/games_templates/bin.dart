@@ -113,8 +113,7 @@ class BinScreenState extends State<BinScreen> {
                     gameImage: widget.binData.gameLogo,
                     tipsToAppear: tipsToAppear.toSet().toList(),
                     duration: duration,
-                    onReplay: () => BinScreen(binData: widget.binData),
-                    gameId: widget.binData.documentName,
+                    onReplay: () => BinScreen(binData: widget.binData)
                   ),
             ),
           );
@@ -126,68 +125,112 @@ class BinScreenState extends State<BinScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.binData.gameName,),
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.of(context).pushReplacementNamed('/auth_gate');
-            },
-          )),
+      appBar: AppBar(
+        title: Text(widget.binData.gameName),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pushReplacementNamed('/auth_gate');
+          },
+        ),
+      ),
       body: LayoutBuilder(
         builder: (context, constraints) {
           final screenHeight = constraints.maxHeight;
           final screenWidth = constraints.maxWidth;
 
-          final binWidth = screenWidth / 3; // e.g. allow for 2 bins + spacing
+          // Compute bin dimensions that scale to screen size
+          final binHeight = screenHeight * 0.2; // ~15% of screen height
+          final binWidth = screenWidth * 0.4;    // ~30% of screen width
+
           final verticalSpacing = screenHeight * 0.05;
 
+          final totalBinsWidth = 2 * binWidth; // Since there are two bins
+          final availableWidthForSpacing = screenWidth - totalBinsWidth; // Remaining space after bins
+
+          final spaceBetweenBins = availableWidthForSpacing / 3;
+          final leftMarginYellow = (screenWidth - binWidth) / 2;
+
+          final appBarHeight = AppBar().preferredSize.height;
+
+          final double binHalfWidth = binWidth / 2;
+          final double binHalfHeight = binHeight / 2;
+          final double offsetXGreen = spaceBetweenBins + binHalfWidth;
+          final double offsetXBlue = spaceBetweenBins * 2 + binWidth + binHalfWidth;
+          final double offsetXYellow = leftMarginYellow + binHalfWidth;
+          final double offsetXBrown = spaceBetweenBins * 2 + binHalfWidth;
+          final double offsetXRed = spaceBetweenBins * 2 + binWidth + binHalfWidth;
+
+          final double verticalOffset = appBarHeight + binHalfHeight;
+
+          Offset greenPosition = Offset(offsetXGreen, verticalOffset);
+          Offset bluePosition = Offset(offsetXBlue, verticalOffset);
+          Offset yellowPosition = Offset(offsetXYellow, verticalOffset + binHeight + verticalSpacing);
+          Offset brownPosition = Offset(offsetXBrown, verticalOffset + binHeight * 2 + verticalSpacing * 2);
+          Offset redPosition = Offset(offsetXRed, verticalOffset + binHeight * 2 + verticalSpacing * 2);
+
+
           return SafeArea(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  SizedBox(height: verticalSpacing),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            child: Stack(
+              children: [
+                SingleChildScrollView(
+                  child: Column(
                     children: [
-                      binWidget('green', Offset.zero, binWidth),
-                      binWidget('blue', Offset.zero, binWidth),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          binWidget('green', binHeight, binWidth, greenPosition),
+                          binWidget('blue', binHeight, binWidth, bluePosition),
+                        ],
+                      ),
+                      SizedBox(height: verticalSpacing),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          binWidget('yellow', binHeight, binWidth, yellowPosition),
+                        ],
+                      ),
+                      SizedBox(height: verticalSpacing),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          binWidget('brown', binHeight, binWidth, brownPosition),
+                          binWidget('red', binHeight, binWidth, redPosition),
+                        ],
+                      ),
+                      const SizedBox(height: 40),
+                      Wrap(
+                        spacing: 20,
+                        runSpacing: 20,
+                        alignment: WrapAlignment.center,
+                        children: trashItems.keys.map((item) {
+                          return Draggable<String>(
+                            data: item,
+                            feedback: getImageWidget(item, binHeight * 0.6),
+                            childWhenDragging: Opacity(
+                              opacity: 0.5,
+                              child: getImageWidget(item, binHeight * 0.6),
+                            ),
+                            child: getImageWidget(item, binHeight * 0.6),
+                          );
+                        }).toList(),
+                      ),
                     ],
                   ),
-                  SizedBox(height: verticalSpacing),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      binWidget('yellow', Offset.zero, binWidth),
-                    ],
+                ),
+
+                // ✅ Show feedback icon if needed
+                if (showIcon)
+                  Positioned(
+                    left: iconPosition.dx,
+                    top: iconPosition.dy,
+                    child: Image.asset(
+                      rightAnswer ? 'assets/right.png' : 'assets/wrong.png',
+                      width: 50,
+                      height: 50,
+                    ),
                   ),
-                  SizedBox(height: verticalSpacing),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      binWidget('brown', Offset.zero, binWidth),
-                      binWidget('red', Offset.zero, binWidth),
-                    ],
-                  ),
-                  const SizedBox(height: 40),
-                  Wrap(
-                    spacing: 20,
-                    runSpacing: 20,
-                    alignment: WrapAlignment.center,
-                    children: trashItems.keys.map((item) {
-                      return Draggable<String>(
-                        data: item,
-                        feedback: getImageWidget(item, binWidth * 0.6),
-                        childWhenDragging: Opacity(
-                          opacity: 0.5,
-                          child: getImageWidget(item, binWidth * 0.6),
-                        ),
-                        child: getImageWidget(item, binWidth * 0.6),
-                      );
-                    }).toList(),
-                  ),
-                  const SizedBox(height: 40),
-                ],
-              ),
+              ],
             ),
           );
         },
@@ -195,7 +238,7 @@ class BinScreenState extends State<BinScreen> {
     );
   }
 
-  Widget binWidget(String color, Offset binPosition, double binWidth) {
+  Widget binWidget(String color, double binHeight, double binWidth, Offset binPosition) {
     return DragTarget<String>(
       onWillAcceptWithDetails: (data) {
         setState(() => binStates[color] = true);
@@ -212,7 +255,9 @@ class BinScreenState extends State<BinScreen> {
         binStates[color]!
             ? 'assets/open_${color}_bin.png'
             : 'assets/${color}_bin.png',
+        height: binHeight,
         width: binWidth,
+        fit: BoxFit.contain,
       ),
     );
   }
