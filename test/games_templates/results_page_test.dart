@@ -30,7 +30,6 @@ class MockDataService extends Mock implements DataService {
 }
 
 void main() {
-
   group('ResultsPage Tests', ()
   {
     late Widget testWidget;
