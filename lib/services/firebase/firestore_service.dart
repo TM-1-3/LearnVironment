@@ -473,9 +473,9 @@ class FirestoreService {
 
       var data = snapshot.data() as Map<String, dynamic>;
 
-      List<String> students = List<String>.from(data['students']);
-      for (String student in students) {
-        if (student == studentId) {
+      List<Map<String, dynamic>> students = List<Map<String,dynamic>>.from(data['students']);
+      for (Map<String, dynamic> student in students) {
+        if (student['studentId'] == studentId) {
           return true;
         }
       }
@@ -560,10 +560,6 @@ class FirestoreService {
     try {
       final subjectRef = _firestore.collection('subjects').doc(subjectId);
       final studentRef = _firestore.collection('users').doc(studentId);
-      await subjectRef.update({
-        'students': FieldValue.arrayUnion([studentId]),
-      });
-
 
       // Run both updates in a batch
       final batch = _firestore.batch();

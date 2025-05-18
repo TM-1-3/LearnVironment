@@ -842,7 +842,7 @@ void main() {
       await firestore.collection('subjects').doc('subject123').set({
         'logo': 'math_logo.png',
         'name': 'Mathematics',
-        'students': ['student1', 'student2'],
+        'students': [{'studentId':'student1', 'correctCount':0, 'wrongCount':0}, {'studentId':'student2', 'correctCount':0, 'wrongCount':0}],
         'assignments': ['assignment1'],
         'teacher': 'teacher123',
       });
@@ -860,7 +860,7 @@ void main() {
       expect(result.subjectId, 'subject123');
       expect(result.subjectLogo, 'math_logo.png');
       expect(result.subjectName, 'Mathematics');
-      expect(result.students, ['student1', 'student2']);
+      expect(result.students, [{'studentId':'student1', 'correctCount':0, 'wrongCount':0}, {'studentId':'student2', 'correctCount':0, 'wrongCount':0}],);
       expect(result.assignments, ['assignment1']);
       expect(result.teacher, 'teacher123');
     });
@@ -914,7 +914,7 @@ void main() {
         subjectId: 'subject001',
         subjectName: 'Science',
         subjectLogo: 'science_logo.png',
-        students: ['student1', 'student2'],
+        students: [{'studentId':'student1', 'correctCount':0, 'wrongCount':0}, {'studentId':'student2', 'correctCount':0, 'wrongCount':0}],
         assignments: ['assignment1'],
         teacher: testUid,
       );
@@ -928,7 +928,7 @@ void main() {
       expect(data['name'], 'Science');
       expect(data['logo'], 'science_logo.png');
       expect(data['teacher'], testUid);
-      expect(data['students'], ['student1', 'student2']);
+      expect(data['students'], [{'studentId':'student1', 'correctCount':0, 'wrongCount':0}, {'studentId':'student2', 'correctCount':0, 'wrongCount':0}],);
       expect(data['assignments'], ['assignment1']);
 
       final userSnapshot = await firestore.collection('users').doc(testUid).get();
