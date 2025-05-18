@@ -28,12 +28,10 @@ class DataService {
 
   // 1. Users & Accounts
   // 2. Games
-  // 3. Subjects (Aka Classes)
+  // 3. Subjects
   // 4. Assignments
 
   //================================ USERS & ACCOUNTS =======================================//
-
-
   Future<bool> checkIfUsernameAlreadyExists(String username) async {
     return await _firestoreService.checkIfUsernameAlreadyExists(username);
   }
@@ -84,6 +82,7 @@ class DataService {
       return null;
     }
   }
+
   Future<void> deleteAccount({required String uid}) async {
     try {
       await _firestoreService.deleteAccount(uid: uid);
@@ -117,11 +116,7 @@ class DataService {
     }
   }
 
-
-
   //==================================== GAMES ====================================//
-
-
   Future<GameData?> getGameData({required String gameId}) async {
     try {
       final cachedGame = await _gameCacheService.getCachedGameData(gameId);
