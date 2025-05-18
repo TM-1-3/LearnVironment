@@ -54,7 +54,7 @@ class ResultsPage extends StatelessWidget {
 
             if (assignment != null && assignment.gameId == gameId) {
               final result = GameResultData(
-                subjectId: subjectId, //TODO achar todos os subjects que o aluno esteja e que o assignment tenha esse jogo (trocar pra uma lista de subjects)
+                subjectId: subjectId,
                 studentId: studentId,
                 gameId: assignment.gameId,
                 correctCount: correctCount,
