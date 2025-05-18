@@ -155,8 +155,25 @@ class QuizState extends State<Quiz> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 80),
-            Image.asset(widget.quizData.gameLogo, width: 200, height: 200),
+            ClipRRect(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: 180,
+                ),
+                child: widget.quizData.gameLogo.startsWith('assets/')
+                    ? Image.asset(
+                  widget.quizData.gameLogo,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                )
+                    : Image.network(
+                  widget.quizData.gameLogo,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
             const SizedBox(height: 20),
             Text(
               widget.quizData.gameName,
