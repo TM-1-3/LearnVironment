@@ -3,7 +3,7 @@ import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/games_templates/quiz.dart';
 import 'package:learnvironment/games_templates/bin.dart';
 import 'package:learnvironment/services/data_service.dart';
-import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/services/firebase/auth_service.dart';
 import 'package:provider/provider.dart';
 
 class GamesInitialScreen extends StatelessWidget {
@@ -37,7 +37,25 @@ class GamesInitialScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset(gameData.gameLogo, width: 200, height: 200),
+                ClipRRect(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxHeight: 200,
+                    ),
+                    child: gameData.gameLogo.startsWith('assets/')
+                        ? Image.asset(
+                      gameData.gameLogo,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    )
+                        : Image.network(
+                      gameData.gameLogo,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
                 SizedBox(height: 20),
                 Text(
                   gameData.gameName,

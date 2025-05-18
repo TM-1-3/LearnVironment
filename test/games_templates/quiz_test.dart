@@ -1,12 +1,33 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:learnvironment/data/game_data.dart';
+import 'package:learnvironment/data/user_data.dart';
 import 'package:learnvironment/games_templates/results_page.dart';
 import 'package:learnvironment/games_templates/quiz.dart';
 import 'package:learnvironment/services/data_service.dart';
+import 'package:learnvironment/services/firebase/auth_service.dart';
 import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
 
+class MockAuthService extends Mock implements AuthService {
+  late String uid;
+
+  MockAuthService({MockFirebaseAuth? firebaseAuth}) {
+    loggedIn = firebaseAuth?.currentUser != null;
+    uid = firebaseAuth?.currentUser?.uid ?? '';
+    fetchedNotifications = true;
+  }
+
+  @override
+  Future<String> getUid() async {
+    return uid;
+  }
+
+  @override
+  Stream<User?> get authStateChanges => Stream.value(MockUser());
+}
 
 class MockGameData extends Mock implements GameData {
   @override
@@ -121,7 +142,10 @@ class MockGameData extends Mock implements GameData {
 }
 
 class MockDataService extends Mock implements DataService{
-
+  @override
+  Future<UserData?> getUserData({required String userId}) {
+    return Future.value(UserData(role: '', id: '', username: '', name: '', email: '', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: [], myGames: [], tClasses: [], stClasses: [], img: ''));
+  }
 }
 
 void main() {
@@ -129,13 +153,27 @@ void main() {
     late MockGameData quizData;
     late Widget testWidget;
     late MockDataService mockDataService;
+    late MockFirebaseAuth mockAuth;
 
     setUp(() {
       quizData = MockGameData();
       mockDataService = MockDataService();
 
-      testWidget = Provider<DataService>.value(
-        value: mockDataService,
+      mockAuth = MockFirebaseAuth(signedIn: true,
+        mockUser: MockUser(
+          uid: 'testStudent',
+          email: 'test@example.com',
+          displayName: 'Test User',
+        ),
+      );
+
+      testWidget = MultiProvider(
+        providers: [
+          ChangeNotifierProvider<AuthService>(
+            create: (_) => MockAuthService(firebaseAuth: mockAuth),
+          ),
+          Provider<DataService>(create: (_) => mockDataService),
+        ],
         child: MaterialApp(
           home: Quiz(quizData: quizData),
         ),

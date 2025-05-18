@@ -92,8 +92,8 @@
 - Developers can now dry run their games [#117](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/117)
 - Developers can add a description to their games [#118](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/118)
 - Developers can assign an age group to their games [#119](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/119)
-- Organized source code in firestore service and dataService repositories [#105](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/105)
-- Fixed bug where students couldn´t see their new classes, by adding a refresh indicator to the home page [#123](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/123)
+- Organized source code in `````FirestoreService````` and ````DataService```` repositories [#105](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/105)
+- Fixed bug where students could not see their new classes, by adding a refresh indicator to the home page [#123](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/123)
 - Teachers add students in a class by entering their usernames, instead of their names, as two students can have the same name, but usernames cannot be equal [#126](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/126)
 - It is checked if a student is already in a class, before adding to it, so teachers cannot add a student to a class more than once [#127](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/127)
 - Fixed bugs in back buttons of teacher pages [#94](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/94)
@@ -101,6 +101,14 @@
 - Developers can now make games [#130](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/130/)
 - Fixed bug in the custom image for classes [#131](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/131)
 - Developers can now edit their games [#132](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/132/)
+- Improved tests for ````FirestoreService```` [#128](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/128/)
+- Fixed notifications bug where all users receive notifications [#143](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/143/)
+- Fixed Image bug in ````SubjectsScreen```` [#135](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/135)
+- Fixed bug in the image of ````GameInitialScreen```` [#139](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/139)
+- Fixed bug when updating profile, lost the data of my games [#145](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/145)
+- Fixed bug in ````Small sized devices```` for Developer Game Cards [#148](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/148)
+- Fixed bug in ````Small sized devices```` for Teacher Game Cards [#137](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/137)
+- Fixed bug when editing drag games [#149](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/149)
 
 ### Test User
 - email: up202307719@g.uporto.pt

@@ -153,12 +153,18 @@ class _MyGameCardState extends State<MyGameCard> {
                         );
                       },
                     ),
-                    ElevatedButton(
-                      onPressed: _isLoading ? null : _togglePublicStatus,
-                      child: _isLoading
-                          ? CircularProgressIndicator()  // Loading state
-                          : Text(_isPublic ? 'Make Private' : 'Make Public'),
-                    ),
+                    SizedBox(
+                      width: double.infinity, // Ensures the button stretches to the full width
+                      child: ElevatedButton(
+                        onPressed: _isLoading ? null : _togglePublicStatus,
+                        child: _isLoading
+                            ? CircularProgressIndicator()  // Loading state
+                            : Text(
+                          _isPublic ? 'Make Private' : 'Make Public',
+                          textAlign: TextAlign.center, // Ensures the text is centered
+                        ),
+                      ),
+                    )
                   ],
                 ),
               ),

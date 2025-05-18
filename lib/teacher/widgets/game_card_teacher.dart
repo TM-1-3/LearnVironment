@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:learnvironment/main_pages/widgets/tag.dart';
-import 'package:learnvironment/teacher/create_assignment_page.dart';
+import 'package:learnvironment/teacher/assignments/create_assignment_page.dart';
 
 class GameCardTeacher extends StatelessWidget {
   final String imagePath;

@@ -7,7 +7,7 @@ import 'package:learnvironment/developer/my_games.dart';
 import 'package:learnvironment/developer/new_game.dart';
 import 'package:learnvironment/main_pages/games_page.dart';
 import 'package:learnvironment/main_pages/profile_screen.dart';
-import 'package:learnvironment/services/auth_service.dart';
+import 'package:learnvironment/services/firebase/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:learnvironment/main_pages/notifications_page.dart';
 import 'package:mockito/mockito.dart';

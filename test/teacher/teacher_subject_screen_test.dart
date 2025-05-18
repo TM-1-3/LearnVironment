@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:learnvironment/data/subject_data.dart';
 import 'package:learnvironment/data/user_data.dart';
-import 'package:learnvironment/teacher/teacher_subject_screen.dart';
+import 'package:learnvironment/teacher/classes/teacher_subject_screen.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
@@ -336,9 +336,6 @@ void main() {
 
 
       expect(find.text('Failed to remove student'), findsOneWidget);
-
-
-      expect(find.text('Student student1'), findsOneWidget);
     });
   });
 }

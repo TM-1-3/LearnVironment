@@ -3,7 +3,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:learnvironment/services/firebase_messaging_service.dart';
+import 'package:learnvironment/services/firebase/messaging_service.dart';
 import 'package:learnvironment/data/notification_storage.dart';
 
 @GenerateNiceMocks([
@@ -11,17 +11,17 @@ import 'package:learnvironment/data/notification_storage.dart';
   MockSpec<FirebaseMessaging>()
 ])
 
-import 'firebase_messaging_service_test.mocks.dart';
+import 'messaging_service_test.mocks.dart';
 
 void main() {
   late MockFlutterLocalNotificationsPlugin mockFlutterLocalNotificationsPlugin;
-  late FirebaseMessagingService firebaseMessagingService;
+  late MessagingService firebaseMessagingService;
   late MockFirebaseMessaging mockFirebaseMessaging;
 
   setUp(() {
     mockFirebaseMessaging = MockFirebaseMessaging();
     mockFlutterLocalNotificationsPlugin = MockFlutterLocalNotificationsPlugin();
-    firebaseMessagingService = FirebaseMessagingService(localNotificationsPlugin: mockFlutterLocalNotificationsPlugin, firebaseMessaging: mockFirebaseMessaging);
+    firebaseMessagingService = MessagingService(localNotificationsPlugin: mockFlutterLocalNotificationsPlugin, firebaseMessaging: mockFirebaseMessaging);
   });
 
   group('FirebaseMessagingService Tests', () {
@@ -46,7 +46,7 @@ void main() {
         data: {},
       );
 
-      FirebaseMessagingService.showNotification(message: message, localNotificationsPlugin: mockFlutterLocalNotificationsPlugin);
+      MessagingService.showNotification(message: message, localNotificationsPlugin: mockFlutterLocalNotificationsPlugin);
 
       verify(mockFlutterLocalNotificationsPlugin.show(
         message.notification.hashCode,
@@ -59,7 +59,7 @@ void main() {
     test('should not crash when notification or android details are missing', () async {
       final RemoteMessage message = RemoteMessage(data: {});
 
-      FirebaseMessagingService.showNotification(message: message, localNotificationsPlugin: mockFlutterLocalNotificationsPlugin);
+      MessagingService.showNotification(message: message, localNotificationsPlugin: mockFlutterLocalNotificationsPlugin);
 
       verifyNever(mockFlutterLocalNotificationsPlugin.show(any, any, any, any));
     });
