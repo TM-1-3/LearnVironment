@@ -91,7 +91,25 @@ class ResultsPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset(gameImage, width: 200, height: 200),
+              ClipRRect(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: 200,
+                  ),
+                  child: gameImage.startsWith('assets/')
+                      ? Image.asset(
+                    gameImage,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  )
+                      : Image.network(
+                    gameImage,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
               const SizedBox(height: 40),
               const Text("Game Completed!", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
               const SizedBox(height: 20),
