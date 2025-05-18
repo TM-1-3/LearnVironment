@@ -880,6 +880,92 @@ void main() {
     });
   });
 
+  group('getPlayedGames', () {
+    const userId = 'user123';
+    const gameId = 'game123';
+
+    setUp(() {
+      // Reset mocks for each test
+      when(mockUserCacheService.getCachedGamesPlayed()).thenAnswer((_) async => ['game123']);
+      when(mockFirestoreService.getPlayedGames(uid: userId)).thenAnswer((_) async => [
+        {'gameId': gameId, 'gameTitle': 'Game 1', 'tags': ['Action', 'Adventure'], 'imagePath': 'image1.jpg'}
+      ]);
+      when(mockGameCacheService.getCachedGameData(gameId)).thenAnswer((_) async => GameData(
+        gameLogo: 'image1.jpg',
+        gameName: 'Game 1',
+        tags: ['Action', 'Adventure'],
+        documentName: gameId,
+        public: true,
+        gameDescription: '',
+        gameBibliography: '',
+        gameTemplate: '',
+        correctAnswers: {}, tips: {},
+      ));
+    });
+
+    testWidgets('should load games from cache', (WidgetTester tester) async {
+      // Arrange: Mock the cache with game IDs
+      when(mockUserCacheService.getCachedGamesPlayed()).thenAnswer((_) async => [gameId]);
+
+      await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
+      await tester.pumpAndSettle();
+
+      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+
+      // Act
+      final games = await state.getDataService().getPlayedGames(userId: userId);
+
+      // Assert
+      expect(games.isNotEmpty, true);
+      expect(games.length, 1);
+      expect(games[0]['gameId'], gameId);
+      expect(games[0]['gameTitle'], 'Game 1');
+      verify(mockUserCacheService.getCachedGamesPlayed()).called(1);
+      verify(mockGameCacheService.getCachedGameData(gameId)).called(1);
+      verifyNoMoreInteractions(mockUserCacheService);
+      verifyNoMoreInteractions(mockGameCacheService);
+    });
+
+    testWidgets('should load games from Firestore when cache is empty', (WidgetTester tester) async {
+      // Arrange: Simulate no cached games
+      when(mockUserCacheService.getCachedGamesPlayed()).thenAnswer((_) async => []);
+
+      await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
+      await tester.pumpAndSettle();
+
+      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+
+      // Act
+      final games = await state.getDataService().getPlayedGames(userId: userId);
+
+      // Assert
+      expect(games.isNotEmpty, true);
+      expect(games[0]['gameId'], gameId);
+      verify(mockUserCacheService.getCachedGamesPlayed()).called(1);
+      verify(mockFirestoreService.getPlayedGames(uid: userId)).called(1);
+      verifyNoMoreInteractions(mockUserCacheService);
+      verifyNoMoreInteractions(mockFirestoreService);
+    });
+
+    testWidgets('should return an empty list if an error occurs', (WidgetTester tester) async {
+      // Arrange: Simulate an error while getting data
+      when(mockUserCacheService.getCachedGamesPlayed()).thenThrow(Exception('Cache error'));
+
+      await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
+      await tester.pumpAndSettle();
+
+      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+
+      // Act
+      final games = await state.getDataService().getPlayedGames(userId: userId);
+
+      // Assert
+      expect(games.isEmpty, true);
+      verify(mockUserCacheService.getCachedGamesPlayed()).called(1);
+      verifyNoMoreInteractions(mockUserCacheService);
+    });
+  });
+
 }
 
 

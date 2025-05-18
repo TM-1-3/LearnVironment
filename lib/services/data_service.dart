@@ -269,11 +269,7 @@ class DataService {
     }
   }
 
-
-
   //======================================= SUBJECTS ====================================//
-
-
   Future<SubjectData?> getSubjectData({required String subjectId}) async {
     try {
       final cachedSubject = await _subjectCacheService.getCachedSubjectData(subjectId);
@@ -418,11 +414,7 @@ class DataService {
     }
   }
 
-
-
   //========================================= ASSIGNMENTS ======================================================//
-
-
   Future<void> createAssignment({
     required String title,
     required DateTime dueDate,
