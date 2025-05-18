@@ -809,6 +809,77 @@ void main() {
     });
   });
 
+  group('updateGamePublicStatus', () {
+    const gameId = 'game123';
+    const status = true;
+
+    setUp(() {
+      // Reset the mock services for each test
+      when(mockFirestoreService.updateGamePublicStatus(gameId: gameId, status: status))
+          .thenAnswer((_) async {});
+      when(mockGameCacheService.updateGamePublicStatus(gameId: gameId, status: status))
+          .thenAnswer((_) async {});
+    });
+
+    testWidgets('should update Firestore and game cache successfully', (WidgetTester tester) async {
+      await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
+      await tester.pumpAndSettle();
+
+      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+
+      // Act
+      await state.getDataService().updateGamePublicStatus(gameId: gameId, status: status);
+
+      // Assert
+      verify(mockFirestoreService.updateGamePublicStatus(gameId: gameId, status: status)).called(1);
+      verify(mockGameCacheService.updateGamePublicStatus(gameId: gameId, status: status)).called(1);
+      verifyNoMoreInteractions(mockFirestoreService);
+      verifyNoMoreInteractions(mockGameCacheService);
+    });
+
+    testWidgets('should throw an exception if Firestore update fails', (WidgetTester tester) async {
+      // Arrange: Simulate Firestore failure
+      when(mockFirestoreService.updateGamePublicStatus(gameId: gameId, status: status))
+          .thenThrow(Exception('Firestore update failed'));
+
+      await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
+      await tester.pumpAndSettle();
+
+      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+
+      // Act & Assert
+      expect(
+            () => state.getDataService().updateGamePublicStatus(gameId: gameId, status: status),
+        throwsA(isA<Exception>()),
+      );
+
+      verify(mockFirestoreService.updateGamePublicStatus(gameId: gameId, status: status)).called(1);
+      verifyNoMoreInteractions(mockGameCacheService);  // Ensure cache is not updated if Firestore fails
+    });
+
+    testWidgets('should throw an exception if cache update fails', (WidgetTester tester) async {
+      // Arrange: Simulate cache update failure
+      when(mockGameCacheService.updateGamePublicStatus(gameId: gameId, status: status))
+          .thenThrow(Exception('Cache update failed'));
+
+      await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
+      await tester.pumpAndSettle();
+
+      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+
+      // Act & Assert
+      expect(
+            () => state.getDataService().updateGamePublicStatus(gameId: gameId, status: status),
+        throwsA(isA<Exception>()),
+      );
+
+      await tester.pump();
+
+      verify(mockFirestoreService.updateGamePublicStatus(gameId: gameId, status: status)).called(1);
+      verify(mockGameCacheService.updateGamePublicStatus(gameId: gameId, status: status)).called(1);
+    });
+  });
+
 }
 
 

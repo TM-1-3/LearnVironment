@@ -233,7 +233,6 @@ class DataService {
       await _gameCacheService.updateGamePublicStatus(gameId: gameId, status: status);
       print('[DataService] Game Cache updated successfully');
 
-
     } catch (e) {
       print('[DataService] Error updating user\'s gamesPlayed: $e');
       throw Exception("Error updating user's gamesPlayed");
