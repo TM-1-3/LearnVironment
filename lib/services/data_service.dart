@@ -525,4 +525,22 @@ class DataService {
       print("Error creating Assignment");
     }
   }
+
+  //=========================== DELETE CACHE ==========================
+  Future<void> deleteCache() async {
+    try {
+      await _userCacheService.clearUserCache();
+      print("[DATASERVICE] User cache deleted");
+      await _subjectCacheService.clearSubjectCache();
+      print("[DATASERVICE] Subject cache deleted");
+      await _gameCacheService.clear();
+      print("[DATASERVICE] Game cache deleted");
+      await _assignmentCacheService.clearAssignmentCache();
+      print("[DATASERVICE] Assignment cache deleted");
+
+    } catch (e) {
+      print("[DATASERVICE] Error deleting cache");
+      rethrow;
+    }
+  }
 }
