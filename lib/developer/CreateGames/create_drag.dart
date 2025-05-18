@@ -127,7 +127,7 @@ class _CreateDragPageState extends State<CreateDragPage> {
 
       List<String> keys = [];
 
-      int index = 0;
+      int index = 1;
       //Validate Objects
       for (var object in trashObjects) {
         if (object.isEmpty() || object.selectedOption == null) {
