@@ -2163,6 +2163,234 @@ void main() {
     });
   });
 
+  group('getAssignmentData', () {
+    testWidgets('should load assignment data from cache when available', (WidgetTester tester) async {
+      // Arrange
+      final assignmentId = 'assignment1';
+      final cachedAssignment = AssignmentData(
+        assId: assignmentId,
+        title: 'Assignment 1',
+        subjectId: 'subject1',
+        dueDate: '2025-05-01',
+        gameId: 'game1',
+      );
+
+      when(mockAssignmentCacheService.getCachedAssignmentData(assignmentId))
+          .thenAnswer((_) async => cachedAssignment);
+
+      await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
+      await tester.pumpAndSettle();
+
+      // Act
+      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final result = await state.getDataService().getAssignmentData(assignmentId: assignmentId);
+
+      // Assert
+      expect(result, isNotNull);
+      expect(result!.assId, assignmentId);
+      expect(result.title, 'Assignment 1');
+      verify(mockAssignmentCacheService.getCachedAssignmentData(assignmentId)).called(1);
+    });
+
+    testWidgets('should load assignment data from Firestore when cache is empty', (WidgetTester tester) async {
+      // Arrange
+      final assignmentId = 'assignment1';
+      final assignmentData = AssignmentData(
+        assId: assignmentId,
+        title: 'Assignment 1',
+        subjectId: 'subject1',
+        dueDate: '2025-05-01',
+        gameId: 'game1',
+      );
+
+      when(mockAssignmentCacheService.getCachedAssignmentData(assignmentId))
+          .thenAnswer((_) async => null); // Cache miss
+      when(mockFirestoreService.fetchAssignmentData(assignmentId: assignmentId))
+          .thenAnswer((_) async => assignmentData);
+
+      await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
+      await tester.pumpAndSettle();
+
+      // Act
+      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final result = await state.getDataService().getAssignmentData(assignmentId: assignmentId);
+
+      // Assert
+      expect(result, isNotNull);
+      expect(result!.assId, assignmentId);
+      verify(mockAssignmentCacheService.getCachedAssignmentData(assignmentId)).called(1);
+      verify(mockFirestoreService.fetchAssignmentData(assignmentId: assignmentId)).called(1);
+    });
+
+    testWidgets('should return null if an error occurs while fetching assignment data', (WidgetTester tester) async {
+      // Arrange
+      final assignmentId = 'assignment1';
+
+      when(mockAssignmentCacheService.getCachedAssignmentData(assignmentId))
+          .thenAnswer((_) async => null); // Cache miss
+      when(mockFirestoreService.fetchAssignmentData(assignmentId: assignmentId))
+          .thenThrow(Exception('Error fetching assignment data'));
+
+      await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
+      await tester.pumpAndSettle();
+
+      // Act
+      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final result = await state.getDataService().getAssignmentData(assignmentId: assignmentId);
+
+      // Assert
+      expect(result, isNull);
+      verify(mockAssignmentCacheService.getCachedAssignmentData(assignmentId)).called(1);
+      verify(mockFirestoreService.fetchAssignmentData(assignmentId: assignmentId)).called(1);
+    });
+
+    testWidgets('should load assignment data from Firestore and cache it', (WidgetTester tester) async {
+      // Arrange
+      final assignmentId = 'assignment1';
+      final assignmentData = AssignmentData(
+        assId: assignmentId,
+        title: 'Assignment 1',
+        subjectId: 'subject1',
+        dueDate: '2025-05-01',
+        gameId: 'game1',
+      );
+
+      when(mockAssignmentCacheService.getCachedAssignmentData(assignmentId))
+          .thenAnswer((_) async => null); // Cache miss
+      when(mockFirestoreService.fetchAssignmentData(assignmentId: assignmentId))
+          .thenAnswer((_) async => assignmentData);
+
+      await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
+      await tester.pumpAndSettle();
+
+      // Act
+      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final result = await state.getDataService().getAssignmentData(assignmentId: assignmentId);
+
+      // Assert
+      expect(result, isNotNull);
+      expect(result!.assId, assignmentId);
+      verify(mockAssignmentCacheService.getCachedAssignmentData(assignmentId)).called(1);
+      verify(mockFirestoreService.fetchAssignmentData(assignmentId: assignmentId)).called(1);
+      verify(mockAssignmentCacheService.cacheAssignmentData(assignmentData)).called(1);
+    });
+  });
+
+  group('deleteAssignment', () {
+    testWidgets('should delete assignment from cache and Firestore successfully', (WidgetTester tester) async {
+      // Arrange
+      final assignmentId = 'assignment1';
+      final uid = 'user1';
+      final assignmentData = AssignmentData(
+        assId: assignmentId,
+        title: 'Assignment 1',
+        subjectId: 'subject1',
+        dueDate: '2025-05-01',
+        gameId: 'game1',
+      );
+      final subjectData = SubjectData(
+        subjectId: 'subject1',
+        subjectName: 'Subject 1',
+        assignments: [assignmentId],
+        subjectLogo: 'subjectLogo',
+        teacher: '',
+        students: [],
+      );
+
+      when(mockAssignmentCacheService.getCachedAssignmentData(assignmentId))
+          .thenAnswer((_) async => assignmentData);
+      when(mockSubjectCacheService.getCachedSubjectData('subject1'))
+          .thenAnswer((_) async => subjectData);
+      when(mockFirestoreService.deleteAssignment(assignmentId: assignmentId, uid: uid))
+          .thenAnswer((_) async {});
+      when(mockSubjectCacheService.cacheSubjectData(subjectData))
+          .thenAnswer((_) async {});
+
+      await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
+      await tester.pumpAndSettle();
+
+      // Act
+      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      await state.getDataService().deleteAssignment(assignmentId: assignmentId, uid: uid);
+
+      // Assert
+      verify(mockAssignmentCacheService.deleteAssignment(assignmentId: assignmentId)).called(1);
+      verify(mockFirestoreService.deleteAssignment(assignmentId: assignmentId, uid: uid)).called(1);
+      verify(mockSubjectCacheService.deleteSubject(subjectId: 'subject1')).called(1);
+      verify(mockSubjectCacheService.cacheSubjectData(subjectData)).called(1);
+    });
+
+    testWidgets('should fetch assignment data from Firestore if not in cache', (WidgetTester tester) async {
+      // Arrange
+      final assignmentId = 'assignment1';
+      final uid = 'user1';
+      final assignmentData = AssignmentData(
+        assId: assignmentId,
+        title: 'Assignment 1',
+        subjectId: 'subject1',
+        dueDate: '2025-05-01',
+        gameId: 'game1',
+      );
+      final subjectData = SubjectData(
+        subjectId: 'subject1',
+        subjectName: 'Subject 1',
+        assignments: [assignmentId],
+        subjectLogo: 'subjectLogo',
+        teacher: '',
+        students: [],
+      );
+
+      when(mockAssignmentCacheService.getCachedAssignmentData(assignmentId))
+          .thenAnswer((_) async => null); // Cache miss
+      when(mockFirestoreService.fetchAssignmentData(assignmentId: assignmentId))
+          .thenAnswer((_) async => assignmentData);
+      when(mockSubjectCacheService.getCachedSubjectData('subject1'))
+          .thenAnswer((_) async => subjectData);
+      when(mockFirestoreService.deleteAssignment(assignmentId: assignmentId, uid: uid))
+          .thenAnswer((_) async {});
+      when(mockSubjectCacheService.cacheSubjectData(subjectData))
+          .thenAnswer((_) async {});
+
+      await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
+      await tester.pumpAndSettle();
+
+      // Act
+      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      await state.getDataService().deleteAssignment(assignmentId: assignmentId, uid: uid);
+
+      // Assert
+      verify(mockFirestoreService.fetchAssignmentData(assignmentId: assignmentId)).called(1);
+      verify(mockAssignmentCacheService.deleteAssignment(assignmentId: assignmentId)).called(1);
+      verify(mockFirestoreService.deleteAssignment(assignmentId: assignmentId, uid: uid)).called(1);
+      verify(mockSubjectCacheService.deleteSubject(subjectId: 'subject1')).called(1);
+      verify(mockSubjectCacheService.cacheSubjectData(subjectData)).called(1);
+    });
+
+    testWidgets('should handle error if assignment data is not found and fails during delete', (WidgetTester tester) async {
+      // Arrange
+      final assignmentId = 'assignment1';
+      final uid = 'user1';
+
+      when(mockAssignmentCacheService.getCachedAssignmentData(assignmentId))
+          .thenAnswer((_) async => null); // Cache miss
+      when(mockFirestoreService.fetchAssignmentData(assignmentId: assignmentId))
+          .thenThrow(Exception('Error fetching assignment data'));
+
+      await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
+      await tester.pumpAndSettle();
+
+      // Act
+      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      await state.getDataService().deleteAssignment(assignmentId: assignmentId, uid: uid);
+
+      // Assert
+      verify(mockAssignmentCacheService.getCachedAssignmentData(assignmentId)).called(1);
+      verify(mockFirestoreService.fetchAssignmentData(assignmentId: assignmentId)).called(1);
+      verifyNever(mockAssignmentCacheService.deleteAssignment(assignmentId: assignmentId)); // Not called since error occurred
+      verifyNever(mockFirestoreService.deleteAssignment(assignmentId: assignmentId, uid: uid)); // Not called due to failure
+      verifyNoMoreInteractions(mockSubjectCacheService);
+    });
+  });
 
 }
 
