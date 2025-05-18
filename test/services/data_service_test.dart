@@ -668,6 +668,147 @@ void main() {
     });
   });
 
+  group('createGame', () {
+    const uid = 'user123';
+    late GameData gameData;
+
+    setUp(() {
+      gameData = GameData(gameLogo: "logo.png", gameName: "Trivia Quest", gameBibliography: "", gameDescription: "", gameTemplate: "drag", tips: {}, correctAnswers: {}, tags: ['fun', 'trivia'], documentName: "game_abc", public: true);
+    });
+
+    testWidgets('successfully creates game and updates cache', (WidgetTester tester) async {
+      when(mockFirestoreService.createGame(uid: uid, game: gameData))
+          .thenAnswer((_) async {});
+      when(mockUserCacheService.createGame(uid: uid, gameId: 'game_abc'))
+          .thenAnswer((_) async {});
+      when(mockGameCacheService.cacheGameData(gameData))
+          .thenAnswer((_) async {});
+
+      await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
+      await tester.pumpAndSettle();
+
+      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+
+      await state.getDataService().createGame(uid: uid, game: gameData);
+
+      verify(mockFirestoreService.createGame(uid: uid, game: gameData)).called(1);
+      verify(mockUserCacheService.createGame(uid: uid, gameId: 'game_abc')).called(1);
+      verify(mockGameCacheService.cacheGameData(gameData)).called(1);
+      verifyNoMoreInteractions(mockFirestoreService);
+      verifyNoMoreInteractions(mockUserCacheService);
+      verifyNoMoreInteractions(mockGameCacheService);
+    });
+
+    testWidgets('rethrows exception if Firestore call fails', (WidgetTester tester) async {
+      when(mockFirestoreService.createGame(uid: uid, game: gameData))
+          .thenThrow(Exception('Firestore failed'));
+
+      await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
+      await tester.pumpAndSettle();
+
+      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+
+      expect(
+            () => state.getDataService().createGame(uid: uid, game: gameData),
+        throwsA(isA<Exception>()),
+      );
+
+      verify(mockFirestoreService.createGame(uid: uid, game: gameData)).called(1);
+      verifyZeroInteractions(mockUserCacheService);
+      verifyZeroInteractions(mockGameCacheService);
+    });
+  });
+
+  group('getMyGames', () {
+    const uid = 'user123';
+    late GameData gameData;
+
+    setUp(() {
+      gameData = GameData(gameLogo: "game_logo.png", gameName: "Amazing Game", gameBibliography: "", gameDescription: "", gameTemplate: "drag", tips: {}, correctAnswers: {}, tags: ['adventure', 'multiplayer'], documentName: "game123", public: true);
+    });
+
+    testWidgets('returns cached games if available', (WidgetTester tester) async {
+      // Simulate cached games
+      when(mockUserCacheService.getMyGames()).thenAnswer((_) async => ['game123']);
+      when(mockGameCacheService.getCachedGameData('game123')).thenAnswer((_) async => gameData);
+
+      await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
+      await tester.pumpAndSettle();
+
+      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+
+      final result = await state.getDataService().getMyGames(uid: uid);
+
+      expect(result.length, 1);
+      expect(result.first['gameTitle'], 'Amazing Game');
+      verify(mockUserCacheService.getMyGames()).called(1);
+      verify(mockGameCacheService.getCachedGameData('game123')).called(1);
+      verifyNoMoreInteractions(mockFirestoreService);
+    });
+
+    testWidgets('falls back to Firestore if game cache is empty', (WidgetTester tester) async {
+      // Simulate empty cache and Firestore response
+      when(mockUserCacheService.getMyGames()).thenAnswer((_) async => ['game123']);
+      when(mockGameCacheService.getCachedGameData('game123'))
+          .thenAnswer((_) async => null);
+      when(mockFirestoreService.fetchGameData(gameId: 'game123'))
+          .thenAnswer((_) async => gameData);
+
+      await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
+      await tester.pumpAndSettle();
+
+      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+
+      final result = await state.getDataService().getMyGames(uid: uid);
+
+      expect(result.length, 1);
+      expect(result.first['gameTitle'], 'Amazing Game');
+      verify(mockUserCacheService.getMyGames()).called(1);
+      verify(mockFirestoreService.fetchGameData(gameId: 'game123')).called(1);
+      verify(mockGameCacheService.getCachedGameData('game123')).called(1);
+      verify(mockGameCacheService.cacheGameData(gameData)).called(1);
+    });
+
+    testWidgets('falls back to Firestore if user cache is empty', (WidgetTester tester) async {
+      // Simulate empty cache and Firestore response
+      when(mockUserCacheService.getMyGames()).thenAnswer((_) async => []);
+      when(mockFirestoreService.getMyGames(uid: uid))
+          .thenAnswer((_) async => [
+        {'gameId': 'game123',
+        'gameTitle': 'Amazing Game'}
+      ]);
+
+      await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
+      await tester.pumpAndSettle();
+
+      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+
+      final result = await state.getDataService().getMyGames(uid: uid);
+
+      expect(result.length, 1);
+      expect(result.first['gameTitle'], 'Amazing Game');
+      verify(mockUserCacheService.getMyGames()).called(1);
+      verify(mockFirestoreService.getMyGames(uid: uid)).called(1);
+    });
+
+    testWidgets('returns empty list on error', (WidgetTester tester) async {
+      // Simulate an error
+      when(mockUserCacheService.getMyGames()).thenThrow(Exception('Cache failed'));
+
+      await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
+      await tester.pumpAndSettle();
+
+      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+
+      final result = await state.getDataService().getMyGames(uid: uid);
+
+      expect(result, isEmpty);
+      verify(mockUserCacheService.getMyGames()).called(1);
+      verifyZeroInteractions(mockFirestoreService);
+      verifyZeroInteractions(mockGameCacheService);
+    });
+  });
+
 }
 
 
