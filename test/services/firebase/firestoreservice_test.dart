@@ -1146,32 +1146,59 @@ void main() {
       firestoreService = FirestoreService(firestore: firestore);
     });
 
-    test('removes student from subject\'s students list', () async {
+    test('removes student from subject\'s students list and updates user', () async {
+      // Set up subject document with two students
+      await firestore.collection('subjects').doc(subjectId).set({
+        'name': 'Biology',
+        'students': [
+          {'studentId': studentId},
+          {'studentId': 'student002'},
+        ],
+      });
+
+      // Set up user document with subject in stClasses
+      await firestore.collection('users').doc(studentId).set({
+        'name': 'Student One',
+        'stClasses': [subjectId],
+      });
+
       await firestoreService.removeStudentFromSubject(
         subjectId: subjectId,
         studentId: studentId,
       );
 
+      // Check subject doc
       final subjectSnapshot = await firestore.collection('subjects').doc(subjectId).get();
-      final subjectData = subjectSnapshot.data()!;
-
-      final studentsRaw = subjectData['students'];
-      expect(studentsRaw, isA<List>());
-
-      final students = studentsRaw as List;
-
-      // Defensive extraction of studentIds
+      final students = subjectSnapshot.data()!['students'] as List;
       final studentIds = students
-          .whereType<Map<String, dynamic>>() // ensure we only map over valid maps
+          .whereType<Map<String, dynamic>>()
           .map((e) => e['studentId'] as String?)
-          .whereType<String>() // remove nulls
+          .whereType<String>()
           .toList();
 
       expect(studentIds, isNot(contains(studentId)));
       expect(studentIds, contains('student002'));
+
+      final userSnapshot = await firestore.collection('users').doc(studentId).get();
+      final stClasses = userSnapshot.data()?['stClasses'] as List?;
+      expect(stClasses, isNot(contains(subjectId)));
     });
 
     test('handles case where student is not in the students list', () async {
+      // Setup the subject document with existing students before removal attempt
+      await firestore.collection('subjects').doc(subjectId).set({
+        'name': 'Biology',
+        'students': [
+          {'studentId': studentId},
+          {'studentId': 'student002'},
+        ],
+      });
+
+      await firestore.collection('users').doc('non_existing_student').set({
+        'name': 'Student One',
+        'stClasses': [],
+      });
+
       await firestoreService.removeStudentFromSubject(
         subjectId: subjectId,
         studentId: 'non_existing_student',
@@ -1187,6 +1214,7 @@ void main() {
           .whereType<String>() // remove nulls
           .toList();
 
+      // The list should remain unchanged
       expect(studentIds, containsAll(['student002', studentId]));
     });
 
