@@ -602,6 +602,73 @@ void main() {
     });
   });
 
+  group('getAllGames', () {
+    GameData gameData = GameData(gameLogo: "logo.png", gameName: "Trivia Quest", gameBibliography: "", gameDescription: "", gameTemplate: "drag", tips: {}, correctAnswers: {}, tags: ['fun', 'trivia'], documentName: "game123", public: true);
+
+    testWidgets('returns public cached games if available', (WidgetTester tester) async {
+      final publicGame = gameData;
+
+      when(mockGameCacheService.getCachedGameIds()).thenAnswer((_) async => ['game123']);
+      when(mockGameCacheService.getCachedGameData('game123')).thenAnswer((_) async => publicGame);
+
+      await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
+      await tester.pumpAndSettle();
+
+      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final result = await state.getDataService().getAllGames();
+
+      expect(result.length, 1);
+      expect(result.first['gameTitle'], 'Trivia Quest');
+      verify(mockGameCacheService.getCachedGameIds()).called(1);
+      verify(mockGameCacheService.getCachedGameData('game123')).called(1);
+      verifyZeroInteractions(mockFirestoreService);
+    });
+
+    testWidgets('fetches from Firestore if no valid cached games', (WidgetTester tester) async {
+      // Simulate no valid cached games
+      when(mockGameCacheService.getCachedGameIds()).thenAnswer((_) async => []);
+      when(mockFirestoreService.getAllGames()).thenAnswer((_) async => [
+        {
+          'gameId': 'fresh1',
+          'gameTitle': 'Fresh Game',
+          'tags': ['new'],
+          'gameLogo': 'fresh_logo.png'
+        }
+      ]);
+
+      GameData gameData = GameData(gameLogo: "fresh_logo.png", gameName: "Fresh Game", gameBibliography: "", gameDescription: "", gameTemplate: "drag", tips: {}, correctAnswers: {}, tags: ['new'], documentName: "fresh1", public: true);
+      final freshGameData = gameData;
+      when(mockFirestoreService.fetchGameData(gameId: 'fresh1')).thenAnswer((_) async => freshGameData);
+      when(mockGameCacheService.cacheGameData(freshGameData)).thenAnswer((_) async => {});
+
+      await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
+      await tester.pumpAndSettle();
+
+      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final result = await state.getDataService().getAllGames();
+
+      expect(result.length, 1);
+      expect(result.first['gameId'], 'fresh1');
+      verify(mockGameCacheService.getCachedGameIds()).called(1);
+      verify(mockFirestoreService.getAllGames()).called(1);
+      verify(mockFirestoreService.fetchGameData(gameId: 'fresh1')).called(1);
+      verify(mockGameCacheService.cacheGameData(freshGameData)).called(1);
+    });
+
+    testWidgets('returns empty list on error', (WidgetTester tester) async {
+      when(mockGameCacheService.getCachedGameIds()).thenThrow(Exception('Cache fail'));
+
+      await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
+      await tester.pumpAndSettle();
+
+      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final result = await state.getDataService().getAllGames();
+
+      expect(result, isEmpty);
+      verify(mockGameCacheService.getCachedGameIds()).called(1);
+    });
+  });
+
 }
 
 

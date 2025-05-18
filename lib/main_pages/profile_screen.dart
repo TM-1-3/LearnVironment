@@ -243,6 +243,9 @@ class ProfileScreenState extends State<ProfileScreen> {
                     onPressed: _showDeleteAccountDialog,
                     icon: const Icon(Icons.delete_forever),
                     label: const Text('Delete Account'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                    ),
                   ),
                 ],
               )
