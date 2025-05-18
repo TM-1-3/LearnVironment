@@ -141,21 +141,39 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
 
       tags.insert(0, "Age: $selectedAge"); //Add age to tags
 
+      List<String> keys = [];
+
+      int index = 1;
       for (var object in questionObjects) {
         final key = object.questionController.text.trim();
         final tip = object.tipController.text.trim();
 
         if (key.isNotEmpty && tip.isNotEmpty && !(object.options.isEmpty()) && object.selectedOption != null) {
-          tips[key] = tip;
 
           final opt1 = object.options.option1Controller.text.trim();
           final opt2 = object.options.option2Controller.text.trim();
           final opt3 = object.options.option3Controller.text.trim();
           final opt4 = object.options.option4Controller.text.trim();
           List<String> options = [opt1, opt2, opt3, opt4];
-          questionsAndOptions[key] = options;
 
+          if (keys.contains(key)) {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Please use unique image URL in Object $index'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+            object.questionController.text = "";
+            return;
+          }
+
+          tips[key] = tip;
+          questionsAndOptions[key] = options;
           correctAnswers[key] = options[int.parse(object.selectedOption!)-1];
+          keys.add(key);
+          index++;
         } else {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
