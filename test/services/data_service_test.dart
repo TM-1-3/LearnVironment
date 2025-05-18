@@ -2392,6 +2392,54 @@ void main() {
     });
   });
 
+  group('deleteCache', () {
+    testWidgets('should clear all caches successfully', (WidgetTester tester) async {
+      // Arrange
+      when(mockUserCacheService.clearUserCache()).thenAnswer((_) async {});
+      when(mockSubjectCacheService.clearSubjectCache()).thenAnswer((_) async {});
+      when(mockGameCacheService.clear()).thenAnswer((_) async {});
+      when(mockAssignmentCacheService.clearAssignmentCache()).thenAnswer((_) async {});
+
+      await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
+      await tester.pumpAndSettle();
+      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+
+      // Act
+      await state.getDataService().deleteCache();
+
+      // Assert
+      verify(mockUserCacheService.clearUserCache()).called(1);
+      verify(mockSubjectCacheService.clearSubjectCache()).called(1);
+      verify(mockGameCacheService.clear()).called(1);
+      verify(mockAssignmentCacheService.clearAssignmentCache()).called(1);
+      verifyNoMoreInteractions(mockUserCacheService);
+      verifyNoMoreInteractions(mockSubjectCacheService);
+      verifyNoMoreInteractions(mockGameCacheService);
+      verifyNoMoreInteractions(mockAssignmentCacheService);
+    });
+
+    testWidgets('should rethrow exception if one of the cache clears fails', (WidgetTester tester) async {
+      // Arrange
+      when(mockUserCacheService.clearUserCache()).thenThrow(Exception('User cache error'));
+      // Other cache services should not be called
+
+      await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
+      await tester.pumpAndSettle();
+      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+
+      // Act & Assert
+      expect(
+            () => state.getDataService().deleteCache(),
+        throwsA(isA<Exception>()),
+      );
+
+      verify(mockUserCacheService.clearUserCache()).called(1);
+      verifyNever(mockSubjectCacheService.clearSubjectCache());
+      verifyNever(mockGameCacheService.clear());
+      verifyNever(mockAssignmentCacheService.clearAssignmentCache());
+    });
+  });
+
 }
 
 
