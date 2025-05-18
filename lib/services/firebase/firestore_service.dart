@@ -564,7 +564,7 @@ class FirestoreService {
       // Run both updates in a batch
       final batch = _firestore.batch();
 
-      batch.update(subjectRef, {
+      await subjectRef.update({
         'students': FieldValue.arrayUnion([
           {
             'studentId': studentId,
@@ -610,18 +610,13 @@ class FirestoreService {
       students.removeWhere((student) =>
       student is Map<String, dynamic> && student['studentId'] == studentId);
 
-      // Run both removals in a batch
-      final batch = _firestore.batch();
-
-      batch.update(subjectRef, {
+      await subjectRef.update({
         'students': students,
       });
 
-      batch.update(studentRef, {
-        'classes': FieldValue.arrayRemove([subjectId]),
+      await subjectRef.update({
+        'stClasses': FieldValue.arrayRemove([subjectId]),
       });
-
-      await batch.commit();
 
       print("[FirestoreService] Removed student $studentId from subject $subjectId.");
     } catch (e, stackTrace) {
