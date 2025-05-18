@@ -3,24 +3,22 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i9;
+import 'dart:async' as _i7;
 
-import 'package:firebase_messaging/firebase_messaging.dart' as _i11;
-import 'package:flutter/cupertino.dart' as _i6;
-import 'package:flutter/foundation.dart' as _i7;
+import 'package:firebase_messaging/firebase_messaging.dart' as _i9;
 import 'package:learnvironment/data/assignment_data.dart' as _i5;
 import 'package:learnvironment/data/game_data.dart' as _i3;
 import 'package:learnvironment/data/subject_data.dart' as _i4;
 import 'package:learnvironment/data/user_data.dart' as _i2;
 import 'package:learnvironment/services/cache/assignment_cache_service.dart'
-    as _i15;
-import 'package:learnvironment/services/cache/game_cache_service.dart' as _i13;
+    as _i13;
+import 'package:learnvironment/services/cache/game_cache_service.dart' as _i11;
 import 'package:learnvironment/services/cache/subject_cache_service.dart'
-    as _i14;
-import 'package:learnvironment/services/cache/user_cache_service.dart' as _i12;
-import 'package:learnvironment/services/firebase/firestore_service.dart' as _i8;
+    as _i12;
+import 'package:learnvironment/services/cache/user_cache_service.dart' as _i10;
+import 'package:learnvironment/services/firebase/firestore_service.dart' as _i6;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i10;
+import 'package:mockito/src/dummies.dart' as _i8;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -77,59 +75,12 @@ class _FakeAssignmentData_3 extends _i1.SmartFake
         );
 }
 
-class _FakeWidget_4 extends _i1.SmartFake implements _i6.Widget {
-  _FakeWidget_4(
-    Object parent,
-    Invocation parentInvocation,
-  ) : super(
-          parent,
-          parentInvocation,
-        );
-
-  @override
-  String toString({_i6.DiagnosticLevel? minLevel = _i6.DiagnosticLevel.info}) =>
-      super.toString();
-}
-
-class _FakeInheritedWidget_5 extends _i1.SmartFake
-    implements _i6.InheritedWidget {
-  _FakeInheritedWidget_5(
-    Object parent,
-    Invocation parentInvocation,
-  ) : super(
-          parent,
-          parentInvocation,
-        );
-
-  @override
-  String toString({_i6.DiagnosticLevel? minLevel = _i6.DiagnosticLevel.info}) =>
-      super.toString();
-}
-
-class _FakeDiagnosticsNode_6 extends _i1.SmartFake
-    implements _i6.DiagnosticsNode {
-  _FakeDiagnosticsNode_6(
-    Object parent,
-    Invocation parentInvocation,
-  ) : super(
-          parent,
-          parentInvocation,
-        );
-
-  @override
-  String toString({
-    _i7.TextTreeConfiguration? parentConfiguration,
-    _i6.DiagnosticLevel? minLevel = _i6.DiagnosticLevel.info,
-  }) =>
-      super.toString();
-}
-
 /// A class which mocks [FirestoreService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockFirestoreService extends _i1.Mock implements _i8.FirestoreService {
+class MockFirestoreService extends _i1.Mock implements _i6.FirestoreService {
   @override
-  _i9.Future<void> updateUserGamesPlayed({
+  _i7.Future<void> updateUserGamesPlayed({
     required String? uid,
     required String? gameId,
   }) =>
@@ -142,19 +93,19 @@ class MockFirestoreService extends _i1.Mock implements _i8.FirestoreService {
             #gameId: gameId,
           },
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 
   @override
-  _i9.Future<_i2.UserData> fetchUserData({required String? userId}) =>
+  _i7.Future<_i2.UserData> fetchUserData({required String? userId}) =>
       (super.noSuchMethod(
         Invocation.method(
           #fetchUserData,
           [],
           {#userId: userId},
         ),
-        returnValue: _i9.Future<_i2.UserData>.value(_FakeUserData_0(
+        returnValue: _i7.Future<_i2.UserData>.value(_FakeUserData_0(
           this,
           Invocation.method(
             #fetchUserData,
@@ -163,7 +114,7 @@ class MockFirestoreService extends _i1.Mock implements _i8.FirestoreService {
           ),
         )),
         returnValueForMissingStub:
-            _i9.Future<_i2.UserData>.value(_FakeUserData_0(
+            _i7.Future<_i2.UserData>.value(_FakeUserData_0(
           this,
           Invocation.method(
             #fetchUserData,
@@ -171,44 +122,44 @@ class MockFirestoreService extends _i1.Mock implements _i8.FirestoreService {
             {#userId: userId},
           ),
         )),
-      ) as _i9.Future<_i2.UserData>);
+      ) as _i7.Future<_i2.UserData>);
 
   @override
-  _i9.Future<bool> checkIfUsernameAlreadyExists(String? username) =>
+  _i7.Future<bool> checkIfUsernameAlreadyExists(String? username) =>
       (super.noSuchMethod(
         Invocation.method(
           #checkIfUsernameAlreadyExists,
           [username],
         ),
-        returnValue: _i9.Future<bool>.value(false),
-        returnValueForMissingStub: _i9.Future<bool>.value(false),
-      ) as _i9.Future<bool>);
+        returnValue: _i7.Future<bool>.value(false),
+        returnValueForMissingStub: _i7.Future<bool>.value(false),
+      ) as _i7.Future<bool>);
 
   @override
-  _i9.Future<String?> getUserIdByUserName(String? username) =>
+  _i7.Future<String?> getUserIdByUserName(String? username) =>
       (super.noSuchMethod(
         Invocation.method(
           #getUserIdByUserName,
           [username],
         ),
-        returnValue: _i9.Future<String?>.value(),
-        returnValueForMissingStub: _i9.Future<String?>.value(),
-      ) as _i9.Future<String?>);
+        returnValue: _i7.Future<String?>.value(),
+        returnValueForMissingStub: _i7.Future<String?>.value(),
+      ) as _i7.Future<String?>);
 
   @override
-  _i9.Future<String?> fetchUserType({required String? uid}) =>
+  _i7.Future<String?> fetchUserType({required String? uid}) =>
       (super.noSuchMethod(
         Invocation.method(
           #fetchUserType,
           [],
           {#uid: uid},
         ),
-        returnValue: _i9.Future<String?>.value(),
-        returnValueForMissingStub: _i9.Future<String?>.value(),
-      ) as _i9.Future<String?>);
+        returnValue: _i7.Future<String?>.value(),
+        returnValueForMissingStub: _i7.Future<String?>.value(),
+      ) as _i7.Future<String?>);
 
   @override
-  _i9.Future<void> setUserInfo({
+  _i7.Future<void> setUserInfo({
     required String? uid,
     required String? name,
     required String? username,
@@ -239,35 +190,35 @@ class MockFirestoreService extends _i1.Mock implements _i8.FirestoreService {
             #myGames: myGames,
           },
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 
   @override
-  _i9.Future<void> deleteAccount({required String? uid}) => (super.noSuchMethod(
+  _i7.Future<void> deleteAccount({required String? uid}) => (super.noSuchMethod(
         Invocation.method(
           #deleteAccount,
           [],
           {#uid: uid},
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 
   @override
-  _i9.Future<List<Map<String, dynamic>>> getAllGames() => (super.noSuchMethod(
+  _i7.Future<List<Map<String, dynamic>>> getAllGames() => (super.noSuchMethod(
         Invocation.method(
           #getAllGames,
           [],
         ),
-        returnValue: _i9.Future<List<Map<String, dynamic>>>.value(
+        returnValue: _i7.Future<List<Map<String, dynamic>>>.value(
             <Map<String, dynamic>>[]),
-        returnValueForMissingStub: _i9.Future<List<Map<String, dynamic>>>.value(
+        returnValueForMissingStub: _i7.Future<List<Map<String, dynamic>>>.value(
             <Map<String, dynamic>>[]),
-      ) as _i9.Future<List<Map<String, dynamic>>>);
+      ) as _i7.Future<List<Map<String, dynamic>>>);
 
   @override
-  _i9.Future<void> createGame({
+  _i7.Future<void> createGame({
     required String? uid,
     required _i3.GameData? game,
   }) =>
@@ -280,26 +231,26 @@ class MockFirestoreService extends _i1.Mock implements _i8.FirestoreService {
             #game: game,
           },
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 
   @override
-  _i9.Future<List<Map<String, dynamic>>> getMyGames({required String? uid}) =>
+  _i7.Future<List<Map<String, dynamic>>> getMyGames({required String? uid}) =>
       (super.noSuchMethod(
         Invocation.method(
           #getMyGames,
           [],
           {#uid: uid},
         ),
-        returnValue: _i9.Future<List<Map<String, dynamic>>>.value(
+        returnValue: _i7.Future<List<Map<String, dynamic>>>.value(
             <Map<String, dynamic>>[]),
-        returnValueForMissingStub: _i9.Future<List<Map<String, dynamic>>>.value(
+        returnValueForMissingStub: _i7.Future<List<Map<String, dynamic>>>.value(
             <Map<String, dynamic>>[]),
-      ) as _i9.Future<List<Map<String, dynamic>>>);
+      ) as _i7.Future<List<Map<String, dynamic>>>);
 
   @override
-  _i9.Future<List<Map<String, dynamic>>> getPlayedGames(
+  _i7.Future<List<Map<String, dynamic>>> getPlayedGames(
           {required String? uid}) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -307,21 +258,21 @@ class MockFirestoreService extends _i1.Mock implements _i8.FirestoreService {
           [],
           {#uid: uid},
         ),
-        returnValue: _i9.Future<List<Map<String, dynamic>>>.value(
+        returnValue: _i7.Future<List<Map<String, dynamic>>>.value(
             <Map<String, dynamic>>[]),
-        returnValueForMissingStub: _i9.Future<List<Map<String, dynamic>>>.value(
+        returnValueForMissingStub: _i7.Future<List<Map<String, dynamic>>>.value(
             <Map<String, dynamic>>[]),
-      ) as _i9.Future<List<Map<String, dynamic>>>);
+      ) as _i7.Future<List<Map<String, dynamic>>>);
 
   @override
-  _i9.Future<_i3.GameData> fetchGameData({required String? gameId}) =>
+  _i7.Future<_i3.GameData> fetchGameData({required String? gameId}) =>
       (super.noSuchMethod(
         Invocation.method(
           #fetchGameData,
           [],
           {#gameId: gameId},
         ),
-        returnValue: _i9.Future<_i3.GameData>.value(_FakeGameData_1(
+        returnValue: _i7.Future<_i3.GameData>.value(_FakeGameData_1(
           this,
           Invocation.method(
             #fetchGameData,
@@ -330,7 +281,7 @@ class MockFirestoreService extends _i1.Mock implements _i8.FirestoreService {
           ),
         )),
         returnValueForMissingStub:
-            _i9.Future<_i3.GameData>.value(_FakeGameData_1(
+            _i7.Future<_i3.GameData>.value(_FakeGameData_1(
           this,
           Invocation.method(
             #fetchGameData,
@@ -338,10 +289,10 @@ class MockFirestoreService extends _i1.Mock implements _i8.FirestoreService {
             {#gameId: gameId},
           ),
         )),
-      ) as _i9.Future<_i3.GameData>);
+      ) as _i7.Future<_i3.GameData>);
 
   @override
-  _i9.Future<void> updateGamePublicStatus({
+  _i7.Future<void> updateGamePublicStatus({
     required String? gameId,
     required bool? status,
   }) =>
@@ -354,12 +305,12 @@ class MockFirestoreService extends _i1.Mock implements _i8.FirestoreService {
             #status: status,
           },
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 
   @override
-  _i9.Future<List<Map<String, dynamic>>> getAllSubjects(
+  _i7.Future<List<Map<String, dynamic>>> getAllSubjects(
           {required String? teacherId}) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -367,21 +318,21 @@ class MockFirestoreService extends _i1.Mock implements _i8.FirestoreService {
           [],
           {#teacherId: teacherId},
         ),
-        returnValue: _i9.Future<List<Map<String, dynamic>>>.value(
+        returnValue: _i7.Future<List<Map<String, dynamic>>>.value(
             <Map<String, dynamic>>[]),
-        returnValueForMissingStub: _i9.Future<List<Map<String, dynamic>>>.value(
+        returnValueForMissingStub: _i7.Future<List<Map<String, dynamic>>>.value(
             <Map<String, dynamic>>[]),
-      ) as _i9.Future<List<Map<String, dynamic>>>);
+      ) as _i7.Future<List<Map<String, dynamic>>>);
 
   @override
-  _i9.Future<_i4.SubjectData> fetchSubjectData({required String? subjectId}) =>
+  _i7.Future<_i4.SubjectData> fetchSubjectData({required String? subjectId}) =>
       (super.noSuchMethod(
         Invocation.method(
           #fetchSubjectData,
           [],
           {#subjectId: subjectId},
         ),
-        returnValue: _i9.Future<_i4.SubjectData>.value(_FakeSubjectData_2(
+        returnValue: _i7.Future<_i4.SubjectData>.value(_FakeSubjectData_2(
           this,
           Invocation.method(
             #fetchSubjectData,
@@ -390,7 +341,7 @@ class MockFirestoreService extends _i1.Mock implements _i8.FirestoreService {
           ),
         )),
         returnValueForMissingStub:
-            _i9.Future<_i4.SubjectData>.value(_FakeSubjectData_2(
+            _i7.Future<_i4.SubjectData>.value(_FakeSubjectData_2(
           this,
           Invocation.method(
             #fetchSubjectData,
@@ -398,10 +349,10 @@ class MockFirestoreService extends _i1.Mock implements _i8.FirestoreService {
             {#subjectId: subjectId},
           ),
         )),
-      ) as _i9.Future<_i4.SubjectData>);
+      ) as _i7.Future<_i4.SubjectData>);
 
   @override
-  _i9.Future<bool> checkIfStudentAlreadyInClass({
+  _i7.Future<bool> checkIfStudentAlreadyInClass({
     required String? subjectId,
     required String? studentId,
   }) =>
@@ -414,12 +365,12 @@ class MockFirestoreService extends _i1.Mock implements _i8.FirestoreService {
             #studentId: studentId,
           },
         ),
-        returnValue: _i9.Future<bool>.value(false),
-        returnValueForMissingStub: _i9.Future<bool>.value(false),
-      ) as _i9.Future<bool>);
+        returnValue: _i7.Future<bool>.value(false),
+        returnValueForMissingStub: _i7.Future<bool>.value(false),
+      ) as _i7.Future<bool>);
 
   @override
-  _i9.Future<void> addSubjectData({
+  _i7.Future<void> addSubjectData({
     required _i4.SubjectData? subject,
     required String? uid,
   }) =>
@@ -432,12 +383,12 @@ class MockFirestoreService extends _i1.Mock implements _i8.FirestoreService {
             #uid: uid,
           },
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 
   @override
-  _i9.Future<void> deleteSubject({
+  _i7.Future<void> deleteSubject({
     required String? subjectId,
     required String? uid,
   }) =>
@@ -450,12 +401,12 @@ class MockFirestoreService extends _i1.Mock implements _i8.FirestoreService {
             #uid: uid,
           },
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 
   @override
-  _i9.Future<void> addStudentToSubject({
+  _i7.Future<void> addStudentToSubject({
     required String? subjectId,
     required String? studentId,
   }) =>
@@ -468,12 +419,12 @@ class MockFirestoreService extends _i1.Mock implements _i8.FirestoreService {
             #studentId: studentId,
           },
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 
   @override
-  _i9.Future<void> removeStudentFromSubject({
+  _i7.Future<void> removeStudentFromSubject({
     required String? subjectId,
     required String? studentId,
   }) =>
@@ -486,12 +437,12 @@ class MockFirestoreService extends _i1.Mock implements _i8.FirestoreService {
             #studentId: studentId,
           },
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 
   @override
-  _i9.Future<String> createAssignment({
+  _i7.Future<String> createAssignment({
     required String? title,
     required String? gameId,
     required String? turma,
@@ -508,7 +459,7 @@ class MockFirestoreService extends _i1.Mock implements _i8.FirestoreService {
             #dueDate: dueDate,
           },
         ),
-        returnValue: _i9.Future<String>.value(_i10.dummyValue<String>(
+        returnValue: _i7.Future<String>.value(_i8.dummyValue<String>(
           this,
           Invocation.method(
             #createAssignment,
@@ -522,7 +473,7 @@ class MockFirestoreService extends _i1.Mock implements _i8.FirestoreService {
           ),
         )),
         returnValueForMissingStub:
-            _i9.Future<String>.value(_i10.dummyValue<String>(
+            _i7.Future<String>.value(_i8.dummyValue<String>(
           this,
           Invocation.method(
             #createAssignment,
@@ -535,10 +486,10 @@ class MockFirestoreService extends _i1.Mock implements _i8.FirestoreService {
             },
           ),
         )),
-      ) as _i9.Future<String>);
+      ) as _i7.Future<String>);
 
   @override
-  _i9.Future<_i5.AssignmentData> fetchAssignmentData(
+  _i7.Future<_i5.AssignmentData> fetchAssignmentData(
           {required String? assignmentId}) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -546,7 +497,7 @@ class MockFirestoreService extends _i1.Mock implements _i8.FirestoreService {
           [],
           {#assignmentId: assignmentId},
         ),
-        returnValue: _i9.Future<_i5.AssignmentData>.value(_FakeAssignmentData_3(
+        returnValue: _i7.Future<_i5.AssignmentData>.value(_FakeAssignmentData_3(
           this,
           Invocation.method(
             #fetchAssignmentData,
@@ -555,7 +506,7 @@ class MockFirestoreService extends _i1.Mock implements _i8.FirestoreService {
           ),
         )),
         returnValueForMissingStub:
-            _i9.Future<_i5.AssignmentData>.value(_FakeAssignmentData_3(
+            _i7.Future<_i5.AssignmentData>.value(_FakeAssignmentData_3(
           this,
           Invocation.method(
             #fetchAssignmentData,
@@ -563,10 +514,10 @@ class MockFirestoreService extends _i1.Mock implements _i8.FirestoreService {
             {#assignmentId: assignmentId},
           ),
         )),
-      ) as _i9.Future<_i5.AssignmentData>);
+      ) as _i7.Future<_i5.AssignmentData>);
 
   @override
-  _i9.Future<void> deleteAssignment({
+  _i7.Future<void> deleteAssignment({
     required String? assignmentId,
     required String? uid,
   }) =>
@@ -579,25 +530,25 @@ class MockFirestoreService extends _i1.Mock implements _i8.FirestoreService {
             #uid: uid,
           },
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 
   @override
-  _i9.Future<List<Map<String, dynamic>>> getAllAssignments() =>
+  _i7.Future<List<Map<String, dynamic>>> getAllAssignments() =>
       (super.noSuchMethod(
         Invocation.method(
           #getAllAssignments,
           [],
         ),
-        returnValue: _i9.Future<List<Map<String, dynamic>>>.value(
+        returnValue: _i7.Future<List<Map<String, dynamic>>>.value(
             <Map<String, dynamic>>[]),
-        returnValueForMissingStub: _i9.Future<List<Map<String, dynamic>>>.value(
+        returnValueForMissingStub: _i7.Future<List<Map<String, dynamic>>>.value(
             <Map<String, dynamic>>[]),
-      ) as _i9.Future<List<Map<String, dynamic>>>);
+      ) as _i7.Future<List<Map<String, dynamic>>>);
 
   @override
-  _i9.Future<List<_i11.RemoteMessage>> fetchNotifications(
+  _i7.Future<List<_i9.RemoteMessage>> fetchNotifications(
           {required String? uid}) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -606,91 +557,91 @@ class MockFirestoreService extends _i1.Mock implements _i8.FirestoreService {
           {#uid: uid},
         ),
         returnValue:
-            _i9.Future<List<_i11.RemoteMessage>>.value(<_i11.RemoteMessage>[]),
+            _i7.Future<List<_i9.RemoteMessage>>.value(<_i9.RemoteMessage>[]),
         returnValueForMissingStub:
-            _i9.Future<List<_i11.RemoteMessage>>.value(<_i11.RemoteMessage>[]),
-      ) as _i9.Future<List<_i11.RemoteMessage>>);
+            _i7.Future<List<_i9.RemoteMessage>>.value(<_i9.RemoteMessage>[]),
+      ) as _i7.Future<List<_i9.RemoteMessage>>);
 }
 
 /// A class which mocks [UserCacheService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockUserCacheService extends _i1.Mock implements _i12.UserCacheService {
+class MockUserCacheService extends _i1.Mock implements _i10.UserCacheService {
   @override
-  _i9.Future<void> cacheUserData(_i2.UserData? user) => (super.noSuchMethod(
+  _i7.Future<void> cacheUserData(_i2.UserData? user) => (super.noSuchMethod(
         Invocation.method(
           #cacheUserData,
           [user],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 
   @override
-  _i9.Future<_i2.UserData?> getCachedUserData() => (super.noSuchMethod(
+  _i7.Future<_i2.UserData?> getCachedUserData() => (super.noSuchMethod(
         Invocation.method(
           #getCachedUserData,
           [],
         ),
-        returnValue: _i9.Future<_i2.UserData?>.value(),
-        returnValueForMissingStub: _i9.Future<_i2.UserData?>.value(),
-      ) as _i9.Future<_i2.UserData?>);
+        returnValue: _i7.Future<_i2.UserData?>.value(),
+        returnValueForMissingStub: _i7.Future<_i2.UserData?>.value(),
+      ) as _i7.Future<_i2.UserData?>);
 
   @override
-  _i9.Future<void> clearUserCache() => (super.noSuchMethod(
+  _i7.Future<void> clearUserCache() => (super.noSuchMethod(
         Invocation.method(
           #clearUserCache,
           [],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 
   @override
-  _i9.Future<void> updateCachedGamesPlayed(String? gameId) =>
+  _i7.Future<void> updateCachedGamesPlayed(String? gameId) =>
       (super.noSuchMethod(
         Invocation.method(
           #updateCachedGamesPlayed,
           [gameId],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 
   @override
-  _i9.Future<List<String>> getMyGames() => (super.noSuchMethod(
+  _i7.Future<List<String>> getMyGames() => (super.noSuchMethod(
         Invocation.method(
           #getMyGames,
           [],
         ),
-        returnValue: _i9.Future<List<String>>.value(<String>[]),
-        returnValueForMissingStub: _i9.Future<List<String>>.value(<String>[]),
-      ) as _i9.Future<List<String>>);
+        returnValue: _i7.Future<List<String>>.value(<String>[]),
+        returnValueForMissingStub: _i7.Future<List<String>>.value(<String>[]),
+      ) as _i7.Future<List<String>>);
 
   @override
-  _i9.Future<List<String>> getCachedGamesPlayed() => (super.noSuchMethod(
+  _i7.Future<List<String>> getCachedGamesPlayed() => (super.noSuchMethod(
         Invocation.method(
           #getCachedGamesPlayed,
           [],
         ),
-        returnValue: _i9.Future<List<String>>.value(<String>[]),
-        returnValueForMissingStub: _i9.Future<List<String>>.value(<String>[]),
-      ) as _i9.Future<List<String>>);
+        returnValue: _i7.Future<List<String>>.value(<String>[]),
+        returnValueForMissingStub: _i7.Future<List<String>>.value(<String>[]),
+      ) as _i7.Future<List<String>>);
 
   @override
-  _i9.Future<List<String>> getCachedClasses({required String? type}) =>
+  _i7.Future<List<String>> getCachedClasses({required String? type}) =>
       (super.noSuchMethod(
         Invocation.method(
           #getCachedClasses,
           [],
           {#type: type},
         ),
-        returnValue: _i9.Future<List<String>>.value(<String>[]),
-        returnValueForMissingStub: _i9.Future<List<String>>.value(<String>[]),
-      ) as _i9.Future<List<String>>);
+        returnValue: _i7.Future<List<String>>.value(<String>[]),
+        returnValueForMissingStub: _i7.Future<List<String>>.value(<String>[]),
+      ) as _i7.Future<List<String>>);
 
   @override
-  _i9.Future<void> createGame({
+  _i7.Future<void> createGame({
     required String? uid,
     required String? gameId,
   }) =>
@@ -703,58 +654,58 @@ class MockUserCacheService extends _i1.Mock implements _i12.UserCacheService {
             #gameId: gameId,
           },
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 }
 
 /// A class which mocks [GameCacheService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockGameCacheService extends _i1.Mock implements _i13.GameCacheService {
+class MockGameCacheService extends _i1.Mock implements _i11.GameCacheService {
   @override
-  _i9.Future<void> cacheGameData(_i3.GameData? gameData) => (super.noSuchMethod(
+  _i7.Future<void> cacheGameData(_i3.GameData? gameData) => (super.noSuchMethod(
         Invocation.method(
           #cacheGameData,
           [gameData],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 
   @override
-  _i9.Future<_i3.GameData?> getCachedGameData(String? gameId) =>
+  _i7.Future<_i3.GameData?> getCachedGameData(String? gameId) =>
       (super.noSuchMethod(
         Invocation.method(
           #getCachedGameData,
           [gameId],
         ),
-        returnValue: _i9.Future<_i3.GameData?>.value(),
-        returnValueForMissingStub: _i9.Future<_i3.GameData?>.value(),
-      ) as _i9.Future<_i3.GameData?>);
+        returnValue: _i7.Future<_i3.GameData?>.value(),
+        returnValueForMissingStub: _i7.Future<_i3.GameData?>.value(),
+      ) as _i7.Future<_i3.GameData?>);
 
   @override
-  _i9.Future<List<String>> getCachedGameIds() => (super.noSuchMethod(
+  _i7.Future<List<String>> getCachedGameIds() => (super.noSuchMethod(
         Invocation.method(
           #getCachedGameIds,
           [],
         ),
-        returnValue: _i9.Future<List<String>>.value(<String>[]),
-        returnValueForMissingStub: _i9.Future<List<String>>.value(<String>[]),
-      ) as _i9.Future<List<String>>);
+        returnValue: _i7.Future<List<String>>.value(<String>[]),
+        returnValueForMissingStub: _i7.Future<List<String>>.value(<String>[]),
+      ) as _i7.Future<List<String>>);
 
   @override
-  _i9.Future<void> clear() => (super.noSuchMethod(
+  _i7.Future<void> clear() => (super.noSuchMethod(
         Invocation.method(
           #clear,
           [],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 
   @override
-  _i9.Future<void> updateGamePublicStatus({
+  _i7.Future<void> updateGamePublicStatus({
     required String? gameId,
     required bool? status,
   }) =>
@@ -767,302 +718,128 @@ class MockGameCacheService extends _i1.Mock implements _i13.GameCacheService {
             #status: status,
           },
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 }
 
 /// A class which mocks [SubjectCacheService].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockSubjectCacheService extends _i1.Mock
-    implements _i14.SubjectCacheService {
+    implements _i12.SubjectCacheService {
   @override
-  _i9.Future<void> cacheSubjectData(_i4.SubjectData? subjectData) =>
+  _i7.Future<void> cacheSubjectData(_i4.SubjectData? subjectData) =>
       (super.noSuchMethod(
         Invocation.method(
           #cacheSubjectData,
           [subjectData],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 
   @override
-  _i9.Future<_i4.SubjectData?> getCachedSubjectData(String? subjectId) =>
+  _i7.Future<_i4.SubjectData?> getCachedSubjectData(String? subjectId) =>
       (super.noSuchMethod(
         Invocation.method(
           #getCachedSubjectData,
           [subjectId],
         ),
-        returnValue: _i9.Future<_i4.SubjectData?>.value(),
-        returnValueForMissingStub: _i9.Future<_i4.SubjectData?>.value(),
-      ) as _i9.Future<_i4.SubjectData?>);
+        returnValue: _i7.Future<_i4.SubjectData?>.value(),
+        returnValueForMissingStub: _i7.Future<_i4.SubjectData?>.value(),
+      ) as _i7.Future<_i4.SubjectData?>);
 
   @override
-  _i9.Future<List<String>> getCachedSubjectIds() => (super.noSuchMethod(
+  _i7.Future<List<String>> getCachedSubjectIds() => (super.noSuchMethod(
         Invocation.method(
           #getCachedSubjectIds,
           [],
         ),
-        returnValue: _i9.Future<List<String>>.value(<String>[]),
-        returnValueForMissingStub: _i9.Future<List<String>>.value(<String>[]),
-      ) as _i9.Future<List<String>>);
+        returnValue: _i7.Future<List<String>>.value(<String>[]),
+        returnValueForMissingStub: _i7.Future<List<String>>.value(<String>[]),
+      ) as _i7.Future<List<String>>);
 
   @override
-  _i9.Future<void> deleteSubject({required String? subjectId}) =>
+  _i7.Future<void> deleteSubject({required String? subjectId}) =>
       (super.noSuchMethod(
         Invocation.method(
           #deleteSubject,
           [],
           {#subjectId: subjectId},
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 
   @override
-  _i9.Future<void> clearSubjectCache() => (super.noSuchMethod(
+  _i7.Future<void> clearSubjectCache() => (super.noSuchMethod(
         Invocation.method(
           #clearSubjectCache,
           [],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 }
 
 /// A class which mocks [AssignmentCacheService].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockAssignmentCacheService extends _i1.Mock
-    implements _i15.AssignmentCacheService {
+    implements _i13.AssignmentCacheService {
   @override
-  _i9.Future<void> cacheAssignmentData(_i5.AssignmentData? assignmentData) =>
+  _i7.Future<void> cacheAssignmentData(_i5.AssignmentData? assignmentData) =>
       (super.noSuchMethod(
         Invocation.method(
           #cacheAssignmentData,
           [assignmentData],
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 
   @override
-  _i9.Future<_i5.AssignmentData?> getCachedAssignmentData(
+  _i7.Future<_i5.AssignmentData?> getCachedAssignmentData(
           String? assignmentId) =>
       (super.noSuchMethod(
         Invocation.method(
           #getCachedAssignmentData,
           [assignmentId],
         ),
-        returnValue: _i9.Future<_i5.AssignmentData?>.value(),
-        returnValueForMissingStub: _i9.Future<_i5.AssignmentData?>.value(),
-      ) as _i9.Future<_i5.AssignmentData?>);
+        returnValue: _i7.Future<_i5.AssignmentData?>.value(),
+        returnValueForMissingStub: _i7.Future<_i5.AssignmentData?>.value(),
+      ) as _i7.Future<_i5.AssignmentData?>);
 
   @override
-  _i9.Future<List<String>> getCachedAssignmentIds() => (super.noSuchMethod(
+  _i7.Future<List<String>> getCachedAssignmentIds() => (super.noSuchMethod(
         Invocation.method(
           #getCachedAssignmentIds,
           [],
         ),
-        returnValue: _i9.Future<List<String>>.value(<String>[]),
-        returnValueForMissingStub: _i9.Future<List<String>>.value(<String>[]),
-      ) as _i9.Future<List<String>>);
+        returnValue: _i7.Future<List<String>>.value(<String>[]),
+        returnValueForMissingStub: _i7.Future<List<String>>.value(<String>[]),
+      ) as _i7.Future<List<String>>);
 
   @override
-  _i9.Future<void> deleteAssignment({required String? assignmentId}) =>
+  _i7.Future<void> deleteAssignment({required String? assignmentId}) =>
       (super.noSuchMethod(
         Invocation.method(
           #deleteAssignment,
           [],
           {#assignmentId: assignmentId},
         ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
-}
-
-/// A class which mocks [BuildContext].
-///
-/// See the documentation for Mockito's code generation for more information.
-class MockBuildContext extends _i1.Mock implements _i6.BuildContext {
-  @override
-  _i6.Widget get widget => (super.noSuchMethod(
-        Invocation.getter(#widget),
-        returnValue: _FakeWidget_4(
-          this,
-          Invocation.getter(#widget),
-        ),
-        returnValueForMissingStub: _FakeWidget_4(
-          this,
-          Invocation.getter(#widget),
-        ),
-      ) as _i6.Widget);
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 
   @override
-  bool get mounted => (super.noSuchMethod(
-        Invocation.getter(#mounted),
-        returnValue: false,
-        returnValueForMissingStub: false,
-      ) as bool);
-
-  @override
-  bool get debugDoingBuild => (super.noSuchMethod(
-        Invocation.getter(#debugDoingBuild),
-        returnValue: false,
-        returnValueForMissingStub: false,
-      ) as bool);
-
-  @override
-  _i6.InheritedWidget dependOnInheritedElement(
-    _i6.InheritedElement? ancestor, {
-    Object? aspect,
-  }) =>
-      (super.noSuchMethod(
+  _i7.Future<void> clearAssignmentCache() => (super.noSuchMethod(
         Invocation.method(
-          #dependOnInheritedElement,
-          [ancestor],
-          {#aspect: aspect},
-        ),
-        returnValue: _FakeInheritedWidget_5(
-          this,
-          Invocation.method(
-            #dependOnInheritedElement,
-            [ancestor],
-            {#aspect: aspect},
-          ),
-        ),
-        returnValueForMissingStub: _FakeInheritedWidget_5(
-          this,
-          Invocation.method(
-            #dependOnInheritedElement,
-            [ancestor],
-            {#aspect: aspect},
-          ),
-        ),
-      ) as _i6.InheritedWidget);
-
-  @override
-  void visitAncestorElements(_i6.ConditionalElementVisitor? visitor) =>
-      super.noSuchMethod(
-        Invocation.method(
-          #visitAncestorElements,
-          [visitor],
-        ),
-        returnValueForMissingStub: null,
-      );
-
-  @override
-  void visitChildElements(_i6.ElementVisitor? visitor) => super.noSuchMethod(
-        Invocation.method(
-          #visitChildElements,
-          [visitor],
-        ),
-        returnValueForMissingStub: null,
-      );
-
-  @override
-  void dispatchNotification(_i6.Notification? notification) =>
-      super.noSuchMethod(
-        Invocation.method(
-          #dispatchNotification,
-          [notification],
-        ),
-        returnValueForMissingStub: null,
-      );
-
-  @override
-  _i6.DiagnosticsNode describeElement(
-    String? name, {
-    _i7.DiagnosticsTreeStyle? style = _i7.DiagnosticsTreeStyle.errorProperty,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #describeElement,
-          [name],
-          {#style: style},
-        ),
-        returnValue: _FakeDiagnosticsNode_6(
-          this,
-          Invocation.method(
-            #describeElement,
-            [name],
-            {#style: style},
-          ),
-        ),
-        returnValueForMissingStub: _FakeDiagnosticsNode_6(
-          this,
-          Invocation.method(
-            #describeElement,
-            [name],
-            {#style: style},
-          ),
-        ),
-      ) as _i6.DiagnosticsNode);
-
-  @override
-  _i6.DiagnosticsNode describeWidget(
-    String? name, {
-    _i7.DiagnosticsTreeStyle? style = _i7.DiagnosticsTreeStyle.errorProperty,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #describeWidget,
-          [name],
-          {#style: style},
-        ),
-        returnValue: _FakeDiagnosticsNode_6(
-          this,
-          Invocation.method(
-            #describeWidget,
-            [name],
-            {#style: style},
-          ),
-        ),
-        returnValueForMissingStub: _FakeDiagnosticsNode_6(
-          this,
-          Invocation.method(
-            #describeWidget,
-            [name],
-            {#style: style},
-          ),
-        ),
-      ) as _i6.DiagnosticsNode);
-
-  @override
-  List<_i6.DiagnosticsNode> describeMissingAncestor(
-          {required Type? expectedAncestorType}) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #describeMissingAncestor,
+          #clearAssignmentCache,
           [],
-          {#expectedAncestorType: expectedAncestorType},
         ),
-        returnValue: <_i6.DiagnosticsNode>[],
-        returnValueForMissingStub: <_i6.DiagnosticsNode>[],
-      ) as List<_i6.DiagnosticsNode>);
-
-  @override
-  _i6.DiagnosticsNode describeOwnershipChain(String? name) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #describeOwnershipChain,
-          [name],
-        ),
-        returnValue: _FakeDiagnosticsNode_6(
-          this,
-          Invocation.method(
-            #describeOwnershipChain,
-            [name],
-          ),
-        ),
-        returnValueForMissingStub: _FakeDiagnosticsNode_6(
-          this,
-          Invocation.method(
-            #describeOwnershipChain,
-            [name],
-          ),
-        ),
-      ) as _i6.DiagnosticsNode);
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 }
