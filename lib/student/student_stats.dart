@@ -30,11 +30,11 @@ class StudentStatsPageState extends State<StudentStatsPage> {
       final uid = await authService.getUid();
       final fetchedGames = await dataService.getPlayedGames(userId: uid);
 
-      if (fetchedGames.isNotEmpty) {
-        setState(() {
-          games = fetchedGames;
-        });
-      } else {
+      setState(() {
+        games = fetchedGames;
+      });
+
+      if (fetchedGames.isEmpty) {
         print('[STATS] No games played yet.');
       }
     } catch (e) {
@@ -47,12 +47,14 @@ class StudentStatsPageState extends State<StudentStatsPage> {
     }
   }
 
+  Future<void> _refreshGames() async {
+    await _loadGames();
+  }
+
   Future<void> _loadGame(String gameId) async {
     try {
       final dataService = Provider.of<DataService>(context, listen: false);
-
-      // Ensure you check for null or handle this properly
-      GameData? gameData = await dataService.getGameData(gameId: gameId);
+      final gameData = await dataService.getGameData(gameId: gameId);
 
       if (gameData != null && mounted) {
         Navigator.push(
@@ -76,7 +78,18 @@ class StudentStatsPageState extends State<StudentStatsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
+      appBar: AppBar(
+        title: const Text("My Statistics"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Refresh Statistics',
+            onPressed: _refreshGames,
+          )
+        ],
+      ),
+      body: RefreshIndicator(
+        onRefresh: _refreshGames,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
           child: Column(
@@ -102,6 +115,7 @@ class StudentStatsPageState extends State<StudentStatsPage> {
                     } else {
                       mainAxisExtent = 1500;
                     }
+
                     return games.isNotEmpty
                         ? GridView.builder(
                       padding: const EdgeInsets.all(8),
@@ -109,7 +123,7 @@ class StudentStatsPageState extends State<StudentStatsPage> {
                         crossAxisCount: 2,
                         crossAxisSpacing: 10.0,
                         mainAxisSpacing: 10.0,
-                        mainAxisExtent: mainAxisExtent, // Fixed height for items
+                        mainAxisExtent: mainAxisExtent,
                       ),
                       itemCount: games.length,
                       itemBuilder: (context, index) {
