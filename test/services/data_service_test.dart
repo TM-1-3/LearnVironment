@@ -209,7 +209,7 @@ void main() {
 
       // Act & Assert
       expect(
-            () => state.getDataService().updateUserGamesPlayed(userId: userId, gameId: gameId),
+            () async => await state.getDataService().updateUserGamesPlayed(userId: userId, gameId: gameId),
         throwsA(isA<Exception>()),
       );
 
@@ -359,7 +359,7 @@ void main() {
 
       // Act & Assert
       expect(
-            () => state.getDataService().deleteAccount(uid: uid),
+            () async => await state.getDataService().deleteAccount(uid: uid),
         throwsA(isA<Exception>()),
       );
 
@@ -709,7 +709,7 @@ void main() {
       final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
 
       expect(
-            () => state.getDataService().createGame(uid: uid, game: gameData),
+            () async => await state.getDataService().createGame(uid: uid, game: gameData),
         throwsA(isA<Exception>()),
       );
 
@@ -1749,7 +1749,7 @@ void main() {
         find.byType(DataServiceTestWidget),
       );
       expect(
-            () => state.getDataService().removeStudentFromSubject(subjectId: mockSubjectId, studentId: mockStudentId),
+            () async => await state.getDataService().removeStudentFromSubject(subjectId: mockSubjectId, studentId: mockStudentId),
         throwsA(isA<Exception>()),
       );
 
@@ -1763,27 +1763,32 @@ void main() {
       final mockSubjectId = 'subject1';
       final mockStudentId = 'student1';
 
+      // Mock the behavior for removing the student from the subject and fetching subject data
       when(mockFirestoreService.removeStudentFromSubject(subjectId: mockSubjectId, studentId: mockStudentId))
           .thenAnswer((_) async {});
       when(mockFirestoreService.fetchSubjectData(subjectId: mockSubjectId))
           .thenThrow(Exception('Error fetching updated subject data'));
 
-      // Act & Assert: Call the method and expect an exception to be thrown
+      // Act: Initialize the widget and call the method
       await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
       await tester.pumpAndSettle();
 
-      final state = tester.state<DataServiceTestWidgetState>(
-        find.byType(DataServiceTestWidget),
-      );
+      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+
+      // Assert: Ensure that an exception is thrown when the method is called
       expect(
-            () => state.getDataService().removeStudentFromSubject(subjectId: mockSubjectId, studentId: mockStudentId),
-        throwsA(isA<Exception>()),
+            () async => await state.getDataService().removeStudentFromSubject(subjectId: mockSubjectId, studentId: mockStudentId),
+        throwsA(isA<Exception>().having((e) => e.toString(), 'message', contains('Error removing student from subject'))),
       );
 
       await tester.pump();
 
+      // Ensure expected interactions with Firestore
       verify(mockFirestoreService.removeStudentFromSubject(subjectId: mockSubjectId, studentId: mockStudentId)).called(1);
       verify(mockFirestoreService.fetchSubjectData(subjectId: mockSubjectId)).called(1);
+      verify(mockSubjectCacheService.deleteSubject(subjectId: mockSubjectId)).called(1);
+
+      // Ensure no unexpected interactions with the cache service (deleteSubject shouldn't be called)
       verifyNoMoreInteractions(mockSubjectCacheService);
     });
 
@@ -1827,6 +1832,217 @@ void main() {
       verify(mockFirestoreService.fetchSubjectData(subjectId: mockSubjectId)).called(1);
       verify(mockSubjectCacheService.deleteSubject(subjectId: mockSubjectId)).called(1);
       verify(mockSubjectCacheService.cacheSubjectData(updatedSubject)).called(1);
+    });
+  });
+
+  group('createAssignment', () {
+    testWidgets('should successfully create assignment and update cache', (WidgetTester tester) async {
+      // Arrange: Mock services to simulate successful assignment creation
+      final mockTitle = 'New Assignment';
+      final mockDueDate = DateTime(2025, 6, 1);
+      final mockTurma = 'subject1';
+      final mockGameId = 'game1';
+      final mockAssId = 'assignment1';
+      final mockSubjectData = SubjectData(
+        subjectId: mockTurma,
+        subjectName: 'Subject Name',
+        subjectLogo: 'subject_logo.png',
+        assignments: [],
+        teacher: '',
+        students: [],
+      );
+
+      // Mock service calls
+      when(mockFirestoreService.createAssignment(
+        title: mockTitle,
+        dueDate: mockDueDate.toString(),
+        turma: mockTurma,
+        gameId: mockGameId,
+      )).thenAnswer((_) async => mockAssId);
+
+      when(mockSubjectCacheService.getCachedSubjectData(mockTurma))
+          .thenAnswer((_) async => mockSubjectData);
+      when(mockSubjectCacheService.deleteSubject(subjectId: mockTurma))
+          .thenAnswer((_) async {});
+      when(mockSubjectCacheService.cacheSubjectData(mockSubjectData))
+          .thenAnswer((_) async {});
+
+      // Act: Call the createAssignment method
+      await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
+      await tester.pumpAndSettle();
+
+      final state = tester.state<DataServiceTestWidgetState>(
+        find.byType(DataServiceTestWidget),
+      );
+      await state.getDataService().createAssignment(
+        title: mockTitle,
+        dueDate: mockDueDate,
+        turma: mockTurma,
+        gameId: mockGameId,
+      );
+
+      // Assert: Verify that Firestore and cache interactions occur as expected
+      verify(mockFirestoreService.createAssignment(
+        title: mockTitle,
+        dueDate: mockDueDate.toString(),
+        turma: mockTurma,
+        gameId: mockGameId,
+      )).called(1);
+      verify(mockSubjectCacheService.getCachedSubjectData(mockTurma)).called(1);
+      verify(mockSubjectCacheService.deleteSubject(subjectId: mockTurma)).called(1);
+      verify(mockSubjectCacheService.cacheSubjectData(mockSubjectData)).called(1);
+    });
+
+    testWidgets('should throw exception if Firestore assignment creation fails', (WidgetTester tester) async {
+      // Arrange: Mock Firestore to throw an error while creating the assignment
+      final mockTitle = 'New Assignment';
+      final mockDueDate = DateTime(2025, 6, 1);
+      final mockTurma = 'subject1';
+      final mockGameId = 'game1';
+
+      when(mockFirestoreService.createAssignment(
+        title: mockTitle,
+        dueDate: mockDueDate.toString(),
+        turma: mockTurma,
+        gameId: mockGameId,
+      )).thenThrow(Exception('Error creating assignment'));
+
+      // Act & Assert: Call the method and expect an exception to be thrown
+      await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
+      await tester.pumpAndSettle();
+
+      final state = tester.state<DataServiceTestWidgetState>(
+        find.byType(DataServiceTestWidget),
+      );
+      expect(
+            () => state.getDataService().createAssignment(
+          title: mockTitle,
+          dueDate: mockDueDate,
+          turma: mockTurma,
+          gameId: mockGameId,
+        ),
+        throwsA(isA<Exception>()),
+      );
+
+      await tester.pump();
+
+      verify(mockFirestoreService.createAssignment(
+        title: mockTitle,
+        dueDate: mockDueDate.toString(),
+        turma: mockTurma,
+        gameId: mockGameId,
+      )).called(1);
+      verifyNoMoreInteractions(mockSubjectCacheService);
+    });
+
+    testWidgets('should handle failure when fetching subject data from Firestore', (WidgetTester tester) async {
+      // Arrange: Mock Firestore to throw an error when fetching subject data
+      final mockTitle = 'New Assignment';
+      final mockDueDate = DateTime(2025, 6, 1);
+      final mockTurma = 'subject1';
+      final mockGameId = 'game1';
+      final mockAssId = 'assignment1';
+
+      when(mockFirestoreService.createAssignment(
+        title: mockTitle,
+        dueDate: mockDueDate.toString(),
+        turma: mockTurma,
+        gameId: mockGameId,
+      )).thenAnswer((_) async => mockAssId);
+
+      when(mockSubjectCacheService.getCachedSubjectData(mockTurma))
+          .thenAnswer((_) async => null); // Simulating a missing cached subject
+      when(mockFirestoreService.fetchSubjectData(subjectId: mockTurma))
+          .thenThrow(Exception('Error fetching subject data'));
+
+      // Act & Assert: Call the method and expect an exception to be thrown
+      await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
+      await tester.pumpAndSettle();
+
+      final state = tester.state<DataServiceTestWidgetState>(
+        find.byType(DataServiceTestWidget),
+      );
+      expect(
+            () => state.getDataService().createAssignment(
+          title: mockTitle,
+          dueDate: mockDueDate,
+          turma: mockTurma,
+          gameId: mockGameId,
+        ),
+        throwsA(isA<Exception>()),
+      );
+
+      await tester.pump();
+
+      verify(mockFirestoreService.createAssignment(
+        title: mockTitle,
+        dueDate: mockDueDate.toString(),
+        turma: mockTurma,
+        gameId: mockGameId,
+      )).called(1);
+      verify(mockSubjectCacheService.getCachedSubjectData(mockTurma)).called(1);
+      verify(mockFirestoreService.fetchSubjectData(subjectId: mockTurma)).called(1);
+      verifyNoMoreInteractions(mockSubjectCacheService);
+    });
+
+    testWidgets('should handle failure when cache update fails', (WidgetTester tester) async {
+      // Arrange: Mock Firestore and simulate failure during cache update
+      final mockTitle = 'New Assignment';
+      final mockDueDate = DateTime(2025, 6, 1);
+      final mockTurma = 'subject1';
+      final mockGameId = 'game1';
+      final mockAssId = 'assignment1';
+      final mockSubjectData = SubjectData(
+        subjectId: mockTurma,
+        subjectName: 'Subject Name',
+        subjectLogo: 'subject_logo.png',
+        assignments: [],
+        teacher: '',
+        students: [],
+      );
+
+      when(mockFirestoreService.createAssignment(
+        title: mockTitle,
+        dueDate: mockDueDate.toString(),
+        turma: mockTurma,
+        gameId: mockGameId,
+      )).thenAnswer((_) async => mockAssId);
+
+      when(mockSubjectCacheService.getCachedSubjectData(mockTurma))
+          .thenAnswer((_) async => mockSubjectData);
+      when(mockSubjectCacheService.deleteSubject(subjectId: mockTurma))
+          .thenAnswer((_) async {});
+      when(mockSubjectCacheService.cacheSubjectData(mockSubjectData))
+          .thenThrow(Exception('Cache error'));
+
+      // Act & Assert: Call the method and expect an exception to be thrown
+      await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
+      await tester.pumpAndSettle();
+
+      final state = tester.state<DataServiceTestWidgetState>(
+        find.byType(DataServiceTestWidget),
+      );
+      expect(
+            () => state.getDataService().createAssignment(
+          title: mockTitle,
+          dueDate: mockDueDate,
+          turma: mockTurma,
+          gameId: mockGameId,
+        ),
+        throwsA(isA<Exception>()),
+      );
+
+      await tester.pump();
+
+      verify(mockFirestoreService.createAssignment(
+        title: mockTitle,
+        dueDate: mockDueDate.toString(),
+        turma: mockTurma,
+        gameId: mockGameId,
+      )).called(1);
+      verify(mockSubjectCacheService.getCachedSubjectData(mockTurma)).called(1);
+      verify(mockSubjectCacheService.deleteSubject(subjectId: mockTurma)).called(1);
+      verify(mockSubjectCacheService.cacheSubjectData(mockSubjectData)).called(1);
     });
   });
 

@@ -432,6 +432,7 @@ class DataService {
 
     } catch (e) {
       print("Error creating Assignment");
+      rethrow;
     }
   }
 
