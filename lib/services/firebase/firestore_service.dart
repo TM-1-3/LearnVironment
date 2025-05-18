@@ -614,7 +614,7 @@ class FirestoreService {
         'students': students,
       });
 
-      await subjectRef.update({
+      await studentRef.update({
         'stClasses': FieldValue.arrayRemove([subjectId]),
       });
 
