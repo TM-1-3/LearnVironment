@@ -101,6 +101,22 @@ class ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  Future<void> _deleteCache() async {
+    try {
+      DataService dataService = Provider.of<DataService>(context, listen: false);
+
+      await dataService.deleteCache();
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Successfully deleted the cache!')),
+        );
+      }
+    } catch (e) {
+      _showErrorDialog("Error deleting cache. Please try again.", "Error");
+    }
+  }
+
   // Show the confirmation dialog before deleting account
   Future<void> _showDeleteAccountDialog() async {
     bool? shouldDelete = await showDialog<bool>(
@@ -240,9 +256,19 @@ class ProfileScreenState extends State<ProfileScreen> {
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton.icon(
+                    onPressed: _deleteCache,
+                    icon: const Icon(Icons.delete),
+                    label: const Text('Delete Cache'),
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton.icon(
                     onPressed: _showDeleteAccountDialog,
                     icon: const Icon(Icons.delete_forever),
                     label: const Text('Delete Account'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      foregroundColor: Colors.white
+                    ),
                   ),
                 ],
               )
