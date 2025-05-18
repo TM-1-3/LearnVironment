@@ -28,12 +28,10 @@ class DataService {
 
   // 1. Users & Accounts
   // 2. Games
-  // 3. Subjects (Aka Classes)
+  // 3. Subjects
   // 4. Assignments
 
   //================================ USERS & ACCOUNTS =======================================//
-
-
   Future<bool> checkIfUsernameAlreadyExists(String username) async {
     return await _firestoreService.checkIfUsernameAlreadyExists(username);
   }
@@ -84,6 +82,7 @@ class DataService {
       return null;
     }
   }
+
   Future<void> deleteAccount({required String uid}) async {
     try {
       await _firestoreService.deleteAccount(uid: uid);
@@ -117,11 +116,7 @@ class DataService {
     }
   }
 
-
-
   //==================================== GAMES ====================================//
-
-
   Future<GameData?> getGameData({required String gameId}) async {
     try {
       final cachedGame = await _gameCacheService.getCachedGameData(gameId);
@@ -238,7 +233,6 @@ class DataService {
       await _gameCacheService.updateGamePublicStatus(gameId: gameId, status: status);
       print('[DataService] Game Cache updated successfully');
 
-
     } catch (e) {
       print('[DataService] Error updating user\'s gamesPlayed: $e');
       throw Exception("Error updating user's gamesPlayed");
@@ -275,11 +269,7 @@ class DataService {
     }
   }
 
-
-
   //======================================= SUBJECTS ====================================//
-
-
   Future<SubjectData?> getSubjectData({required String subjectId}) async {
     try {
       final cachedSubject = await _subjectCacheService.getCachedSubjectData(subjectId);
@@ -424,11 +414,7 @@ class DataService {
     }
   }
 
-
-
   //========================================= ASSIGNMENTS ======================================================//
-
-
   Future<void> createAssignment({
     required String title,
     required DateTime dueDate,
@@ -446,6 +432,7 @@ class DataService {
 
     } catch (e) {
       print("Error creating Assignment");
+      rethrow;
     }
   }
 
@@ -528,6 +515,24 @@ class DataService {
 
     } catch (e) {
       print("Error creating Assignment");
+    }
+  }
+
+  //=========================== DELETE CACHE ==========================
+  Future<void> deleteCache() async {
+    try {
+      await _userCacheService.clearUserCache();
+      print("[DATASERVICE] User cache deleted");
+      await _subjectCacheService.clearSubjectCache();
+      print("[DATASERVICE] Subject cache deleted");
+      await _gameCacheService.clear();
+      print("[DATASERVICE] Game cache deleted");
+      await _assignmentCacheService.clearAssignmentCache();
+      print("[DATASERVICE] Assignment cache deleted");
+
+    } catch (e) {
+      print("[DATASERVICE] Error deleting cache");
+      rethrow;
     }
   }
 }

@@ -100,4 +100,32 @@ class AssignmentCacheService {
       print('[CACHE ERROR] Exception while deleting assignment $assignmentId: $e');
     }
   }
+
+  Future<void> clearAssignmentCache() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final cachedIds = prefs.getStringList('cached_assignment_ids') ?? [];
+
+      print('[CACHE] Clearing assignment cache...');
+
+      // Remove each cached assignment
+      for (final assignmentId in cachedIds) {
+        final key = 'assignment_$assignmentId';
+        final success = await prefs.remove(key);
+        if (!success) {
+          print('[CACHE ERROR] Failed to remove assignment: $assignmentId');
+        } else {
+          print('[CACHE] Successfully removed assignment: $assignmentId');
+        }
+      }
+
+      // Clear the cached assignment IDs list
+      await prefs.remove('cached_assignment_ids');
+
+      print('[CACHE] Assignment cache cleared successfully.');
+    } catch (e) {
+      print('[CACHE ERROR] Error clearing assignment cache: $e');
+    }
+  }
+
 }

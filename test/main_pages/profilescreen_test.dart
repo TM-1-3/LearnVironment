@@ -45,6 +45,9 @@ class MockDataService extends Mock implements DataService {
   Future<void> deleteAccount({required String uid}) async {}
 
   @override
+  Future<void> deleteCache() async {}
+
+  @override
   Future<UserData?> getUserData({required String userId}) async {
     if (userId == 'error') {
       return null;
@@ -186,5 +189,16 @@ void main() async {
     await tester.pumpAndSettle();
 
     expect(find.byType(EditProfilePage), findsOneWidget);
+  });
+
+  testWidgets('delete cache', (WidgetTester tester) async {
+    await tester.pumpWidget(testWidget);
+
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byIcon(Icons.delete));
+    await tester.tap(find.byIcon(Icons.delete));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SnackBar), findsOneWidget);
   });
 }
