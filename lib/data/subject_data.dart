@@ -5,7 +5,7 @@ class SubjectData {
   final String subjectLogo;
   final String subjectName;
   final String teacher;
-  final List<String> students;
+  final List<Map<String,dynamic>> students;
   late List<String> assignments;
 
   SubjectData({
@@ -38,7 +38,7 @@ class SubjectData {
       subjectLogo: data['subjectLogo'] ?? '',
       subjectName: data['subjectName'] ?? '',
       teacher: data['teacher'] ?? '',
-      students: List<String>.from(jsonDecode(data['students'] ?? '[]')),
+      students: List<Map<String,dynamic>>.from(jsonDecode(data['students'] ?? '[]')),
       assignments: List<String>.from(jsonDecode(data['assignments'] ?? '[]')),
     );
   }

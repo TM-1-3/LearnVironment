@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:learnvironment/data/game_data.dart';
+import 'package:learnvironment/data/game_result_data.dart';
 import 'package:learnvironment/data/subject_data.dart';
 import 'package:learnvironment/data/user_data.dart';
 import 'package:learnvironment/services/firebase/firestore_service.dart';
@@ -269,6 +270,32 @@ class DataService {
     }
   }
 
+  Future<void> recordGameResult(GameResultData result) async {
+    try {
+      await _firestoreService.recordGameResult(result);
+      print('[DataService] Game result recorded successfully for student: ${result.studentId}, game: ${result.gameId}');
+
+      final subjectData = await getSubjectData(subjectId: result.subjectId);
+
+      await _firestoreService.updateStudentCount(gameResultData: result, subjectData: subjectData);
+
+      // Fetch the updated subject data from Firestore
+      final updatedSubject = await _firestoreService.fetchSubjectData(subjectId: subjectData!.subjectId);
+
+      // Remove the old subject data from the cache
+      await _subjectCacheService.deleteSubject(subjectId: updatedSubject.subjectId);
+      print('[DataService] Removed old subject data from cache');
+
+      // Cache the updated subject data with the new student
+      await _subjectCacheService.cacheSubjectData(updatedSubject);
+      print('[DataService] Cached updated subject data with new student');
+    } catch (e) {
+      print('[DataService] Error recording game result: $e');
+      throw Exception("Error recording game result");
+    }
+  }
+
+                                                                  // SUBJECTS (Aka CLASSES) //
   //======================================= SUBJECTS ====================================//
   Future<SubjectData?> getSubjectData({required String subjectId}) async {
     try {

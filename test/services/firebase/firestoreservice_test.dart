@@ -238,7 +238,7 @@ void main() {
         'assignments': [],
         'logo': 'assets/placeholder.png',
         'name': 'test',
-        'students': ['student'],
+        'students': [{'studentId':'student', 'correctCount':0, 'wrongCount':0}],
         'subjectId': 'something',
         'teacher': 'someone'
       });
@@ -704,7 +704,7 @@ void main() {
           'name': 'subjectName',
           'logo': 'subjectLogo',
           'teacher': 'id',
-          'students': [docRef.id],
+          'students': [{'studentId':[docRef.id], 'correctCount':0, 'wrongCount':0}],
           'assignments' : [assRef.id]
         });
         firestoreService = FirestoreService(firestore: firestore);
@@ -842,7 +842,7 @@ void main() {
       await firestore.collection('subjects').doc('subject123').set({
         'logo': 'math_logo.png',
         'name': 'Mathematics',
-        'students': ['student1', 'student2'],
+        'students': [{'studentId':'student1', 'correctCount':0, 'wrongCount':0}, {'studentId':'student2', 'correctCount':0, 'wrongCount':0}],
         'assignments': ['assignment1'],
         'teacher': 'teacher123',
       });
@@ -860,7 +860,7 @@ void main() {
       expect(result.subjectId, 'subject123');
       expect(result.subjectLogo, 'math_logo.png');
       expect(result.subjectName, 'Mathematics');
-      expect(result.students, ['student1', 'student2']);
+      expect(result.students, [{'studentId':'student1', 'correctCount':0, 'wrongCount':0}, {'studentId':'student2', 'correctCount':0, 'wrongCount':0}],);
       expect(result.assignments, ['assignment1']);
       expect(result.teacher, 'teacher123');
     });
@@ -914,7 +914,7 @@ void main() {
         subjectId: 'subject001',
         subjectName: 'Science',
         subjectLogo: 'science_logo.png',
-        students: ['student1', 'student2'],
+        students: [{'studentId':'student1', 'correctCount':0, 'wrongCount':0}, {'studentId':'student2', 'correctCount':0, 'wrongCount':0}],
         assignments: ['assignment1'],
         teacher: testUid,
       );
@@ -928,7 +928,7 @@ void main() {
       expect(data['name'], 'Science');
       expect(data['logo'], 'science_logo.png');
       expect(data['teacher'], testUid);
-      expect(data['students'], ['student1', 'student2']);
+      expect(data['students'], [{'studentId':'student1', 'correctCount':0, 'wrongCount':0}, {'studentId':'student2', 'correctCount':0, 'wrongCount':0}],);
       expect(data['assignments'], ['assignment1']);
 
       final userSnapshot = await firestore.collection('users').doc(testUid).get();
@@ -1077,7 +1077,10 @@ void main() {
       final subjectData = subjectSnapshot.data()!;
       final userData = userSnapshot.data()!;
 
-      expect(subjectData['students'], contains(studentId));
+      expect(
+        subjectData['students'],
+        contains(predicate((s) => s is Map && s['studentId'] == studentId)),
+      );
       expect(userData['stClasses'], contains(subjectId));
     });
 
@@ -1092,7 +1095,12 @@ void main() {
       );
 
       final subjectSnapshot = await firestore.collection('subjects').doc(subjectId).get();
-      expect(subjectSnapshot.data()!['students'], contains(studentId));
+      final students = subjectSnapshot.data()!['students'] as List;
+
+      expect(
+        students,
+        contains(predicate((s) => s is Map && s['studentId'] == studentId)),
+      );
     });
 
     test('adds subject to student even if stClasses field was missing', () async {
@@ -1132,26 +1140,65 @@ void main() {
 
       await firestore.collection('subjects').doc(subjectId).set({
         'name': 'Biology',
-        'students': [studentId, 'student002'],
+        'students': [{'studentId':studentId}, {'studentId':'student002'}],
       });
 
       firestoreService = FirestoreService(firestore: firestore);
     });
 
-    test('removes student from subject\'s students list', () async {
+    test('removes student from subject\'s students list and updates user', () async {
+      // Set up subject document with two students
+      await firestore.collection('subjects').doc(subjectId).set({
+        'name': 'Biology',
+        'students': [
+          {'studentId': studentId},
+          {'studentId': 'student002'},
+        ],
+      });
+
+      // Set up user document with subject in stClasses
+      await firestore.collection('users').doc(studentId).set({
+        'name': 'Student One',
+        'stClasses': [subjectId],
+      });
+
       await firestoreService.removeStudentFromSubject(
         subjectId: subjectId,
         studentId: studentId,
       );
 
+      // Check subject doc
       final subjectSnapshot = await firestore.collection('subjects').doc(subjectId).get();
-      final subjectData = subjectSnapshot.data()!;
+      final students = subjectSnapshot.data()!['students'] as List;
+      final studentIds = students
+          .whereType<Map<String, dynamic>>()
+          .map((e) => e['studentId'] as String?)
+          .whereType<String>()
+          .toList();
 
-      expect(subjectData['students'], isNot(contains(studentId)));
-      expect(subjectData['students'], contains('student002'));
+      expect(studentIds, isNot(contains(studentId)));
+      expect(studentIds, contains('student002'));
+
+      final userSnapshot = await firestore.collection('users').doc(studentId).get();
+      final stClasses = userSnapshot.data()?['stClasses'] as List?;
+      expect(stClasses, isNot(contains(subjectId)));
     });
 
     test('handles case where student is not in the students list', () async {
+      // Setup the subject document with existing students before removal attempt
+      await firestore.collection('subjects').doc(subjectId).set({
+        'name': 'Biology',
+        'students': [
+          {'studentId': studentId},
+          {'studentId': 'student002'},
+        ],
+      });
+
+      await firestore.collection('users').doc('non_existing_student').set({
+        'name': 'Student One',
+        'stClasses': [],
+      });
+
       await firestoreService.removeStudentFromSubject(
         subjectId: subjectId,
         studentId: 'non_existing_student',
@@ -1160,7 +1207,15 @@ void main() {
       final subjectSnapshot = await firestore.collection('subjects').doc(subjectId).get();
       final subjectData = subjectSnapshot.data()!;
 
-      expect(subjectData['students'], containsAll(['student002', studentId]));
+      final students = subjectData['students'] as List;
+      final studentIds = students
+          .whereType<Map<String, dynamic>>() // ensure we only map over valid maps
+          .map((e) => e['studentId'] as String?)
+          .whereType<String>() // remove nulls
+          .toList();
+
+      // The list should remain unchanged
+      expect(studentIds, containsAll(['student002', studentId]));
     });
 
     test('handles case where students field is missing', () async {
@@ -1173,11 +1228,10 @@ void main() {
         studentId: studentId,
       );
 
-      final subjectSnapshot =
-      await firestore.collection('subjects').doc('noStudentsField').get();
+      final subjectSnapshot = await firestore.collection('subjects').doc('noStudentsField').get();
       final data = subjectSnapshot.data()!;
 
-      expect(data['students'], []);
+      expect(data['students'], null);
     });
 
     test('throws and logs error if Firestore update fails', () async {

@@ -30,7 +30,6 @@ class MockDataService extends Mock implements DataService {
 }
 
 void main() {
-
   group('ResultsPage Tests', ()
   {
     late Widget testWidget;
@@ -58,7 +57,8 @@ void main() {
               gameImage: 'assets/quizLogo.png',
               tipsToAppear: ['Tip1', 'Tip2', 'Tip3'],
               duration: const Duration(minutes: 2, seconds: 10),
-              onReplay: () => RandomGame()
+              onReplay: () => RandomGame(),
+              gameId: 'gameId',
           ),
             routes: {
               '/auth_gate': (context) => MockAuthGate(),

@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:learnvironment/data/assignment_data.dart';
 import 'package:learnvironment/data/game_data.dart';
+import 'package:learnvironment/data/game_result_data.dart';
 import 'package:learnvironment/data/subject_data.dart';
 import 'package:learnvironment/data/user_data.dart';
 
-import '../../data/assignment_data.dart';
 
 class FirestoreService {
   final FirebaseFirestore _firestore;
@@ -378,6 +379,27 @@ class FirestoreService {
     }
   }
 
+  Future<void> recordGameResult(GameResultData result) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(result.studentId)
+          .collection('game_results')
+          .add({
+        'subjectId': result.subjectId,
+        'gameId': result.gameId,
+        'correctCount': result.correctCount,
+        'wrongCount': result.wrongCount,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+
+      print('[FirestoreService] Game result stored in Firestore successfully.');
+    } catch (e) {
+      print('[FirestoreService] Error storing game result in Firestore: $e');
+      throw Exception("Error storing game result in Firestore");
+    }
+  }
+
   Future<void> updateGamePublicStatus({required String gameId, required bool status}) async {
     try {
       final gameDoc = _firestore.collection('games').doc(gameId);
@@ -430,7 +452,7 @@ class FirestoreService {
         subjectId: snapshot.id,
         subjectLogo: data['logo'] ?? 'assets/placeholder.png',
         subjectName: data['name'] ?? 'Unknown Name',
-        students: List<String>.from(data['students'] ?? []),
+        students: List<Map<String,dynamic>>.from(data['students'] ?? []),
         assignments: List<String>.from(data['assignments'] ?? []),
         teacher: data['teacher'],
       );
@@ -451,9 +473,9 @@ class FirestoreService {
 
       var data = snapshot.data() as Map<String, dynamic>;
 
-      List<String> students = List<String>.from(data['students']);
-      for (String student in students) {
-        if (student == studentId) {
+      List<Map<String, dynamic>> students = List<Map<String,dynamic>>.from(data['students']);
+      for (Map<String, dynamic> student in students) {
+        if (student['studentId'] == studentId) {
           return true;
         }
       }
@@ -506,18 +528,22 @@ class FirestoreService {
       final userDoc = _firestore.collection('users').doc(uid);
       final userSnapshot = await userDoc.get();
 
+      List<String> classes = [];
       List<String> stClasses = [];
       List<String> tClasses = [];
 
       if (userSnapshot.exists && userSnapshot.data() != null) {
         final data = userSnapshot.data()!;
+        classes = List<String>.from(data['classes'] ?? []);
         stClasses = List<String>.from(data['stClasses'] ?? []);
         tClasses = List<String>.from(data['tClasses'] ?? []);
       }
 
+      classes.remove(subjectId);
       stClasses.remove(subjectId);
       tClasses.remove(subjectId);
 
+      await userDoc.update({'classes': classes});
       await userDoc.update({'stClasses': stClasses});
       await userDoc.update({'tClasses': tClasses});
       print("[FirestoreService] Class Deleted");
@@ -527,19 +553,37 @@ class FirestoreService {
     }
   }
 
-  Future<void> addStudentToSubject({required String subjectId, required String studentId}) async {
+  Future<void> addStudentToSubject({
+    required String subjectId,
+    required String studentId,
+  }) async {
     try {
       final subjectRef = _firestore.collection('subjects').doc(subjectId);
-      final userRef = _firestore.collection('users').doc(studentId);
+      final studentRef = _firestore.collection('users').doc(studentId);
+
+      // Run both updates in a batch
+      final batch = _firestore.batch();
+
       await subjectRef.update({
-        'students': FieldValue.arrayUnion([studentId]),
+        'students': FieldValue.arrayUnion([
+          {
+            'studentId': studentId,
+            'correctCount': 0,
+            'wrongCount': 0,
+          }
+        ]),
       });
-      await userRef.update({
+
+      // Add subject to student's subject list
+      await studentRef.update({
         'stClasses': FieldValue.arrayUnion([subjectId]),
       });
-      print("[FirestoreService] Added student $studentId to subject $subjectId");
+
+      await batch.commit();
+
+      print("[FirestoreService] Added student $studentId to subject $subjectId and updated student record.");
     } catch (e, stackTrace) {
-      print("[FirestoreService] Error adding student to subject: $e\n$stackTrace");
+      print("[FirestoreService] Error adding student to subject and updating student: $e\n$stackTrace");
       rethrow;
     }
   }
@@ -550,17 +594,75 @@ class FirestoreService {
   }) async {
     try {
       final subjectRef = _firestore.collection('subjects').doc(subjectId);
+      final studentRef = _firestore.collection('users').doc(studentId);
+
+      final subjectSnapshot = await subjectRef.get();
+      final data = subjectSnapshot.data();
+
+      if (data == null || data['students'] == null) {
+        print('[FirestoreService] No students found in subject $subjectId');
+        return;
+      }
+
+      List<dynamic> students = List.from(data['students']);
+
+      // Filter out the student with matching ID
+      students.removeWhere((student) =>
+      student is Map<String, dynamic> && student['studentId'] == studentId);
 
       await subjectRef.update({
-        'students': FieldValue.arrayRemove([studentId]),
+        'students': students,
       });
 
-      print("[FirestoreService] Removed student $studentId from subject $subjectId");
+      await studentRef.update({
+        'stClasses': FieldValue.arrayRemove([subjectId]),
+      });
+
+      print("[FirestoreService] Removed student $studentId from subject $subjectId.");
     } catch (e, stackTrace) {
-      print("[FirestoreService] Error removing student from subject: $e\n$stackTrace");
+      print("[FirestoreService] Error removing student: $e\n$stackTrace");
       rethrow;
     }
   }
+
+  Future<void> updateStudentCount({
+    required GameResultData gameResultData,
+    required SubjectData? subjectData,
+  }) async {
+    if (subjectData == null) {
+      print('[FirestoreService] SubjectData is null. Aborting update.');
+      return;
+    }
+
+    final subjectRef = _firestore.collection('subjects').doc(gameResultData.subjectId);
+    bool updated = false;
+
+    // Create a mutable list of students
+    final students = List<Map<String, dynamic>>.from(subjectData.students);
+
+    for (var student in students) {
+      if (student['studentId'] == gameResultData.studentId) {
+        student['correctCount'] = (student['correctCount']) + gameResultData.correctCount;
+        student['wrongCount'] = (student['wrongCount']) + gameResultData.wrongCount;
+        updated = true;
+        break;
+      }
+    }
+
+    if (updated) {
+      try {
+        print("[FirestoreService] Loading new students $students to firestore");
+        await subjectRef.update({'students': students});
+        print('[FirestoreService] Student count updated successfully for student: ${gameResultData.studentId}');
+      } catch (e) {
+        print('[FirestoreService] Failed to update student count: $e');
+        rethrow;
+      }
+    } else {
+      print('[FirestoreService] No matching student found to update.');
+    }
+  }
+
 
 
   //================================ ASSIGNMENTS ====================================//
