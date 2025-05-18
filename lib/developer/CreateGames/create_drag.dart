@@ -125,7 +125,9 @@ class _CreateDragPageState extends State<CreateDragPage> {
 
       tags.insert(0, "Age: $selectedAge"); //Add age to tags
 
-      int index = 0;
+      List<String> keys = [];
+
+      int index = 1;
       //Validate Objects
       for (var object in trashObjects) {
         if (object.isEmpty() || object.selectedOption == null) {
@@ -158,10 +160,24 @@ class _CreateDragPageState extends State<CreateDragPage> {
           return;
         }
 
+        if (keys.contains(key)) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Please use unique image URL in Object $index'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+          object.imageUrlController.text = "";
+          return;
+        }
+
         tips[key] = tip;
         correctAnswers[key] = answer;
         print(key);
         index++;
+        keys.add(key);
       }
 
       // Validate Logo

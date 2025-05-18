@@ -113,6 +113,7 @@
 - Fixed Image bug in ````ResultsPage```` [#140](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/140)
 - Fixed Image bug in ````QuizInitialScreen```` [#141](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/141)
 - Added a way for a user to delete the cache and made the delete account button user-friendly [#153](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/153)
+- Fixed bug that allowed users to have repetitive questions when creating a game  [#143](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/143)
 
 ### Test User
 - email: up202307719@g.uporto.pt
