@@ -439,6 +439,32 @@ You can find below information and references related with the project managemen
 
 **Board at the End of Sprint 3**
 
-### Sprint 4
-
 ### Final Release
+#### Classes & Assignments
+Teachers can create and manage classes by adding students directly. Once a class is set up, they can easily create assignments and distribute them to the students. Students receive notifications whenever a new assignment is added, ensuring they stay up to date and never miss a task. This allows for a streamlined learning process where all students can access and complete tasks in a structured environment.  
+<img width="306" alt="image" src="https://github.com/user-attachments/assets/476605f5-074d-48dd-9596-2ab372b831a6" /><img width="305" alt="image" src="https://github.com/user-attachments/assets/d618539b-d246-466b-ac77-2b1c55a0fdd2" /><img width="308" alt="image" src="https://github.com/user-attachments/assets/61e1cd84-1e3d-47e0-ac73-4441f2100424" />
+
+#### Statistics
+Students have access to a personal dashboard where they can view the games they’ve played, track their progress, and understand which areas they need to improve on. This promotes self-awareness and goal-setting in their learning journey.  
+<img width="310" alt="image" src="https://github.com/user-attachments/assets/b9d2522d-4223-4c4b-b56b-dbfb1076bba7" />
+
+Teachers, on the other hand, can see detailed statistics for each of their classes individually. This includes performance trends, participation rates, and specific areas where students may be struggling, enabling data-driven teaching decisions.  
+<img width="308" alt="image" src="https://github.com/user-attachments/assets/a345c63e-4701-476b-9101-831255c41a66" />
+
+#### Game Development
+Developers can easily create interactive learning games such as “quiz” or “drag” games through a user-friendly form-based interface. Once the game is built, they can test it through a dry run, make edits as needed, and choose to publish it publicly or keep it private. This makes game development accessible and iterative.  
+<img width="306" alt="image" src="https://github.com/user-attachments/assets/fc9f4168-3727-47bf-9432-540c7086d560" /><img width="306" alt="image" src="https://github.com/user-attachments/assets/59aecb7b-e42a-478b-abb3-389a12d619d4" />
+
+#### Profile
+Users can seamlessly switch between different roles: student, teacher, and developer. This flexibility allows them to access the appropriate tools and features for each role, whether it's playing games, assigning tasks, or building new content—all from a single account.  
+<img width="307" alt="image" src="https://github.com/user-attachments/assets/e0032679-28a3-4d71-8929-8ff31a075976" />
+
+#### Browsing Games
+All users can search for games using keywords or explore through categorized tags. This makes it easy to discover relevant and engaging content across a wide range of subjects and formats.  
+<img width="310" alt="image" src="https://github.com/user-attachments/assets/a220d369-e525-4fb2-ae81-880706a1a682" />
+
+#### Play Games
+Games provide instant feedback using audio cues and images, helping players understand mistakes right away and learn more effectively. Additionally, each game includes a bibliography that allows teachers to verify the accuracy and source of the content, ensuring educational reliability.  
+<img width="307" alt="image" src="https://github.com/user-attachments/assets/ac38e06d-25be-4f94-877a-11e54103c079" /><img width="308" alt="image" src="https://github.com/user-attachments/assets/b7291a78-c2ba-4682-a7d7-72c41f305103" />
+
+
