@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:learnvironment/services/cache/user_cache_service.dart';
 import 'package:learnvironment/teacher/assignments/assignment_page_teacher.dart';
 import 'package:learnvironment/teacher/widgets/assignment_card_teacher.dart';
 import 'package:learnvironment/services/firebase/auth_service.dart';
@@ -73,10 +74,24 @@ class AssignmentsPageTeacherState extends State<AssignmentsPageTeacher> {
     }
   }
 
+  Future<void> _refreshAssignments() async {
+    try {
+      final dataService = Provider.of<DataService>(context, listen: false);
+      final userCacheService = Provider.of<UserCacheService>(context, listen: false);
+      await userCacheService.clearUserCache();
+
+      final fetchedSubjects = await dataService.getAllAssignments(subjectId: widget.id);
+      print('[AssignmentsPage] Refreshed assignments');
+      setState((){
+        assignments = fetchedSubjects;
+      });
+    } catch (e) {
+      print('[AssignmentsPage] Error fetching assignments: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final filteredAssignments = getFilteredAssignments();
-
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -101,7 +116,7 @@ class AssignmentsPageTeacherState extends State<AssignmentsPageTeacher> {
         children: [
           Expanded(
             child: RefreshIndicator(
-              onRefresh: _fetchAssignments,
+              onRefresh: _refreshAssignments,
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   double mainAxisExtent = 600.0;
@@ -114,9 +129,7 @@ class AssignmentsPageTeacherState extends State<AssignmentsPageTeacher> {
                   } else {
                     mainAxisExtent = 1545;
                   }
-
                   final filteredAssignments = getFilteredAssignments();
-
                   return filteredAssignments.isNotEmpty
                       ? GridView.builder(
                     padding: const EdgeInsets.all(8),
