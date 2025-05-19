@@ -82,6 +82,7 @@
 - As a teacher I want to be able to monitor class performance so that I can see the progress of the overall class. [#13](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/13)
 - As a student I want to be able to see my statistics so that I can see my performance. [#27](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/27)
 - As a teacher I want to be able to see the profile of a student from my class so that I can see who he is. [#106](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/106)
+- As a teacher I want to be able to monitor individual student so that I can see the progress of individuals. [#12](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/12)
 
 ### Detailed description
 - Teachers can now remove students from their classes [#107](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/107)
@@ -122,6 +123,7 @@
 - Fixed bug in ````AssignmentPageTeacher```` for wrong name on delete assignment [#159](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/100)
 - Fixed bug when creating assignments [#136](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/136)
 - Teachers can now access ````StudentProfilePage```` through their classes [#161](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/161)
+- Teachers can now see individual student progress on ````StudentProfilePage```` through their classes [163](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/163)
 
 ### Test User
 - email: up202307719@g.uporto.pt
