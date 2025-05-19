@@ -15,6 +15,7 @@ import 'package:learnvironment/services/cache/assignment_cache_service.dart'
 import 'package:learnvironment/services/cache/game_cache_service.dart' as _i11;
 import 'package:learnvironment/services/cache/subject_cache_service.dart'
     as _i12;
+import 'package:learnvironment/services/cache/game_result_cache_service.dart' as _i14;
 import 'package:learnvironment/services/cache/user_cache_service.dart' as _i10;
 import 'package:learnvironment/services/firebase/firestore_service.dart' as _i6;
 import 'package:mockito/mockito.dart' as _i1;
@@ -843,3 +844,9 @@ class MockAssignmentCacheService extends _i1.Mock
         returnValueForMissingStub: _i7.Future<void>.value(),
       ) as _i7.Future<void>);
 }
+
+/// A class which mocks [GameResultCacheService].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGameResultCacheService extends _i1.Mock
+    implements _i14.GameResultCacheService {}

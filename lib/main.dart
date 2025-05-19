@@ -9,6 +9,7 @@ import 'package:learnvironment/authentication/signup_screen.dart';
 import 'package:learnvironment/data/notification_storage.dart';
 import 'package:learnvironment/firebase_options.dart';
 import 'package:learnvironment/services/cache/assignment_cache_service.dart';
+import 'package:learnvironment/services/cache/game_result_cache_service.dart';
 import 'package:learnvironment/services/firebase/auth_service.dart';
 import 'package:learnvironment/services/cache/game_cache_service.dart';
 import 'package:learnvironment/services/cache/user_cache_service.dart';
@@ -59,6 +60,7 @@ void main() async {
         Provider<GameCacheService>(create: (_) => GameCacheService()),
         Provider<SubjectCacheService>(create: (_) => SubjectCacheService()),
         Provider<AssignmentCacheService>(create: (_) => AssignmentCacheService()),
+        Provider<GameResultCacheService>(create: (_) => GameResultCacheService()),
         Provider<DataService>(create: (context) => DataService(context)),
       ],
       child: App(),

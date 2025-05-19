@@ -4,6 +4,7 @@ import 'package:learnvironment/data/assignment_data.dart';
 import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/data/subject_data.dart';
 import 'package:learnvironment/data/user_data.dart';
+import 'package:learnvironment/services/cache/game_result_cache_service.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:learnvironment/services/data_service.dart';
@@ -22,6 +23,7 @@ import 'data_service_test.mocks.dart';
   MockSpec<GameCacheService>(),
   MockSpec<SubjectCacheService>(),
   MockSpec<AssignmentCacheService>(),
+  MockSpec<GameResultCacheService>(),
 ])
 
 void main() {
@@ -30,6 +32,7 @@ void main() {
   late MockGameCacheService mockGameCacheService;
   late MockSubjectCacheService mockSubjectCacheService;
   late MockAssignmentCacheService mockAssignmentCacheService;
+  late MockGameResultCacheService mockGameResultCacheService;
 
   setUp(() {
     // Initialize the mock services
@@ -38,6 +41,7 @@ void main() {
     mockGameCacheService = MockGameCacheService();
     mockSubjectCacheService = MockSubjectCacheService();
     mockAssignmentCacheService = MockAssignmentCacheService();
+    mockGameResultCacheService = MockGameResultCacheService();
   });
 
   // Helper function to create a widget that provides the necessary services
@@ -49,6 +53,7 @@ void main() {
         Provider<GameCacheService>.value(value: mockGameCacheService),
         Provider<SubjectCacheService>.value(value: mockSubjectCacheService),
         Provider<AssignmentCacheService>.value(value: mockAssignmentCacheService),
+        Provider<GameResultCacheService>.value(value: mockGameResultCacheService)
       ],
       child: MaterialApp(
         home: child,

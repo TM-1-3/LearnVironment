@@ -59,6 +59,7 @@ class ResultsPage extends StatelessWidget {
                 gameId: assignment.gameId,
                 correctCount: correctCount,
                 wrongCount: wrongCount,
+                timestamp: DateTime.now(),
               );
 
               await dataService.recordGameResult(result);

@@ -194,7 +194,7 @@ void main() {
       await tester.pumpWidget(testWidget);
       await tester.pumpAndSettle();
 
-      expect(find.byType(GameCard), findsNWidgets(2));
+      expect(find.byType(GameCard), findsNWidgets(4));
     });
 
     testWidgets('should display message if no games are played', (WidgetTester tester) async {
@@ -219,6 +219,7 @@ void main() {
     testWidgets('should navigate to game details when game card is tapped', (WidgetTester tester) async {
       await tester.pumpWidget(testWidget);
       await tester.pumpAndSettle();
+      await tester.ensureVisible(find.byType(GestureDetector).first);
       await tester.tap(find.byType(GestureDetector).first);
       await tester.pumpAndSettle();
 
