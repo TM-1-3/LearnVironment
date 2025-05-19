@@ -3074,6 +3074,67 @@ void main() {
       verify(mockGameResultCacheService.getCachedGameResults(uid)).called(1);
       verify(mockFirestoreService.fetchGameResults(studentId: uid)).called(1);
     });
+
+    testWidgets('getWeekGameResults should return results for past 7 days with correct aggregation', (WidgetTester tester) async {
+      final uid = 'student1';
+      final now = DateTime.now();
+
+      // Arrange mock game results: 3 in last 7 days, 1 old
+      final mockResults = [
+        GameResultData(
+          gameId: 'game1',
+          subjectId: 'subject1',
+          studentId: uid,
+          correctCount: 5,
+          wrongCount: 2,
+          timestamp: now.subtract(const Duration(days: 1)), // Should count
+        ),
+        GameResultData(
+          gameId: 'game2',
+          subjectId: 'subject1',
+          studentId: uid,
+          correctCount: 3,
+          wrongCount: 1,
+          timestamp: now.subtract(const Duration(days: 3)), // Should count
+        ),
+        GameResultData(
+          gameId: 'game3',
+          subjectId: 'subject1',
+          studentId: uid,
+          correctCount: 4,
+          wrongCount: 2,
+          timestamp: now.subtract(const Duration(days: 6)), // Should count
+        ),
+        GameResultData(
+          gameId: 'gameOld',
+          subjectId: 'subject1',
+          studentId: uid,
+          correctCount: 10,
+          wrongCount: 5,
+          timestamp: now.subtract(const Duration(days: 10)), // Should NOT count
+        ),
+      ];
+
+      when(mockGameResultCacheService.getCachedGameResults(uid)).thenAnswer((_) async => mockResults);
+
+      await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
+      await tester.pumpAndSettle();
+      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final dataService = state.getDataService();
+
+      // Act
+      final weekResults = await dataService.getWeekGameResults(studentId: uid);
+
+      // Assert
+      expect(weekResults.length, 7);
+      final totalCorrect = weekResults.fold<int>(0, (sum, item) => sum + (item['correctCount'] as int));
+      final totalWrong = weekResults.fold<int>(0, (sum, item) => sum + (item['wrongCount'] as int));
+
+      expect(totalCorrect, 12);
+      expect(totalWrong, 5);
+
+      verify(mockGameResultCacheService.getCachedGameResults(uid)).called(1);
+    });
   });
 }
 
