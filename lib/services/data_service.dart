@@ -524,23 +524,24 @@ class DataService {
     }
   }
 
-  Future<void> deleteAssignment({required String assignmentId, required String uid,}) async {
+  Future<void> deleteAssignment({required String assignmentId}) async {
     try {
       AssignmentData? assignmentData = await _assignmentCacheService.getCachedAssignmentData(assignmentId);
       assignmentData ??= await _firestoreService.fetchAssignmentData(assignmentId: assignmentId);
+      final String subjectId = assignmentData.subjectId;
 
-      await _assignmentCacheService.deleteAssignment(assignmentId: assignmentId);
-      await _firestoreService.deleteAssignment(assignmentId: assignmentId, uid: uid);
-
-      SubjectData? subjectData = await _subjectCacheService.getCachedSubjectData(assignmentData.subjectId);
-      subjectData ??= await _firestoreService.fetchSubjectData(subjectId: assignmentData.subjectId);
-      await _subjectCacheService.deleteSubject(subjectId: assignmentData.subjectId);
+      SubjectData? subjectData = await _subjectCacheService.getCachedSubjectData(subjectId);
+      subjectData ??= await _firestoreService.fetchSubjectData(subjectId: subjectId);
+      await _subjectCacheService.deleteSubject(subjectId: subjectId);
 
       subjectData.assignments.remove(assignmentId);
 
       await _subjectCacheService.cacheSubjectData(subjectData);
+
+      await _assignmentCacheService.deleteAssignment(assignmentId: assignmentId);
+      await _firestoreService.deleteAssignment(assignmentId: assignmentId, uid: assignmentData.subjectId);
     } catch (e) {
-      print("Error creating Assignment");
+      print("[DATASERVICE] Error deleting Assignment");
     }
   }
 

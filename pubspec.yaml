@@ -30,6 +30,7 @@ dependencies:
   http: ^1.4.0
   uuid: any
   fl_chart: ^0.71.0
+  firebase_analytics: ^11.4.5
 
 dev_dependencies:
   flutter_test:
