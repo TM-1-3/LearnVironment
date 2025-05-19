@@ -124,6 +124,7 @@
 - Fixed bug when creating assignments [#136](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/136)
 - Teachers can now access ````StudentProfilePage```` through their classes [#161](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/161)
 - Teachers can now see individual student progress on ````StudentProfilePage```` through their classes [163](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/163)
+- Fixed bug when creating assignments class name was not displayed [#101](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/101)
 
 ### Test User
 - email: up202307719@g.uporto.pt

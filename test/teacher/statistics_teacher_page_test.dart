@@ -1,11 +1,8 @@
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:learnvironment/authentication/login_screen.dart';
-import 'package:learnvironment/authentication/signup_screen.dart';
 import 'package:learnvironment/data/subject_data.dart';
 import 'package:learnvironment/data/user_data.dart';
-import 'package:learnvironment/main_pages/profile_screen.dart';
 import 'package:learnvironment/services/cache/subject_cache_service.dart';
 import 'package:learnvironment/services/cache/user_cache_service.dart';
 import 'package:learnvironment/services/data_service.dart';
@@ -15,9 +12,6 @@ import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:learnvironment/authentication/auth_gate.dart';
-
-import '../main_pages/editprofilescreen_test.dart';
-
 
 class MockAuthGate extends AuthGate {
   MockAuthGate({key});
