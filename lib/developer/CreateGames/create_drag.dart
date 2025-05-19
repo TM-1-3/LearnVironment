@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/developer/CreateGames/objects/trash_object.dart';
 import 'package:learnvironment/developer/widgets/dropdown/age_dropdown.dart';
@@ -8,6 +7,7 @@ import 'package:learnvironment/developer/widgets/game_form_field.dart';
 import 'package:learnvironment/developer/widgets/forms/trash_object_form.dart';
 import 'package:learnvironment/services/firebase/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
+import 'package:learnvironment/services/image_validator_service.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
@@ -95,22 +95,6 @@ class _CreateDragPageState extends State<CreateDragPage> {
     }
   }
 
-  Future<bool> _validateImage(String imageUrl) async {
-    http.Response res;
-    try {
-      res = await http.get(Uri.parse(imageUrl));
-    } catch (e) {
-      return false;
-    }
-    if (res.statusCode != 200) return false;
-    Map<String, dynamic> data = res.headers;
-    if (data['content-type'] == 'image/jpeg' || data['content-type'] == 'image/png' || data['content-type'] == 'image/gif') {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
@@ -146,19 +130,25 @@ class _CreateDragPageState extends State<CreateDragPage> {
         final answer = object.selectedOption!.split(' ').first.toLowerCase();
 
         //Validate image
-        bool isValidImage = await _validateImage(key);
-        if (!isValidImage) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Please use a valid image URL in Object $index'),
-                backgroundColor: Colors.red,
-              ),
-            );
+        if (mounted) {
+          final ImageValidatorService imageValidatorService = Provider.of<ImageValidatorService>(context, listen: false);
+          bool isValidImage = await imageValidatorService.validateImage(key);
+          if (!isValidImage) {
+            print('Please use a valid image URL in Object $index');
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                      'Please use a valid image URL in Object $index'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+            object.imageUrlController.text = "";
+            return;
           }
-          object.imageUrlController.text = "";
-          return;
         }
+
 
         if (keys.contains(key)) {
           if (mounted) {
@@ -182,20 +172,23 @@ class _CreateDragPageState extends State<CreateDragPage> {
 
       // Validate Logo
       if (gameLogo.isNotEmpty) {
-        bool isValidImage = await _validateImage(gameLogo);
-        if (!isValidImage) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Please use a valid image URL for the Logo'),
-                backgroundColor: Colors.red,
-              ),
-            );
+        if (mounted) {
+          final ImageValidatorService imageValidatorService = Provider.of<ImageValidatorService>(context, listen: false);
+          bool isValidImage = await imageValidatorService.validateImage(gameLogo);
+          if (!isValidImage) {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Please use a valid image URL for the Logo'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+            setState(() {
+              gameLogoController.text = "";
+            });
+            return;
           }
-          setState(() {
-            gameLogoController.text = "";
-          });
-          return;
         }
       } else {
         gameLogo = "assets/placeholder.png";
