@@ -136,18 +136,6 @@ class _AssignmentPageTeacherState extends State<AssignmentPageTeacher> {
           return SingleChildScrollView(
             child: Column(
               children: [
-                ElevatedButton.icon(
-                  onPressed: () => confirmDelete(context),
-                  icon: const Icon(Icons.delete),
-                  key: Key("delete"),
-                  label: const Text('Delete Assignment'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                    textStyle: const TextStyle(fontSize: 16),
-                  ),
-                ),
                 ClipRRect(
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
                   child: ConstrainedBox(
@@ -174,7 +162,7 @@ class _AssignmentPageTeacherState extends State<AssignmentPageTeacher> {
                 Text(
                   gameData.gameName,
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 20),
                 Center(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 30.0, horizontal: 20.0),
@@ -186,6 +174,19 @@ class _AssignmentPageTeacherState extends State<AssignmentPageTeacher> {
                       ),
                       child: const Text('Play Game'),
                     ),
+                  ),
+                ),
+                const SizedBox(height: 40),
+                ElevatedButton.icon(
+                  onPressed: () => confirmDelete(context),
+                  icon: const Icon(Icons.delete),
+                  key: Key("delete"),
+                  label: const Text('Delete Assignment'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                    textStyle: const TextStyle(fontSize: 16),
                   ),
                 ),
               ],
