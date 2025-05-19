@@ -118,6 +118,7 @@
 - Fixed bug that allowed users to have repetitive questions when creating a game  [#143](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/143)
 - Teachers can now see class performance in ````StatisticsTeacherPage```` [#157](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/157)
 - Students can see their weeks progress in ````StudentsStatsPage```` [#158](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/158)
+- Fixed bug in ````AssignmentPageTeacher```` for wrong name on delete assignment [#159](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/159)
 
 ### Test User
 - email: up202307719@g.uporto.pt
