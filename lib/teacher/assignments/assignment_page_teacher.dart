@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:learnvironment/data/assignment_data.dart';
-import 'package:learnvironment/services/firebase/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:provider/provider.dart';
 
@@ -15,10 +14,9 @@ class AssignmentPageTeacher extends StatelessWidget {
   Future<void> _deleteAssignment(BuildContext context) async {
     try {
       final dataService = Provider.of<DataService>(context, listen: false);
-      final authService = Provider.of<AuthService>(context, listen: false);
-      await dataService.deleteAssignment(assignmentId: assignmentData.assId, uid: await authService.getUid());
+      await dataService.deleteAssignment(assignmentId: assignmentData.assId);
       if (context.mounted) {
-        Navigator.of(context).pushReplacementNamed('/auth_gate'); // Go back after deletion
+        Navigator.of(context).pushReplacementNamed('/auth_gate');
       }
     } catch (e) {
       print('[deleteSubject] Error deleting subject: $e');
@@ -34,16 +32,16 @@ class AssignmentPageTeacher extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Subject'),
-        content: const Text('Are you sure you want to delete this subject? This action cannot be undone.'),
+        title: const Text('Delete Assignment'),
+        content: const Text('Are you sure you want to delete this assignment? This action cannot be undone.'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(), // Cancel
+            onPressed: () => Navigator.of(context).pop(),
             child: const Text('Cancel'),
           ),
           ElevatedButton(
             onPressed: () async {
-              Navigator.of(context).pop(); // Close the dialog
+              Navigator.of(context).pop();
               Navigator.of(context).pushReplacementNamed('/auth_gate');
               await _deleteAssignment(context);
             },

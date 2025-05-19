@@ -26,7 +26,7 @@ class StatisticsTeacherPageState extends State<StatisticsTeacherPage> {
     _loadClasses();
   }
 
-  Future<void> _loadClasses() async {
+  Future<void> _loadClasses({bool forceRefresh = false}) async {
     try {
       final dataService = Provider.of<DataService>(context, listen: false);
       final authService = Provider.of<AuthService>(context, listen: false);
@@ -40,7 +40,10 @@ class StatisticsTeacherPageState extends State<StatisticsTeacherPage> {
 
       final classList = <SubjectData>[];
       for (final classId in userData.tClasses) {
-        final subjectData = await dataService.getSubjectData(subjectId: classId);
+        final subjectData = await dataService.getSubjectData(
+          subjectId: classId,
+          forceRefresh: forceRefresh
+        );
         if (subjectData != null) classList.add(subjectData);
       }
 
@@ -65,8 +68,7 @@ class StatisticsTeacherPageState extends State<StatisticsTeacherPage> {
         _selectedClass = null;
       });
 
-      await _loadClasses();
-
+      await _loadClasses(forceRefresh: true);
     } catch (e) {
       print('[StatisticsTeacherPage] Error refreshing StatisticsPage: $e');
     }

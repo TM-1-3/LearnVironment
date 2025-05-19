@@ -4,14 +4,17 @@ class GameResultData {
   final String gameId;
   final int correctCount;
   final int wrongCount;
+  final DateTime timestamp;
 
   GameResultData({
     required this.subjectId,
     required this.studentId,
     required this.gameId,
     required this.correctCount,
-    required this.wrongCount
+    required this.wrongCount,
+    required this.timestamp,
   });
+
 
   Map<String, dynamic> toCache() {
     return {
@@ -20,7 +23,7 @@ class GameResultData {
       'gameId': gameId,
       'correctCount': correctCount,
       'wrongCount': wrongCount,
-      'timestamp': DateTime.now().toIso8601String(),
+      'timestamp': timestamp.toIso8601String(),
     };
   }
 }

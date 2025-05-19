@@ -72,7 +72,7 @@ class TeacherMainPageState extends State<TeacherMainPage> {
       final dataService = Provider.of<DataService>(context, listen: false);
       final authService = Provider.of<AuthService>(context, listen: false);
 
-      final subjectData = await dataService.getSubjectData(subjectId: subjectId);
+      final subjectData = await dataService.getSubjectData(subjectId: subjectId, forceRefresh: false);
       final userId = await authService.getUid();
 
       if (subjectData != null && userId.isNotEmpty && mounted) {

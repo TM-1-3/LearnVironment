@@ -22,6 +22,7 @@ class CreateAssignmentPageState extends State<CreateAssignmentPage> {
   late DateTime _dueDate;
   late String _selectedClass;
   late List<String> _classes = [];
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -32,7 +33,6 @@ class CreateAssignmentPageState extends State<CreateAssignmentPage> {
     _loadClasses();
 
     titleController.addListener(_onTextChanged);
-
   }
 
   void _onTextChanged() {
@@ -184,66 +184,87 @@ class CreateAssignmentPageState extends State<CreateAssignmentPage> {
               }
             },
           ),
-
         ),
         body: Center(
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              const SizedBox(height: 20),
-    Column(
-      children: [
-        const SizedBox(height: 20),
-        TextField(
-          controller: titleController,
-          decoration: const InputDecoration(labelText: 'Title'),
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      controller: titleController,
+                      decoration: const InputDecoration(labelText: 'Title'),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Title is required';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    GestureDetector(
+                      key: const Key("dueDate"),
+                      onTap: _pickDueDate,
+                      child: AbsorbPointer(
+                        child: TextField(
+                          decoration: const InputDecoration(
+                            labelText: 'Due Date',
+                            suffixIcon: Icon(Icons.calendar_today),
+                          ),
+                          controller: TextEditingController(
+                            text: '${_dueDate.year}-${_dueDate.month.toString().padLeft(2, '0')}-${_dueDate.day.toString().padLeft(2, '0')}',
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    DropdownButtonFormField<String>(
+                      value: _selectedClass.isEmpty ? null : _selectedClass,
+                      decoration: const InputDecoration(labelText: 'Class'),
+                      items: _classes.map((type) {
+                        return DropdownMenuItem<String>(
+                          value: type,
+                          child: Text(type),
+                        );
+                      }).toList(),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Class is required';
+                        }
+                        return null;
+                      },
+                      onChanged: (String? newValue) {
+                        if (newValue != null) {
+                          setState(() {
+                            _selectedClass = newValue;
+                            _isSaved = false;
+                          });
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          await _createAssignment(
+                            title: titleController.text.trim(),
+                            dueDate: _dueDate,
+                            turma: _selectedClass,
+                            gameid: widget.gameId,
+                          );
+                        }
+                      },
+                      child: const Text('Save Changes'),
+                    ),
+                  ],
+                ),
+              )
+            ]),
         ),
-        const SizedBox(height: 10),
-        GestureDetector(
-          key: Key("dueDate"),
-          onTap: _pickDueDate,
-          child: AbsorbPointer(
-            child: TextField(
-              decoration: const InputDecoration(
-                labelText: 'Due Date',
-                suffixIcon: Icon(Icons.calendar_today),
-              ),
-              controller: TextEditingController(
-                text: '${_dueDate.year}-${_dueDate.month.toString().padLeft(2, '0')}-${_dueDate.day.toString().padLeft(2, '0')}',
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 10),
-        DropdownButtonFormField<String>(
-          value: null,
-          decoration: const InputDecoration(labelText: 'Class'),
-          items: _classes.map((type) {
-            return DropdownMenuItem<String>(
-              value: type,
-              child: Text(type),
-            );
-          }).toList(),
-          onChanged: (String? newValue) {
-            if (newValue != null) {
-              setState(() {
-                _selectedClass = newValue;
-                _isSaved = false;
-              });
-            }
-          },
-        ),
-        const SizedBox(height: 20),
-        ElevatedButton(
-          onPressed: () async {
-            _createAssignment(title: titleController.text.trim(), dueDate: _dueDate, turma: _selectedClass, gameid: widget.gameId);
-          },
-          child: const Text('Save Changes'),
-        ),
-      ],
-          ),
-        ]),
-      ),
-    ));
+      )
+    );
   }
 }
