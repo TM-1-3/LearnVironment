@@ -14,6 +14,8 @@ import 'package:learnvironment/data/user_data.dart' as _i2;
 import 'package:learnvironment/services/cache/assignment_cache_service.dart'
     as _i14;
 import 'package:learnvironment/services/cache/game_cache_service.dart' as _i12;
+import 'package:learnvironment/services/cache/game_result_cache_service.dart'
+    as _i15;
 import 'package:learnvironment/services/cache/subject_cache_service.dart'
     as _i13;
 import 'package:learnvironment/services/cache/user_cache_service.dart' as _i11;
@@ -591,6 +593,21 @@ class MockFirestoreService extends _i1.Mock implements _i6.FirestoreService {
         returnValueForMissingStub:
             _i7.Future<List<_i10.RemoteMessage>>.value(<_i10.RemoteMessage>[]),
       ) as _i7.Future<List<_i10.RemoteMessage>>);
+
+  @override
+  _i7.Future<List<_i8.GameResultData>> fetchGameResults(
+          {required String? studentId}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #fetchGameResults,
+          [],
+          {#studentId: studentId},
+        ),
+        returnValue:
+            _i7.Future<List<_i8.GameResultData>>.value(<_i8.GameResultData>[]),
+        returnValueForMissingStub:
+            _i7.Future<List<_i8.GameResultData>>.value(<_i8.GameResultData>[]),
+      ) as _i7.Future<List<_i8.GameResultData>>);
 }
 
 /// A class which mocks [UserCacheService].
@@ -867,6 +884,56 @@ class MockAssignmentCacheService extends _i1.Mock
   _i7.Future<void> clearAssignmentCache() => (super.noSuchMethod(
         Invocation.method(
           #clearAssignmentCache,
+          [],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+}
+
+/// A class which mocks [GameResultCacheService].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGameResultCacheService extends _i1.Mock
+    implements _i15.GameResultCacheService {
+  @override
+  _i7.Future<void> cacheGameResult(_i8.GameResultData? result) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #cacheGameResult,
+          [result],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+
+  @override
+  _i7.Future<List<_i8.GameResultData>?> getCachedGameResults(
+          String? studentId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getCachedGameResults,
+          [studentId],
+        ),
+        returnValue: _i7.Future<List<_i8.GameResultData>?>.value(),
+        returnValueForMissingStub:
+            _i7.Future<List<_i8.GameResultData>?>.value(),
+      ) as _i7.Future<List<_i8.GameResultData>?>);
+
+  @override
+  _i7.Future<void> clearCachedResults(String? studentId) => (super.noSuchMethod(
+        Invocation.method(
+          #clearCachedResults,
+          [studentId],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+
+  @override
+  _i7.Future<void> clearAll() => (super.noSuchMethod(
+        Invocation.method(
+          #clearAll,
           [],
         ),
         returnValue: _i7.Future<void>.value(),

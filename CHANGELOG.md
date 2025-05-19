@@ -80,6 +80,7 @@
 - As a game developer I want to be able to add a description to my game so that users can understand what it is about before playing it. [#20](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/20)
 - As a game developer I want to be able to associate my game with an age group so that my games reach their target audience. [#21](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/21)
 - As a teacher I want to be able to monitor class performance so that I can see the progress of the overall class. [#13](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/13)
+- As a student I want to be able to see my statistics so that I can see my performance. [#27](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/27)
 
 ### Detailed description
 - Teachers can now remove students from their classes [#107](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/107)
@@ -115,7 +116,10 @@
 - Fixed Image bug in ````QuizInitialScreen```` [#141](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/141)
 - Added a way for a user to delete the cache and made the delete account button user-friendly [#153](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/153)
 - Fixed bug that allowed users to have repetitive questions when creating a game  [#143](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/143)
-- Teachers can now see class performance in ````StatisticsTeacherPage```` [#157](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/157)
+- Teachers can now see class performance in ````StatisticsTeacherPage```` [#157](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/157)
+- Students can see their weeks progress in ````StudentsStatsPage```` [#158](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/158)
+- Fixed bug in ````AssignmentPageTeacher```` for wrong name on delete assignment [#159](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/100)
+- Fixed bug when creating assignments [#136](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/136)
 
 ### Test User
 - email: up202307719@g.uporto.pt
