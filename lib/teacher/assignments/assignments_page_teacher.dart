@@ -121,13 +121,13 @@ class AssignmentsPageTeacherState extends State<AssignmentsPageTeacher> {
                 builder: (context, constraints) {
                   double mainAxisExtent = 600.0;
                   if (constraints.maxWidth <= 600) {
-                    mainAxisExtent = constraints.maxWidth + 45;
+                    mainAxisExtent = constraints.maxWidth;
                   } else if (constraints.maxWidth <= 1000) {
-                    mainAxisExtent = 695;
+                    mainAxisExtent = 650;
                   } else if (constraints.maxWidth <= 2000) {
-                    mainAxisExtent = 1095;
+                    mainAxisExtent = 950;
                   } else {
-                    mainAxisExtent = 1545;
+                    mainAxisExtent = 1000;
                   }
                   final filteredAssignments = getFilteredAssignments();
                   return filteredAssignments.isNotEmpty
@@ -147,6 +147,7 @@ class AssignmentsPageTeacherState extends State<AssignmentsPageTeacher> {
                         assignmentTitle: assignment['title'],
                         assignmentId: assignment['assignmentId'],
                         loadAssignment: _loadAssignment,
+                        gameId: assignment["gameId"],
                       );
                     },
                   )

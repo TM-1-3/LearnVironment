@@ -147,6 +147,7 @@ class AssignmentsPageStudentState extends State<AssignmentsPageStudent> {
                         assignmentTitle: assignment['title'],
                         assignmentId: assignment['assignmentId'],
                         loadAssignment: _loadAssignment,
+                        gameId: assignment["gameId"],
                       );
                     },
                   )
