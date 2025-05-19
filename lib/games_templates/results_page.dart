@@ -45,7 +45,7 @@ class ResultsPage extends StatelessWidget {
       List<String> studentSubjectIds = userData?.stClasses ?? [];
 
       for (final subjectId in studentSubjectIds) {
-        SubjectData? subject = await dataService.getSubjectData(subjectId: subjectId);
+        SubjectData? subject = await dataService.getSubjectData(subjectId: subjectId, forceRefresh: false);
         if (subject != null) {
           print(subject.assignments);
           for (final assignmentId in subject.assignments) {
@@ -59,6 +59,7 @@ class ResultsPage extends StatelessWidget {
                 gameId: assignment.gameId,
                 correctCount: correctCount,
                 wrongCount: wrongCount,
+                timestamp: DateTime.now(),
               );
 
               await dataService.recordGameResult(result);
