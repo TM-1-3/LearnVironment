@@ -1,34 +1,90 @@
+import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:learnvironment/authentication/login_screen.dart';
+import 'package:learnvironment/authentication/signup_screen.dart';
 import 'package:learnvironment/data/subject_data.dart';
 import 'package:learnvironment/data/user_data.dart';
+import 'package:learnvironment/main_pages/profile_screen.dart';
+import 'package:learnvironment/services/cache/subject_cache_service.dart';
+import 'package:learnvironment/services/cache/user_cache_service.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:learnvironment/services/firebase/auth_service.dart';
 import 'package:learnvironment/teacher/statistics_teacher_page.dart';
 import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:learnvironment/authentication/auth_gate.dart';
+
+import '../main_pages/editprofilescreen_test.dart';
+
+
+class MockAuthGate extends AuthGate {
+  MockAuthGate({key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(
+        child: Text('Mock AuthGate Screen'),
+      ),
+    );
+  }
+}
 
 class MockDataService extends Mock implements DataService {
   @override
   Future<UserData?> getUserData({required String userId}) async {
-    return UserData(
-      id: 'teacher1',
-      name: 'Mr. Smith',
-      email: 'smith@example.com',
-      username: 'teacher1',
-      role: 'teacher',
-      birthdate: DateTime(1980, 5, 10),
-      gamesPlayed: [],
-      myGames: [],
-      img: '',
-      stClasses: [],
-      tClasses: ['Class A', 'Class B'],
-    );
+    if (userId == 'teacher1') {
+      return UserData(
+        id: 'teacher1',
+        name: 'Mr. Smith',
+        email: 'smith@example.com',
+        username: 'teacher1',
+        role: 'teacher',
+        birthdate: DateTime(1980, 5, 10),
+        gamesPlayed: [],
+        myGames: [],
+        img: '',
+        stClasses: [],
+        tClasses: ['Class A', 'Class B'],
+      );
+    } else if (userId == 'student1') {
+      return UserData(
+        id: 'student1',
+        name: 'Alice',
+        email: 'alice@example.com',
+        username: 'alice123',
+        role: 'student',
+        birthdate: DateTime(2005, 2, 14),
+        gamesPlayed: [],
+        myGames: [],
+        img: '',
+        stClasses: ['Class A'],
+        tClasses: [],
+      );
+    } else if (userId == 'student2') {
+      return UserData(
+        id: 'student2',
+        name: 'Bob',
+        email: 'bob@example.com',
+        username: 'bob321',
+        role: 'student',
+        birthdate: DateTime(2004, 8, 30),
+        gamesPlayed: [],
+        myGames: [],
+        img: '',
+        stClasses: ['Class A'],
+        tClasses: [],
+      );
+    }
+
+    return null;
   }
 
+
   @override
-  Future<SubjectData?> getSubjectData({required String subjectId}) async {
+  Future<SubjectData?> getSubjectData({required String subjectId, bool forceRefresh = false}) async {
     if (subjectId == 'Class A') {
       return SubjectData(
         subjectId: 'Class A',
@@ -38,7 +94,7 @@ class MockDataService extends Mock implements DataService {
           {'studentId': 'student1', 'correctCount': 5, 'wrongCount': 2},
           {'studentId': 'student2', 'correctCount': 3, 'wrongCount': 4},
         ],
-        subjectLogo: '',
+        subjectLogo: 'placeholder.png',
         assignments: [],
       );
     } else if (subjectId == 'Class B') {
@@ -47,7 +103,7 @@ class MockDataService extends Mock implements DataService {
         subjectName: 'Class B',
         teacher: 'teacher1',
         students: [],
-        subjectLogo: '',
+        subjectLogo: 'placeholder.png',
         assignments: [],
       );
     }
@@ -56,56 +112,77 @@ class MockDataService extends Mock implements DataService {
 }
 
 class MockAuthService extends Mock implements AuthService {
+  late String uid;
+
   @override
   Future<String> getUid() async => 'teacher1';
+
+  MockAuthService({MockFirebaseAuth? firebaseAuth}) {
+    uid = firebaseAuth?.currentUser?.uid ?? '';
+  }
 }
 
+class MockUserCache extends Mock implements UserCacheService {}
+class MockSubjectCacheService extends Mock implements SubjectCacheService {}
+
+
 void main() {
-  late MockDataService mockDataService;
-  late MockAuthService mockAuthService;
-  late Widget testWidget;
+  late MockFirebaseAuth auth;
+  late MockAuthService authService;
+  late MockUserCache userCache;
+  late MockDataService dataService;
+  late MockSubjectCacheService subjectCache;
+
 
   setUp(() {
-    mockDataService = MockDataService();
-    mockAuthService = MockAuthService();
+    auth = MockFirebaseAuth(
+        mockUser: MockUser(uid: 'test', email: 'john@example.com'),
+        signedIn: true);
+    authService = MockAuthService(firebaseAuth: auth);
+    userCache = MockUserCache();
+    dataService = MockDataService();
+    subjectCache = MockSubjectCacheService();
 
-    testWidget = MultiProvider(
-      providers: [
-        Provider<DataService>(create: (_) => mockDataService),
-        Provider<AuthService>(create: (_) => mockAuthService),
-      ],
-      child: const MaterialApp(home: StatisticsTeacherPage()),
-    );
   });
 
+  Widget createTestWidget(Widget child) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<AuthService>(create: (_) => authService),
+        Provider<DataService>(create: (_) => dataService),
+        Provider<UserCacheService>(create: (_) => userCache),
+        Provider<SubjectCacheService>(create: (_) => subjectCache),
+      ],
+      child: MaterialApp(
+        home: Material(child: child), // 🟢 Add Material ancestor
+        routes: {
+          '/auth_gate': (context) => MockAuthGate(),
+        },
+      ),
+    );
+  }
+
   group('StatisticsTeacherPage Widget Tests', () {
-    testWidgets('shows dropdown and chart when a class is selected', (tester) async {
-      await tester.pumpWidget(testWidget);
+    testWidgets('Shows dropdown and chart when a class is selected', (tester) async {
+      await tester.pumpWidget(createTestWidget(const StatisticsTeacherPage()));
       await tester.pumpAndSettle();
 
-      // Open the dropdown
-      await tester.ensureVisible(find.byKey(Key('DropdownButton')));
-      await tester.tap(find.byKey(Key('DropdownButton')));
-      await tester.pump(); // just a short pump first
-      await tester.pump(const Duration(seconds: 1)); // then a longer one
+      final dropdownFinder = find.byKey(const Key('DropdownButton'));
+      await tester.ensureVisible(dropdownFinder);
+      await tester.tap(dropdownFinder);
+      await tester.pumpAndSettle();
 
-
-      // ✅ Wait until Class A shows up
-      expect(find.text('Class A'), findsWidgets); // Use `findsWidgets` not `findsOneWidget`
-
-      // Tap the menu item
+      expect(find.text('Class A'), findsWidgets);
       await tester.tap(find.text('Class A').last);
       await tester.pumpAndSettle();
 
-      // Verify chart & names
       expect(find.byType(BarChart), findsOneWidget);
-      expect(find.text('student1'), findsOneWidget); // Should be the name from `getUserData`
-      expect(find.text('student2'), findsOneWidget);
+      expect(find.text('Alice'), findsOneWidget);
+      expect(find.text('Bob'), findsOneWidget);
     });
 
-
     testWidgets('shows message when no students exist for selected class', (tester) async {
-      await tester.pumpWidget(testWidget);
+      await tester.pumpWidget(createTestWidget(const StatisticsTeacherPage()));
       await tester.pumpAndSettle();
 
       await tester.tap(find.byKey(const Key('DropdownButton')));
@@ -118,7 +195,7 @@ void main() {
     });
 
     testWidgets('refresh button reloads class list', (tester) async {
-      await tester.pumpWidget(testWidget);
+      await tester.pumpWidget(createTestWidget(const StatisticsTeacherPage()));
       await tester.pumpAndSettle();
 
       final refreshButton = find.byIcon(Icons.refresh);
@@ -127,7 +204,7 @@ void main() {
       await tester.tap(refreshButton);
       await tester.pumpAndSettle();
 
-      expect(find.byType(DropdownButtonFormField<SubjectData>), findsOneWidget);
+      expect(find.byKey(const Key('DropdownButton')), findsOneWidget);
     });
   });
 }
