@@ -417,12 +417,20 @@ You can find below information and references related with the project managemen
 **Sprint Retrospective:**
 
 **Did Well:**
-  
-  
+
+- **Finishing the Implementation of the Main Features:** By the end of the sprint, all of the app´s main features were fully implemented, improved, tested, and free of bugs, making the final product a success;
+
+- **Starting Tasks Earlier:** As a result of the team’s experience in the previous sprint, members decided to start their tasks as early as possible. This not only helped prevent external factors from compromising task completion, but also allowed for higher quality implementation by providing more time for development, improvement, testing, and interaction with the features.
+
+
 **Do Differently:**
+
+- **Nothing Significant:** In this final coding sprint, nothing significant occurred that delayed or compromised the development process. By the end of the project, the team collectively demonstrated that it had learned from past mistakes and challenges, resulting in a productive and satisfactory working environment.
   
 
 **Challenges:**
+
+- **Balancing All the Work:** During the sprint, team members felt somewhat overwhelmed by the number of projects, exams, and deadlines that were rapidly approaching—on top of the need to develop the app. Fortunately, the team remained dedicated to delivering the best possible final product and managed to complete the majority of the work successfully.
 
 
 **Board at the Beginning of Sprint 3**
