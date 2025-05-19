@@ -134,7 +134,6 @@ class _CreateDragPageState extends State<CreateDragPage> {
           final ImageValidatorService imageValidatorService = Provider.of<ImageValidatorService>(context, listen: false);
           bool isValidImage = await imageValidatorService.validateImage(key);
           if (!isValidImage) {
-            print('Please use a valid image URL in Object $index');
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -165,7 +164,6 @@ class _CreateDragPageState extends State<CreateDragPage> {
 
         tips[key] = tip;
         correctAnswers[key] = answer;
-        print(key);
         index++;
         keys.add(key);
       }

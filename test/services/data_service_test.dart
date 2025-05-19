@@ -2316,11 +2316,11 @@ void main() {
 
       // Act
       final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
-      await state.getDataService().deleteAssignment(assignmentId: assignmentId, uid: uid);
+      await state.getDataService().deleteAssignment(assignmentId: assignmentId);
 
       // Assert
       verify(mockAssignmentCacheService.deleteAssignment(assignmentId: assignmentId)).called(1);
-      verify(mockFirestoreService.deleteAssignment(assignmentId: assignmentId, uid: uid)).called(1);
+      verify(mockFirestoreService.deleteAssignment(assignmentId: assignmentId, uid: 'subject1')).called(1);
       verify(mockSubjectCacheService.deleteSubject(subjectId: 'subject1')).called(1);
       verify(mockSubjectCacheService.cacheSubjectData(subjectData)).called(1);
     });
@@ -2361,12 +2361,12 @@ void main() {
 
       // Act
       final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
-      await state.getDataService().deleteAssignment(assignmentId: assignmentId, uid: uid);
+      await state.getDataService().deleteAssignment(assignmentId: assignmentId);
 
       // Assert
       verify(mockFirestoreService.fetchAssignmentData(assignmentId: assignmentId)).called(1);
       verify(mockAssignmentCacheService.deleteAssignment(assignmentId: assignmentId)).called(1);
-      verify(mockFirestoreService.deleteAssignment(assignmentId: assignmentId, uid: uid)).called(1);
+      verify(mockFirestoreService.deleteAssignment(assignmentId: assignmentId, uid: 'subject1')).called(1);
       verify(mockSubjectCacheService.deleteSubject(subjectId: 'subject1')).called(1);
       verify(mockSubjectCacheService.cacheSubjectData(subjectData)).called(1);
     });
@@ -2386,7 +2386,7 @@ void main() {
 
       // Act
       final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
-      await state.getDataService().deleteAssignment(assignmentId: assignmentId, uid: uid);
+      await state.getDataService().deleteAssignment(assignmentId: assignmentId);
 
       // Assert
       verify(mockAssignmentCacheService.getCachedAssignmentData(assignmentId)).called(1);

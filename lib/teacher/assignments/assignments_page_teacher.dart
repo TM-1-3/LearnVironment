@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:learnvironment/services/cache/user_cache_service.dart';
 import 'package:learnvironment/teacher/assignments/assignment_page_teacher.dart';
 import 'package:learnvironment/teacher/widgets/assignment_card_teacher.dart';
 import 'package:learnvironment/services/firebase/auth_service.dart';
@@ -73,10 +74,24 @@ class AssignmentsPageTeacherState extends State<AssignmentsPageTeacher> {
     }
   }
 
+  Future<void> _refreshAssignments() async {
+    try {
+      final dataService = Provider.of<DataService>(context, listen: false);
+      final userCacheService = Provider.of<UserCacheService>(context, listen: false);
+      await userCacheService.clearUserCache();
+
+      final fetchedSubjects = await dataService.getAllAssignments(subjectId: widget.id);
+      print('[AssignmentsPage] Refreshed assignments');
+      setState((){
+        assignments = fetchedSubjects;
+      });
+    } catch (e) {
+      print('[AssignmentsPage] Error fetching assignments: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final filteredAssignments = getFilteredAssignments();
-
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -100,41 +115,55 @@ class AssignmentsPageTeacherState extends State<AssignmentsPageTeacher> {
       body: Column(
         children: [
           Expanded(
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                double mainAxisExtent = 600.0;
-                if (constraints.maxWidth <= 600) {
-                  mainAxisExtent = constraints.maxWidth+45;
-                } else if (constraints.maxWidth <= 1000) {
-                  mainAxisExtent = 695;
-                } else if (constraints.maxWidth <= 2000) {
-                  mainAxisExtent = 1095;
-                } else {
-                  mainAxisExtent = 1545;
-                }
-                return filteredAssignments.isNotEmpty
-                    ? GridView.builder(
-                  padding: const EdgeInsets.all(8),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 10.0,
-                    mainAxisSpacing: 10.0,
-                    mainAxisExtent: mainAxisExtent,
-                  ),
-                  itemCount: filteredAssignments.length,
-                  itemBuilder: (context, index) {
-                    final assignment = filteredAssignments[index];
-                    return AssignmentCardTeacher(
-                      assignmentTitle: assignment['title'],
-                      assignmentId: assignment['assignmentId'],
-                      loadAssignment: _loadAssignment,
-                    );
-                  },
-                )
-                    : const Center(
-                  child: Text('Create assignments by pressing the plus icon in the games page!'),
-                );
-              },
+            child: RefreshIndicator(
+              onRefresh: _refreshAssignments,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  double mainAxisExtent = 600.0;
+                  if (constraints.maxWidth <= 600) {
+                    mainAxisExtent = constraints.maxWidth + 45;
+                  } else if (constraints.maxWidth <= 1000) {
+                    mainAxisExtent = 695;
+                  } else if (constraints.maxWidth <= 2000) {
+                    mainAxisExtent = 1095;
+                  } else {
+                    mainAxisExtent = 1545;
+                  }
+                  final filteredAssignments = getFilteredAssignments();
+                  return filteredAssignments.isNotEmpty
+                      ? GridView.builder(
+                    padding: const EdgeInsets.all(8),
+                    physics: const AlwaysScrollableScrollPhysics(), // required for RefreshIndicator
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 10.0,
+                      mainAxisSpacing: 10.0,
+                      mainAxisExtent: mainAxisExtent,
+                    ),
+                    itemCount: filteredAssignments.length,
+                    itemBuilder: (context, index) {
+                      final assignment = filteredAssignments[index];
+                      return AssignmentCardTeacher(
+                        assignmentTitle: assignment['title'],
+                        assignmentId: assignment['assignmentId'],
+                        loadAssignment: _loadAssignment,
+                      );
+                    },
+                  )
+                      : ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    children: const [
+                      SizedBox(height: 200),
+                      Center(
+                        child: Text(
+                          'Create assignments by pressing the plus icon in the games page!',
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
             ),
           ),
         ],

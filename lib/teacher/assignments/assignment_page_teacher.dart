@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:learnvironment/data/assignment_data.dart';
-import 'package:learnvironment/services/firebase/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:provider/provider.dart';
 
@@ -15,8 +14,7 @@ class AssignmentPageTeacher extends StatelessWidget {
   Future<void> _deleteAssignment(BuildContext context) async {
     try {
       final dataService = Provider.of<DataService>(context, listen: false);
-      final authService = Provider.of<AuthService>(context, listen: false);
-      await dataService.deleteAssignment(assignmentId: assignmentData.assId, uid: await authService.getUid());
+      await dataService.deleteAssignment(assignmentId: assignmentData.assId);
       if (context.mounted) {
         Navigator.of(context).pushReplacementNamed('/auth_gate');
       }
