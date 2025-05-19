@@ -5,6 +5,8 @@ import 'package:learnvironment/services/data_service.dart';
 import 'package:learnvironment/teacher/assignments/assignments_page_teacher.dart';
 import 'package:provider/provider.dart';
 
+import '../../student/student_profile.dart';
+
 class TeacherSubjectScreen extends StatefulWidget {
   final SubjectData subjectData;
 
@@ -247,11 +249,17 @@ class _TeacherSubjectScreenState extends State<TeacherSubjectScreen> {
                                   }
                                 },
                               ),
-                            ),
-                          );
-                        }
-                      },
-                    );
+                              onTap: () {
+                              // Navigate to the student profile page
+                              Navigator.of(context).push(
+                              MaterialPageRoute(
+                              builder: (context) => StudentProfilePage(studentId: studentId),
+                              ),
+                            );
+                          }
+                        ));
+                      }
+                    });
                   },
                 )
                     : const Padding(
