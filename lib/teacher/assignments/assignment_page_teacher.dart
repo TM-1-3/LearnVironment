@@ -160,7 +160,11 @@ class _AssignmentPageTeacherState extends State<AssignmentPageTeacher> {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  gameData.gameName,
+                  "Game: ${gameData.gameName}",
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  "Due Date: ${assignmentData.dueDate}",
                 ),
                 const SizedBox(height: 20),
                 Center(
