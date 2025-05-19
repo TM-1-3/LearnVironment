@@ -3,6 +3,7 @@ import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:learnvironment/authentication/auth_gate.dart';
+import 'package:learnvironment/data/subject_data.dart';
 import 'package:learnvironment/data/user_data.dart';
 import 'package:learnvironment/teacher/assignments/create_assignment_page.dart';
 import 'package:learnvironment/services/data_service.dart';
@@ -57,6 +58,11 @@ class MockDataService extends Mock implements DataService {
     if (_throwErrorOnSave) {
       throw Exception('Failed to save assignment');
     }
+  }
+
+  @override
+  Future<SubjectData?> getSubjectData({required String subjectId, required bool forceRefresh}) async {
+    return SubjectData(subjectId: subjectId, subjectLogo: "", subjectName: subjectId, teacher: "", students: [], assignments: []);
   }
 }
 
