@@ -5,6 +5,7 @@ import 'package:learnvironment/authentication/auth_gate.dart';
 import 'package:learnvironment/data/game_data.dart';
 import 'package:learnvironment/developer/CreateGames/create_quiz.dart';
 import 'package:learnvironment/developer/new_game.dart';
+import 'package:learnvironment/services/image_validator_service.dart';
 import 'package:mockito/mockito.dart';
 import 'package:learnvironment/services/firebase/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
@@ -13,7 +14,19 @@ import 'package:provider/provider.dart';
 class MockDataService extends Mock implements DataService {
   @override
   Future<void> createGame({required String uid, required GameData game}) async {
-    print("created game");
+    if (game.gameName == "fail") {
+      throw Exception("Failed");
+    }
+  }
+}
+
+class MockImageValidatorService extends Mock implements ImageValidatorService {
+  @override
+  Future<bool> validateImage(String imageUrl) async {
+    if (imageUrl == 'invalid image') {
+      return false;
+    }
+    return true;
   }
 }
 
@@ -59,6 +72,7 @@ void main() {
       providers: [
         ChangeNotifierProvider<AuthService>(create: (_) => authService),
         Provider<DataService>(create: (context) => MockDataService()),
+        Provider<ImageValidatorService>(create: (_) => MockImageValidatorService()),
       ],
       child: MaterialApp(
         home: CreateQuizPage(),
