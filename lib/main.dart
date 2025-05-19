@@ -15,6 +15,7 @@ import 'package:learnvironment/services/cache/user_cache_service.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:learnvironment/services/firebase/firestore_service.dart';
 import 'package:learnvironment/services/cache/subject_cache_service.dart';
+import 'package:learnvironment/services/image_validator_service.dart';
 import 'package:provider/provider.dart';
 import 'package:learnvironment/services/firebase/messaging_service.dart';
 
@@ -59,6 +60,7 @@ void main() async {
         Provider<GameCacheService>(create: (_) => GameCacheService()),
         Provider<SubjectCacheService>(create: (_) => SubjectCacheService()),
         Provider<AssignmentCacheService>(create: (_) => AssignmentCacheService()),
+        Provider<ImageValidatorService>(create: (_) => ImageValidatorService()),
         Provider<DataService>(create: (context) => DataService(context)),
       ],
       child: App(),
