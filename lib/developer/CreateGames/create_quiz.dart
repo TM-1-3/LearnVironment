@@ -173,8 +173,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
       if (gameLogo.isNotEmpty) {
         if (mounted) {
           final ImageValidatorService imageValidatorService = Provider.of<ImageValidatorService>(context, listen: false);
-          bool isValidImage = await imageValidatorService.validateImage(
-              gameLogo);
+          bool isValidImage = await imageValidatorService.validateImage(gameLogo);
           if (!isValidImage) {
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(

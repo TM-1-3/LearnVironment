@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:learnvironment/data/subject_data.dart';
+import 'package:learnvironment/services/data_service.dart';
 import 'package:learnvironment/services/firebase/auth_service.dart';
+import 'package:learnvironment/services/image_validator_service.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
-
-import '../../data/subject_data.dart';
-import '../../services/data_service.dart';
 
 class CreateSubjectPage extends StatefulWidget {
   const CreateSubjectPage({super.key});
@@ -19,22 +18,6 @@ class _CreateSubjectPageState extends State<CreateSubjectPage> {
   final _nameController = TextEditingController();
   final _logoController = TextEditingController();
   bool _isLoading = false;
-
-  Future<bool> _validateImage(String imageUrl) async {
-    http.Response res;
-    try {
-      res = await http.get(Uri.parse(imageUrl));
-    } catch (e) {
-      return false;
-    }
-    if (res.statusCode != 200) return false;
-    Map<String, dynamic> data = res.headers;
-    if (data['content-type'] == 'image/jpeg' || data['content-type'] == 'image/png' || data['content-type'] == 'image/gif') {
-      return true;
-    } else {
-      return false;
-    }
-  }
 
   Future<void> _createSubject() async {
     if (!_formKey.currentState!.validate()) return;
@@ -50,8 +33,12 @@ class _CreateSubjectPageState extends State<CreateSubjectPage> {
 
       String value = _logoController.text.trim();
 
-      if (!await _validateImage(value)) {
-        value = "assets/placeholder.png";
+      if (mounted) {
+        final ImageValidatorService imageValidatorService = Provider.of<ImageValidatorService>(context, listen: false);
+        bool isValidImage = await imageValidatorService.validateImage(value);
+        if (!isValidImage) {
+          value = "assets/placeholder.png";
+        }
       }
       String uid = await authService.getUid();
 
