@@ -1009,7 +1009,7 @@ void main() {
       final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
 
       // Act
-      final subject = await state.getDataService().getSubjectData(subjectId: subjectId);
+      final subject = await state.getDataService().getSubjectData(subjectId: subjectId, forceRefresh: false);
 
       // Assert
       expect(subject, isNotNull);
@@ -1031,7 +1031,7 @@ void main() {
       final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
 
       // Act
-      final subject = await state.getDataService().getSubjectData(subjectId: subjectId);
+      final subject = await state.getDataService().getSubjectData(subjectId: subjectId, forceRefresh: false);
 
       // Assert
       expect(subject, isNotNull);
@@ -1055,7 +1055,7 @@ void main() {
       final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
 
       // Act
-      final subject = await state.getDataService().getSubjectData(subjectId: subjectId);
+      final subject = await state.getDataService().getSubjectData(subjectId: subjectId, forceRefresh: false);
 
       // Assert
       expect(subject, isNull);

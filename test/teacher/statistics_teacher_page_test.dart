@@ -46,7 +46,7 @@ class MockDataService extends Mock implements DataService {
   }
 
   @override
-  Future<SubjectData?> getSubjectData({required String subjectId}) async {
+  Future<SubjectData?> getSubjectData({required String subjectId, required bool forceRefresh}) async {
     if (subjectId == 'Class A') {
       return SubjectData(
         subjectId: 'Class A',

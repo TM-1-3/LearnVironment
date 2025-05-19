@@ -277,7 +277,7 @@ class DataService {
       await _firestoreService.recordGameResult(result);
       print('[DataService] Game result recorded successfully for student: ${result.studentId}, game: ${result.gameId}');
 
-      final subjectData = await getSubjectData(subjectId: result.subjectId);
+      final subjectData = await getSubjectData(subjectId: result.subjectId, forceRefresh: false);
 
       await _firestoreService.updateStudentCount(gameResultData: result, subjectData: subjectData);
 
@@ -303,12 +303,14 @@ class DataService {
 
                                                                   // SUBJECTS (Aka CLASSES) //
   //======================================= SUBJECTS ====================================//
-  Future<SubjectData?> getSubjectData({required String subjectId}) async {
+  Future<SubjectData?> getSubjectData({required String subjectId, required bool forceRefresh}) async {
     try {
-      final cachedSubject = await _subjectCacheService.getCachedSubjectData(subjectId);
-      if (cachedSubject != null) {
-        print('[DataService] Loaded subject from cache');
-        return cachedSubject;
+      if (!forceRefresh) {
+        final cachedSubject = await _subjectCacheService.getCachedSubjectData(subjectId);
+        if (cachedSubject != null) {
+          print('[DataService] Loaded subject from cache');
+          return cachedSubject;
+        }
       }
 
       final freshSubject = await _firestoreService.fetchSubjectData(subjectId: subjectId);
@@ -474,7 +476,7 @@ class DataService {
       List<Map<String, dynamic>> loadedAssignments = [];
 
       // Try to load each cached subject
-      SubjectData? subjectData = await getSubjectData(subjectId: subjectId);
+      SubjectData? subjectData = await getSubjectData(subjectId: subjectId, forceRefresh: false);
       if (subjectData == null) {
         throw Exception("Assignments is null");
       }
