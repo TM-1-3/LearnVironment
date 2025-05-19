@@ -116,9 +116,10 @@
 - Fixed Image bug in ````QuizInitialScreen```` [#141](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/141)
 - Added a way for a user to delete the cache and made the delete account button user-friendly [#153](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/153)
 - Fixed bug that allowed users to have repetitive questions when creating a game  [#143](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/143)
-- Teachers can now see class performance in ````StatisticsTeacherPage```` [#157](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/157)
-- Students can see their weeks progress in ````StudentsStatsPage```` [#158](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/158)
-- Fixed bug in ````AssignmentPageTeacher```` for wrong name on delete assignment [#159](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/159)
+- Teachers can now see class performance in ````StatisticsTeacherPage```` [#157](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/157)
+- Students can see their weeks progress in ````StudentsStatsPage```` [#158](https://github.com/LEIC-ES-2024-25/2LEIC13T3/pull/158)
+- Fixed bug in ````AssignmentPageTeacher```` for wrong name on delete assignment [#159](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/100)
+- Fixed bug when creating assignments [#136](https://github.com/LEIC-ES-2024-25/2LEIC13T3/issues/136)
 
 ### Test User
 - email: up202307719@g.uporto.pt
