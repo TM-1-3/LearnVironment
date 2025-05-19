@@ -359,7 +359,7 @@ void main() {
     expect(find.byType(MockAuthGate), findsOneWidget);
   });
 
-  testWidgets('Creates a valid drag game', (WidgetTester tester) async {
+  testWidgets('Handles exceptions gracefully', (WidgetTester tester) async {
     await tester.pumpWidget(testWidget);
 
     //Fill all text fields
