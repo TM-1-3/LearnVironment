@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:learnvironment/data/subject_data.dart';
 import 'package:learnvironment/services/data_service.dart';
+import 'package:learnvironment/student/assignments_page_student.dart';
 import 'package:provider/provider.dart';
 
 class StudentSubjectScreen extends StatelessWidget {
@@ -71,6 +72,20 @@ class StudentSubjectScreen extends StatelessWidget {
                 Text(
                   subjectData.subjectName,
                   style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 40),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => AssignmentsPageStudent(id: subjectData.subjectId))) ;
+                  },
+                  child: Card(
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+                      child: Text("View Assignments", style: TextStyle(fontSize: 20)),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 30),
                 const Text(
