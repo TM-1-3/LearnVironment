@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:learnvironment/services/cache/user_cache_service.dart';
 import 'package:learnvironment/student/assignment_page_student.dart';
-import 'package:learnvironment/teacher/assignments/assignment_page_teacher.dart';
 import 'package:learnvironment/teacher/widgets/assignment_card_teacher.dart';
 import 'package:learnvironment/services/firebase/auth_service.dart';
 import 'package:learnvironment/services/data_service.dart';
