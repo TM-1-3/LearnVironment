@@ -812,4 +812,33 @@ class FirestoreService {
     }
     return notifications;
   }
+
+  Future<List<GameResultData>> fetchGameResults({required String studentId}) async {
+    try {
+      final querySnapshot = await _firestore
+          .collection('users')
+          .doc(studentId)
+          .collection('game_results')
+          .orderBy('timestamp', descending: true)
+          .get();
+
+      final results = querySnapshot.docs.map((doc) {
+        final data = doc.data();
+        return GameResultData(
+          studentId: studentId,
+          subjectId: data['subjectId'] ?? '',
+          gameId: data['gameId'] ?? '',
+          correctCount: data['correctCount'] ?? 0,
+          wrongCount: data['wrongCount'] ?? 0,
+          timestamp: (data['timestamp'] as Timestamp?)!.toDate(),
+        );
+      }).toList();
+
+      print('[FirestoreService] Fetched ${results.length} game results for student $studentId');
+      return results;
+    } catch (e, stackTrace) {
+      print('[FirestoreService] Error fetching game results: $e\n$stackTrace');
+      rethrow;
+    }
+  }
 }

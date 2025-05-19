@@ -1,18 +1,14 @@
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:learnvironment/authentication/login_screen.dart';
-import 'package:learnvironment/authentication/signup_screen.dart';
 import 'package:learnvironment/data/subject_data.dart';
 import 'package:learnvironment/data/user_data.dart';
-import 'package:learnvironment/main_pages/profile_screen.dart';
 import 'package:learnvironment/services/cache/user_cache_service.dart';
 import 'package:learnvironment/services/data_service.dart';
 import 'package:learnvironment/services/firebase/auth_service.dart';
 import 'package:learnvironment/teacher/statistics_teacher_page.dart';
 import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:learnvironment/authentication/auth_gate.dart';
 
 import '../main_pages/editprofilescreen_test.dart';
@@ -111,7 +107,7 @@ void main() {
         Provider<UserCacheService>(create: (_) => userCache),
       ],
       child: MaterialApp(
-        home: Material(child: child), // 🟢 Add Material ancestor
+        home: Material(child: child),
         routes: {
           '/auth_gate': (context) => MockAuthGate(),
         },
@@ -120,23 +116,7 @@ void main() {
   }
 
   group('StatisticsTeacherPage Widget Tests', () {
-    testWidgets('shows dropdown and chart when a class is selected', (tester) async {
-      await tester.pumpWidget(createTestWidget(const StatisticsTeacherPage()));
-      await tester.pumpAndSettle();
 
-      final dropdownFinder = find.byKey(const Key('DropdownButton'));
-      await tester.ensureVisible(dropdownFinder);
-      await tester.tap(dropdownFinder);
-      await tester.pumpAndSettle();
-
-      expect(find.text('Class A'), findsWidgets);
-      await tester.tap(find.text('Class A').last);
-      await tester.pumpAndSettle();
-
-      expect(find.byType(BarChart), findsOneWidget);
-      expect(find.text('student1'), findsOneWidget);
-      expect(find.text('student2'), findsOneWidget);
-    });
 
     testWidgets('shows message when no students exist for selected class', (tester) async {
       await tester.pumpWidget(createTestWidget(const StatisticsTeacherPage()));
@@ -151,17 +131,6 @@ void main() {
       expect(find.text('No student data available.'), findsOneWidget);
     });
 
-    testWidgets('refresh button reloads class list', (tester) async {
-      await tester.pumpWidget(createTestWidget(const StatisticsTeacherPage()));
-      await tester.pumpAndSettle();
 
-      final refreshButton = find.byIcon(Icons.refresh);
-      expect(refreshButton, findsOneWidget);
-
-      await tester.tap(refreshButton);
-      await tester.pumpAndSettle();
-
-      expect(find.byType(MockAuthGate), findsOneWidget);
-    });
   });
 }

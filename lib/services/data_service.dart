@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 
 import '../data/assignment_data.dart';
 import 'cache/assignment_cache_service.dart';
+import 'cache/game_result_cache_service.dart';
 
 class DataService {
   late final FirestoreService _firestoreService;
@@ -18,6 +19,7 @@ class DataService {
   late final GameCacheService _gameCacheService;
   late final SubjectCacheService _subjectCacheService;
   late final AssignmentCacheService _assignmentCacheService;
+  late final GameResultCacheService _gameResultCacheService;
 
   DataService(BuildContext context) {
     _firestoreService = Provider.of<FirestoreService>(context, listen: false);
@@ -25,6 +27,7 @@ class DataService {
     _gameCacheService = Provider.of<GameCacheService>(context, listen: false);
     _subjectCacheService = Provider.of<SubjectCacheService>(context, listen: false);
     _assignmentCacheService = Provider.of<AssignmentCacheService>(context, listen: false);
+    _gameResultCacheService = Provider.of<GameResultCacheService>(context, listen: false);
   }
 
   // 1. Users & Accounts
@@ -57,7 +60,6 @@ class DataService {
       } else {
         print('[DataService] User data not found in cache');
       }
-
     } catch (e) {
       print('[DataService] Error updating user\'s gamesPlayed: $e');
       throw Exception("Error updating user's gamesPlayed");
@@ -289,6 +291,10 @@ class DataService {
       // Cache the updated subject data with the new student
       await _subjectCacheService.cacheSubjectData(updatedSubject);
       print('[DataService] Cached updated subject data with new student');
+
+      //Cache the game result
+      await _gameResultCacheService.cacheGameResult(result);
+      print('[DataService] Cached game result for ${result.studentId}, game: ${result.gameId}');
     } catch (e) {
       print('[DataService] Error recording game result: $e');
       throw Exception("Error recording game result");
@@ -560,6 +566,74 @@ class DataService {
     } catch (e) {
       print("[DATASERVICE] Error deleting cache");
       rethrow;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getWeekGameResults({required String studentId}) async {
+    try {
+      final now = DateTime.now();
+      final sevenDaysAgo = now.subtract(const Duration(days: 7));
+
+      final allResults = await getGameResults(studentId: studentId);
+
+      // Filter to only last 7 days
+      final recentResults = allResults.where((result) {
+        return result.timestamp.isAfter(sevenDaysAgo);
+      });
+
+      // Initialize 7-day buckets from 6 days ago to today
+      final List<Map<String, dynamic>> weekData = List.generate(7, (i) {
+        final date = now.subtract(Duration(days: 6 - i));
+        return {
+          'date': DateTime(date.year, date.month, date.day),
+          'correctCount': 0,
+          'wrongCount': 0,
+        };
+      });
+
+      for (var result in recentResults) {
+        for (var day in weekData) {
+          final dayDate = day['date'] as DateTime;
+          if (result.timestamp.year == dayDate.year &&
+              result.timestamp.month == dayDate.month &&
+              result.timestamp.day == dayDate.day) {
+            day['correctCount'] += result.correctCount;
+            day['wrongCount'] += result.wrongCount;
+            break;
+          }
+        }
+      }
+
+      return weekData;
+    } catch (e) {
+      print('[DataService] Error fetching weekly game results: $e');
+      throw Exception("Error fetching weekly game results");
+    }
+  }
+
+  Future<List<GameResultData>> getGameResults({required String studentId}) async {
+    try {
+      // 1. Try loading from GameResultCacheService
+      final cachedResults = await _gameResultCacheService.getCachedGameResults(studentId);
+      if (cachedResults != null && cachedResults.isNotEmpty) {
+        print('[DataService] Loaded game results from cache for student: $studentId');
+        return cachedResults;
+      }
+
+      // 2. If no cache, load from Firestore
+      final freshResults = await _firestoreService.fetchGameResults(studentId: studentId);
+
+      // 3. Cache each result individually
+      for (final result in freshResults) {
+        await _gameResultCacheService.cacheGameResult(result);
+      }
+
+      print('[DataService] Loaded game results from Firestore and cached them for student: $studentId');
+      return freshResults;
+
+    } catch (e) {
+      print('[DataService] Error fetching game results: $e');
+      return [];
     }
   }
 }
