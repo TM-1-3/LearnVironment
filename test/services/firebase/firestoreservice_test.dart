@@ -1253,7 +1253,7 @@ void main() {
       firestore = FakeFirebaseFirestore();
 
       await firestore.collection('assignment').doc('assignment123').set({
-        'subjectId': 'subjectABC',
+        'class': 'subjectABC',
         'gameId': 'gameXYZ',
         'title': 'Homework 1',
         'dueDate': '2025-06-01',
