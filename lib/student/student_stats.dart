@@ -80,13 +80,7 @@ class StudentStatsPageState extends State<StudentStatsPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("My Statistics"),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            tooltip: 'Refresh Statistics',
-            onPressed: _refreshGames,
-          )
-        ],
+
       ),
       body: RefreshIndicator(
         onRefresh: _refreshGames,
