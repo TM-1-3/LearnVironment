@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:learnvironment/data/assignment_data.dart';
 import 'package:learnvironment/data/game_data.dart';
+import 'package:learnvironment/data/game_result_data.dart';
 import 'package:learnvironment/data/subject_data.dart';
 import 'package:learnvironment/data/user_data.dart';
 import 'package:learnvironment/services/cache/game_result_cache_service.dart';
@@ -52,8 +53,10 @@ void main() {
         Provider<UserCacheService>.value(value: mockUserCacheService),
         Provider<GameCacheService>.value(value: mockGameCacheService),
         Provider<SubjectCacheService>.value(value: mockSubjectCacheService),
-        Provider<AssignmentCacheService>.value(value: mockAssignmentCacheService),
-        Provider<GameResultCacheService>.value(value: mockGameResultCacheService)
+        Provider<AssignmentCacheService>.value(
+            value: mockAssignmentCacheService),
+        Provider<GameResultCacheService>.value(
+            value: mockGameResultCacheService)
       ],
       child: MaterialApp(
         home: child,
@@ -63,7 +66,8 @@ void main() {
 
   group('checkIfUsernameAlreadyExists', () {
     testWidgets('returns true if username exists', (WidgetTester tester) async {
-      when(mockFirestoreService.checkIfUsernameAlreadyExists('existingUsername'))
+      when(
+          mockFirestoreService.checkIfUsernameAlreadyExists('existingUsername'))
           .thenAnswer((_) async => true);
 
       await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
@@ -72,14 +76,18 @@ void main() {
       final state = tester.state<DataServiceTestWidgetState>(
         find.byType(DataServiceTestWidget),
       );
-      final result = await state.getDataService().checkIfUsernameAlreadyExists('existingUsername');
+      final result = await state.getDataService().checkIfUsernameAlreadyExists(
+          'existingUsername');
 
       expect(result, isTrue);
-      verify(mockFirestoreService.checkIfUsernameAlreadyExists('existingUsername')).called(1);
+      verify(
+          mockFirestoreService.checkIfUsernameAlreadyExists('existingUsername'))
+          .called(1);
       verifyNoMoreInteractions(mockFirestoreService);
     });
 
-    testWidgets('returns false if username does not exist', (WidgetTester tester) async {
+    testWidgets('returns false if username does not exist', (
+        WidgetTester tester) async {
       when(mockFirestoreService.checkIfUsernameAlreadyExists('newUsername'))
           .thenAnswer((_) async => false);
 
@@ -89,16 +97,19 @@ void main() {
       final state = tester.state<DataServiceTestWidgetState>(
         find.byType(DataServiceTestWidget),
       );
-      final result = await state.getDataService().checkIfUsernameAlreadyExists('newUsername');
+      final result = await state.getDataService().checkIfUsernameAlreadyExists(
+          'newUsername');
 
       expect(result, isFalse);
-      verify(mockFirestoreService.checkIfUsernameAlreadyExists('newUsername')).called(1);
+      verify(mockFirestoreService.checkIfUsernameAlreadyExists('newUsername'))
+          .called(1);
       verifyNoMoreInteractions(mockFirestoreService);
     });
   });
 
   group('getUserIdByUserName', () {
-    testWidgets('returns user ID if username exists', (WidgetTester tester) async {
+    testWidgets(
+        'returns user ID if username exists', (WidgetTester tester) async {
       // Arrange
       when(mockFirestoreService.getUserIdByUserName('john_doe'))
           .thenAnswer((_) async => 'user_123');
@@ -112,7 +123,8 @@ void main() {
       );
 
       // Act
-      final result = await state.getDataService().getUserIdByUserName('john_doe');
+      final result = await state.getDataService().getUserIdByUserName(
+          'john_doe');
 
       // Assert
       expect(result, equals('user_123'));
@@ -120,7 +132,8 @@ void main() {
       verifyNoMoreInteractions(mockFirestoreService);
     });
 
-    testWidgets('returns null if username does not exist', (WidgetTester tester) async {
+    testWidgets(
+        'returns null if username does not exist', (WidgetTester tester) async {
       // Arrange
       when(mockFirestoreService.getUserIdByUserName('ghost_user'))
           .thenAnswer((_) async => null);
@@ -134,7 +147,8 @@ void main() {
       );
 
       // Act
-      final result = await state.getDataService().getUserIdByUserName('ghost_user');
+      final result = await state.getDataService().getUserIdByUserName(
+          'ghost_user');
 
       // Assert
       expect(result, isNull);
@@ -147,10 +161,30 @@ void main() {
     const String userId = 'user_123';
     const String gameId = 'game_456';
 
-    testWidgets('updates Firestore and cache when cached user matches', (WidgetTester tester) async {
-      final UserData userData = UserData(id: userId, username: 'username', email: 'email', name: 'name', role: 'teacher', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: [], myGames: [], img: '', tClasses: [], stClasses: []);
+    testWidgets('updates Firestore and cache when cached user matches', (
+        WidgetTester tester) async {
+      final UserData userData = UserData(id: userId,
+          username: 'username',
+          email: 'email',
+          name: 'name',
+          role: 'teacher',
+          birthdate: DateTime(
+              2000,
+              1,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0),
+          gamesPlayed: [],
+          myGames: [],
+          img: '',
+          tClasses: [],
+          stClasses: []);
       // Arrange: mock Firestore and cache behavior
-      when(mockFirestoreService.updateUserGamesPlayed(uid: userId, gameId: gameId))
+      when(mockFirestoreService.updateUserGamesPlayed(
+          uid: userId, gameId: gameId))
           .thenAnswer((_) async => {});
       when(mockUserCacheService.getCachedUserData())
           .thenAnswer((_) async => userData);
@@ -165,20 +199,43 @@ void main() {
       );
 
       // Act
-      await state.getDataService().updateUserGamesPlayed(userId: userId, gameId: gameId);
+      await state.getDataService().updateUserGamesPlayed(
+          userId: userId, gameId: gameId);
 
       // Assert
-      verify(mockFirestoreService.updateUserGamesPlayed(uid: userId, gameId: gameId)).called(1);
+      verify(mockFirestoreService.updateUserGamesPlayed(
+          uid: userId, gameId: gameId)).called(1);
       verify(mockUserCacheService.getCachedUserData()).called(1);
       verify(mockUserCacheService.updateCachedGamesPlayed(gameId)).called(1);
       verifyNoMoreInteractions(mockFirestoreService);
       verifyNoMoreInteractions(mockUserCacheService);
     });
 
-    testWidgets('updates Firestore but not cache if cached user does not match', (WidgetTester tester) async {
-      final UserData userData = UserData(id: "different_user", username: 'username', email: 'email', name: 'name', role: 'teacher', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: [], myGames: [], img: '', tClasses: [], stClasses: []);
+    testWidgets(
+        'updates Firestore but not cache if cached user does not match', (
+        WidgetTester tester) async {
+      final UserData userData = UserData(id: "different_user",
+          username: 'username',
+          email: 'email',
+          name: 'name',
+          role: 'teacher',
+          birthdate: DateTime(
+              2000,
+              1,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0),
+          gamesPlayed: [],
+          myGames: [],
+          img: '',
+          tClasses: [],
+          stClasses: []);
       // Arrange
-      when(mockFirestoreService.updateUserGamesPlayed(uid: userId, gameId: gameId))
+      when(mockFirestoreService.updateUserGamesPlayed(
+          uid: userId, gameId: gameId))
           .thenAnswer((_) async => {});
       when(mockUserCacheService.getCachedUserData())
           .thenAnswer((_) async => userData);
@@ -191,19 +248,23 @@ void main() {
       );
 
       // Act
-      await state.getDataService().updateUserGamesPlayed(userId: userId, gameId: gameId);
+      await state.getDataService().updateUserGamesPlayed(
+          userId: userId, gameId: gameId);
 
       // Assert
-      verify(mockFirestoreService.updateUserGamesPlayed(uid: userId, gameId: gameId)).called(1);
+      verify(mockFirestoreService.updateUserGamesPlayed(
+          uid: userId, gameId: gameId)).called(1);
       verify(mockUserCacheService.getCachedUserData()).called(1);
       verifyNever(mockUserCacheService.updateCachedGamesPlayed(any));
       verifyNoMoreInteractions(mockFirestoreService);
       verifyNoMoreInteractions(mockUserCacheService);
     });
 
-    testWidgets('throws exception if Firestore update fails', (WidgetTester tester) async {
+    testWidgets('throws exception if Firestore update fails', (
+        WidgetTester tester) async {
       // Arrange
-      when(mockFirestoreService.updateUserGamesPlayed(uid: userId, gameId: gameId))
+      when(mockFirestoreService.updateUserGamesPlayed(
+          uid: userId, gameId: gameId))
           .thenThrow(Exception('Firestore failure'));
 
       await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
@@ -215,11 +276,14 @@ void main() {
 
       // Act & Assert
       expect(
-            () async => await state.getDataService().updateUserGamesPlayed(userId: userId, gameId: gameId),
+            () async =>
+        await state.getDataService().updateUserGamesPlayed(
+            userId: userId, gameId: gameId),
         throwsA(isA<Exception>()),
       );
 
-      verify(mockFirestoreService.updateUserGamesPlayed(uid: userId, gameId: gameId)).called(1);
+      verify(mockFirestoreService.updateUserGamesPlayed(
+          uid: userId, gameId: gameId)).called(1);
       verifyNever(mockUserCacheService.getCachedUserData());
       verifyNoMoreInteractions(mockFirestoreService);
       verifyZeroInteractions(mockUserCacheService);
@@ -228,9 +292,28 @@ void main() {
 
   group('getUserData', () {
     const userId = 'user_123';
-    final UserData userData = UserData(id: userId, username: 'username', email: 'email', name: 'name', role: 'teacher', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: [], myGames: [], img: '', tClasses: [], stClasses: []);
+    final UserData userData = UserData(id: userId,
+        username: 'username',
+        email: 'email',
+        name: 'name',
+        role: 'teacher',
+        birthdate: DateTime(
+            2000,
+            1,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0),
+        gamesPlayed: [],
+        myGames: [],
+        img: '',
+        tClasses: [],
+        stClasses: []);
 
-    testWidgets('returns cached user if it matches userId', (WidgetTester tester) async {
+    testWidgets('returns cached user if it matches userId', (
+        WidgetTester tester) async {
       final cachedUser = userData;
 
       when(mockUserCacheService.getCachedUserData())
@@ -247,12 +330,14 @@ void main() {
 
       expect(result, cachedUser);
       verify(mockUserCacheService.getCachedUserData()).called(1);
-      verifyNever(mockFirestoreService.fetchUserData(userId: anyNamed('userId')));
+      verifyNever(
+          mockFirestoreService.fetchUserData(userId: anyNamed('userId')));
       verifyNoMoreInteractions(mockUserCacheService);
       verifyZeroInteractions(mockFirestoreService);
     });
 
-    testWidgets('fetches from Firestore and caches if cache is null', (WidgetTester tester) async {
+    testWidgets('fetches from Firestore and caches if cache is null', (
+        WidgetTester tester) async {
       final firestoreUser = userData;
 
       when(mockUserCacheService.getCachedUserData())
@@ -279,8 +364,28 @@ void main() {
       verifyNoMoreInteractions(mockFirestoreService);
     });
 
-    testWidgets('fetches from Firestore and caches if cached user has different id', (WidgetTester tester) async {
-      final cachedUser = UserData(id: "other_id", username: 'username', email: 'email', name: 'name', role: 'teacher', birthdate: DateTime(2000, 1, 1, 0, 0, 0, 0, 0), gamesPlayed: [], myGames: [], img: '', tClasses: [], stClasses: []);
+    testWidgets(
+        'fetches from Firestore and caches if cached user has different id', (
+        WidgetTester tester) async {
+      final cachedUser = UserData(id: "other_id",
+          username: 'username',
+          email: 'email',
+          name: 'name',
+          role: 'teacher',
+          birthdate: DateTime(
+              2000,
+              1,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0),
+          gamesPlayed: [],
+          myGames: [],
+          img: '',
+          tClasses: [],
+          stClasses: []);
       final firestoreUser = userData;
 
       when(mockUserCacheService.getCachedUserData())
@@ -307,7 +412,8 @@ void main() {
       verifyNoMoreInteractions(mockFirestoreService);
     });
 
-    testWidgets('returns null and logs error on exception', (WidgetTester tester) async {
+    testWidgets('returns null and logs error on exception', (
+        WidgetTester tester) async {
       when(mockUserCacheService.getCachedUserData())
           .thenThrow(Exception('Cache error'));
 
@@ -329,9 +435,11 @@ void main() {
   group('deleteAccount', () {
     const uid = 'user_123';
 
-    testWidgets('calls deleteAccount and clears cache on success', (WidgetTester tester) async {
+    testWidgets('calls deleteAccount and clears cache on success', (
+        WidgetTester tester) async {
       // Arrange
-      when(mockFirestoreService.deleteAccount(uid: uid)).thenAnswer((_) async {});
+      when(mockFirestoreService.deleteAccount(uid: uid)).thenAnswer((
+          _) async {});
       when(mockUserCacheService.clearUserCache()).thenAnswer((_) async {});
 
       await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
@@ -351,7 +459,8 @@ void main() {
       verifyNoMoreInteractions(mockUserCacheService);
     });
 
-    testWidgets('rethrows exception if Firestore deletion fails', (WidgetTester tester) async {
+    testWidgets('rethrows exception if Firestore deletion fails', (
+        WidgetTester tester) async {
       // Arrange
       when(mockFirestoreService.deleteAccount(uid: uid))
           .thenThrow(Exception('Firestore delete failed'));
@@ -375,9 +484,11 @@ void main() {
       verifyZeroInteractions(mockUserCacheService);
     });
 
-    testWidgets('rethrows exception if clearing cache fails', (WidgetTester tester) async {
+    testWidgets('rethrows exception if clearing cache fails', (
+        WidgetTester tester) async {
       // Arrange
-      when(mockFirestoreService.deleteAccount(uid: uid)).thenAnswer((_) async {});
+      when(mockFirestoreService.deleteAccount(uid: uid)).thenAnswer((
+          _) async {});
       when(mockUserCacheService.clearUserCache())
           .thenThrow(Exception('Cache clear failed'));
 
@@ -419,10 +530,13 @@ void main() {
 
     setUp(() {
       // Return fixed lists when any cache method is called
-      when(mockUserCacheService.getCachedGamesPlayed()).thenAnswer((_) async => gamesPlayed);
+      when(mockUserCacheService.getCachedGamesPlayed()).thenAnswer((
+          _) async => gamesPlayed);
       when(mockUserCacheService.getMyGames()).thenAnswer((_) async => myGames);
-      when(mockUserCacheService.getCachedClasses(type: 'stClasses')).thenAnswer((_) async => stClasses);
-      when(mockUserCacheService.getCachedClasses(type: 'tClasses')).thenAnswer((_) async => tClasses);
+      when(mockUserCacheService.getCachedClasses(type: 'stClasses'))
+          .thenAnswer((_) async => stClasses);
+      when(mockUserCacheService.getCachedClasses(type: 'tClasses')).thenAnswer((
+          _) async => tClasses);
       when(mockUserCacheService.clearUserCache()).thenAnswer((_) async => {});
       when(mockUserCacheService.cacheUserData(any)).thenAnswer((_) async => {});
       when(mockFirestoreService.setUserInfo(
@@ -440,7 +554,8 @@ void main() {
       )).thenAnswer((_) async => {});
     });
 
-    testWidgets('updates user profile successfully and caches updated user', (WidgetTester tester) async {
+    testWidgets('updates user profile successfully and caches updated user', (
+        WidgetTester tester) async {
       await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
       await tester.pumpAndSettle();
 
@@ -462,7 +577,8 @@ void main() {
       // Assert all the expected calls
       verify(mockUserCacheService.getCachedGamesPlayed()).called(1);
       verify(mockUserCacheService.getMyGames()).called(1);
-      verify(mockUserCacheService.getCachedClasses(type: 'stClasses')).called(1);
+      verify(mockUserCacheService.getCachedClasses(type: 'stClasses')).called(
+          1);
       verify(mockUserCacheService.getCachedClasses(type: 'tClasses')).called(1);
       verify(mockFirestoreService.setUserInfo(
         uid: uid,
@@ -484,7 +600,8 @@ void main() {
       verifyNoMoreInteractions(mockUserCacheService);
     });
 
-    testWidgets('handles errors internally without throwing', (WidgetTester tester) async {
+    testWidgets('handles errors internally without throwing', (
+        WidgetTester tester) async {
       // Simulate failure during Firestore set
       when(mockFirestoreService.setUserInfo(
         uid: anyNamed('uid'),
@@ -536,9 +653,19 @@ void main() {
 
   group('getGameData', () {
     const gameId = 'game_abc';
-    GameData gameData = GameData(gameLogo: "", gameName: "", gameBibliography: "", gameDescription: "", gameTemplate: "drag", tips: {}, correctAnswers: {}, tags: [], documentName: gameId, public: true);
+    GameData gameData = GameData(gameLogo: "",
+        gameName: "",
+        gameBibliography: "",
+        gameDescription: "",
+        gameTemplate: "drag",
+        tips: {},
+        correctAnswers: {},
+        tags: [],
+        documentName: gameId,
+        public: true);
 
-    testWidgets('returns cached game data if available', (WidgetTester tester) async {
+    testWidgets(
+        'returns cached game data if available', (WidgetTester tester) async {
       final cachedGame = gameData;
 
       when(mockGameCacheService.getCachedGameData(gameId))
@@ -561,7 +688,8 @@ void main() {
       verifyZeroInteractions(mockFirestoreService);
     });
 
-    testWidgets('fetches from Firestore and caches if not in cache', (WidgetTester tester) async {
+    testWidgets('fetches from Firestore and caches if not in cache', (
+        WidgetTester tester) async {
       final freshGame = gameData;
 
       when(mockGameCacheService.getCachedGameData(gameId))
@@ -588,7 +716,8 @@ void main() {
       verifyNoMoreInteractions(mockFirestoreService);
     });
 
-    testWidgets('returns null and logs error on exception', (WidgetTester tester) async {
+    testWidgets('returns null and logs error on exception', (
+        WidgetTester tester) async {
       when(mockGameCacheService.getCachedGameData(gameId))
           .thenThrow(Exception('Cache fail'));
 
@@ -608,18 +737,33 @@ void main() {
   });
 
   group('getAllGames', () {
-    GameData gameData = GameData(gameLogo: "logo.png", gameName: "Trivia Quest", gameBibliography: "", gameDescription: "", gameTemplate: "drag", tips: {}, correctAnswers: {}, tags: ['fun', 'trivia'], documentName: "game123", public: true);
+    GameData gameData = GameData(gameLogo: "logo.png",
+        gameName: "Trivia Quest",
+        gameBibliography: "",
+        gameDescription: "",
+        gameTemplate: "drag",
+        tips: {},
+        correctAnswers: {},
+        tags: ['fun', 'trivia'],
+        documentName: "game123",
+        public: true);
 
-    testWidgets('returns public cached games if available', (WidgetTester tester) async {
+    testWidgets('returns public cached games if available', (
+        WidgetTester tester) async {
       final publicGame = gameData;
 
-      when(mockGameCacheService.getCachedGameIds()).thenAnswer((_) async => ['game123']);
-      when(mockGameCacheService.getCachedGameData('game123')).thenAnswer((_) async => publicGame);
+      when(mockGameCacheService.getCachedGameIds()).thenAnswer((_) async =>
+      [
+        'game123'
+      ]);
+      when(mockGameCacheService.getCachedGameData('game123')).thenAnswer((
+          _) async => publicGame);
 
       await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
       await tester.pumpAndSettle();
 
-      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
       final result = await state.getDataService().getAllGames();
 
       expect(result.length, 1);
@@ -629,10 +773,12 @@ void main() {
       verifyZeroInteractions(mockFirestoreService);
     });
 
-    testWidgets('fetches from Firestore if no valid cached games', (WidgetTester tester) async {
+    testWidgets('fetches from Firestore if no valid cached games', (
+        WidgetTester tester) async {
       // Simulate no valid cached games
       when(mockGameCacheService.getCachedGameIds()).thenAnswer((_) async => []);
-      when(mockFirestoreService.getAllGames()).thenAnswer((_) async => [
+      when(mockFirestoreService.getAllGames()).thenAnswer((_) async =>
+      [
         {
           'gameId': 'fresh1',
           'gameTitle': 'Fresh Game',
@@ -641,15 +787,27 @@ void main() {
         }
       ]);
 
-      GameData gameData = GameData(gameLogo: "fresh_logo.png", gameName: "Fresh Game", gameBibliography: "", gameDescription: "", gameTemplate: "drag", tips: {}, correctAnswers: {}, tags: ['new'], documentName: "fresh1", public: true);
+      GameData gameData = GameData(gameLogo: "fresh_logo.png",
+          gameName: "Fresh Game",
+          gameBibliography: "",
+          gameDescription: "",
+          gameTemplate: "drag",
+          tips: {},
+          correctAnswers: {},
+          tags: ['new'],
+          documentName: "fresh1",
+          public: true);
       final freshGameData = gameData;
-      when(mockFirestoreService.fetchGameData(gameId: 'fresh1')).thenAnswer((_) async => freshGameData);
-      when(mockGameCacheService.cacheGameData(freshGameData)).thenAnswer((_) async => {});
+      when(mockFirestoreService.fetchGameData(gameId: 'fresh1')).thenAnswer((
+          _) async => freshGameData);
+      when(mockGameCacheService.cacheGameData(freshGameData)).thenAnswer((
+          _) async => {});
 
       await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
       await tester.pumpAndSettle();
 
-      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
       final result = await state.getDataService().getAllGames();
 
       expect(result.length, 1);
@@ -661,12 +819,14 @@ void main() {
     });
 
     testWidgets('returns empty list on error', (WidgetTester tester) async {
-      when(mockGameCacheService.getCachedGameIds()).thenThrow(Exception('Cache fail'));
+      when(mockGameCacheService.getCachedGameIds()).thenThrow(
+          Exception('Cache fail'));
 
       await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
       await tester.pumpAndSettle();
 
-      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
       final result = await state.getDataService().getAllGames();
 
       expect(result, isEmpty);
@@ -679,10 +839,20 @@ void main() {
     late GameData gameData;
 
     setUp(() {
-      gameData = GameData(gameLogo: "logo.png", gameName: "Trivia Quest", gameBibliography: "", gameDescription: "", gameTemplate: "drag", tips: {}, correctAnswers: {}, tags: ['fun', 'trivia'], documentName: "game_abc", public: true);
+      gameData = GameData(gameLogo: "logo.png",
+          gameName: "Trivia Quest",
+          gameBibliography: "",
+          gameDescription: "",
+          gameTemplate: "drag",
+          tips: {},
+          correctAnswers: {},
+          tags: ['fun', 'trivia'],
+          documentName: "game_abc",
+          public: true);
     });
 
-    testWidgets('successfully creates game and updates cache', (WidgetTester tester) async {
+    testWidgets('successfully creates game and updates cache', (
+        WidgetTester tester) async {
       when(mockFirestoreService.createGame(uid: uid, game: gameData))
           .thenAnswer((_) async {});
       when(mockUserCacheService.createGame(uid: uid, gameId: 'game_abc'))
@@ -693,33 +863,40 @@ void main() {
       await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
       await tester.pumpAndSettle();
 
-      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
 
       await state.getDataService().createGame(uid: uid, game: gameData);
 
-      verify(mockFirestoreService.createGame(uid: uid, game: gameData)).called(1);
-      verify(mockUserCacheService.createGame(uid: uid, gameId: 'game_abc')).called(1);
+      verify(mockFirestoreService.createGame(uid: uid, game: gameData)).called(
+          1);
+      verify(mockUserCacheService.createGame(uid: uid, gameId: 'game_abc'))
+          .called(1);
       verify(mockGameCacheService.cacheGameData(gameData)).called(1);
       verifyNoMoreInteractions(mockFirestoreService);
       verifyNoMoreInteractions(mockUserCacheService);
       verifyNoMoreInteractions(mockGameCacheService);
     });
 
-    testWidgets('rethrows exception if Firestore call fails', (WidgetTester tester) async {
+    testWidgets('rethrows exception if Firestore call fails', (
+        WidgetTester tester) async {
       when(mockFirestoreService.createGame(uid: uid, game: gameData))
           .thenThrow(Exception('Firestore failed'));
 
       await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
       await tester.pumpAndSettle();
 
-      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
 
       expect(
-            () async => await state.getDataService().createGame(uid: uid, game: gameData),
+            () async =>
+        await state.getDataService().createGame(uid: uid, game: gameData),
         throwsA(isA<Exception>()),
       );
 
-      verify(mockFirestoreService.createGame(uid: uid, game: gameData)).called(1);
+      verify(mockFirestoreService.createGame(uid: uid, game: gameData)).called(
+          1);
       verifyZeroInteractions(mockUserCacheService);
       verifyZeroInteractions(mockGameCacheService);
     });
@@ -730,18 +907,33 @@ void main() {
     late GameData gameData;
 
     setUp(() {
-      gameData = GameData(gameLogo: "game_logo.png", gameName: "Amazing Game", gameBibliography: "", gameDescription: "", gameTemplate: "drag", tips: {}, correctAnswers: {}, tags: ['adventure', 'multiplayer'], documentName: "game123", public: true);
+      gameData = GameData(gameLogo: "game_logo.png",
+          gameName: "Amazing Game",
+          gameBibliography: "",
+          gameDescription: "",
+          gameTemplate: "drag",
+          tips: {},
+          correctAnswers: {},
+          tags: ['adventure', 'multiplayer'],
+          documentName: "game123",
+          public: true);
     });
 
-    testWidgets('returns cached games if available', (WidgetTester tester) async {
+    testWidgets(
+        'returns cached games if available', (WidgetTester tester) async {
       // Simulate cached games
-      when(mockUserCacheService.getMyGames()).thenAnswer((_) async => ['game123']);
-      when(mockGameCacheService.getCachedGameData('game123')).thenAnswer((_) async => gameData);
+      when(mockUserCacheService.getMyGames()).thenAnswer((_) async =>
+      [
+        'game123'
+      ]);
+      when(mockGameCacheService.getCachedGameData('game123')).thenAnswer((
+          _) async => gameData);
 
       await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
       await tester.pumpAndSettle();
 
-      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
 
       final result = await state.getDataService().getMyGames(uid: uid);
 
@@ -752,9 +944,13 @@ void main() {
       verifyNoMoreInteractions(mockFirestoreService);
     });
 
-    testWidgets('falls back to Firestore if game cache is empty', (WidgetTester tester) async {
+    testWidgets('falls back to Firestore if game cache is empty', (
+        WidgetTester tester) async {
       // Simulate empty cache and Firestore response
-      when(mockUserCacheService.getMyGames()).thenAnswer((_) async => ['game123']);
+      when(mockUserCacheService.getMyGames()).thenAnswer((_) async =>
+      [
+        'game123'
+      ]);
       when(mockGameCacheService.getCachedGameData('game123'))
           .thenAnswer((_) async => null);
       when(mockFirestoreService.fetchGameData(gameId: 'game123'))
@@ -763,7 +959,8 @@ void main() {
       await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
       await tester.pumpAndSettle();
 
-      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
 
       final result = await state.getDataService().getMyGames(uid: uid);
 
@@ -775,19 +972,22 @@ void main() {
       verify(mockGameCacheService.cacheGameData(gameData)).called(1);
     });
 
-    testWidgets('falls back to Firestore if user cache is empty', (WidgetTester tester) async {
+    testWidgets('falls back to Firestore if user cache is empty', (
+        WidgetTester tester) async {
       // Simulate empty cache and Firestore response
       when(mockUserCacheService.getMyGames()).thenAnswer((_) async => []);
       when(mockFirestoreService.getMyGames(uid: uid))
-          .thenAnswer((_) async => [
+          .thenAnswer((_) async =>
+      [
         {'gameId': 'game123',
-        'gameTitle': 'Amazing Game'}
+          'gameTitle': 'Amazing Game'}
       ]);
 
       await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
       await tester.pumpAndSettle();
 
-      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
 
       final result = await state.getDataService().getMyGames(uid: uid);
 
@@ -799,12 +999,14 @@ void main() {
 
     testWidgets('returns empty list on error', (WidgetTester tester) async {
       // Simulate an error
-      when(mockUserCacheService.getMyGames()).thenThrow(Exception('Cache failed'));
+      when(mockUserCacheService.getMyGames()).thenThrow(
+          Exception('Cache failed'));
 
       await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
       await tester.pumpAndSettle();
 
-      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
 
       final result = await state.getDataService().getMyGames(uid: uid);
 
@@ -821,68 +1023,89 @@ void main() {
 
     setUp(() {
       // Reset the mock services for each test
-      when(mockFirestoreService.updateGamePublicStatus(gameId: gameId, status: status))
+      when(mockFirestoreService.updateGamePublicStatus(
+          gameId: gameId, status: status))
           .thenAnswer((_) async {});
-      when(mockGameCacheService.updateGamePublicStatus(gameId: gameId, status: status))
+      when(mockGameCacheService.updateGamePublicStatus(
+          gameId: gameId, status: status))
           .thenAnswer((_) async {});
     });
 
-    testWidgets('should update Firestore and game cache successfully', (WidgetTester tester) async {
+    testWidgets('should update Firestore and game cache successfully', (
+        WidgetTester tester) async {
       await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
       await tester.pumpAndSettle();
 
-      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
 
       // Act
-      await state.getDataService().updateGamePublicStatus(gameId: gameId, status: status);
+      await state.getDataService().updateGamePublicStatus(
+          gameId: gameId, status: status);
 
       // Assert
-      verify(mockFirestoreService.updateGamePublicStatus(gameId: gameId, status: status)).called(1);
-      verify(mockGameCacheService.updateGamePublicStatus(gameId: gameId, status: status)).called(1);
+      verify(mockFirestoreService.updateGamePublicStatus(
+          gameId: gameId, status: status)).called(1);
+      verify(mockGameCacheService.updateGamePublicStatus(
+          gameId: gameId, status: status)).called(1);
       verifyNoMoreInteractions(mockFirestoreService);
       verifyNoMoreInteractions(mockGameCacheService);
     });
 
-    testWidgets('should throw an exception if Firestore update fails', (WidgetTester tester) async {
+    testWidgets('should throw an exception if Firestore update fails', (
+        WidgetTester tester) async {
       // Arrange: Simulate Firestore failure
-      when(mockFirestoreService.updateGamePublicStatus(gameId: gameId, status: status))
+      when(mockFirestoreService.updateGamePublicStatus(
+          gameId: gameId, status: status))
           .thenThrow(Exception('Firestore update failed'));
 
       await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
       await tester.pumpAndSettle();
 
-      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
 
       // Act & Assert
       expect(
-            () => state.getDataService().updateGamePublicStatus(gameId: gameId, status: status),
+            () =>
+            state.getDataService().updateGamePublicStatus(
+                gameId: gameId, status: status),
         throwsA(isA<Exception>()),
       );
 
-      verify(mockFirestoreService.updateGamePublicStatus(gameId: gameId, status: status)).called(1);
-      verifyNoMoreInteractions(mockGameCacheService);  // Ensure cache is not updated if Firestore fails
+      verify(mockFirestoreService.updateGamePublicStatus(
+          gameId: gameId, status: status)).called(1);
+      verifyNoMoreInteractions(
+          mockGameCacheService); // Ensure cache is not updated if Firestore fails
     });
 
-    testWidgets('should throw an exception if cache update fails', (WidgetTester tester) async {
+    testWidgets('should throw an exception if cache update fails', (
+        WidgetTester tester) async {
       // Arrange: Simulate cache update failure
-      when(mockGameCacheService.updateGamePublicStatus(gameId: gameId, status: status))
+      when(mockGameCacheService.updateGamePublicStatus(
+          gameId: gameId, status: status))
           .thenThrow(Exception('Cache update failed'));
 
       await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
       await tester.pumpAndSettle();
 
-      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
 
       // Act & Assert
       expect(
-            () => state.getDataService().updateGamePublicStatus(gameId: gameId, status: status),
+            () =>
+            state.getDataService().updateGamePublicStatus(
+                gameId: gameId, status: status),
         throwsA(isA<Exception>()),
       );
 
       await tester.pump();
 
-      verify(mockFirestoreService.updateGamePublicStatus(gameId: gameId, status: status)).called(1);
-      verify(mockGameCacheService.updateGamePublicStatus(gameId: gameId, status: status)).called(1);
+      verify(mockFirestoreService.updateGamePublicStatus(
+          gameId: gameId, status: status)).called(1);
+      verify(mockGameCacheService.updateGamePublicStatus(
+          gameId: gameId, status: status)).called(1);
     });
   });
 
@@ -892,31 +1115,44 @@ void main() {
 
     setUp(() {
       // Reset mocks for each test
-      when(mockUserCacheService.getCachedGamesPlayed()).thenAnswer((_) async => ['game123']);
-      when(mockFirestoreService.getPlayedGames(uid: userId)).thenAnswer((_) async => [
-        {'gameId': gameId, 'gameTitle': 'Game 1', 'tags': ['Action', 'Adventure'], 'imagePath': 'image1.jpg'}
+      when(mockUserCacheService.getCachedGamesPlayed()).thenAnswer((
+          _) async => ['game123']);
+      when(mockFirestoreService.getPlayedGames(uid: userId)).thenAnswer((
+          _) async =>
+      [
+        {
+          'gameId': gameId,
+          'gameTitle': 'Game 1',
+          'tags': ['Action', 'Adventure'],
+          'imagePath': 'image1.jpg'
+        }
       ]);
-      when(mockGameCacheService.getCachedGameData(gameId)).thenAnswer((_) async => GameData(
-        gameLogo: 'image1.jpg',
-        gameName: 'Game 1',
-        tags: ['Action', 'Adventure'],
-        documentName: gameId,
-        public: true,
-        gameDescription: '',
-        gameBibliography: '',
-        gameTemplate: '',
-        correctAnswers: {}, tips: {},
-      ));
+      when(mockGameCacheService.getCachedGameData(gameId)).thenAnswer((
+          _) async =>
+          GameData(
+            gameLogo: 'image1.jpg',
+            gameName: 'Game 1',
+            tags: ['Action', 'Adventure'],
+            documentName: gameId,
+            public: true,
+            gameDescription: '',
+            gameBibliography: '',
+            gameTemplate: '',
+            correctAnswers: {},
+            tips: {},
+          ));
     });
 
     testWidgets('should load games from cache', (WidgetTester tester) async {
       // Arrange: Mock the cache with game IDs
-      when(mockUserCacheService.getCachedGamesPlayed()).thenAnswer((_) async => [gameId]);
+      when(mockUserCacheService.getCachedGamesPlayed()).thenAnswer((
+          _) async => [gameId]);
 
       await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
       await tester.pumpAndSettle();
 
-      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
 
       // Act
       final games = await state.getDataService().getPlayedGames(userId: userId);
@@ -932,14 +1168,17 @@ void main() {
       verifyNoMoreInteractions(mockGameCacheService);
     });
 
-    testWidgets('should load games from Firestore when cache is empty', (WidgetTester tester) async {
+    testWidgets('should load games from Firestore when cache is empty', (
+        WidgetTester tester) async {
       // Arrange: Simulate no cached games
-      when(mockUserCacheService.getCachedGamesPlayed()).thenAnswer((_) async => []);
+      when(mockUserCacheService.getCachedGamesPlayed()).thenAnswer((
+          _) async => []);
 
       await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
       await tester.pumpAndSettle();
 
-      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
 
       // Act
       final games = await state.getDataService().getPlayedGames(userId: userId);
@@ -953,14 +1192,17 @@ void main() {
       verifyNoMoreInteractions(mockFirestoreService);
     });
 
-    testWidgets('should return an empty list if an error occurs', (WidgetTester tester) async {
+    testWidgets('should return an empty list if an error occurs', (
+        WidgetTester tester) async {
       // Arrange: Simulate an error while getting data
-      when(mockUserCacheService.getCachedGamesPlayed()).thenThrow(Exception('Cache error'));
+      when(mockUserCacheService.getCachedGamesPlayed()).thenThrow(
+          Exception('Cache error'));
 
       await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
       await tester.pumpAndSettle();
 
-      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
 
       // Act
       final games = await state.getDataService().getPlayedGames(userId: userId);
@@ -977,39 +1219,53 @@ void main() {
 
     setUp(() {
       // Reset mocks for each test
-      when(mockSubjectCacheService.getCachedSubjectData(subjectId)).thenAnswer((_) async => SubjectData(
-        subjectId: subjectId,
-        subjectName: 'Mathematics',
-        subjectLogo: '',
-        teacher: '',
-        students: [],
-        assignments: [],
-      ));
+      when(mockSubjectCacheService.getCachedSubjectData(subjectId)).thenAnswer((
+          _) async =>
+          SubjectData(
+            subjectId: subjectId,
+            subjectName: 'Mathematics',
+            subjectLogo: '',
+            teacher: '',
+            students: [],
+            assignments: [],
+          ));
 
-      when(mockFirestoreService.fetchSubjectData(subjectId: subjectId)).thenAnswer((_) async => SubjectData(
-        subjectId: subjectId,
-        subjectName: 'Mathematics',
-        subjectLogo: '',
-        teacher: '',
-        students: [],
-        assignments: [],
-      ));
+      when(mockFirestoreService.fetchSubjectData(subjectId: subjectId))
+          .thenAnswer((_) async =>
+          SubjectData(
+            subjectId: subjectId,
+            subjectName: 'Mathematics',
+            subjectLogo: '',
+            teacher: '',
+            students: [],
+            assignments: [],
+          ));
 
-      when(mockSubjectCacheService.cacheSubjectData(any)).thenAnswer((_) async {});
+      when(mockSubjectCacheService.cacheSubjectData(any)).thenAnswer((
+          _) async {});
     });
 
-    testWidgets('should load subject data from cache', (WidgetTester tester) async {
+    testWidgets(
+        'should load subject data from cache', (WidgetTester tester) async {
       // Arrange: Mock the cache with subject data
       when(mockSubjectCacheService.getCachedSubjectData(subjectId))
-          .thenAnswer((_) async => SubjectData(subjectName: 'Mathematics', subjectId: subjectId, subjectLogo: '', teacher: '', students: [], assignments: []));
+          .thenAnswer((_) async =>
+          SubjectData(subjectName: 'Mathematics',
+              subjectId: subjectId,
+              subjectLogo: '',
+              teacher: '',
+              students: [],
+              assignments: []));
 
       await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
       await tester.pumpAndSettle();
 
-      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
 
       // Act
-      final subject = await state.getDataService().getSubjectData(subjectId: subjectId, forceRefresh: false);
+      final subject = await state.getDataService().getSubjectData(
+          subjectId: subjectId, forceRefresh: false);
 
       // Assert
       expect(subject, isNotNull);
@@ -1020,7 +1276,8 @@ void main() {
       verifyNoMoreInteractions(mockFirestoreService);
     });
 
-    testWidgets('should load subject data from Firestore when cache is empty', (WidgetTester tester) async {
+    testWidgets('should load subject data from Firestore when cache is empty', (
+        WidgetTester tester) async {
       // Arrange: Simulate no cached subject data
       when(mockSubjectCacheService.getCachedSubjectData(subjectId))
           .thenAnswer((_) async => null);
@@ -1028,23 +1285,27 @@ void main() {
       await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
       await tester.pumpAndSettle();
 
-      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
 
       // Act
-      final subject = await state.getDataService().getSubjectData(subjectId: subjectId, forceRefresh: false);
+      final subject = await state.getDataService().getSubjectData(
+          subjectId: subjectId, forceRefresh: false);
 
       // Assert
       expect(subject, isNotNull);
       expect(subject?.subjectId, subjectId);
       expect(subject?.subjectName, 'Mathematics');
       verify(mockSubjectCacheService.getCachedSubjectData(subjectId)).called(1);
-      verify(mockFirestoreService.fetchSubjectData(subjectId: subjectId)).called(1);
+      verify(mockFirestoreService.fetchSubjectData(subjectId: subjectId))
+          .called(1);
       verify(mockSubjectCacheService.cacheSubjectData(any)).called(1);
       verifyNoMoreInteractions(mockSubjectCacheService);
       verifyNoMoreInteractions(mockFirestoreService);
     });
 
-    testWidgets('should return null if an error occurs', (WidgetTester tester) async {
+    testWidgets(
+        'should return null if an error occurs', (WidgetTester tester) async {
       // Arrange: Simulate an error when fetching subject data
       when(mockSubjectCacheService.getCachedSubjectData(subjectId))
           .thenThrow(Exception('Cache error'));
@@ -1052,10 +1313,12 @@ void main() {
       await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
       await tester.pumpAndSettle();
 
-      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
 
       // Act
-      final subject = await state.getDataService().getSubjectData(subjectId: subjectId, forceRefresh: false);
+      final subject = await state.getDataService().getSubjectData(
+          subjectId: subjectId, forceRefresh: false);
 
       // Assert
       expect(subject, isNull);
@@ -1071,65 +1334,88 @@ void main() {
 
     setUp(() {
       // Initialize mocks before each test
-      when(mockFirestoreService.checkIfStudentAlreadyInClass(subjectId: subjectId, studentId: studentId))
+      when(mockFirestoreService.checkIfStudentAlreadyInClass(
+          subjectId: subjectId, studentId: studentId))
           .thenAnswer((_) async => true);
     });
 
-    testWidgets('should return true if student is already in the class', (WidgetTester tester) async {
+    testWidgets('should return true if student is already in the class', (
+        WidgetTester tester) async {
       // Arrange: Mock the Firestore service to return true (student is in class)
-      when(mockFirestoreService.checkIfStudentAlreadyInClass(subjectId: subjectId, studentId: studentId))
+      when(mockFirestoreService.checkIfStudentAlreadyInClass(
+          subjectId: subjectId, studentId: studentId))
           .thenAnswer((_) async => true);
 
       await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
       await tester.pumpAndSettle();
 
-      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
 
       // Act
-      final isStudentInClass = await state.getDataService().checkIfStudentAlreadyInClass(subjectId: subjectId, studentId: studentId);
+      final isStudentInClass = await state
+          .getDataService()
+          .checkIfStudentAlreadyInClass(
+          subjectId: subjectId, studentId: studentId);
 
       // Assert
       expect(isStudentInClass, true);
-      verify(mockFirestoreService.checkIfStudentAlreadyInClass(subjectId: subjectId, studentId: studentId)).called(1);
+      verify(mockFirestoreService.checkIfStudentAlreadyInClass(
+          subjectId: subjectId, studentId: studentId)).called(1);
       verifyNoMoreInteractions(mockFirestoreService);
     });
 
-    testWidgets('should return false if student is not in the class', (WidgetTester tester) async {
+    testWidgets('should return false if student is not in the class', (
+        WidgetTester tester) async {
       // Arrange: Mock the Firestore service to return false (student is not in class)
-      when(mockFirestoreService.checkIfStudentAlreadyInClass(subjectId: subjectId, studentId: studentId))
+      when(mockFirestoreService.checkIfStudentAlreadyInClass(
+          subjectId: subjectId, studentId: studentId))
           .thenAnswer((_) async => false);
 
       await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
       await tester.pumpAndSettle();
 
-      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
 
       // Act
-      final isStudentInClass = await state.getDataService().checkIfStudentAlreadyInClass(subjectId: subjectId, studentId: studentId);
+      final isStudentInClass = await state
+          .getDataService()
+          .checkIfStudentAlreadyInClass(
+          subjectId: subjectId, studentId: studentId);
 
       // Assert
       expect(isStudentInClass, false);
-      verify(mockFirestoreService.checkIfStudentAlreadyInClass(subjectId: subjectId, studentId: studentId)).called(1);
+      verify(mockFirestoreService.checkIfStudentAlreadyInClass(
+          subjectId: subjectId, studentId: studentId)).called(1);
       verifyNoMoreInteractions(mockFirestoreService);
     });
 
-    testWidgets('should throw an exception if Firestore call fails', (WidgetTester tester) async {
+    testWidgets('should throw an exception if Firestore call fails', (
+        WidgetTester tester) async {
       // Arrange: Simulate an error in Firestore service
-      when(mockFirestoreService.checkIfStudentAlreadyInClass(subjectId: subjectId, studentId: studentId))
+      when(mockFirestoreService.checkIfStudentAlreadyInClass(
+          subjectId: subjectId, studentId: studentId))
           .thenThrow(Exception('Error checking student class enrollment'));
 
       await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
       await tester.pumpAndSettle();
 
-      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
 
       // Act & Assert
       expect(
-            () async => await state.getDataService().checkIfStudentAlreadyInClass(subjectId: subjectId, studentId: studentId),
+            () async =>
+        await state
+            .getDataService()
+            .checkIfStudentAlreadyInClass(
+            subjectId: subjectId, studentId: studentId),
         throwsA(isA<Exception>()), // Expect an exception to be thrown
       );
 
-      verify(mockFirestoreService.checkIfStudentAlreadyInClass(subjectId: subjectId, studentId: studentId)).called(1);
+      verify(mockFirestoreService.checkIfStudentAlreadyInClass(
+          subjectId: subjectId, studentId: studentId)).called(1);
       verifyNoMoreInteractions(mockFirestoreService);
     });
   });
@@ -1150,25 +1436,31 @@ void main() {
       img: 'testimage.png',
     );
 
-    testWidgets('should load subjects from cache when available', (WidgetTester tester) async {
+    testWidgets('should load subjects from cache when available', (
+        WidgetTester tester) async {
       // Arrange: Mock user data and cached subjects
-      when(mockUserCacheService.getCachedUserData()).thenAnswer((_) async => mockUserData);
-      when(mockSubjectCacheService.getCachedSubjectData('subject1')).thenAnswer((_) async => SubjectData(
-        subjectId: 'subject1',
-        subjectName: 'Subject 1',
-        subjectLogo: 'logo1.png',
-        teacher: '',
-        students: [],
-        assignments: [],
-      ));
-      when(mockSubjectCacheService.getCachedSubjectData('subject2')).thenAnswer((_) async => SubjectData(
-        subjectId: 'subject2',
-        subjectName: 'Subject 2',
-        subjectLogo: 'logo2.png',
-        teacher: '',
-        students: [],
-        assignments: [],
-      ));
+      when(mockUserCacheService.getCachedUserData()).thenAnswer((
+          _) async => mockUserData);
+      when(mockSubjectCacheService.getCachedSubjectData('subject1'))
+          .thenAnswer((_) async =>
+          SubjectData(
+            subjectId: 'subject1',
+            subjectName: 'Subject 1',
+            subjectLogo: 'logo1.png',
+            teacher: '',
+            students: [],
+            assignments: [],
+          ));
+      when(mockSubjectCacheService.getCachedSubjectData('subject2'))
+          .thenAnswer((_) async =>
+          SubjectData(
+            subjectId: 'subject2',
+            subjectName: 'Subject 2',
+            subjectLogo: 'logo2.png',
+            teacher: '',
+            students: [],
+            assignments: [],
+          ));
 
       // Act: Call getAllSubjects
       await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
@@ -1183,31 +1475,42 @@ void main() {
       expect(result, isNotEmpty);
       expect(result[0]['subjectId'], 'subject1');
       expect(result[1]['subjectId'], 'subject2');
-      verify(mockSubjectCacheService.getCachedSubjectData('subject1')).called(1);
-      verify(mockSubjectCacheService.getCachedSubjectData('subject2')).called(1);
+      verify(mockSubjectCacheService.getCachedSubjectData('subject1')).called(
+          1);
+      verify(mockSubjectCacheService.getCachedSubjectData('subject2')).called(
+          1);
     });
 
-    testWidgets('should load subjects from Firestore when not in cache', (WidgetTester tester) async {
+    testWidgets('should load subjects from Firestore when not in cache', (
+        WidgetTester tester) async {
       // Arrange: Mock user data and cache miss
-      when(mockUserCacheService.getCachedUserData()).thenAnswer((_) async => mockUserData);
-      when(mockSubjectCacheService.getCachedSubjectData('subject1')).thenAnswer((_) async => null);
-      when(mockSubjectCacheService.getCachedSubjectData('subject2')).thenAnswer((_) async => null);
+      when(mockUserCacheService.getCachedUserData()).thenAnswer((
+          _) async => mockUserData);
+      when(mockSubjectCacheService.getCachedSubjectData('subject1'))
+          .thenAnswer((_) async => null);
+      when(mockSubjectCacheService.getCachedSubjectData('subject2'))
+          .thenAnswer((_) async => null);
 
-      when(mockFirestoreService.fetchSubjectData(subjectId: 'subject1')).thenAnswer((_) async => SubjectData(
-        subjectId: 'subject1',
-        subjectName: 'Subject 1',
-        subjectLogo: 'logo1.png', teacher: '',
-        students: [],
-        assignments: [],
-      ));
-      when(mockFirestoreService.fetchSubjectData(subjectId: 'subject2')).thenAnswer((_) async => SubjectData(
-        subjectId: 'subject2',
-        subjectName: 'Subject 2',
-        subjectLogo: 'logo2.png',
-        teacher: '',
-        students: [],
-        assignments: [],
-      ));
+      when(mockFirestoreService.fetchSubjectData(subjectId: 'subject1'))
+          .thenAnswer((_) async =>
+          SubjectData(
+            subjectId: 'subject1',
+            subjectName: 'Subject 1',
+            subjectLogo: 'logo1.png',
+            teacher: '',
+            students: [],
+            assignments: [],
+          ));
+      when(mockFirestoreService.fetchSubjectData(subjectId: 'subject2'))
+          .thenAnswer((_) async =>
+          SubjectData(
+            subjectId: 'subject2',
+            subjectName: 'Subject 2',
+            subjectLogo: 'logo2.png',
+            teacher: '',
+            students: [],
+            assignments: [],
+          ));
 
       // Act: Call getAllSubjects
       await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
@@ -1222,13 +1525,17 @@ void main() {
       expect(result, isNotEmpty);
       expect(result[0]['subjectId'], 'subject1');
       expect(result[1]['subjectId'], 'subject2');
-      verify(mockFirestoreService.fetchSubjectData(subjectId: 'subject1')).called(1);
-      verify(mockFirestoreService.fetchSubjectData(subjectId: 'subject2')).called(1);
+      verify(mockFirestoreService.fetchSubjectData(subjectId: 'subject1'))
+          .called(1);
+      verify(mockFirestoreService.fetchSubjectData(subjectId: 'subject2'))
+          .called(1);
     });
 
-    testWidgets('should return an empty list if user data is null', (WidgetTester tester) async {
+    testWidgets('should return an empty list if user data is null', (
+        WidgetTester tester) async {
       // Arrange: Mock that user data is null
-      when(mockUserCacheService.getCachedUserData()).thenAnswer((_) async => null);
+      when(mockUserCacheService.getCachedUserData()).thenAnswer((
+          _) async => null);
 
       // Act: Call getAllSubjects
       await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
@@ -1243,12 +1550,17 @@ void main() {
       expect(result, isEmpty);
     });
 
-    testWidgets('should return an empty list if an error occurs', (WidgetTester tester) async {
+    testWidgets('should return an empty list if an error occurs', (
+        WidgetTester tester) async {
       // Arrange: Mock user data and simulate an error
-      when(mockUserCacheService.getCachedUserData()).thenAnswer((_) async => mockUserData);
-      when(mockSubjectCacheService.getCachedSubjectData('subject1')).thenAnswer((_) async => null);
-      when(mockSubjectCacheService.getCachedSubjectData('subject2')).thenAnswer((_) async => null);
-      when(mockFirestoreService.fetchSubjectData(subjectId: 'subject1')).thenThrow(Exception('Error fetching subject'));
+      when(mockUserCacheService.getCachedUserData()).thenAnswer((
+          _) async => mockUserData);
+      when(mockSubjectCacheService.getCachedSubjectData('subject1'))
+          .thenAnswer((_) async => null);
+      when(mockSubjectCacheService.getCachedSubjectData('subject2'))
+          .thenAnswer((_) async => null);
+      when(mockFirestoreService.fetchSubjectData(subjectId: 'subject1'))
+          .thenThrow(Exception('Error fetching subject'));
 
       // Act: Call getAllSubjects
       await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
@@ -1265,7 +1577,9 @@ void main() {
   });
 
   group('addSubject', () {
-    testWidgets('should successfully add subject to Firestore and update cache', (WidgetTester tester) async {
+    testWidgets(
+        'should successfully add subject to Firestore and update cache', (
+        WidgetTester tester) async {
       // Arrange: Mock services to return successful values
       final mockSubject = SubjectData(
         subjectId: 'subject1',
@@ -1291,7 +1605,8 @@ void main() {
       );
 
       // Mock Firestore and Cache behavior
-      when(mockFirestoreService.addSubjectData(subject: mockSubject, uid: 'user1'))
+      when(mockFirestoreService.addSubjectData(
+          subject: mockSubject, uid: 'user1'))
           .thenAnswer((_) async {});
       when(mockSubjectCacheService.cacheSubjectData(mockSubject))
           .thenAnswer((_) async {});
@@ -1305,17 +1620,20 @@ void main() {
       final state = tester.state<DataServiceTestWidgetState>(
         find.byType(DataServiceTestWidget),
       );
-      await state.getDataService().addSubject(subject: mockSubject, uid: 'user1');
+      await state.getDataService().addSubject(
+          subject: mockSubject, uid: 'user1');
 
       // Assert: Verify Firestore and Cache interactions
-      verify(mockFirestoreService.addSubjectData(subject: mockSubject, uid: 'user1')).called(1);
+      verify(mockFirestoreService.addSubjectData(
+          subject: mockSubject, uid: 'user1')).called(1);
       verify(mockSubjectCacheService.cacheSubjectData(mockSubject)).called(1);
       verify(mockUserCacheService.getCachedUserData()).called(1);
       verify(mockUserCacheService.clearUserCache()).called(1);
       verify(mockUserCacheService.cacheUserData(mockUserData)).called(1);
     });
 
-    testWidgets('should throw exception if Firestore fails to add subject', (WidgetTester tester) async {
+    testWidgets('should throw exception if Firestore fails to add subject', (
+        WidgetTester tester) async {
       // Arrange: Mock Firestore to throw an exception
       final mockSubject = SubjectData(
         subjectId: 'subject1',
@@ -1326,7 +1644,8 @@ void main() {
         assignments: [],
       );
 
-      when(mockFirestoreService.addSubjectData(subject: mockSubject, uid: 'user1'))
+      when(mockFirestoreService.addSubjectData(
+          subject: mockSubject, uid: 'user1'))
           .thenThrow(Exception('Firestore error'));
 
       // Act & Assert: Call the function and expect an exception to be thrown
@@ -1337,16 +1656,20 @@ void main() {
         find.byType(DataServiceTestWidget),
       );
       expect(
-            () => state.getDataService().addSubject(subject: mockSubject, uid: 'user1'),
+            () =>
+            state.getDataService().addSubject(
+                subject: mockSubject, uid: 'user1'),
         throwsA(isA<Exception>()),
       );
 
-      verify(mockFirestoreService.addSubjectData(subject: mockSubject, uid: 'user1')).called(1);
+      verify(mockFirestoreService.addSubjectData(
+          subject: mockSubject, uid: 'user1')).called(1);
       verifyNoMoreInteractions(mockSubjectCacheService);
       verifyNoMoreInteractions(mockUserCacheService);
     });
 
-    testWidgets('should throw exception if caching subject fails', (WidgetTester tester) async {
+    testWidgets('should throw exception if caching subject fails', (
+        WidgetTester tester) async {
       // Arrange: Mock successful Firestore call but cache fails
       final mockSubject = SubjectData(
         subjectId: 'subject1',
@@ -1357,7 +1680,8 @@ void main() {
         assignments: [],
       );
 
-      when(mockFirestoreService.addSubjectData(subject: mockSubject, uid: 'user1'))
+      when(mockFirestoreService.addSubjectData(
+          subject: mockSubject, uid: 'user1'))
           .thenAnswer((_) async {});
       when(mockSubjectCacheService.cacheSubjectData(mockSubject))
           .thenThrow(Exception('Cache error'));
@@ -1370,18 +1694,22 @@ void main() {
         find.byType(DataServiceTestWidget),
       );
       expect(
-            () => state.getDataService().addSubject(subject: mockSubject, uid: 'user1'),
+            () =>
+            state.getDataService().addSubject(
+                subject: mockSubject, uid: 'user1'),
         throwsA(isA<Exception>()),
       );
 
       await tester.pump();
 
-      verify(mockFirestoreService.addSubjectData(subject: mockSubject, uid: 'user1')).called(1);
+      verify(mockFirestoreService.addSubjectData(
+          subject: mockSubject, uid: 'user1')).called(1);
       verify(mockSubjectCacheService.cacheSubjectData(mockSubject)).called(1);
       verifyNoMoreInteractions(mockUserCacheService);
     });
 
-    testWidgets('should throw exception if user data fetching fails', (WidgetTester tester) async {
+    testWidgets('should throw exception if user data fetching fails', (
+        WidgetTester tester) async {
       // Arrange: Mock Firestore and Cache calls
       final mockSubject = SubjectData(
         subjectId: 'subject1',
@@ -1392,7 +1720,8 @@ void main() {
         assignments: [],
       );
 
-      when(mockFirestoreService.addSubjectData(subject: mockSubject, uid: 'user1'))
+      when(mockFirestoreService.addSubjectData(
+          subject: mockSubject, uid: 'user1'))
           .thenAnswer((_) async {});
       when(mockSubjectCacheService.cacheSubjectData(mockSubject))
           .thenAnswer((_) async {});
@@ -1409,13 +1738,16 @@ void main() {
         find.byType(DataServiceTestWidget),
       );
       expect(
-            () => state.getDataService().addSubject(subject: mockSubject, uid: 'user1'),
+            () =>
+            state.getDataService().addSubject(
+                subject: mockSubject, uid: 'user1'),
         throwsA(isA<Exception>()),
       );
 
       await tester.pump();
 
-      verify(mockFirestoreService.addSubjectData(subject: mockSubject, uid: 'user1')).called(1);
+      verify(mockFirestoreService.addSubjectData(
+          subject: mockSubject, uid: 'user1')).called(1);
       verify(mockSubjectCacheService.cacheSubjectData(mockSubject)).called(1);
       verify(mockUserCacheService.getCachedUserData()).called(1);
       verify(mockFirestoreService.fetchUserData(userId: 'user1')).called(1);
@@ -1423,7 +1755,9 @@ void main() {
   });
 
   group('deleteSubject', () {
-    testWidgets('should successfully delete a subject from Firestore, cache, and update user data', (WidgetTester tester) async {
+    testWidgets(
+        'should successfully delete a subject from Firestore, cache, and update user data', (
+        WidgetTester tester) async {
       // Arrange: Mock services to simulate success
       final mockSubjectId = 'subject1';
       final mockUid = 'user1';
@@ -1443,7 +1777,8 @@ void main() {
       );
 
       // Mock service calls
-      when(mockFirestoreService.deleteSubject(subjectId: mockSubjectId, uid: mockUid))
+      when(mockFirestoreService.deleteSubject(
+          subjectId: mockSubjectId, uid: mockUid))
           .thenAnswer((_) async {});
       when(mockSubjectCacheService.deleteSubject(subjectId: mockSubjectId))
           .thenAnswer((_) async {});
@@ -1461,22 +1796,28 @@ void main() {
       final state = tester.state<DataServiceTestWidgetState>(
         find.byType(DataServiceTestWidget),
       );
-      await state.getDataService().deleteSubject(subjectId: mockSubjectId, uid: mockUid);
+      await state.getDataService().deleteSubject(
+          subjectId: mockSubjectId, uid: mockUid);
 
       // Assert: Verify that Firestore, cache, and user data are correctly updated
-      verify(mockFirestoreService.deleteSubject(subjectId: mockSubjectId, uid: mockUid)).called(1);
-      verify(mockSubjectCacheService.deleteSubject(subjectId: mockSubjectId)).called(1);
+      verify(mockFirestoreService.deleteSubject(
+          subjectId: mockSubjectId, uid: mockUid)).called(1);
+      verify(mockSubjectCacheService.deleteSubject(subjectId: mockSubjectId))
+          .called(1);
       verify(mockUserCacheService.getCachedUserData()).called(1);
       verify(mockUserCacheService.clearUserCache()).called(1);
       verify(mockUserCacheService.cacheUserData(mockUserData)).called(1);
     });
 
-    testWidgets('should throw exception if Firestore fails to delete the subject', (WidgetTester tester) async {
+    testWidgets(
+        'should throw exception if Firestore fails to delete the subject', (
+        WidgetTester tester) async {
       // Arrange: Mock Firestore to throw an error
       final mockSubjectId = 'subject1';
       final mockUid = 'user1';
 
-      when(mockFirestoreService.deleteSubject(subjectId: mockSubjectId, uid: mockUid))
+      when(mockFirestoreService.deleteSubject(
+          subjectId: mockSubjectId, uid: mockUid))
           .thenThrow(Exception('Firestore error'));
 
       // Act & Assert: Call the method and expect an exception to be thrown
@@ -1487,21 +1828,26 @@ void main() {
         find.byType(DataServiceTestWidget),
       );
       expect(
-            () => state.getDataService().deleteSubject(subjectId: mockSubjectId, uid: mockUid),
+            () =>
+            state.getDataService().deleteSubject(
+                subjectId: mockSubjectId, uid: mockUid),
         throwsA(isA<Exception>()),
       );
 
-      verify(mockFirestoreService.deleteSubject(subjectId: mockSubjectId, uid: mockUid)).called(1);
+      verify(mockFirestoreService.deleteSubject(
+          subjectId: mockSubjectId, uid: mockUid)).called(1);
       verifyNoMoreInteractions(mockSubjectCacheService);
       verifyNoMoreInteractions(mockUserCacheService);
     });
 
-    testWidgets('should throw exception if cache deletion fails', (WidgetTester tester) async {
+    testWidgets('should throw exception if cache deletion fails', (
+        WidgetTester tester) async {
       // Arrange: Mock Firestore and simulate cache failure
       final mockSubjectId = 'subject1';
       final mockUid = 'user1';
 
-      when(mockFirestoreService.deleteSubject(subjectId: mockSubjectId, uid: mockUid))
+      when(mockFirestoreService.deleteSubject(
+          subjectId: mockSubjectId, uid: mockUid))
           .thenAnswer((_) async {});
       when(mockSubjectCacheService.deleteSubject(subjectId: mockSubjectId))
           .thenThrow(Exception('Cache error'));
@@ -1514,23 +1860,29 @@ void main() {
         find.byType(DataServiceTestWidget),
       );
       expect(
-            () => state.getDataService().deleteSubject(subjectId: mockSubjectId, uid: mockUid),
+            () =>
+            state.getDataService().deleteSubject(
+                subjectId: mockSubjectId, uid: mockUid),
         throwsA(isA<Exception>()),
       );
 
       await tester.pump();
 
-      verify(mockFirestoreService.deleteSubject(subjectId: mockSubjectId, uid: mockUid)).called(1);
-      verify(mockSubjectCacheService.deleteSubject(subjectId: mockSubjectId)).called(1);
+      verify(mockFirestoreService.deleteSubject(
+          subjectId: mockSubjectId, uid: mockUid)).called(1);
+      verify(mockSubjectCacheService.deleteSubject(subjectId: mockSubjectId))
+          .called(1);
       verifyNoMoreInteractions(mockUserCacheService);
     });
 
-    testWidgets('should throw exception if user data fetching fails', (WidgetTester tester) async {
+    testWidgets('should throw exception if user data fetching fails', (
+        WidgetTester tester) async {
       // Arrange: Mock successful deletion, but simulate failure in fetching user data
       final mockSubjectId = 'subject1';
       final mockUid = 'user1';
 
-      when(mockFirestoreService.deleteSubject(subjectId: mockSubjectId, uid: mockUid))
+      when(mockFirestoreService.deleteSubject(
+          subjectId: mockSubjectId, uid: mockUid))
           .thenAnswer((_) async {});
       when(mockSubjectCacheService.deleteSubject(subjectId: mockSubjectId))
           .thenAnswer((_) async {});
@@ -1547,35 +1899,42 @@ void main() {
         find.byType(DataServiceTestWidget),
       );
       expect(
-            () => state.getDataService().deleteSubject(subjectId: mockSubjectId, uid: mockUid),
+            () =>
+            state.getDataService().deleteSubject(
+                subjectId: mockSubjectId, uid: mockUid),
         throwsA(isA<Exception>()),
       );
 
       await tester.pump();
 
-      verify(mockFirestoreService.deleteSubject(subjectId: mockSubjectId, uid: mockUid)).called(1);
-      verify(mockSubjectCacheService.deleteSubject(subjectId: mockSubjectId)).called(1);
+      verify(mockFirestoreService.deleteSubject(
+          subjectId: mockSubjectId, uid: mockUid)).called(1);
+      verify(mockSubjectCacheService.deleteSubject(subjectId: mockSubjectId))
+          .called(1);
       verify(mockUserCacheService.getCachedUserData()).called(1);
       verify(mockFirestoreService.fetchUserData(userId: mockUid)).called(1);
     });
   });
 
   group('addStudentToSubject', () {
-    testWidgets('should successfully add student to subject, update Firestore, and cache', (WidgetTester tester) async {
+    testWidgets(
+        'should successfully add student to subject, update Firestore, and cache', (
+        WidgetTester tester) async {
       // Arrange: Mock services to simulate successful data flow
       final mockSubjectId = 'subject1';
       final mockStudentId = 'student1';
       final updatedSubject = SubjectData(
-        subjectId: mockSubjectId,
-        subjectName: 'Subject Name',
-        subjectLogo: 'subject_logo.png',
-        teacher: '',
-        students: [],
-        assignments: []
+          subjectId: mockSubjectId,
+          subjectName: 'Subject Name',
+          subjectLogo: 'subject_logo.png',
+          teacher: '',
+          students: [],
+          assignments: []
       );
 
       // Mock service calls
-      when(mockFirestoreService.addStudentToSubject(subjectId: mockSubjectId, studentId: mockStudentId))
+      when(mockFirestoreService.addStudentToSubject(
+          subjectId: mockSubjectId, studentId: mockStudentId))
           .thenAnswer((_) async {});
       when(mockFirestoreService.fetchSubjectData(subjectId: mockSubjectId))
           .thenAnswer((_) async => updatedSubject);
@@ -1591,21 +1950,29 @@ void main() {
       final state = tester.state<DataServiceTestWidgetState>(
         find.byType(DataServiceTestWidget),
       );
-      await state.getDataService().addStudentToSubject(subjectId: mockSubjectId, studentId: mockStudentId);
+      await state.getDataService().addStudentToSubject(
+          subjectId: mockSubjectId, studentId: mockStudentId);
 
       // Assert: Verify that Firestore and cache interactions occur as expected
-      verify(mockFirestoreService.addStudentToSubject(subjectId: mockSubjectId, studentId: mockStudentId)).called(1);
-      verify(mockFirestoreService.fetchSubjectData(subjectId: mockSubjectId)).called(1);
-      verify(mockSubjectCacheService.deleteSubject(subjectId: mockSubjectId)).called(1);
-      verify(mockSubjectCacheService.cacheSubjectData(updatedSubject)).called(1);
+      verify(mockFirestoreService.addStudentToSubject(
+          subjectId: mockSubjectId, studentId: mockStudentId)).called(1);
+      verify(mockFirestoreService.fetchSubjectData(subjectId: mockSubjectId))
+          .called(1);
+      verify(mockSubjectCacheService.deleteSubject(subjectId: mockSubjectId))
+          .called(1);
+      verify(mockSubjectCacheService.cacheSubjectData(updatedSubject)).called(
+          1);
     });
 
-    testWidgets('should throw exception if Firestore fails to add student to subject', (WidgetTester tester) async {
+    testWidgets(
+        'should throw exception if Firestore fails to add student to subject', (
+        WidgetTester tester) async {
       // Arrange: Mock Firestore to throw an error
       final mockSubjectId = 'subject1';
       final mockStudentId = 'student1';
 
-      when(mockFirestoreService.addStudentToSubject(subjectId: mockSubjectId, studentId: mockStudentId))
+      when(mockFirestoreService.addStudentToSubject(
+          subjectId: mockSubjectId, studentId: mockStudentId))
           .thenThrow(Exception('Error adding student to subject'));
 
       // Act & Assert: Call the method and expect an exception to be thrown
@@ -1616,23 +1983,29 @@ void main() {
         find.byType(DataServiceTestWidget),
       );
       expect(
-            () => state.getDataService().addStudentToSubject(subjectId: mockSubjectId, studentId: mockStudentId),
+            () =>
+            state.getDataService().addStudentToSubject(
+                subjectId: mockSubjectId, studentId: mockStudentId),
         throwsA(isA<Exception>()),
       );
 
       await tester.pump();
 
-      verify(mockFirestoreService.addStudentToSubject(subjectId: mockSubjectId, studentId: mockStudentId)).called(1);
+      verify(mockFirestoreService.addStudentToSubject(
+          subjectId: mockSubjectId, studentId: mockStudentId)).called(1);
       verifyNoMoreInteractions(mockFirestoreService);
       verifyNoMoreInteractions(mockSubjectCacheService);
     });
 
-    testWidgets('should throw exception if fetching updated subject data fails', (WidgetTester tester) async {
+    testWidgets(
+        'should throw exception if fetching updated subject data fails', (
+        WidgetTester tester) async {
       // Arrange: Mock Firestore and simulate error in fetching updated subject data
       final mockSubjectId = 'subject1';
       final mockStudentId = 'student1';
 
-      when(mockFirestoreService.addStudentToSubject(subjectId: mockSubjectId, studentId: mockStudentId))
+      when(mockFirestoreService.addStudentToSubject(
+          subjectId: mockSubjectId, studentId: mockStudentId))
           .thenAnswer((_) async {});
       when(mockFirestoreService.fetchSubjectData(subjectId: mockSubjectId))
           .thenThrow(Exception('Error fetching updated subject data'));
@@ -1645,18 +2018,23 @@ void main() {
         find.byType(DataServiceTestWidget),
       );
       expect(
-            () => state.getDataService().addStudentToSubject(subjectId: mockSubjectId, studentId: mockStudentId),
+            () =>
+            state.getDataService().addStudentToSubject(
+                subjectId: mockSubjectId, studentId: mockStudentId),
         throwsA(isA<Exception>()),
       );
 
       await tester.pump();
 
-      verify(mockFirestoreService.addStudentToSubject(subjectId: mockSubjectId, studentId: mockStudentId)).called(1);
-      verify(mockFirestoreService.fetchSubjectData(subjectId: mockSubjectId)).called(1);
+      verify(mockFirestoreService.addStudentToSubject(
+          subjectId: mockSubjectId, studentId: mockStudentId)).called(1);
+      verify(mockFirestoreService.fetchSubjectData(subjectId: mockSubjectId))
+          .called(1);
       verifyNoMoreInteractions(mockSubjectCacheService);
     });
 
-    testWidgets('should throw exception if cache deletion or caching fails', (WidgetTester tester) async {
+    testWidgets('should throw exception if cache deletion or caching fails', (
+        WidgetTester tester) async {
       // Arrange: Mock Firestore and simulate error in cache operations
       final mockSubjectId = 'subject1';
       final mockStudentId = 'student1';
@@ -1669,7 +2047,8 @@ void main() {
         assignments: [],
       );
 
-      when(mockFirestoreService.addStudentToSubject(subjectId: mockSubjectId, studentId: mockStudentId))
+      when(mockFirestoreService.addStudentToSubject(
+          subjectId: mockSubjectId, studentId: mockStudentId))
           .thenAnswer((_) async {});
       when(mockFirestoreService.fetchSubjectData(subjectId: mockSubjectId))
           .thenAnswer((_) async => updatedSubject);
@@ -1686,21 +2065,29 @@ void main() {
         find.byType(DataServiceTestWidget),
       );
       expect(
-            () => state.getDataService().addStudentToSubject(subjectId: mockSubjectId, studentId: mockStudentId),
+            () =>
+            state.getDataService().addStudentToSubject(
+                subjectId: mockSubjectId, studentId: mockStudentId),
         throwsA(isA<Exception>()),
       );
 
       await tester.pump();
 
-      verify(mockFirestoreService.addStudentToSubject(subjectId: mockSubjectId, studentId: mockStudentId)).called(1);
-      verify(mockFirestoreService.fetchSubjectData(subjectId: mockSubjectId)).called(1);
-      verify(mockSubjectCacheService.deleteSubject(subjectId: mockSubjectId)).called(1);
-      verify(mockSubjectCacheService.cacheSubjectData(updatedSubject)).called(1);
+      verify(mockFirestoreService.addStudentToSubject(
+          subjectId: mockSubjectId, studentId: mockStudentId)).called(1);
+      verify(mockFirestoreService.fetchSubjectData(subjectId: mockSubjectId))
+          .called(1);
+      verify(mockSubjectCacheService.deleteSubject(subjectId: mockSubjectId))
+          .called(1);
+      verify(mockSubjectCacheService.cacheSubjectData(updatedSubject)).called(
+          1);
     });
   });
 
   group('removeStudentFromSubject', () {
-    testWidgets('should successfully remove student from subject, update Firestore, and cache', (WidgetTester tester) async {
+    testWidgets(
+        'should successfully remove student from subject, update Firestore, and cache', (
+        WidgetTester tester) async {
       // Arrange: Mock services to simulate successful data flow
       final mockSubjectId = 'subject1';
       final mockStudentId = 'student1';
@@ -1714,7 +2101,8 @@ void main() {
       );
 
       // Mock service calls
-      when(mockFirestoreService.removeStudentFromSubject(subjectId: mockSubjectId, studentId: mockStudentId))
+      when(mockFirestoreService.removeStudentFromSubject(
+          subjectId: mockSubjectId, studentId: mockStudentId))
           .thenAnswer((_) async {});
       when(mockFirestoreService.fetchSubjectData(subjectId: mockSubjectId))
           .thenAnswer((_) async => updatedSubject);
@@ -1730,21 +2118,29 @@ void main() {
       final state = tester.state<DataServiceTestWidgetState>(
         find.byType(DataServiceTestWidget),
       );
-      await state.getDataService().removeStudentFromSubject(subjectId: mockSubjectId, studentId: mockStudentId);
+      await state.getDataService().removeStudentFromSubject(
+          subjectId: mockSubjectId, studentId: mockStudentId);
 
       // Assert: Verify that Firestore and cache interactions occur as expected
-      verify(mockFirestoreService.removeStudentFromSubject(subjectId: mockSubjectId, studentId: mockStudentId)).called(1);
-      verify(mockFirestoreService.fetchSubjectData(subjectId: mockSubjectId)).called(1);
-      verify(mockSubjectCacheService.deleteSubject(subjectId: mockSubjectId)).called(1);
-      verify(mockSubjectCacheService.cacheSubjectData(updatedSubject)).called(1);
+      verify(mockFirestoreService.removeStudentFromSubject(
+          subjectId: mockSubjectId, studentId: mockStudentId)).called(1);
+      verify(mockFirestoreService.fetchSubjectData(subjectId: mockSubjectId))
+          .called(1);
+      verify(mockSubjectCacheService.deleteSubject(subjectId: mockSubjectId))
+          .called(1);
+      verify(mockSubjectCacheService.cacheSubjectData(updatedSubject)).called(
+          1);
     });
 
-    testWidgets('should throw exception if Firestore fails to remove student from subject', (WidgetTester tester) async {
+    testWidgets(
+        'should throw exception if Firestore fails to remove student from subject', (
+        WidgetTester tester) async {
       // Arrange: Mock Firestore to throw an error
       final mockSubjectId = 'subject1';
       final mockStudentId = 'student1';
 
-      when(mockFirestoreService.removeStudentFromSubject(subjectId: mockSubjectId, studentId: mockStudentId))
+      when(mockFirestoreService.removeStudentFromSubject(
+          subjectId: mockSubjectId, studentId: mockStudentId))
           .thenThrow(Exception('Error removing student from subject'));
 
       // Act & Assert: Call the method and expect an exception to be thrown
@@ -1755,22 +2151,28 @@ void main() {
         find.byType(DataServiceTestWidget),
       );
       expect(
-            () async => await state.getDataService().removeStudentFromSubject(subjectId: mockSubjectId, studentId: mockStudentId),
+            () async =>
+        await state.getDataService().removeStudentFromSubject(
+            subjectId: mockSubjectId, studentId: mockStudentId),
         throwsA(isA<Exception>()),
       );
 
-      verify(mockFirestoreService.removeStudentFromSubject(subjectId: mockSubjectId, studentId: mockStudentId)).called(1);
+      verify(mockFirestoreService.removeStudentFromSubject(
+          subjectId: mockSubjectId, studentId: mockStudentId)).called(1);
       verifyNoMoreInteractions(mockFirestoreService);
       verifyNoMoreInteractions(mockSubjectCacheService);
     });
 
-    testWidgets('should throw exception if fetching updated subject data fails', (WidgetTester tester) async {
+    testWidgets(
+        'should throw exception if fetching updated subject data fails', (
+        WidgetTester tester) async {
       // Arrange: Mock Firestore and simulate error in fetching updated subject data
       final mockSubjectId = 'subject1';
       final mockStudentId = 'student1';
 
       // Mock the behavior for removing the student from the subject and fetching subject data
-      when(mockFirestoreService.removeStudentFromSubject(subjectId: mockSubjectId, studentId: mockStudentId))
+      when(mockFirestoreService.removeStudentFromSubject(
+          subjectId: mockSubjectId, studentId: mockStudentId))
           .thenAnswer((_) async {});
       when(mockFirestoreService.fetchSubjectData(subjectId: mockSubjectId))
           .thenThrow(Exception('Error fetching updated subject data'));
@@ -1779,26 +2181,34 @@ void main() {
       await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
       await tester.pumpAndSettle();
 
-      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
 
       // Assert: Ensure that an exception is thrown when the method is called
       expect(
-            () async => await state.getDataService().removeStudentFromSubject(subjectId: mockSubjectId, studentId: mockStudentId),
-        throwsA(isA<Exception>().having((e) => e.toString(), 'message', contains('Error removing student from subject'))),
+            () async =>
+        await state.getDataService().removeStudentFromSubject(
+            subjectId: mockSubjectId, studentId: mockStudentId),
+        throwsA(isA<Exception>().having((e) => e.toString(), 'message',
+            contains('Error removing student from subject'))),
       );
 
       await tester.pump();
 
       // Ensure expected interactions with Firestore
-      verify(mockFirestoreService.removeStudentFromSubject(subjectId: mockSubjectId, studentId: mockStudentId)).called(1);
-      verify(mockFirestoreService.fetchSubjectData(subjectId: mockSubjectId)).called(1);
-      verify(mockSubjectCacheService.deleteSubject(subjectId: mockSubjectId)).called(1);
+      verify(mockFirestoreService.removeStudentFromSubject(
+          subjectId: mockSubjectId, studentId: mockStudentId)).called(1);
+      verify(mockFirestoreService.fetchSubjectData(subjectId: mockSubjectId))
+          .called(1);
+      verify(mockSubjectCacheService.deleteSubject(subjectId: mockSubjectId))
+          .called(1);
 
       // Ensure no unexpected interactions with the cache service (deleteSubject shouldn't be called)
       verifyNoMoreInteractions(mockSubjectCacheService);
     });
 
-    testWidgets('should throw exception if cache deletion or caching fails', (WidgetTester tester) async {
+    testWidgets('should throw exception if cache deletion or caching fails', (
+        WidgetTester tester) async {
       // Arrange: Mock Firestore and simulate error in cache operations
       final mockSubjectId = 'subject1';
       final mockStudentId = 'student1';
@@ -1811,7 +2221,8 @@ void main() {
         assignments: [],
       );
 
-      when(mockFirestoreService.removeStudentFromSubject(subjectId: mockSubjectId, studentId: mockStudentId))
+      when(mockFirestoreService.removeStudentFromSubject(
+          subjectId: mockSubjectId, studentId: mockStudentId))
           .thenAnswer((_) async {});
       when(mockFirestoreService.fetchSubjectData(subjectId: mockSubjectId))
           .thenAnswer((_) async => updatedSubject);
@@ -1828,21 +2239,28 @@ void main() {
         find.byType(DataServiceTestWidget),
       );
       expect(
-            () => state.getDataService().removeStudentFromSubject(subjectId: mockSubjectId, studentId: mockStudentId),
+            () =>
+            state.getDataService().removeStudentFromSubject(
+                subjectId: mockSubjectId, studentId: mockStudentId),
         throwsA(isA<Exception>()),
       );
 
       await tester.pump();
 
-      verify(mockFirestoreService.removeStudentFromSubject(subjectId: mockSubjectId, studentId: mockStudentId)).called(1);
-      verify(mockFirestoreService.fetchSubjectData(subjectId: mockSubjectId)).called(1);
-      verify(mockSubjectCacheService.deleteSubject(subjectId: mockSubjectId)).called(1);
-      verify(mockSubjectCacheService.cacheSubjectData(updatedSubject)).called(1);
+      verify(mockFirestoreService.removeStudentFromSubject(
+          subjectId: mockSubjectId, studentId: mockStudentId)).called(1);
+      verify(mockFirestoreService.fetchSubjectData(subjectId: mockSubjectId))
+          .called(1);
+      verify(mockSubjectCacheService.deleteSubject(subjectId: mockSubjectId))
+          .called(1);
+      verify(mockSubjectCacheService.cacheSubjectData(updatedSubject)).called(
+          1);
     });
   });
 
   group('createAssignment', () {
-    testWidgets('should successfully create assignment and update cache', (WidgetTester tester) async {
+    testWidgets('should successfully create assignment and update cache', (
+        WidgetTester tester) async {
       // Arrange: Mock services to simulate successful assignment creation
       final mockTitle = 'New Assignment';
       final mockDueDate = DateTime(2025, 6, 1);
@@ -1895,11 +2313,15 @@ void main() {
         gameId: mockGameId,
       )).called(1);
       verify(mockSubjectCacheService.getCachedSubjectData(mockTurma)).called(1);
-      verify(mockSubjectCacheService.deleteSubject(subjectId: mockTurma)).called(1);
-      verify(mockSubjectCacheService.cacheSubjectData(mockSubjectData)).called(1);
+      verify(mockSubjectCacheService.deleteSubject(subjectId: mockTurma))
+          .called(1);
+      verify(mockSubjectCacheService.cacheSubjectData(mockSubjectData)).called(
+          1);
     });
 
-    testWidgets('should throw exception if Firestore assignment creation fails', (WidgetTester tester) async {
+    testWidgets(
+        'should throw exception if Firestore assignment creation fails', (
+        WidgetTester tester) async {
       // Arrange: Mock Firestore to throw an error while creating the assignment
       final mockTitle = 'New Assignment';
       final mockDueDate = DateTime(2025, 6, 1);
@@ -1921,12 +2343,13 @@ void main() {
         find.byType(DataServiceTestWidget),
       );
       expect(
-            () => state.getDataService().createAssignment(
-          title: mockTitle,
-          dueDate: mockDueDate,
-          turma: mockTurma,
-          gameId: mockGameId,
-        ),
+            () =>
+            state.getDataService().createAssignment(
+              title: mockTitle,
+              dueDate: mockDueDate,
+              turma: mockTurma,
+              gameId: mockGameId,
+            ),
         throwsA(isA<Exception>()),
       );
 
@@ -1941,7 +2364,9 @@ void main() {
       verifyNoMoreInteractions(mockSubjectCacheService);
     });
 
-    testWidgets('should handle failure when fetching subject data from Firestore', (WidgetTester tester) async {
+    testWidgets(
+        'should handle failure when fetching subject data from Firestore', (
+        WidgetTester tester) async {
       // Arrange: Mock Firestore to throw an error when fetching subject data
       final mockTitle = 'New Assignment';
       final mockDueDate = DateTime(2025, 6, 1);
@@ -1969,12 +2394,13 @@ void main() {
         find.byType(DataServiceTestWidget),
       );
       expect(
-            () => state.getDataService().createAssignment(
-          title: mockTitle,
-          dueDate: mockDueDate,
-          turma: mockTurma,
-          gameId: mockGameId,
-        ),
+            () =>
+            state.getDataService().createAssignment(
+              title: mockTitle,
+              dueDate: mockDueDate,
+              turma: mockTurma,
+              gameId: mockGameId,
+            ),
         throwsA(isA<Exception>()),
       );
 
@@ -1987,11 +2413,13 @@ void main() {
         gameId: mockGameId,
       )).called(1);
       verify(mockSubjectCacheService.getCachedSubjectData(mockTurma)).called(1);
-      verify(mockFirestoreService.fetchSubjectData(subjectId: mockTurma)).called(1);
+      verify(mockFirestoreService.fetchSubjectData(subjectId: mockTurma))
+          .called(1);
       verifyNoMoreInteractions(mockSubjectCacheService);
     });
 
-    testWidgets('should handle failure when cache update fails', (WidgetTester tester) async {
+    testWidgets('should handle failure when cache update fails', (
+        WidgetTester tester) async {
       // Arrange: Mock Firestore and simulate failure during cache update
       final mockTitle = 'New Assignment';
       final mockDueDate = DateTime(2025, 6, 1);
@@ -2029,12 +2457,13 @@ void main() {
         find.byType(DataServiceTestWidget),
       );
       expect(
-            () => state.getDataService().createAssignment(
-          title: mockTitle,
-          dueDate: mockDueDate,
-          turma: mockTurma,
-          gameId: mockGameId,
-        ),
+            () =>
+            state.getDataService().createAssignment(
+              title: mockTitle,
+              dueDate: mockDueDate,
+              turma: mockTurma,
+              gameId: mockGameId,
+            ),
         throwsA(isA<Exception>()),
       );
 
@@ -2047,13 +2476,16 @@ void main() {
         gameId: mockGameId,
       )).called(1);
       verify(mockSubjectCacheService.getCachedSubjectData(mockTurma)).called(1);
-      verify(mockSubjectCacheService.deleteSubject(subjectId: mockTurma)).called(1);
-      verify(mockSubjectCacheService.cacheSubjectData(mockSubjectData)).called(1);
+      verify(mockSubjectCacheService.deleteSubject(subjectId: mockTurma))
+          .called(1);
+      verify(mockSubjectCacheService.cacheSubjectData(mockSubjectData)).called(
+          1);
     });
   });
 
   group('getAllAssignments', () {
-    testWidgets('should load assignments from cache when available', (WidgetTester tester) async {
+    testWidgets('should load assignments from cache when available', (
+        WidgetTester tester) async {
       // Arrange
       final subjectId = 'subject1';
       final assignmentId = 'assignment1';
@@ -2066,7 +2498,13 @@ void main() {
       );
 
       when(mockSubjectCacheService.getCachedSubjectData(subjectId))
-          .thenAnswer((_) async => SubjectData(assignments: [assignmentId], subjectId: subjectId, subjectLogo: '', subjectName: '', teacher: '', students: []));
+          .thenAnswer((_) async =>
+          SubjectData(assignments: [assignmentId],
+              subjectId: subjectId,
+              subjectLogo: '',
+              subjectName: '',
+              teacher: '',
+              students: []));
       when(mockAssignmentCacheService.getCachedAssignmentData(assignmentId))
           .thenAnswer((_) async => cachedAssignment);
 
@@ -2074,18 +2512,22 @@ void main() {
       await tester.pumpAndSettle();
 
       // Act
-      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
-      final result = await state.getDataService().getAllAssignments(subjectId: subjectId);
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
+      final result = await state.getDataService().getAllAssignments(
+          subjectId: subjectId);
 
       // Assert
       expect(result, isNotEmpty);
       expect(result[0]['assignmentId'], assignmentId);
       expect(result[0]['title'], 'Assignment 1');
       verify(mockSubjectCacheService.getCachedSubjectData(subjectId)).called(1);
-      verify(mockAssignmentCacheService.getCachedAssignmentData(assignmentId)).called(1);
+      verify(mockAssignmentCacheService.getCachedAssignmentData(assignmentId))
+          .called(1);
     });
 
-    testWidgets('should load assignments from Firestore when cache is empty', (WidgetTester tester) async {
+    testWidgets('should load assignments from Firestore when cache is empty', (
+        WidgetTester tester) async {
       // Arrange
       final subjectId = 'subject1';
       final assignmentId = 'assignment1';
@@ -2098,7 +2540,13 @@ void main() {
       );
 
       when(mockSubjectCacheService.getCachedSubjectData(subjectId))
-          .thenAnswer((_) async => SubjectData(assignments: [assignmentId], subjectId: subjectId, subjectLogo: '', subjectName: '', teacher: '', students: []));
+          .thenAnswer((_) async =>
+          SubjectData(assignments: [assignmentId],
+              subjectId: subjectId,
+              subjectLogo: '',
+              subjectName: '',
+              teacher: '',
+              students: []));
       when(mockAssignmentCacheService.getCachedAssignmentData(assignmentId))
           .thenAnswer((_) async => null); // Cache miss
       when(mockFirestoreService.fetchAssignmentData(assignmentId: assignmentId))
@@ -2108,18 +2556,24 @@ void main() {
       await tester.pumpAndSettle();
 
       // Act
-      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
-      final result = await state.getDataService().getAllAssignments(subjectId: subjectId);
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
+      final result = await state.getDataService().getAllAssignments(
+          subjectId: subjectId);
 
       // Assert
       expect(result, isNotEmpty);
       expect(result[0]['assignmentId'], assignmentId);
       verify(mockSubjectCacheService.getCachedSubjectData(subjectId)).called(1);
-      verify(mockAssignmentCacheService.getCachedAssignmentData(assignmentId)).called(1);
-      verify(mockFirestoreService.fetchAssignmentData(assignmentId: assignmentId)).called(1);
+      verify(mockAssignmentCacheService.getCachedAssignmentData(assignmentId))
+          .called(1);
+      verify(
+          mockFirestoreService.fetchAssignmentData(assignmentId: assignmentId))
+          .called(1);
     });
 
-    testWidgets('should throw an exception if subject data is null', (WidgetTester tester) async {
+    testWidgets('should throw an exception if subject data is null', (
+        WidgetTester tester) async {
       // Arrange
       final subjectId = 'subject1';
 
@@ -2132,7 +2586,8 @@ void main() {
       await tester.pumpAndSettle();
 
       // Act & Assert
-      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
       expect(
         await state.getDataService().getAllAssignments(subjectId: subjectId),
         [],
@@ -2142,34 +2597,49 @@ void main() {
       verify(mockSubjectCacheService.getCachedSubjectData(subjectId)).called(1);
     });
 
-    testWidgets('should return empty list if an error occurs during assignment fetching', (WidgetTester tester) async {
+    testWidgets(
+        'should return empty list if an error occurs during assignment fetching', (
+        WidgetTester tester) async {
       // Arrange
       final subjectId = 'subject1';
 
       when(mockSubjectCacheService.getCachedSubjectData(subjectId))
-          .thenAnswer((_) async => SubjectData(assignments: ['assignment1'], subjectId: subjectId, subjectLogo: '', subjectName: '', teacher: '', students: []));
+          .thenAnswer((_) async =>
+          SubjectData(assignments: ['assignment1'],
+              subjectId: subjectId,
+              subjectLogo: '',
+              subjectName: '',
+              teacher: '',
+              students: []));
       when(mockAssignmentCacheService.getCachedAssignmentData('assignment1'))
           .thenAnswer((_) async => null); // Cache miss
-      when(mockFirestoreService.fetchAssignmentData(assignmentId: 'assignment1'))
+      when(
+          mockFirestoreService.fetchAssignmentData(assignmentId: 'assignment1'))
           .thenThrow(Exception('Error fetching assignment data'));
 
       await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
       await tester.pumpAndSettle();
 
       // Act
-      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
-      final result = await state.getDataService().getAllAssignments(subjectId: subjectId);
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
+      final result = await state.getDataService().getAllAssignments(
+          subjectId: subjectId);
 
       // Assert
       expect(result, isEmpty);
       verify(mockSubjectCacheService.getCachedSubjectData(subjectId)).called(1);
-      verify(mockAssignmentCacheService.getCachedAssignmentData('assignment1')).called(1);
-      verify(mockFirestoreService.fetchAssignmentData(assignmentId: 'assignment1')).called(1);
+      verify(mockAssignmentCacheService.getCachedAssignmentData('assignment1'))
+          .called(1);
+      verify(
+          mockFirestoreService.fetchAssignmentData(assignmentId: 'assignment1'))
+          .called(1);
     });
   });
 
   group('getAssignmentData', () {
-    testWidgets('should load assignment data from cache when available', (WidgetTester tester) async {
+    testWidgets('should load assignment data from cache when available', (
+        WidgetTester tester) async {
       // Arrange
       final assignmentId = 'assignment1';
       final cachedAssignment = AssignmentData(
@@ -2187,17 +2657,22 @@ void main() {
       await tester.pumpAndSettle();
 
       // Act
-      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
-      final result = await state.getDataService().getAssignmentData(assignmentId: assignmentId);
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
+      final result = await state.getDataService().getAssignmentData(
+          assignmentId: assignmentId);
 
       // Assert
       expect(result, isNotNull);
       expect(result!.assId, assignmentId);
       expect(result.title, 'Assignment 1');
-      verify(mockAssignmentCacheService.getCachedAssignmentData(assignmentId)).called(1);
+      verify(mockAssignmentCacheService.getCachedAssignmentData(assignmentId))
+          .called(1);
     });
 
-    testWidgets('should load assignment data from Firestore when cache is empty', (WidgetTester tester) async {
+    testWidgets(
+        'should load assignment data from Firestore when cache is empty', (
+        WidgetTester tester) async {
       // Arrange
       final assignmentId = 'assignment1';
       final assignmentData = AssignmentData(
@@ -2217,17 +2692,24 @@ void main() {
       await tester.pumpAndSettle();
 
       // Act
-      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
-      final result = await state.getDataService().getAssignmentData(assignmentId: assignmentId);
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
+      final result = await state.getDataService().getAssignmentData(
+          assignmentId: assignmentId);
 
       // Assert
       expect(result, isNotNull);
       expect(result!.assId, assignmentId);
-      verify(mockAssignmentCacheService.getCachedAssignmentData(assignmentId)).called(1);
-      verify(mockFirestoreService.fetchAssignmentData(assignmentId: assignmentId)).called(1);
+      verify(mockAssignmentCacheService.getCachedAssignmentData(assignmentId))
+          .called(1);
+      verify(
+          mockFirestoreService.fetchAssignmentData(assignmentId: assignmentId))
+          .called(1);
     });
 
-    testWidgets('should return null if an error occurs while fetching assignment data', (WidgetTester tester) async {
+    testWidgets(
+        'should return null if an error occurs while fetching assignment data', (
+        WidgetTester tester) async {
       // Arrange
       final assignmentId = 'assignment1';
 
@@ -2240,16 +2722,22 @@ void main() {
       await tester.pumpAndSettle();
 
       // Act
-      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
-      final result = await state.getDataService().getAssignmentData(assignmentId: assignmentId);
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
+      final result = await state.getDataService().getAssignmentData(
+          assignmentId: assignmentId);
 
       // Assert
       expect(result, isNull);
-      verify(mockAssignmentCacheService.getCachedAssignmentData(assignmentId)).called(1);
-      verify(mockFirestoreService.fetchAssignmentData(assignmentId: assignmentId)).called(1);
+      verify(mockAssignmentCacheService.getCachedAssignmentData(assignmentId))
+          .called(1);
+      verify(
+          mockFirestoreService.fetchAssignmentData(assignmentId: assignmentId))
+          .called(1);
     });
 
-    testWidgets('should load assignment data from Firestore and cache it', (WidgetTester tester) async {
+    testWidgets('should load assignment data from Firestore and cache it', (
+        WidgetTester tester) async {
       // Arrange
       final assignmentId = 'assignment1';
       final assignmentData = AssignmentData(
@@ -2269,20 +2757,28 @@ void main() {
       await tester.pumpAndSettle();
 
       // Act
-      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
-      final result = await state.getDataService().getAssignmentData(assignmentId: assignmentId);
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
+      final result = await state.getDataService().getAssignmentData(
+          assignmentId: assignmentId);
 
       // Assert
       expect(result, isNotNull);
       expect(result!.assId, assignmentId);
-      verify(mockAssignmentCacheService.getCachedAssignmentData(assignmentId)).called(1);
-      verify(mockFirestoreService.fetchAssignmentData(assignmentId: assignmentId)).called(1);
-      verify(mockAssignmentCacheService.cacheAssignmentData(assignmentData)).called(1);
+      verify(mockAssignmentCacheService.getCachedAssignmentData(assignmentId))
+          .called(1);
+      verify(
+          mockFirestoreService.fetchAssignmentData(assignmentId: assignmentId))
+          .called(1);
+      verify(mockAssignmentCacheService.cacheAssignmentData(assignmentData))
+          .called(1);
     });
   });
 
   group('deleteAssignment', () {
-    testWidgets('should delete assignment from cache and Firestore successfully', (WidgetTester tester) async {
+    testWidgets(
+        'should delete assignment from cache and Firestore successfully', (
+        WidgetTester tester) async {
       // Arrange
       final assignmentId = 'assignment1';
       final uid = 'user1';
@@ -2306,7 +2802,8 @@ void main() {
           .thenAnswer((_) async => assignmentData);
       when(mockSubjectCacheService.getCachedSubjectData('subject1'))
           .thenAnswer((_) async => subjectData);
-      when(mockFirestoreService.deleteAssignment(assignmentId: assignmentId, uid: uid))
+      when(mockFirestoreService.deleteAssignment(
+          assignmentId: assignmentId, uid: uid))
           .thenAnswer((_) async {});
       when(mockSubjectCacheService.cacheSubjectData(subjectData))
           .thenAnswer((_) async {});
@@ -2315,17 +2812,22 @@ void main() {
       await tester.pumpAndSettle();
 
       // Act
-      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
       await state.getDataService().deleteAssignment(assignmentId: assignmentId);
 
       // Assert
-      verify(mockAssignmentCacheService.deleteAssignment(assignmentId: assignmentId)).called(1);
-      verify(mockFirestoreService.deleteAssignment(assignmentId: assignmentId, uid: 'subject1')).called(1);
-      verify(mockSubjectCacheService.deleteSubject(subjectId: 'subject1')).called(1);
+      verify(mockAssignmentCacheService.deleteAssignment(
+          assignmentId: assignmentId)).called(1);
+      verify(mockFirestoreService.deleteAssignment(
+          assignmentId: assignmentId, uid: 'subject1')).called(1);
+      verify(mockSubjectCacheService.deleteSubject(subjectId: 'subject1'))
+          .called(1);
       verify(mockSubjectCacheService.cacheSubjectData(subjectData)).called(1);
     });
 
-    testWidgets('should fetch assignment data from Firestore if not in cache', (WidgetTester tester) async {
+    testWidgets('should fetch assignment data from Firestore if not in cache', (
+        WidgetTester tester) async {
       // Arrange
       final assignmentId = 'assignment1';
       final uid = 'user1';
@@ -2351,7 +2853,8 @@ void main() {
           .thenAnswer((_) async => assignmentData);
       when(mockSubjectCacheService.getCachedSubjectData('subject1'))
           .thenAnswer((_) async => subjectData);
-      when(mockFirestoreService.deleteAssignment(assignmentId: assignmentId, uid: uid))
+      when(mockFirestoreService.deleteAssignment(
+          assignmentId: assignmentId, uid: uid))
           .thenAnswer((_) async {});
       when(mockSubjectCacheService.cacheSubjectData(subjectData))
           .thenAnswer((_) async {});
@@ -2360,18 +2863,26 @@ void main() {
       await tester.pumpAndSettle();
 
       // Act
-      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
       await state.getDataService().deleteAssignment(assignmentId: assignmentId);
 
       // Assert
-      verify(mockFirestoreService.fetchAssignmentData(assignmentId: assignmentId)).called(1);
-      verify(mockAssignmentCacheService.deleteAssignment(assignmentId: assignmentId)).called(1);
-      verify(mockFirestoreService.deleteAssignment(assignmentId: assignmentId, uid: 'subject1')).called(1);
-      verify(mockSubjectCacheService.deleteSubject(subjectId: 'subject1')).called(1);
+      verify(
+          mockFirestoreService.fetchAssignmentData(assignmentId: assignmentId))
+          .called(1);
+      verify(mockAssignmentCacheService.deleteAssignment(
+          assignmentId: assignmentId)).called(1);
+      verify(mockFirestoreService.deleteAssignment(
+          assignmentId: assignmentId, uid: 'subject1')).called(1);
+      verify(mockSubjectCacheService.deleteSubject(subjectId: 'subject1'))
+          .called(1);
       verify(mockSubjectCacheService.cacheSubjectData(subjectData)).called(1);
     });
 
-    testWidgets('should handle error if assignment data is not found and fails during delete', (WidgetTester tester) async {
+    testWidgets(
+        'should handle error if assignment data is not found and fails during delete', (
+        WidgetTester tester) async {
       // Arrange
       final assignmentId = 'assignment1';
       final uid = 'user1';
@@ -2385,29 +2896,39 @@ void main() {
       await tester.pumpAndSettle();
 
       // Act
-      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
       await state.getDataService().deleteAssignment(assignmentId: assignmentId);
 
       // Assert
-      verify(mockAssignmentCacheService.getCachedAssignmentData(assignmentId)).called(1);
-      verify(mockFirestoreService.fetchAssignmentData(assignmentId: assignmentId)).called(1);
-      verifyNever(mockAssignmentCacheService.deleteAssignment(assignmentId: assignmentId)); // Not called since error occurred
-      verifyNever(mockFirestoreService.deleteAssignment(assignmentId: assignmentId, uid: uid)); // Not called due to failure
+      verify(mockAssignmentCacheService.getCachedAssignmentData(assignmentId))
+          .called(1);
+      verify(
+          mockFirestoreService.fetchAssignmentData(assignmentId: assignmentId))
+          .called(1);
+      verifyNever(mockAssignmentCacheService.deleteAssignment(
+          assignmentId: assignmentId)); // Not called since error occurred
+      verifyNever(mockFirestoreService.deleteAssignment(
+          assignmentId: assignmentId, uid: uid)); // Not called due to failure
       verifyNoMoreInteractions(mockSubjectCacheService);
     });
   });
 
   group('deleteCache', () {
-    testWidgets('should clear all caches successfully', (WidgetTester tester) async {
+    testWidgets(
+        'should clear all caches successfully', (WidgetTester tester) async {
       // Arrange
       when(mockUserCacheService.clearUserCache()).thenAnswer((_) async {});
-      when(mockSubjectCacheService.clearSubjectCache()).thenAnswer((_) async {});
+      when(mockSubjectCacheService.clearSubjectCache()).thenAnswer((
+          _) async {});
       when(mockGameCacheService.clear()).thenAnswer((_) async {});
-      when(mockAssignmentCacheService.clearAssignmentCache()).thenAnswer((_) async {});
+      when(mockAssignmentCacheService.clearAssignmentCache()).thenAnswer((
+          _) async {});
 
       await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
       await tester.pumpAndSettle();
-      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
 
       // Act
       await state.getDataService().deleteCache();
@@ -2423,14 +2944,17 @@ void main() {
       verifyNoMoreInteractions(mockAssignmentCacheService);
     });
 
-    testWidgets('should rethrow exception if one of the cache clears fails', (WidgetTester tester) async {
+    testWidgets('should rethrow exception if one of the cache clears fails', (
+        WidgetTester tester) async {
       // Arrange
-      when(mockUserCacheService.clearUserCache()).thenThrow(Exception('User cache error'));
+      when(mockUserCacheService.clearUserCache()).thenThrow(
+          Exception('User cache error'));
       // Other cache services should not be called
 
       await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
       await tester.pumpAndSettle();
-      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
 
       // Act & Assert
       expect(
@@ -2445,10 +2969,177 @@ void main() {
     });
   });
 
+  group('getGameResults', () {
+    testWidgets('should return cached results if available', (
+        WidgetTester tester) async {
+      // Arrange
+      final uid = 'user1';
+      final mockResults = [
+        GameResultData(
+          gameId: 'game1',
+          subjectId: 'subject1',
+          studentId: uid,
+          correctCount: 80,
+          wrongCount: 0,
+          timestamp: DateTime.now(),
+        ),
+        GameResultData(
+          gameId: 'game2',
+          subjectId: 'subject2',
+          studentId: uid,
+          correctCount: 80,
+          wrongCount: 0,
+          timestamp: DateTime.now(),
+        ),
+      ];
+
+      when(mockGameResultCacheService.getCachedGameResults(uid)).thenAnswer((
+          _) async => mockResults);
+
+      await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
+      await tester.pumpAndSettle();
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
+
+      // Act
+      final results = await state.getDataService().getGameResults(
+          studentId: uid);
+
+      // Assert
+      expect(results, equals(mockResults));
+      verify(mockGameResultCacheService.getCachedGameResults(uid)).called(1);
+      verifyNever(mockFirestoreService.fetchGameResults(studentId: uid));
+    });
+
+    testWidgets('should fetch from Firestore if no cached results found', (
+        WidgetTester tester) async {
+      // Arrange
+      final uid = 'user1';
+      final fetchedResults = [
+        GameResultData(
+          gameId: 'game1',
+          subjectId: 'subject1',
+          studentId: uid,
+          correctCount: 80,
+          wrongCount: 0,
+          timestamp: DateTime.now(),
+        ),
+      ];
+
+      when(mockGameResultCacheService.getCachedGameResults(uid)).thenAnswer((
+          _) async => null);
+      when(mockFirestoreService.fetchGameResults(studentId: uid)).thenAnswer((
+          _) async => fetchedResults);
+      when(mockGameResultCacheService.cacheGameResult(any)).thenAnswer((
+          _) async {}); // cache individually
+
+      await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
+      await tester.pumpAndSettle();
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
+
+      // Act
+      final results = await state.getDataService().getGameResults(
+          studentId: uid);
+
+      // Assert
+      expect(results, equals(fetchedResults));
+      verify(mockGameResultCacheService.getCachedGameResults(uid)).called(1);
+      verify(mockFirestoreService.fetchGameResults(studentId: uid)).called(1);
+      verify(mockGameResultCacheService.cacheGameResult(fetchedResults.first))
+          .called(1);
+    });
+
+    testWidgets(
+        'should return empty list if fetch fails', (WidgetTester tester) async {
+      // Arrange
+      final uid = 'user1';
+
+      when(mockGameResultCacheService.getCachedGameResults(uid)).thenAnswer((
+          _) async => null);
+      when(mockFirestoreService.fetchGameResults(studentId: uid)).thenThrow(
+          Exception('Firestore error'));
+
+      await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
+      await tester.pumpAndSettle();
+      final state = tester.state<DataServiceTestWidgetState>(
+          find.byType(DataServiceTestWidget));
+
+      // Act
+      final results = await state.getDataService().getGameResults(
+          studentId: uid);
+
+      // Assert
+      expect(results, isEmpty);
+      verify(mockGameResultCacheService.getCachedGameResults(uid)).called(1);
+      verify(mockFirestoreService.fetchGameResults(studentId: uid)).called(1);
+    });
+
+    testWidgets('getWeekGameResults should return results for past 7 days with correct aggregation', (WidgetTester tester) async {
+      final uid = 'student1';
+      final now = DateTime.now();
+
+      // Arrange mock game results: 3 in last 7 days, 1 old
+      final mockResults = [
+        GameResultData(
+          gameId: 'game1',
+          subjectId: 'subject1',
+          studentId: uid,
+          correctCount: 5,
+          wrongCount: 2,
+          timestamp: now.subtract(const Duration(days: 1)), // Should count
+        ),
+        GameResultData(
+          gameId: 'game2',
+          subjectId: 'subject1',
+          studentId: uid,
+          correctCount: 3,
+          wrongCount: 1,
+          timestamp: now.subtract(const Duration(days: 3)), // Should count
+        ),
+        GameResultData(
+          gameId: 'game3',
+          subjectId: 'subject1',
+          studentId: uid,
+          correctCount: 4,
+          wrongCount: 2,
+          timestamp: now.subtract(const Duration(days: 6)), // Should count
+        ),
+        GameResultData(
+          gameId: 'gameOld',
+          subjectId: 'subject1',
+          studentId: uid,
+          correctCount: 10,
+          wrongCount: 5,
+          timestamp: now.subtract(const Duration(days: 10)), // Should NOT count
+        ),
+      ];
+
+      when(mockGameResultCacheService.getCachedGameResults(uid)).thenAnswer((_) async => mockResults);
+
+      await tester.pumpWidget(createTestableWidget(DataServiceTestWidget()));
+      await tester.pumpAndSettle();
+      final state = tester.state<DataServiceTestWidgetState>(find.byType(DataServiceTestWidget));
+      final dataService = state.getDataService();
+
+      // Act
+      final weekResults = await dataService.getWeekGameResults(studentId: uid);
+
+      // Assert
+      expect(weekResults.length, 7);
+      final totalCorrect = weekResults.fold<int>(0, (sum, item) => sum + (item['correctCount'] as int));
+      final totalWrong = weekResults.fold<int>(0, (sum, item) => sum + (item['wrongCount'] as int));
+
+      expect(totalCorrect, 12);
+      expect(totalWrong, 5);
+
+      verify(mockGameResultCacheService.getCachedGameResults(uid)).called(1);
+    });
+  });
 }
 
 
-class DataServiceTestWidget extends StatefulWidget {
+  class DataServiceTestWidget extends StatefulWidget {
   @override
   DataServiceTestWidgetState createState() => DataServiceTestWidgetState();
 }
