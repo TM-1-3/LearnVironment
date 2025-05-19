@@ -132,7 +132,10 @@ class AssignmentsPageTeacherState extends State<AssignmentsPageTeacher> {
                   },
                 )
                     : const Center(
-                  child: Text('Create assignments by pressing the plus icon in the games page!'),
+                  child: Text(
+                    'Create assignments by pressing the plus icon in the games page!',
+                    textAlign: TextAlign.center,
+                  ),
                 );
               },
             ),
