@@ -230,6 +230,12 @@ class CreateAssignmentPageState extends State<CreateAssignmentPage> {
                           child: Text(type),
                         );
                       }).toList(),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Class is required';
+                        }
+                        return null;
+                      },
                       onChanged: (String? newValue) {
                         if (newValue != null) {
                           setState(() {
@@ -257,7 +263,8 @@ class CreateAssignmentPageState extends State<CreateAssignmentPage> {
                 ),
               )
             ]),
-      ),
-    ));
+        ),
+      )
+    );
   }
 }

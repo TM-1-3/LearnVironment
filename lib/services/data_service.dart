@@ -528,8 +528,8 @@ class DataService {
     try {
       AssignmentData? assignmentData = await _assignmentCacheService.getCachedAssignmentData(assignmentId);
       assignmentData ??= await _firestoreService.fetchAssignmentData(assignmentId: assignmentId);
-      await _assignmentCacheService.deleteAssignment(assignmentId: assignmentId);
 
+      await _assignmentCacheService.deleteAssignment(assignmentId: assignmentId);
       await _firestoreService.deleteAssignment(assignmentId: assignmentId, uid: uid);
 
       SubjectData? subjectData = await _subjectCacheService.getCachedSubjectData(assignmentData.subjectId);
@@ -539,7 +539,6 @@ class DataService {
       subjectData.assignments.remove(assignmentId);
 
       await _subjectCacheService.cacheSubjectData(subjectData);
-
     } catch (e) {
       print("Error creating Assignment");
     }
