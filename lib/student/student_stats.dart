@@ -242,13 +242,13 @@ class StudentStatsPageState extends State<StudentStatsPage> {
                   builder: (context, constraints) {
                     var mainAxisExtent = 600.0;
                     if (constraints.maxWidth <= 600) {
-                      mainAxisExtent = constraints.maxWidth;
+                      mainAxisExtent = constraints.maxWidth+20;
                     } else if (constraints.maxWidth <= 1000) {
-                      mainAxisExtent = 650;
+                      mainAxisExtent = 670;
                     } else if (constraints.maxWidth <= 2000) {
-                      mainAxisExtent = 1050;
+                      mainAxisExtent = 1070;
                     } else {
-                      mainAxisExtent = 1500;
+                      mainAxisExtent = 1520;
                     }
 
                     return GridView.builder(
