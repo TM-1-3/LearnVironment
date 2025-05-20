@@ -438,7 +438,8 @@ You can find below information and references related with the project managemen
 ![beginSprint3](docs/beginSprint3.png)
 
 **Board at the End of Sprint 3**
-<img width="1342" alt="image" src="https://github.com/user-attachments/assets/1162e4b0-0617-4d44-9a66-fbf25f3eba0a" />
+
+![endSprint3](docs/endSprint3.png)
 
 ### Final Release
 #### Classes & Assignments
