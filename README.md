@@ -1,3 +1,28 @@
+<img src='https://sigarra.up.pt/feup/pt/imagens/LogotipoSI' width="30%"/>
+
+<div align="center">
+🌍 <a href="README.md">English</a> | 🇵🇹 <a href="README.pt.md">Português</a>
+</div>
+
+<h3 align="center">BSc in Informatics and Computing Engineering<br> L.EIC017 - Software Engineering<br> 2024/2025 </h3>
+
+---
+<h3 align="center"> Collaborators &#129309 </h2>
+
+<div align="center">
+
+| Name               | Number      |
+|--------------------|-------------|
+| Henrique Vilarinho | up202307037 |
+| Leonor Bidarra     | up202307719 |
+| Maria Sousa        | up202303834 |
+| Miguel Roque       | up202304950 |
+| Tomás Morais       | up202304692 |
+
+Grade : 19,9
+
+</div>
+
 # LearnVironment Development Report
 
 Welcome to the documentation pages of LearnVironment!
