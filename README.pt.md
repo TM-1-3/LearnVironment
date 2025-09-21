@@ -1,5 +1,9 @@
 <img src='https://sigarra.up.pt/feup/pt/imagens/LogotipoSI' width="30%"/>
 
+<div align="center">
+🌍 <a href="README.md">English</a> | 🇵🇹 <a href="README.pt.md">Português</a>
+</div>
+
 <h3 align="center">Licenciatura em Engenharia Informática e Computação<br> L.EIC017 - Engenharia de Software<br> 2024/2025 </h3>
 
 ---
